@@ -53,6 +53,73 @@ export {
 export { useToast, toast } from './components/toast';
 export { Toaster } from './components/toast';
 
+// Form Atoms
+export { Label, type LabelProps } from './components/label';
+export { Input, inputVariants, type InputProps } from './components/input';
+export {
+  Textarea,
+  textareaVariants,
+  type TextareaProps,
+} from './components/textarea';
+export { Checkbox, type CheckboxProps } from './components/checkbox';
+export {
+  RadioGroup,
+  RadioGroupItem,
+  type RadioGroupProps,
+  type RadioGroupItemProps,
+} from './components/radio-group';
+export { Switch, switchVariants, type SwitchProps } from './components/switch';
+
+// Form Composites
+export {
+  Select,
+  SelectGroup,
+  SelectValue,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectLabel,
+  SelectSeparator,
+} from './components/select';
+export { NumberInput, type NumberInputProps } from './components/number-input';
+export { DatePicker, type DatePickerProps } from './components/date-picker';
+export {
+  Combobox,
+  type ComboboxProps,
+  type ComboboxOption,
+} from './components/combobox';
+
+// Form Patterns
+export {
+  FormField,
+  FormLabel,
+  FormControl,
+  FormDescription,
+  FormMessage,
+  useFormField,
+  type FormFieldProps,
+  type FormLabelProps,
+  type FormControlProps,
+  type FormDescriptionProps,
+  type FormMessageProps,
+} from './components/form-field';
+export {
+  DynamicFormField,
+  getFieldComponent,
+  type DynamicFormFieldProps,
+  type FieldType,
+  type FieldOption,
+} from './components/dynamic-form-field';
+export {
+  FormLayout,
+  formLayoutVariants,
+  FormSection,
+  FormActions,
+  type FormLayoutProps,
+  type FormSectionProps,
+  type FormActionsProps,
+} from './components/form-layout';
+
 // PWA Components
 export {
   BottomNavigation,

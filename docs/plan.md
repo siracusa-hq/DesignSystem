@@ -241,3 +241,4 @@ shadcn/ui型アプローチを採用：
 **Phase 0-1: プロジェクト基盤 + デザイントークン** - 完了
 **Phase 2: コアアトム** - 完了（Button, Badge, Avatar, Separator, Skeleton, Spinner, Card, Tooltip, Toast）
 **Phase 3: PWA対応** - 完了（トークン, フック4種, タッチ最適化, PWAコンポーネント4種）
+**Phase 4: フォームドメイン** - 完了（Label, Input, Textarea, Checkbox, RadioGroup, Switch, Select, NumberInput, DatePicker, Combobox, FormField, DynamicFormField, FormLayout）
