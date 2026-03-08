@@ -201,6 +201,27 @@
   --z-tooltip: 600;
 
   /* --------------------------------------------------------
+     PWA: Safe Area Insets
+     ノッチ端末・ホームバー端末のSafe Area対応
+     -------------------------------------------------------- */
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left: env(safe-area-inset-left, 0px);
+
+  /* --------------------------------------------------------
+     PWA: Touch Target
+     WCAG 2.5.5 準拠の最小タッチターゲットサイズ
+     -------------------------------------------------------- */
+  --touch-target-min: 44px;
+  --touch-target-comfortable: 48px;
+
+  /* --------------------------------------------------------
+     PWA: Bottom Navigation
+     -------------------------------------------------------- */
+  --bottom-nav-height: 56px;
+
+  /* --------------------------------------------------------
      Animation: Keyframes
      -------------------------------------------------------- */
   --animate-fade-in: fade-in var(--duration-normal) var(--ease-out);
@@ -250,6 +271,52 @@
     -moz-osx-font-smoothing: grayscale;
   }
 }
+
+/* ============================================================
+   PWA: Standalone Mode
+   ============================================================ */
+
+@media (display-mode: standalone) {
+  body {
+    /* PWAスタンドアロンモードではoverscrollを無効化 */
+    overscroll-behavior-y: contain;
+    /* ユーザー選択を制限（ネイティブアプリ的な挙動） */
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* テキスト入力要素ではユーザー選択を許可 */
+  input,
+  textarea,
+  [contenteditable='true'] {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+}
+
+/* ============================================================
+   PWA: Viewport Height
+   モバイルブラウザのアドレスバーを考慮した実高さ
+   ============================================================ */
+
+@supports (height: 100dvh) {
+  :root {
+    --vh-full: 100dvh;
+  }
+}
+
+@supports not (height: 100dvh) {
+  :root {
+    --vh-full: 100vh;
+  }
+}
+
+/* ============================================================
+   PWA: Touch Device Variant
+   タッチデバイスでのタッチターゲット最適化
+   ============================================================ */
+
+@custom-variant touch (@media (pointer: coarse));
 
 /* ============================================================
    Accessibility: Reduced Motion

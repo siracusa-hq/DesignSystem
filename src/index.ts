@@ -4,6 +4,10 @@ export { createContext } from './lib/create-context';
 
 // Hooks
 export { useBreakpoint, BREAKPOINTS, type Breakpoint } from './hooks';
+export { useDisplayMode, type DisplayMode } from './hooks';
+export { useOnlineStatus } from './hooks';
+export { useViewportHeight } from './hooks';
+export { useInstallPrompt } from './hooks';
 
 // Components
 export { Button, buttonVariants, type ButtonProps } from './components/button';
@@ -48,3 +52,23 @@ export {
 } from './components/toast';
 export { useToast, toast } from './components/toast';
 export { Toaster } from './components/toast';
+
+// PWA Components
+export {
+  BottomNavigation,
+  BottomNavigationItem,
+  type BottomNavigationProps,
+  type BottomNavigationItemProps,
+} from './components/bottom-navigation';
+export {
+  OfflineIndicator,
+  type OfflineIndicatorProps,
+} from './components/offline-indicator';
+export {
+  InstallPrompt,
+  type InstallPromptProps,
+} from './components/install-prompt';
+export {
+  PullToRefresh,
+  type PullToRefreshProps,
+} from './components/pull-to-refresh';
