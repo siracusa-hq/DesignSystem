@@ -197,3 +197,4 @@ shadcn/ui型アプローチを採用：
 ## 現在のステータス
 
 **Phase 0-1: プロジェクト基盤 + デザイントークン** - 完了
+**Phase 2: コアアトム** - 完了（Button, Badge, Avatar, Separator, Skeleton, Spinner, Card, Tooltip, Toast）

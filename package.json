@@ -5,7 +5,9 @@
   "type": "module",
   "license": "UNLICENSED",
   "private": true,
-  "sideEffects": ["**/*.css"],
+  "sideEffects": [
+    "**/*.css"
+  ],
   "exports": {
     ".": {
       "import": "./dist/index.js",
@@ -17,7 +19,10 @@
     },
     "./globals.css": "./src/styles/globals.css"
   },
-  "files": ["dist", "src/styles"],
+  "files": [
+    "dist",
+    "src/styles"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -33,6 +38,9 @@
     "react-dom": "^18.0.0 || ^19.0.0"
   },
   "dependencies": {
+    "@radix-ui/react-toast": "^1.2.15",
+    "@radix-ui/react-tooltip": "^1.2.8",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "tailwind-merge": "^3.0.2"
   },
@@ -44,6 +52,7 @@
     "@tailwindcss/vite": "^4.1.0",
     "@testing-library/jest-dom": "^6.6.0",
     "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "axe-core": "^4.10.0",
