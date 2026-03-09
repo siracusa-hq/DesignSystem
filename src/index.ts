@@ -120,6 +120,49 @@ export {
   type FormActionsProps,
 } from './components/form-layout';
 
+// Data Display
+export {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+  type TabsListProps,
+} from './components/tabs';
+export {
+  EmptyState,
+  EmptyStateIcon,
+  EmptyStateTitle,
+  EmptyStateDescription,
+  EmptyStateActions,
+  type EmptyStateProps,
+} from './components/empty-state';
+export {
+  Table,
+  TableHeader,
+  TableBody,
+  TableFooter,
+  TableRow,
+  TableHead,
+  TableCell,
+  TableCaption,
+} from './components/table';
+export {
+  DataTable,
+  DataTableColumnHeader,
+  DataTablePagination,
+  DataTableToolbar,
+  type DataTableProps,
+} from './components/data-table';
+export {
+  FilterBar,
+  FilterBarGroup,
+  FilterChip,
+  ActiveFilters,
+  FilterBarActions,
+  type FilterChipProps,
+  type ActiveFiltersProps,
+} from './components/filter-bar';
+
 // PWA Components
 export {
   BottomNavigation,

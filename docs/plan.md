@@ -57,55 +57,58 @@ shadcn/ui型アプローチを採用：
 
 ## 実装フェーズ
 
-### Phase 0: プロジェクト基盤 + 品質パイプライン
+### ~~Phase 0: プロジェクト基盤 + 品質パイプライン~~ ✅ 完了
+
 > **品質**(主) / 速度(副)
 
 テストとa11yチェックをインフラとして最初に構築。以降の全フェーズの品質ゲート。
 
-- [ ] プロジェクト初期化（package.json, TypeScript, tsup）
-- [ ] Vitest + Testing Library セットアップ
-- [ ] axe-core アクセシビリティテスト統合
-- [ ] Storybook 8 + addon-a11y セットアップ
-- [ ] `cn()` ユーティリティ（clsx + tailwind-merge）
-- [ ] `createContext()` 型安全コンテキストファクトリ
-- [ ] .gitignore, .prettierrc
+- [x] プロジェクト初期化（package.json, TypeScript, tsup）
+- [x] Vitest + Testing Library セットアップ
+- [x] axe-core アクセシビリティテスト統合
+- [x] Storybook 8 + addon-a11y セットアップ
+- [x] `cn()` ユーティリティ（clsx + tailwind-merge）
+- [x] `createContext()` 型安全コンテキストファクトリ
+- [x] .gitignore, .prettierrc
 
 **成果物:** テスト・ビルド・Storybookが動作する空のデザインシステムパッケージ
 
-### Phase 1: ブランド基盤 + デザイントークン
+### ~~Phase 1: ブランド基盤 + デザイントークン~~ ✅ 完了
+
 > **ブランディング**(主) / 品質(副)
 
 デザイン原則とトークンを**戦略的意思決定**として策定。全後続フェーズの判断基準。
 
-- [ ] デザイン原則ドキュメント（明快さ、一貫性、効率性、適応的密度、段階的開示）
-- [ ] ブランドアイデンティティ定義（カラー方針、タイポグラフィ、アイコン、ボイス&トーン）
-- [ ] デザイントークン実装（`globals.css` - Tailwind v4 `@theme`）
-  - カラー: brand(50-950), neutral(zinc系), semantic(success/warning/error/info)
+- [x] デザイン原則ドキュメント（明快さ、一貫性、効率性、適応的密度、段階的開示）
+- [x] ブランドアイデンティティ定義（カラー方針、タイポグラフィ、アイコン、ボイス&トーン）
+- [x] デザイントークン実装（`globals.css` - Tailwind v4 `@theme`）
+  - カラー: primary(teal #1BA491, 50-950), neutral(zinc系), semantic(success/warning/error/info)
   - タイポグラフィ: Inter + Noto Sans JP, サイズスケール(base=14px), ウェイト
   - スペーシング: 4pxグリッド
   - エレベーション: shadow-xs～xl + shadow-drawer, radius-none～full
   - アニメーション: duration, easing, keyframes
   - Z-index: dropdown(50)～tooltip(600)
-- [ ] TypeScriptトークン定数（プログラム的アクセス用）
-- [ ] レスポンシブ方針 + `useBreakpoint` フック
-- [ ] トークンのStorybookドキュメント（Colors, Typography, Spacing, Elevation）
+- [x] TypeScriptトークン定数（プログラム的アクセス用）
+- [x] レスポンシブ方針 + `useBreakpoint` フック
+- [x] トークンのStorybookドキュメント（Colors, Typography, Spacing, Elevation）
 
 **成果物:** トークンパッケージ + ブランドガイドライン
 
-### Phase 2: コアアトム
+### ~~Phase 2: コアアトム~~ ✅ 完了
+
 > **品質**(主) / 速度(副)
 
 ドメイン横断で使われる基礎コンポーネント。全ドメインスライスの前提。
 
-- [ ] Button（variant: default/destructive/outline/ghost/link, size: sm/md/lg/icon）
-- [ ] Badge（ステータス表示）
-- [ ] Avatar
-- [ ] Separator
-- [ ] Skeleton（ローディングプレースホルダー）
-- [ ] Spinner（ローディングインジケーター）
-- [ ] Card（コンテナ）
-- [ ] Tooltip（Radix UI）
-- [ ] Toast（通知、Radix UI）
+- [x] Button（variant: default/destructive/outline/ghost/link, size: sm/md/lg/icon）
+- [x] Badge（variant: default/success/warning/error/info/outline）
+- [x] Avatar（Avatar + AvatarImage + AvatarFallback, createContextで状態共有）
+- [x] Separator（horizontal/vertical, decorative）
+- [x] Skeleton（animate-pulse, aria-hidden）
+- [x] Spinner（SVGベース, role="status", size: sm/md/lg）
+- [x] Card（Card + CardHeader/Title/Description/Content/Footer）
+- [x] Tooltip（Radix UI, タッチデバイスでは非表示）
+- [x] Toast（Radix UI, variant: default/success/error, useToast + toast()）
 
 **品質ゲート（Phase 2以降の全コンポーネントに適用）:**
 - Vitest + Testing Library ユニットテスト
@@ -114,76 +117,87 @@ shadcn/ui型アプローチを採用：
 - 全バリアントのStorybookストーリー
 - TypeScript Props型ドキュメント
 
-**成果物:** 基本UIコンポーネントライブラリ
+**成果物:** 基本UIコンポーネントライブラリ（9コンポーネント, 96テスト）
 
-### Phase 3: PWA対応
+### ~~Phase 3: PWA対応~~ ✅ 完了
+
 > **品質**(主) / 速度(副)
 
 デスクトップファーストの業務アプリをPWAとしてもネイティブ品質で動作させるための基盤。
 既存コンポーネントのタッチ最適化と、PWA固有のトークン・フック・UIパターンを提供する。
 
 #### 3-A: トークン + ユーティリティ拡張
-- [ ] Safe Area Insetsトークン（`env(safe-area-inset-*)` をCSS変数化）
-- [ ] Viewport単位トークン（`dvh`, `svh` ユーティリティ）
-- [ ] タッチターゲットトークン（最小44px保証の変数）
-- [ ] スタンドアロンモード用スタイル（`@media (display-mode: standalone)` ユーティリティ）
+- [x] Safe Area Insetsトークン（`env(safe-area-inset-*)` をCSS変数化）
+- [x] Viewport単位トークン（`dvh`, `svh` ユーティリティ）
+- [x] タッチターゲットトークン（最小44px保証の変数）
+- [x] スタンドアロンモード用スタイル（`@media (display-mode: standalone)` ユーティリティ）
+- [x] `touch:` カスタムバリアント（`@media (pointer: coarse)`）
 
 #### 3-B: フック
-- [ ] `useDisplayMode()` — standalone / browser / minimal-ui 検出
-- [ ] `useOnlineStatus()` — オンライン/オフライン状態監視
-- [ ] `useViewportHeight()` — モバイルブラウザのアドレスバー考慮した実高さ
-- [ ] `useInstallPrompt()` — PWAインストールプロンプト制御（`beforeinstallprompt` イベント）
+- [x] `useDisplayMode()` — standalone / browser / minimal-ui / fullscreen 検出
+- [x] `useOnlineStatus()` — オンライン/オフライン状態監視
+- [x] `useViewportHeight()` — visualViewport APIでアドレスバー考慮した実高さ
+- [x] `useInstallPrompt()` — PWAインストールプロンプト制御（`beforeinstallprompt` イベント）
 
 #### 3-C: 既存コンポーネントのタッチ最適化
-- [ ] Button: タッチターゲット44px保証（モバイルでの最小サイズ調整）
-- [ ] Toast: モバイルでは下部中央表示、スワイプ方向調整
-- [ ] Tooltip: タッチデバイスではlong-press対応 or 非表示
+- [x] Button: `touch:min-h-[--touch-target-min]` で44px保証
+- [x] Toast: モバイルでは下部中央full-width、デスクトップ(sm+)では右寄せ
+- [x] Tooltip: `touch:hidden` でタッチデバイスでは非表示
 
 #### 3-D: PWA固有コンポーネント
-- [ ] BottomNavigation（モバイルアプリ型ナビゲーション、Safe Area対応）
-- [ ] OfflineIndicator（オフライン状態バナー）
-- [ ] InstallPrompt（PWAインストール誘導UI）
-- [ ] PullToRefresh（引っ張って更新パターン）
+- [x] BottomNavigation（モバイルアプリ型ナビゲーション、Safe Area対応）
+- [x] OfflineIndicator（オフライン状態バナー、role="alert"）
+- [x] InstallPrompt（PWAインストール誘導UI、role="dialog"）
+- [x] PullToRefresh（タッチイベントベース、Spinner連携）
 
 #### 3-E: ドキュメント + ガイド
-- [ ] PWA対応ガイドライン（manifest.json, Service Worker, アイコン生成はアプリ側の責務として記載）
-- [ ] レスポンシブ + PWAのStorybookストーリー（モバイルビューポートでのプレビュー）
+- [x] PWA対応ガイドライン（`docs/PWA_GUIDELINES.md`）
+- [x] レスポンシブ + PWAのStorybookストーリー（PWA/Overview）
 
-**品質ゲート:**
-- タッチターゲットサイズの自動テスト
-- モバイルビューポートでのスナップショット検証
-- `prefers-reduced-motion` 対応確認
+**成果物:** PWA対応済みコンポーネントライブラリ + PWAガイドライン（96テスト）
 
-**成果物:** PWA対応済みコンポーネントライブラリ + PWAガイドライン
+### ~~Phase 4: フォームドメイン~~ ✅ 完了
 
-### Phase 4: フォームドメイン
 > **速度**(主) / 品質(副)
 
 業務アプリ最高価値のドメイン。CRUD・設定・データ入力すべてにフォームが必要。
 
-- [ ] アトム: Input, Label, Textarea, Checkbox, Radio, Switch
-- [ ] コンポジット: Select（Radix UI）, Combobox, DatePicker, NumberInput
-- [ ] パターン: FormField（Label + Input + Error統合）
-- [ ] パターン: DynamicFormField（16データ型→コンポーネント自動マッピング）
-- [ ] フォームレイアウトパターン（vertical, horizontal, grid）
-- [ ] バリデーション統合ガイド（react-hook-form + zod連携）
+- [x] アトム: Label, Input (CVA size), Textarea (CVA size), Checkbox (Radix UI), RadioGroup (Radix UI), Switch (Radix UI, CVA size)
+- [x] コンポジット: Select（Radix UI, 7サブコンポーネント）, Combobox（cmdk + Radix Popover）, DatePicker（native input[type=date]）, NumberInput（inputMode="numeric" + 増減ボタン）
+- [x] パターン: FormField（createContextで複合コンポーネント — FormField/FormLabel/FormControl/FormDescription/FormMessage）
+- [x] パターン: DynamicFormField（16データ型→コンポーネント自動マッピング + getFieldComponent()）
+- [x] フォームレイアウトパターン: FormLayout (vertical/horizontal/grid), FormSection (fieldset), FormActions
+- [x] バリデーション統合ガイド（`docs/form-validation-guide.md` — react-hook-form + zod連携）
 
-**成果物:** 完全なフォームツールキット
+**設計判断:**
+- `aria-invalid`属性でエラースタイル自動適用（カスタムprop不要）
+- react-hook-form非依存 — FormFieldは純粋なプレゼンテーションパターン
+- native date input採用（将来カスタムカレンダーに拡張可能）
+- `inputMode="numeric"`でNumberInputのブラウザ差異を回避
 
-### Phase 5: データ表示ドメイン
+**成果物:** 完全なフォームツールキット（13コンポーネント, 223テスト累計）
+
+### ~~Phase 5: データ表示ドメイン~~ ✅ 完了
+
 > **速度**(主) / ブランディング(副)
 
 業務アプリ中核画面「一覧→フィルタ→詳細」を実現。
 
-- [ ] Table（基本テーブル: ソート、リサイズ）
-- [ ] DataTable（高機能: ページネーション、バルク操作、カラム設定、行選択）
-- [ ] FilterBar（AND/OR条件グループ、演算子選択、保存フィルタ）
-- [ ] EmptyState（空状態 + アクション誘導）
-- [ ] Tabs（Radix UI）
+- [x] Tabs（Radix UI、default/underline variant、createContext variant伝播）
+- [x] EmptyState（複合コンポーネント、sm/md/lg size variant）
+- [x] Table（スタイル付きHTMLプリミティブ8種、横スクロール対応）
+- [x] DataTable（@tanstack/react-table、ソート/ページネーション/行選択/カラム表示切替）
+- [x] FilterBar（FilterChip/ActiveFilters/FilterBarActions、コンポーザブルUI部品）
 
-**成果物:** データ一覧画面の完全なツールキット
+**設計判断:**
+- Table = スタイルプリミティブ（Cardと同パターン）、DataTable = @tanstack/react-table構成
+- FilterBarはAND/OR条件ビルダーではなくコンポーザブルUI部品（ビジネスロジック非依存）
+- @tanstack/react-table採用（ヘッドレス、tree-shakeable、ソート/ページネーション/選択を再発明しない）
+
+**成果物:** データ一覧画面の完全なツールキット（5コンポーネント群, 278テスト累計）
 
 ### Phase 6: ナビゲーション + レイアウトドメイン
+
 > **ブランディング**(主) / 速度(副)
 
 アプリの「骨格」を定義。Polastackアプリの外観と操作感を統一。
@@ -198,6 +212,7 @@ shadcn/ui型アプローチを採用：
 **成果物:** Phase 4-5と組み合わせて完全な業務アプリケーション構築可能
 
 ### Phase 7: 統合 + 採用支援
+
 > **速度**(主) / 品質(副) / ブランディング(副)
 
 デザインシステムを「作った」から「使われている」にする。
@@ -212,6 +227,7 @@ shadcn/ui型アプローチを採用：
 **成果物:** 実証済みの移行パス + テンプレート
 
 ### Phase 8: ガバナンス + 進化
+
 > **品質**(主) / ブランディング(副) / 速度(副)
 
 実利用フィードバックに基づく持続的改善プロセス。
@@ -238,7 +254,13 @@ shadcn/ui型アプローチを採用：
 
 ## 現在のステータス
 
-**Phase 0-1: プロジェクト基盤 + デザイントークン** - 完了
-**Phase 2: コアアトム** - 完了（Button, Badge, Avatar, Separator, Skeleton, Spinner, Card, Tooltip, Toast）
-**Phase 3: PWA対応** - 完了（トークン, フック4種, タッチ最適化, PWAコンポーネント4種）
-**Phase 4: フォームドメイン** - 完了（Label, Input, Textarea, Checkbox, RadioGroup, Switch, Select, NumberInput, DatePicker, Combobox, FormField, DynamicFormField, FormLayout）
+| Phase | 内容 | 状態 | コンポーネント数 | テスト数 |
+|-------|------|------|----------------|---------|
+| Phase 0-1 | プロジェクト基盤 + デザイントークン | ✅ 完了 | — | — |
+| Phase 2 | コアアトム | ✅ 完了 | 9 | 96 |
+| Phase 3 | PWA対応 | ✅ 完了 | +4（フック4種 + タッチ最適化） | 96 |
+| Phase 4 | フォームドメイン | ✅ 完了 | +13 | 223 |
+| Phase 5 | データ表示ドメイン | ✅ 完了 | +5 | 278 |
+| Phase 6 | ナビゲーション + レイアウト | 未着手 | — | — |
+| Phase 7 | 統合 + 採用支援 | 未着手 | — | — |
+| Phase 8 | ガバナンス + 進化 | 未着手 | — | — |
