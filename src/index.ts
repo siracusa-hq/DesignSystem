@@ -163,6 +163,76 @@ export {
   type ActiveFiltersProps,
 } from './components/filter-bar';
 
+// Navigation + Layout
+export {
+  Popover,
+  PopoverTrigger,
+  PopoverAnchor,
+  PopoverContent,
+} from './components/popover';
+export {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuPortal,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuItem,
+  DropdownMenuCheckboxItem,
+  DropdownMenuRadioItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  type DropdownMenuItemProps,
+} from './components/dropdown-menu';
+export {
+  Dialog,
+  DialogTrigger,
+  DialogClose,
+  DialogOverlay,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+} from './components/dialog';
+export {
+  CommandPalette,
+  CommandPaletteGroup,
+  CommandPaletteItem,
+  CommandPaletteSeparator,
+  CommandPaletteEmpty,
+  CommandPaletteShortcut,
+  type CommandPaletteProps,
+  type CommandPaletteGroupProps,
+  type CommandPaletteItemProps,
+} from './components/command-palette';
+export {
+  DrawerProvider,
+  Drawer,
+  DrawerTrigger,
+  DrawerClose,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+  DrawerFooter,
+  type DrawerProps,
+  type DrawerContentProps,
+} from './components/drawer';
+export {
+  AppShell,
+  AppShellSidebar,
+  AppShellHeader,
+  AppShellContent,
+  AppShellFooter,
+  useAppShell,
+  type AppShellProps,
+} from './components/app-shell';
+
 // PWA Components
 export {
   BottomNavigation,

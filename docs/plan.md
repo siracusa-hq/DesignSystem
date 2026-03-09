@@ -196,20 +196,26 @@ shadcn/ui型アプローチを採用：
 
 **成果物:** データ一覧画面の完全なツールキット（5コンポーネント群, 278テスト累計）
 
-### Phase 6: ナビゲーション + レイアウトドメイン
+### ~~Phase 6: ナビゲーション + レイアウトドメイン~~ ✅ 完了
 
 > **ブランディング**(主) / 速度(副)
 
 アプリの「骨格」を定義。Polastackアプリの外観と操作感を統一。
 
-- [ ] AppShell（サイドバー + ヘッダー + コンテンツ、PWA時はBottomNavigation統合）
-- [ ] DropdownMenu（Radix UI）
-- [ ] Dialog / Modal（Radix UI、レスポンシブ対応）
-- [ ] StackedDrawer（重ね表示ドロワー、ピン/アンピン）
-- [ ] CommandPalette（キーボード駆動の検索・ナビゲーション）
-- [ ] Popover（Radix UI）
+- [x] Popover（Radix UI、Tooltipと同パターン簡易ラッパー）
+- [x] DropdownMenu（Radix UI、14サブコンポーネント、destructive/inset variant）
+- [x] Dialog / Modal（Radix UI、レスポンシブ対応 — モバイル:フルスクリーン、デスクトップ:中央モーダル）
+- [x] CommandPalette（Dialog + cmdk構成、グループ/ショートカット/アイコン対応）
+- [x] Drawer（Radix Dialog primitives、left/right side、sm/md/lg/xl size、ピン/アンピン、DrawerProviderスタッキング）
+- [x] AppShell（createContextベース複合コンポーネント、レスポンシブサイドバー、モバイルDrawer連携、PWA BottomNav padding）
 
-**成果物:** Phase 4-5と組み合わせて完全な業務アプリケーション構築可能
+**設計判断:**
+- Dialog モバイル → フルスクリーン（業務アプリのフォーム入力領域最大化）
+- Drawer → Radix Dialog primitives基盤（フォーカストラップ、Escape、aria-modal無料）
+- モバイルサイドバー → Drawer(side='left')再利用（DRY）
+- CommandPalette Cmd+K → 消費者側制御（Radix controlled component哲学）
+
+**成果物:** Phase 4-5と組み合わせて完全な業務アプリケーション構築可能（6コンポーネント群, 337テスト累計）
 
 ### Phase 7: 統合 + 採用支援
 
@@ -261,6 +267,6 @@ shadcn/ui型アプローチを採用：
 | Phase 3 | PWA対応 | ✅ 完了 | +4（フック4種 + タッチ最適化） | 96 |
 | Phase 4 | フォームドメイン | ✅ 完了 | +13 | 223 |
 | Phase 5 | データ表示ドメイン | ✅ 完了 | +5 | 278 |
-| Phase 6 | ナビゲーション + レイアウト | 未着手 | — | — |
+| Phase 6 | ナビゲーション + レイアウト | ✅ 完了 | +6 | 337 |
 | Phase 7 | 統合 + 採用支援 | 未着手 | — | — |
 | Phase 8 | ガバナンス + 進化 | 未着手 | — | — |
