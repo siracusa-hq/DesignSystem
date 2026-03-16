@@ -21,7 +21,7 @@ export function DataTablePagination<TData>({
   return (
     <div
       className={cn(
-        'flex items-center justify-between px-3 py-3 text-sm text-neutral-600',
+        'flex items-center justify-between px-3 py-3 text-sm text-[--color-on-surface-secondary]',
         className,
       )}
     >
@@ -30,7 +30,7 @@ export function DataTablePagination<TData>({
         <select
           value={pageSize}
           onChange={(e) => table.setPageSize(Number(e.target.value))}
-          className="h-8 rounded-md border border-neutral-300 bg-white px-2 text-sm"
+          className="h-8 rounded-md border border-[--color-border-input] bg-[--color-surface-raised] px-2 text-sm"
           aria-label="Rows per page"
         >
           {pageSizeOptions.map((size) => (
@@ -47,7 +47,7 @@ export function DataTablePagination<TData>({
         </span>
         <div className="flex items-center gap-1">
           <button
-            className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-neutral-300 bg-white transition-colors hover:bg-neutral-50 disabled:opacity-50 disabled:pointer-events-none"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[--color-border-input] bg-[--color-surface-raised] transition-colors hover:bg-[--color-surface-sunken] disabled:opacity-50 disabled:pointer-events-none"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
             aria-label="Previous page"
@@ -66,7 +66,7 @@ export function DataTablePagination<TData>({
             </svg>
           </button>
           <button
-            className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-neutral-300 bg-white transition-colors hover:bg-neutral-50 disabled:opacity-50 disabled:pointer-events-none"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[--color-border-input] bg-[--color-surface-raised] transition-colors hover:bg-[--color-surface-sunken] disabled:opacity-50 disabled:pointer-events-none"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
             aria-label="Next page"

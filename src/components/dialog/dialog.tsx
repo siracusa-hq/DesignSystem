@@ -32,13 +32,13 @@ export const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        'fixed z-modal bg-white p-6 shadow-xl',
+        'fixed z-modal bg-[--color-surface-raised] p-6 shadow-xl',
         'focus-visible:outline-none',
         // Mobile: full-screen
         'inset-0',
         // Desktop: centered modal
         'sm:inset-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2',
-        'sm:w-full sm:max-w-lg sm:rounded-xl sm:border sm:border-neutral-200',
+        'sm:w-full sm:max-w-lg sm:rounded-xl sm:border sm:border-[--color-border]',
         // Animations
         'animate-in fade-in-0',
         'sm:zoom-in-95 sm:slide-in-from-left-1/2 sm:slide-in-from-top-[48%]',
@@ -112,7 +112,7 @@ export const DialogDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Description
     ref={ref}
-    className={cn('text-sm text-neutral-500', className)}
+    className={cn('text-sm text-[--color-on-surface-muted]', className)}
     {...props}
   />
 ));

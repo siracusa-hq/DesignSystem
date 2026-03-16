@@ -41,7 +41,7 @@ export const EmptyStateIcon = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn('text-neutral-400 [&>svg]:h-10 [&>svg]:w-10', className)}
+    className={cn('text-[--color-on-surface-muted] [&>svg]:h-10 [&>svg]:w-10', className)}
     {...props}
   />
 ));
@@ -55,7 +55,7 @@ export const EmptyStateTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <h3
     ref={ref}
-    className={cn('text-base font-semibold text-neutral-900', className)}
+    className={cn('text-base font-semibold text-[--color-on-surface]', className)}
     {...props}
   />
 ));
@@ -69,7 +69,7 @@ export const EmptyStateDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn('text-sm text-neutral-500 max-w-sm', className)}
+    className={cn('text-sm text-[--color-on-surface-muted] max-w-sm', className)}
     {...props}
   />
 ));

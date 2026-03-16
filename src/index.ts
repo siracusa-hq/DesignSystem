@@ -8,6 +8,16 @@ export { useDisplayMode, type DisplayMode } from './hooks';
 export { useOnlineStatus } from './hooks';
 export { useViewportHeight } from './hooks';
 export { useInstallPrompt } from './hooks';
+export { useTheme, type UseThemeOptions, type UseThemeReturn } from './hooks/use-theme';
+
+// Theme
+export {
+  ThemeProvider,
+  useTheme as useThemeContext,
+  type ThemeProviderProps,
+  type Theme,
+  type ResolvedTheme,
+} from './components/theme-provider';
 
 // Components
 export { Button, buttonVariants, type ButtonProps } from './components/button';

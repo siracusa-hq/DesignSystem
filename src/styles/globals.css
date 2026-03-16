@@ -1,6 +1,13 @@
 @import 'tailwindcss';
 
 /* ============================================================
+   Dark Mode Variant
+   .dark クラスベースのダークモード切替
+   ============================================================ */
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ============================================================
    Polastack Design System - Design Tokens
    Tailwind CSS v4 @theme directive
    ============================================================ */
@@ -232,6 +239,48 @@
   --animate-slide-out-left: slide-out-left var(--duration-slow) var(--ease-in);
 }
 
+/* ============================================================
+   Semantic Color Tokens
+   ライト/ダークモードで自動切替されるセマンティック変数
+   ============================================================ */
+
+:root {
+  --color-surface: #ffffff;
+  --color-surface-raised: #ffffff;
+  --color-surface-sunken: var(--color-neutral-50);
+  --color-surface-muted: var(--color-neutral-100);
+  --color-on-surface: var(--color-neutral-900);
+  --color-on-surface-secondary: var(--color-neutral-600);
+  --color-on-surface-muted: var(--color-neutral-500);
+  --color-border: var(--color-neutral-200);
+  --color-border-input: var(--color-neutral-300);
+  --color-ring: var(--color-primary-500);
+  --color-ring-offset: #ffffff;
+  --color-surface-overlay: rgb(0 0 0 / 0.5);
+  --color-tooltip-bg: var(--color-neutral-900);
+  --color-tooltip-text: #ffffff;
+  --color-skeleton: var(--color-neutral-200);
+}
+
+.dark {
+  --color-surface: var(--color-neutral-950);
+  --color-surface-raised: var(--color-neutral-900);
+  --color-surface-sunken: var(--color-neutral-950);
+  --color-surface-muted: var(--color-neutral-800);
+  --color-on-surface: var(--color-neutral-50);
+  --color-on-surface-secondary: var(--color-neutral-400);
+  --color-on-surface-muted: var(--color-neutral-400);
+  --color-border: var(--color-neutral-800);
+  --color-border-input: var(--color-neutral-700);
+  --color-ring: var(--color-primary-400);
+  --color-ring-offset: var(--color-neutral-950);
+  --color-surface-overlay: rgb(0 0 0 / 0.6);
+  --color-tooltip-bg: var(--color-neutral-100);
+  --color-tooltip-text: var(--color-neutral-900);
+  --color-skeleton: var(--color-neutral-800);
+  color-scheme: dark;
+}
+
 @keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -270,15 +319,15 @@
   *,
   *::before,
   *::after {
-    border-color: var(--color-neutral-200);
+    border-color: var(--color-border);
   }
 
   body {
     font-family: var(--font-sans);
     font-size: var(--text-base);
     line-height: var(--text-base--line-height);
-    color: var(--color-neutral-900);
-    background-color: white;
+    color: var(--color-on-surface);
+    background-color: var(--color-surface);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }

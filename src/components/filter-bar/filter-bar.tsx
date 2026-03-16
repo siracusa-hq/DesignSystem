@@ -11,7 +11,7 @@ export const FilterBar = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'flex flex-wrap items-center gap-2 rounded-lg border border-neutral-200 bg-white p-3',
+      'flex flex-wrap items-center gap-2 rounded-lg border border-[--color-border] bg-[--color-surface-raised] p-3',
       className,
     )}
     role="toolbar"
@@ -44,7 +44,7 @@ const filterChipVariants = cva(
     variants: {
       variant: {
         default: 'bg-primary-50 text-primary-700',
-        outline: 'border border-neutral-300 text-neutral-700',
+        outline: 'border border-[--color-border-input] text-[--color-on-surface-secondary]',
       },
     },
     defaultVariants: { variant: 'default' },
@@ -116,7 +116,7 @@ export const ActiveFilters = React.forwardRef<
       <button
         type="button"
         onClick={onClearAll}
-        className="text-sm text-neutral-500 hover:text-neutral-700 underline transition-colors"
+        className="text-sm text-[--color-on-surface-muted] hover:text-[--color-on-surface-secondary] underline transition-colors"
       >
         {clearAllLabel}
       </button>

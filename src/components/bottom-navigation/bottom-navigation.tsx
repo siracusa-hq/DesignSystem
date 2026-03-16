@@ -11,7 +11,7 @@ export const BottomNavigation = React.forwardRef<
   <nav
     ref={ref}
     className={cn(
-      'fixed bottom-0 left-0 right-0 z-sticky flex items-center justify-around border-t border-neutral-200 bg-white pb-[--safe-area-bottom]',
+      'fixed bottom-0 left-0 right-0 z-sticky flex items-center justify-around border-t border-[--color-border] bg-[--color-surface-raised] pb-[--safe-area-bottom]',
       'h-[calc(var(--bottom-nav-height)+var(--safe-area-bottom))]',
       className,
     )}
@@ -37,7 +37,7 @@ export const BottomNavigationItem = React.forwardRef<
       'flex min-w-[--touch-target-min] flex-1 flex-col items-center justify-center gap-0.5 py-1 text-xs transition-colors',
       active
         ? 'text-primary-500 font-medium'
-        : 'text-neutral-500 hover:text-neutral-700',
+        : 'text-[--color-on-surface-muted] hover:text-[--color-on-surface-secondary]',
       className,
     )}
     aria-current={active ? 'page' : undefined}

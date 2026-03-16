@@ -142,7 +142,7 @@ export const DrawerContent = React.forwardRef<
     return (
       <div
         className={cn(
-          'flex flex-col border-neutral-200 bg-white',
+          'flex flex-col border-[--color-border] bg-[--color-surface-raised]',
           side === 'right' ? 'border-l' : 'border-r',
           drawerSizeVariants({ size }),
           className,
@@ -166,10 +166,10 @@ export const DrawerContent = React.forwardRef<
       <DialogPrimitive.Content
         ref={ref}
         className={cn(
-          'fixed top-0 h-full bg-white shadow-xl',
+          'fixed top-0 h-full bg-[--color-surface-raised] shadow-xl',
           'focus-visible:outline-none',
-          side === 'right' && 'right-0 border-l border-neutral-200 animate-slide-in-right data-[state=closed]:animate-slide-out-right',
-          side === 'left' && 'left-0 border-r border-neutral-200 animate-slide-in-left data-[state=closed]:animate-slide-out-left',
+          side === 'right' && 'right-0 border-l border-[--color-border] animate-slide-in-right data-[state=closed]:animate-slide-out-right',
+          side === 'left' && 'left-0 border-r border-[--color-border] animate-slide-in-left data-[state=closed]:animate-slide-out-left',
           drawerSizeVariants({ size }),
           className,
         )}
@@ -195,7 +195,7 @@ export const DrawerHeader = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        'flex items-center justify-between border-b border-neutral-200 px-6 py-4',
+        'flex items-center justify-between border-b border-[--color-border] px-6 py-4',
         className,
       )}
       {...props}
@@ -269,7 +269,7 @@ export const DrawerDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Description
     ref={ref}
-    className={cn('text-sm text-neutral-500', className)}
+    className={cn('text-sm text-[--color-on-surface-muted]', className)}
     {...props}
   />
 ));
@@ -284,7 +284,7 @@ export const DrawerFooter = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'flex items-center justify-end gap-2 border-t border-neutral-200 px-6 py-4',
+      'flex items-center justify-end gap-2 border-t border-[--color-border] px-6 py-4',
       className,
     )}
     {...props}

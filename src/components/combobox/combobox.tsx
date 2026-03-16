@@ -54,7 +54,7 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
           aria-expanded={open}
           disabled={disabled}
           className={cn(
-            'flex h-9 w-full items-center justify-between rounded-md border border-neutral-300 bg-white px-3 text-sm text-neutral-900 transition-colors duration-fast',
+            'flex h-9 w-full items-center justify-between rounded-md border border-[--color-border-input] bg-[--color-surface-raised] px-3 text-sm text-[--color-on-surface] transition-colors duration-fast',
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2',
             'disabled:cursor-not-allowed disabled:opacity-50',
             'aria-[invalid=true]:border-error-500 aria-[invalid=true]:focus-visible:ring-error-500',
@@ -63,7 +63,7 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
           )}
           {...props}
         >
-          <span className={cn(!selectedOption && 'text-neutral-400')}>
+          <span className={cn(!selectedOption && 'text-[--color-on-surface-muted]')}>
             {selectedOption?.label ?? placeholder}
           </span>
           <svg
@@ -83,7 +83,7 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
         </PopoverPrimitive.Trigger>
         <PopoverPrimitive.Portal>
           <PopoverPrimitive.Content
-            className="z-popover w-[var(--radix-popover-trigger-width)] rounded-md border border-neutral-200 bg-white p-0 shadow-md animate-in fade-in-0 zoom-in-95"
+            className="z-popover w-[var(--radix-popover-trigger-width)] rounded-md border border-[--color-border] bg-[--color-surface-raised] p-0 shadow-md animate-in fade-in-0 zoom-in-95"
             sideOffset={4}
             align="start"
           >
@@ -92,10 +92,10 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
                 value={search}
                 onValueChange={setSearch}
                 placeholder={searchPlaceholder}
-                className="flex h-9 w-full border-b border-neutral-200 bg-transparent px-3 text-sm outline-none placeholder:text-neutral-400"
+                className="flex h-9 w-full border-b border-[--color-border] bg-transparent px-3 text-sm outline-none placeholder:text-[--color-on-surface-muted]"
               />
               <Command.List className="max-h-60 overflow-auto p-1">
-                <Command.Empty className="px-2 py-6 text-center text-sm text-neutral-500">
+                <Command.Empty className="px-2 py-6 text-center text-sm text-[--color-on-surface-muted]">
                   {emptyMessage}
                 </Command.Empty>
                 {options.map((option) => (
@@ -112,7 +112,7 @@ export const Combobox = React.forwardRef<HTMLButtonElement, ComboboxProps>(
                     }}
                     className={cn(
                       'relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none',
-                      'data-[selected=true]:bg-neutral-100',
+                      'data-[selected=true]:bg-[--color-surface-muted]',
                       'data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50',
                     )}
                   >

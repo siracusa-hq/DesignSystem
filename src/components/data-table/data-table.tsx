@@ -119,7 +119,7 @@ export function DataTable<TData>({
   const showToolbar = enableRowSelection || enableColumnVisibility;
 
   return (
-    <div className={cn('rounded-md border border-neutral-200', className)}>
+    <div className={cn('rounded-md border border-[--color-border]', className)}>
       {showToolbar && (
         <DataTableToolbar
           table={table}
@@ -135,7 +135,7 @@ export function DataTable<TData>({
                 <TableHead key={header.id}>
                   {header.isPlaceholder ? null : header.column.getCanSort() ? (
                     <button
-                      className="flex items-center gap-1 -ml-2 px-2 py-1 rounded-md hover:bg-neutral-100 transition-colors duration-fast"
+                      className="flex items-center gap-1 -ml-2 px-2 py-1 rounded-md hover:bg-[--color-surface-muted] transition-colors duration-fast"
                       onClick={header.column.getToggleSortingHandler()}
                       aria-label={`Sort by ${typeof header.column.columnDef.header === 'string' ? header.column.columnDef.header : header.column.id}`}
                     >

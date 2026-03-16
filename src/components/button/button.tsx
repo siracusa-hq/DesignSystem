@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/cn';
 
 export const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors duration-fast focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 touch:min-h-[--touch-target-min]',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors duration-fast focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-ring] focus-visible:ring-offset-2 ring-offset-[--color-ring-offset] disabled:pointer-events-none disabled:opacity-50 touch:min-h-[--touch-target-min]',
   {
     variants: {
       variant: {
@@ -12,8 +12,8 @@ export const buttonVariants = cva(
         destructive:
           'bg-error-500 text-white hover:bg-error-600 active:bg-error-700',
         outline:
-          'border border-neutral-300 bg-white text-neutral-900 hover:bg-neutral-50 active:bg-neutral-100',
-        ghost: 'text-neutral-900 hover:bg-neutral-100 active:bg-neutral-200',
+          'border border-[--color-border-input] bg-[--color-surface-raised] text-[--color-on-surface] hover:bg-[--color-surface-sunken] active:bg-[--color-surface-muted]',
+        ghost: 'text-[--color-on-surface] hover:bg-[--color-surface-muted] active:bg-neutral-200 dark:active:bg-neutral-700',
         link: 'text-primary-500 underline-offset-4 hover:underline',
       },
       size: {

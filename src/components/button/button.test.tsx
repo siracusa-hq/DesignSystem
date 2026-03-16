@@ -31,7 +31,7 @@ describe('Button', () => {
   it('applies ghost variant', () => {
     render(<Button variant="ghost">Ghost</Button>);
     const button = screen.getByRole('button');
-    expect(button.className).toContain('hover:bg-neutral-100');
+    expect(button.className).toContain('hover:bg-[--color-surface-muted]');
   });
 
   it('applies link variant', () => {

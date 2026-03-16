@@ -41,7 +41,7 @@ export function DataTableToolbar<TData>({
     >
       <div className="flex items-center gap-2">
         {selectedCount > 0 && (
-          <span className="text-sm text-neutral-600">
+          <span className="text-sm text-[--color-on-surface-secondary]">
             {selectedCount} selected
           </span>
         )}
@@ -51,7 +51,7 @@ export function DataTableToolbar<TData>({
       {enableColumnVisibility && (
         <div className="relative" ref={menuRef}>
           <button
-            className="inline-flex items-center gap-1 rounded-md border border-neutral-300 bg-white px-3 py-1.5 text-sm transition-colors hover:bg-neutral-50"
+            className="inline-flex items-center gap-1 rounded-md border border-[--color-border-input] bg-[--color-surface-raised] px-3 py-1.5 text-sm transition-colors hover:bg-[--color-surface-sunken]"
             onClick={() => setShowColumnMenu(!showColumnMenu)}
             aria-label="Toggle columns"
             aria-expanded={showColumnMenu}
@@ -72,14 +72,14 @@ export function DataTableToolbar<TData>({
           </button>
 
           {showColumnMenu && (
-            <div className="absolute right-0 top-full z-popover mt-1 min-w-[10rem] rounded-md border border-neutral-200 bg-white p-2 shadow-md">
+            <div className="absolute right-0 top-full z-popover mt-1 min-w-[10rem] rounded-md border border-[--color-border] bg-[--color-surface-raised] p-2 shadow-md">
               {table
                 .getAllColumns()
                 .filter((col) => col.getCanHide())
                 .map((col) => (
                   <label
                     key={col.id}
-                    className="flex items-center gap-2 rounded px-2 py-1 text-sm hover:bg-neutral-50 cursor-pointer capitalize"
+                    className="flex items-center gap-2 rounded px-2 py-1 text-sm hover:bg-[--color-surface-sunken] cursor-pointer capitalize"
                   >
                     <input
                       type="checkbox"

@@ -65,7 +65,7 @@ describe('Table', () => {
     renderTable();
     const rows = screen.getAllByRole('row');
     // body rows (index 1 and 2) should have hover class
-    expect(rows[1].className).toContain('hover:bg-neutral-50');
+    expect(rows[1].className).toContain('hover:bg-[--color-surface-sunken]');
   });
 
   it('supports data-state=selected on rows', () => {

@@ -23,8 +23,8 @@ const tabsListVariants = cva(
   {
     variants: {
       variant: {
-        default: 'rounded-lg bg-neutral-100 p-1',
-        underline: 'border-b border-neutral-200 bg-transparent',
+        default: 'rounded-lg bg-[--color-surface-muted] p-1',
+        underline: 'border-b border-[--color-border] bg-transparent',
       },
     },
     defaultVariants: { variant: 'default' },
@@ -59,9 +59,9 @@ const tabsTriggerBase =
 
 const tabsTriggerVariantStyles: Record<TabsVariant, string> = {
   default:
-    'rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-neutral-900 text-neutral-600',
+    'rounded-md data-[state=active]:bg-[--color-surface-raised] data-[state=active]:shadow-sm data-[state=active]:text-[--color-on-surface] text-[--color-on-surface-secondary]',
   underline:
-    'border-b-2 border-transparent rounded-none data-[state=active]:border-primary-500 data-[state=active]:text-neutral-900 text-neutral-600',
+    'border-b-2 border-transparent rounded-none data-[state=active]:border-primary-500 data-[state=active]:text-[--color-on-surface] text-[--color-on-surface-secondary]',
 };
 
 export const TabsTrigger = React.forwardRef<

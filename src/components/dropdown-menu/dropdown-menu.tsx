@@ -18,7 +18,7 @@ export const DropdownMenuContent = React.forwardRef<
       ref={ref}
       sideOffset={sideOffset}
       className={cn(
-        'z-dropdown min-w-[8rem] overflow-hidden rounded-md border border-neutral-200 bg-white p-1 shadow-md',
+        'z-dropdown min-w-[8rem] overflow-hidden rounded-md border border-[--color-border] bg-[--color-surface-raised] p-1 shadow-md',
         'animate-in fade-in-0 zoom-in-95',
         'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
         'data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2',
@@ -41,8 +41,8 @@ export const DropdownMenuSubTrigger = React.forwardRef<
     ref={ref}
     className={cn(
       'flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none',
-      'focus:bg-neutral-100',
-      'data-[state=open]:bg-neutral-100',
+      'focus:bg-[--color-surface-muted]',
+      'data-[state=open]:bg-[--color-surface-muted]',
       'touch:min-h-[--touch-target-min]',
       inset && 'pl-8',
       className,
@@ -74,7 +74,7 @@ export const DropdownMenuSubContent = React.forwardRef<
   <DropdownMenuPrimitive.SubContent
     ref={ref}
     className={cn(
-      'z-dropdown min-w-[8rem] overflow-hidden rounded-md border border-neutral-200 bg-white p-1 shadow-md',
+      'z-dropdown min-w-[8rem] overflow-hidden rounded-md border border-[--color-border] bg-[--color-surface-raised] p-1 shadow-md',
       'animate-in fade-in-0 zoom-in-95',
       'data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2',
       'data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2',
@@ -99,7 +99,7 @@ export const DropdownMenuItem = React.forwardRef<
     ref={ref}
     className={cn(
       'relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors',
-      'focus:bg-neutral-100 focus:text-neutral-900',
+      'focus:bg-[--color-surface-muted] focus:text-[--color-on-surface]',
       'data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
       'touch:min-h-[--touch-target-min]',
       destructive && 'text-error-600 focus:bg-error-50 focus:text-error-600',
@@ -119,7 +119,7 @@ export const DropdownMenuCheckboxItem = React.forwardRef<
     ref={ref}
     className={cn(
       'relative flex cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors',
-      'focus:bg-neutral-100',
+      'focus:bg-[--color-surface-muted]',
       'data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
       'touch:min-h-[--touch-target-min]',
       className,
@@ -156,7 +156,7 @@ export const DropdownMenuRadioItem = React.forwardRef<
     ref={ref}
     className={cn(
       'relative flex cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors',
-      'focus:bg-neutral-100',
+      'focus:bg-[--color-surface-muted]',
       'data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
       'touch:min-h-[--touch-target-min]',
       className,
@@ -184,7 +184,7 @@ export const DropdownMenuLabel = React.forwardRef<
   <DropdownMenuPrimitive.Label
     ref={ref}
     className={cn(
-      'px-2 py-1.5 text-xs font-medium text-neutral-500',
+      'px-2 py-1.5 text-xs font-medium text-[--color-on-surface-muted]',
       inset && 'pl-8',
       className,
     )}
@@ -199,7 +199,7 @@ export const DropdownMenuSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DropdownMenuPrimitive.Separator
     ref={ref}
-    className={cn('-mx-1 my-1 h-px bg-neutral-200', className)}
+    className={cn('-mx-1 my-1 h-px bg-[--color-border]', className)}
     {...props}
   />
 ));
@@ -211,7 +211,7 @@ export const DropdownMenuShortcut = ({
 }: React.HTMLAttributes<HTMLSpanElement>) => (
   <span
     className={cn(
-      'ml-auto text-xs tracking-widest text-neutral-400',
+      'ml-auto text-xs tracking-widest text-[--color-on-surface-muted]',
       className,
     )}
     {...props}

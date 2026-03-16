@@ -108,7 +108,7 @@ export const AppShellSidebar = React.forwardRef<
     <aside
       ref={ref}
       className={cn(
-        'hidden md:flex md:flex-col shrink-0 border-r border-neutral-200 bg-white overflow-y-auto transition-[width] duration-slow',
+        'hidden md:flex md:flex-col shrink-0 border-r border-[--color-border] bg-[--color-surface-raised] overflow-y-auto transition-[width] duration-slow',
         className,
       )}
       style={{
@@ -136,7 +136,7 @@ export const AppShellHeader = React.forwardRef<
     <header
       ref={ref}
       className={cn(
-        'flex h-14 items-center gap-3 border-b border-neutral-200 bg-white px-4 shrink-0',
+        'flex h-14 items-center gap-3 border-b border-[--color-border] bg-[--color-surface-raised] px-4 shrink-0',
         className,
       )}
       {...props}
@@ -145,7 +145,7 @@ export const AppShellHeader = React.forwardRef<
         <button
           type="button"
           onClick={() => setMobileSidebarOpen(true)}
-          className="rounded-md p-1.5 hover:bg-neutral-100 transition-colors touch:min-h-[--touch-target-min] touch:min-w-[--touch-target-min] flex items-center justify-center"
+          className="rounded-md p-1.5 hover:bg-[--color-surface-muted] transition-colors touch:min-h-[--touch-target-min] touch:min-w-[--touch-target-min] flex items-center justify-center"
           aria-label="Open menu"
         >
           <svg
@@ -200,7 +200,7 @@ export const AppShellFooter = React.forwardRef<
   <footer
     ref={ref}
     className={cn(
-      'flex items-center border-t border-neutral-200 bg-white px-4 py-2 shrink-0',
+      'flex items-center border-t border-[--color-border] bg-[--color-surface-raised] px-4 py-2 shrink-0',
       className,
     )}
     {...props}

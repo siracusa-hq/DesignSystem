@@ -99,7 +99,7 @@ export const FormDescription = React.forwardRef<
     <p
       ref={ref}
       id={descriptionId}
-      className={cn('text-xs text-neutral-500', className)}
+      className={cn('text-xs text-[--color-on-surface-muted]', className)}
       {...props}
     />
   );
