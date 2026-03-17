@@ -1,0 +1,10 @@
+src/
+.storybook/
+.github/
+docs/
+*.test.*
+*.stories.*
+vitest.config.ts
+tsup.config.ts
+.size-limit.json
+storybook-static/

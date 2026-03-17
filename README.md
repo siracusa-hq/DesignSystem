@@ -11,9 +11,19 @@ BtoB業務アプリケーション向けReactデザインシステム。
 - **CVA** — 型安全なバリアント管理
 - **TypeScript** — 完全な型定義
 
+## Storybook
+
+コンポーネントカタログ: https://tkaneko-siracusa.github.io/DesignSystem/
+
 ## インストール
 
+GitHub Packages からインストールします。
+
 ```bash
+# 1. .npmrc に GitHub Packages registry を設定
+echo "@polastack:registry=https://npm.pkg.github.com" >> .npmrc
+
+# 2. インストール
 pnpm add @polastack/design-system
 ```
 
@@ -135,6 +145,12 @@ pnpm size
 | Warning | Amber |
 | Error | Red |
 | Info | Blue |
+
+## リリース
+
+1. `CHANGELOG.md` を更新
+2. GitHub で新しい Release を作成（タグ: `v0.x.x`）
+3. GitHub Actions が自動的にテスト・ビルド・publish を実行
 
 ## ライセンス
 
