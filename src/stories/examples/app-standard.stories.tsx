@@ -55,7 +55,7 @@ function StandardApp() {
                 className={`px-3 py-2 rounded-md text-left text-sm transition-colors ${
                   currentPage === page
                     ? 'bg-primary-500 text-white font-medium'
-                    : 'text-[--color-on-surface-secondary] hover:bg-[--color-surface-muted]'
+                    : 'text-[var(--color-on-surface-secondary)] hover:bg-[var(--color-surface-muted)]'
                 }`}
               >
                 {page}
@@ -72,7 +72,7 @@ function StandardApp() {
             </Avatar>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">Tanaka Taro</p>
-              <p className="text-xs text-[--color-on-surface-muted] truncate">Admin</p>
+              <p className="text-xs text-[var(--color-on-surface-muted)] truncate">Admin</p>
             </div>
           </div>
         </div>
@@ -115,7 +115,7 @@ function StandardApp() {
 
         <AppShellContent>
           <div className="p-6">
-            <div className="rounded-lg border border-dashed border-[--color-border] p-12 text-center text-[--color-on-surface-muted]">
+            <div className="rounded-lg border border-dashed border-[var(--color-border)] p-12 text-center text-[var(--color-on-surface-muted)]">
               <p className="text-lg font-medium mb-2">{currentPage} Page</p>
               <p className="text-sm">Select a page from the sidebar to navigate</p>
             </div>

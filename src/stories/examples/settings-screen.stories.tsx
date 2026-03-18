@@ -46,8 +46,8 @@ function SettingsScreen() {
   return (
     <div className="w-[640px] max-w-full p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-[--color-on-surface]">Settings</h1>
-        <p className="text-sm text-[--color-on-surface-muted]">Manage your account preferences</p>
+        <h1 className="text-2xl font-semibold text-[var(--color-on-surface)]">Settings</h1>
+        <p className="text-sm text-[var(--color-on-surface-muted)]">Manage your account preferences</p>
       </div>
 
       <Tabs defaultValue="general">

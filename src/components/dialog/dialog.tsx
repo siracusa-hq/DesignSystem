@@ -13,7 +13,7 @@ export const DialogOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      'fixed inset-0 z-modal bg-black/50',
+      'fixed inset-0 z-modal bg-[var(--color-surface-overlay)]',
       'animate-in fade-in-0',
       'data-[state=closed]:animate-out data-[state=closed]:fade-out-0',
       className,
@@ -32,13 +32,13 @@ export const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        'fixed z-modal bg-[--color-surface-raised] p-6 shadow-xl',
+        'fixed z-modal bg-[var(--color-surface-raised)] p-6 shadow-xl',
         'focus-visible:outline-none',
         // Mobile: full-screen
         'inset-0',
         // Desktop: centered modal
         'sm:inset-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2',
-        'sm:w-full sm:max-w-lg sm:rounded-xl sm:border sm:border-[--color-border]',
+        'sm:w-full sm:max-w-lg sm:rounded-xl sm:border sm:border-[var(--color-border)]',
         // Animations
         'animate-in fade-in-0',
         'sm:zoom-in-95 sm:slide-in-from-left-1/2 sm:slide-in-from-top-[48%]',
@@ -112,7 +112,7 @@ export const DialogDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Description
     ref={ref}
-    className={cn('text-sm text-[--color-on-surface-muted]', className)}
+    className={cn('text-sm text-[var(--color-on-surface-muted)]', className)}
     {...props}
   />
 ));

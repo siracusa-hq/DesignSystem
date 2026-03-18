@@ -76,8 +76,8 @@ function DashboardLayout() {
                 type="button"
                 className={`px-3 py-2 rounded-md text-left text-sm transition-colors ${
                   item.active
-                    ? 'bg-[--color-surface-muted] text-[--color-on-surface] font-medium'
-                    : 'text-[--color-on-surface-secondary] hover:bg-[--color-surface-muted]'
+                    ? 'bg-[var(--color-surface-muted)] text-[var(--color-on-surface)] font-medium'
+                    : 'text-[var(--color-on-surface-secondary)] hover:bg-[var(--color-surface-muted)]'
                 }`}
               >
                 {item.label}

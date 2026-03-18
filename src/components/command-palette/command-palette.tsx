@@ -23,17 +23,17 @@ export function CommandPalette({
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-modal bg-black/50 animate-in fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0" />
+        <DialogPrimitive.Overlay className="fixed inset-0 z-modal bg-[var(--color-surface-overlay)] animate-in fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0" />
         <DialogPrimitive.Content
           className={cn(
-            'fixed left-1/2 top-[20%] z-modal w-full max-w-xl -translate-x-1/2 overflow-hidden rounded-xl border border-[--color-border] bg-[--color-surface-raised] shadow-2xl',
+            'fixed left-1/2 top-[20%] z-modal w-full max-w-xl -translate-x-1/2 overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-raised)] shadow-2xl',
             'animate-in fade-in-0 zoom-in-95 slide-in-from-left-1/2',
             'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
             className,
           )}
         >
           <Command shouldFilter className="flex flex-col">
-            <div className="flex items-center border-b border-[--color-border] px-4">
+            <div className="flex items-center border-b border-[var(--color-border)] px-4">
               <svg
                 width="18"
                 height="18"
@@ -43,14 +43,14 @@ export function CommandPalette({
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="shrink-0 text-[--color-on-surface-muted]"
+                className="shrink-0 text-[var(--color-on-surface-muted)]"
               >
                 <circle cx="11" cy="11" r="8" />
                 <path d="m21 21-4.3-4.3" />
               </svg>
               <Command.Input
                 placeholder={placeholder}
-                className="flex h-12 w-full bg-transparent px-3 text-base outline-none placeholder:text-[--color-on-surface-muted]"
+                className="flex h-12 w-full bg-transparent px-3 text-base outline-none placeholder:text-[var(--color-on-surface-muted)]"
               />
             </div>
             <Command.List className="max-h-80 overflow-auto p-2">
@@ -78,7 +78,7 @@ export function CommandPaletteGroup({
   return (
     <Command.Group
       heading={heading}
-      className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-[--color-on-surface-muted]"
+      className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-[var(--color-on-surface-muted)]"
     >
       {children}
     </Command.Group>
@@ -111,13 +111,13 @@ export function CommandPaletteItem({
       disabled={disabled}
       className={cn(
         'relative flex cursor-pointer select-none items-center rounded-md px-2 py-2 text-sm outline-none',
-        'data-[selected=true]:bg-[--color-surface-muted]',
+        'data-[selected=true]:bg-[var(--color-surface-muted)]',
         'data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50',
         className,
       )}
     >
       {icon && (
-        <span className="mr-2 flex h-4 w-4 items-center justify-center text-[--color-on-surface-muted]">
+        <span className="mr-2 flex h-4 w-4 items-center justify-center text-[var(--color-on-surface-muted)]">
           {icon}
         </span>
       )}
@@ -138,7 +138,7 @@ export function CommandPaletteSeparator({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <Command.Separator
-      className={cn('-mx-1 my-1 h-px bg-[--color-border]', className)}
+      className={cn('-mx-1 my-1 h-px bg-[var(--color-border)]', className)}
       {...props}
     />
   );
@@ -154,7 +154,7 @@ export function CommandPaletteEmpty({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <Command.Empty
-      className={cn('px-2 py-6 text-center text-sm text-[--color-on-surface-muted]', className)}
+      className={cn('px-2 py-6 text-center text-sm text-[var(--color-on-surface-muted)]', className)}
       {...props}
     >
       {children}
@@ -172,7 +172,7 @@ export function CommandPaletteShortcut({
   return (
     <span
       className={cn(
-        'ml-auto text-xs tracking-widest text-[--color-on-surface-muted]',
+        'ml-auto text-xs tracking-widest text-[var(--color-on-surface-muted)]',
         className,
       )}
       {...props}

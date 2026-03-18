@@ -12,7 +12,7 @@ export const badgeVariants = cva(
         warning: 'bg-warning-100 text-warning-700 dark:bg-warning-950 dark:text-warning-300',
         error: 'bg-error-100 text-error-700 dark:bg-error-950 dark:text-error-300',
         info: 'bg-info-100 text-info-700 dark:bg-info-950 dark:text-info-300',
-        outline: 'border border-[--color-border-input] text-[--color-on-surface-secondary]',
+        outline: 'border border-[var(--color-border-input)] text-[var(--color-on-surface-secondary)]',
       },
     },
     defaultVariants: {
