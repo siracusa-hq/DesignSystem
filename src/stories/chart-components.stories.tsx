@@ -114,27 +114,53 @@ export const ChartContainerDefault: Story = {
 export const ChartColorPalette: Story = {
   name: 'Chart Color Palette',
   render: () => (
-    <div className="max-w-md">
-      <ChartContainer title="Chart Color Palette" description="Available series colors for data visualization">
-        <div className="flex flex-col gap-3">
+    <div className="max-w-lg">
+      <ChartContainer title="Chart Color Palette" description="Curated color tokens for data visualization">
+        <div className="flex flex-col gap-5">
+          {/* Fill series */}
           <div>
-            <p className="text-xs font-medium text-[var(--color-on-surface-muted)] mb-2">Series Colors</p>
-            <div className="flex gap-2">
+            <p className="text-xs font-medium text-[var(--color-on-surface-muted)] mb-2.5">Fill Series</p>
+            <div className="flex gap-1.5">
               {chartColors.series.map((color, i) => (
-                <div key={i} className="flex flex-col items-center gap-1">
-                  <div className="w-8 h-8 rounded-md" style={{ backgroundColor: color }} />
-                  <span className="text-[10px] text-[var(--color-on-surface-muted)] font-mono">{i + 1}</span>
+                <div key={i} className="flex-1 flex flex-col items-center gap-1.5">
+                  <div className="w-full h-10 rounded-lg" style={{ backgroundColor: color }} />
+                  <span className="text-[10px] text-[var(--color-on-surface-muted)] font-mono tabular-nums">{i + 1}</span>
                 </div>
               ))}
             </div>
           </div>
+          {/* Stroke series */}
           <div>
-            <p className="text-xs font-medium text-[var(--color-on-surface-muted)] mb-2">Semantic Colors</p>
-            <div className="flex gap-2">
+            <p className="text-xs font-medium text-[var(--color-on-surface-muted)] mb-2.5">Stroke Series</p>
+            <div className="flex gap-1.5">
+              {chartColors.stroke.map((color, i) => (
+                <div key={i} className="flex-1 flex flex-col items-center gap-1.5">
+                  <div className="w-full h-10 rounded-lg" style={{ backgroundColor: color }} />
+                  <span className="text-[10px] text-[var(--color-on-surface-muted)] font-mono tabular-nums">{i + 1}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* Semantic */}
+          <div>
+            <p className="text-xs font-medium text-[var(--color-on-surface-muted)] mb-2.5">Semantic</p>
+            <div className="flex gap-1.5">
               {Object.entries(chartColors.semantic).map(([name, color]) => (
-                <div key={name} className="flex flex-col items-center gap-1">
-                  <div className="w-8 h-8 rounded-md" style={{ backgroundColor: color }} />
+                <div key={name} className="flex-1 flex flex-col items-center gap-1.5">
+                  <div className="w-full h-10 rounded-lg" style={{ backgroundColor: color }} />
                   <span className="text-[10px] text-[var(--color-on-surface-muted)]">{name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* Area Light */}
+          <div>
+            <p className="text-xs font-medium text-[var(--color-on-surface-muted)] mb-2.5">Area (Light)</p>
+            <div className="flex gap-1.5">
+              {chartColors.areaLight.map((color, i) => (
+                <div key={i} className="flex-1 flex flex-col items-center gap-1.5">
+                  <div className="w-full h-10 rounded-lg border border-[var(--color-border)]" style={{ backgroundColor: color }} />
+                  <span className="text-[10px] text-[var(--color-on-surface-muted)] font-mono tabular-nums">{i + 1}</span>
                 </div>
               ))}
             </div>

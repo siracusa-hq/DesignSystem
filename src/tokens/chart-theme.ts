@@ -13,44 +13,63 @@ import { colors } from './colors';
 
 /** Ordered color series for chart data — distinct, accessible, brand-consistent. */
 export const chartColors = {
-  /** Primary data series palette (use in order for multi-series charts) */
+  /**
+   * Primary data series palette (use in order for multi-series charts).
+   * Uses 400-level tones for a softer, more cohesive look in filled areas
+   * (bars, pie slices, etc.). Brand teal stays at 500 as the anchor.
+   */
   series: [
-    colors.primary[500],  // #1BA491 teal
-    colors.info[500],     // #3b82f6 blue
-    colors.warning[500],  // #f59e0b amber
-    colors.error[500],    // #ef4444 red
-    colors.success[500],  // #22c55e green
+    colors.primary[500],  // #1BA491 brand teal (anchor)
+    colors.info[400],     // #60a5fa soft blue
+    colors.neutral[400],  // #a1a1aa muted gray
+    colors.warning[400],  // #fbbf24 soft amber
+    colors.success[400],  // #4ade80 soft green
+    colors.error[300],    // #fca5a5 soft coral
     colors.primary[300],  // #61ebd0 light teal
     colors.info[300],     // #93c5fd light blue
-    colors.warning[300],  // #fcd34d light amber
+  ] as const,
+
+  /**
+   * Stronger series — for line charts and small marks (dots, strokes)
+   * where higher contrast is needed against the background.
+   */
+  stroke: [
+    colors.primary[600],  // #138575 deep teal
+    colors.info[600],     // #2563eb deep blue
+    colors.neutral[500],  // #71717a medium gray
+    colors.warning[600],  // #d97706 deep amber
+    colors.success[600],  // #16a34a deep green
+    colors.error[500],    // #ef4444 red
+    colors.primary[700],  // #146b5f dark teal
+    colors.info[700],     // #1d4ed8 dark blue
   ] as const,
 
   /** Semantic colors for status-based charts */
   semantic: {
-    positive: colors.success[500],
-    negative: colors.error[500],
+    positive: colors.success[400],
+    negative: colors.error[400],
     neutral: colors.neutral[400],
-    warning: colors.warning[500],
-    info: colors.info[500],
+    warning: colors.warning[400],
+    info: colors.info[400],
     primary: colors.primary[500],
   } as const,
 
-  /** Light fills for area/background (light mode) */
+  /** Light fills for area/background (light mode) — very subtle */
   areaLight: [
-    colors.primary[100],
-    colors.info[100],
-    colors.warning[100],
-    colors.error[100],
-    colors.success[100],
+    colors.primary[50],
+    colors.info[50],
+    colors.neutral[100],
+    colors.warning[50],
+    colors.success[50],
   ] as const,
 
   /** Dark fills for area/background (dark mode) */
   areaDark: [
-    colors.primary[900],
-    colors.info[900],
-    colors.warning[900],
-    colors.error[900],
-    colors.success[900],
+    colors.primary[950],
+    colors.info[950],
+    colors.neutral[800],
+    colors.warning[950],
+    colors.success[950],
   ] as const,
 
   /** Grid and axis colors (use CSS variables for dark mode compatibility) */
@@ -67,4 +86,5 @@ export const chartColors = {
 } as const;
 
 export type ChartColorSeries = typeof chartColors.series;
+export type ChartStrokeColors = typeof chartColors.stroke;
 export type ChartSemanticColors = typeof chartColors.semantic;

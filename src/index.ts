@@ -273,5 +273,6 @@ export { ChartContainer, type ChartContainerProps } from './components/chart-con
 export {
   chartColors,
   type ChartColorSeries,
+  type ChartStrokeColors,
   type ChartSemanticColors,
 } from './tokens/chart-theme';
