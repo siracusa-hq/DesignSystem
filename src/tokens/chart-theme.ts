@@ -1,90 +1,88 @@
-import { colors } from './colors';
-
 /**
  * Chart theme tokens for integrating charting libraries (Recharts, Chart.js, etc.)
- * with the Polastack design system color palette.
+ * with the Polastack design system.
+ *
+ * Design approach:
+ *   - Categorical palette is hand-curated for perceptual balance (Tableau 10 methodology)
+ *   - Colors are independent from UI semantic tokens (Primer / shadcn best practice)
+ *   - Each categorical color has a 1:1 paired subtle variant for area fills (Primer emphasis/muted pattern)
+ *   - Brand teal anchors position 0; remaining hues span the full wheel for maximum distinction
  *
  * Usage with Recharts:
- *   <Bar fill={chartColors.series[0]} />
+ *   <Bar fill={chartColors.categorical[0]} />
+ *   <Area fill={chartColors.subtle[0]} stroke={chartColors.categorical[0]} />
  *
  * Usage with Chart.js:
- *   datasets: [{ backgroundColor: chartColors.series }]
+ *   datasets: [{ backgroundColor: chartColors.categorical }]
  */
 
-/** Ordered color series for chart data — distinct, accessible, brand-consistent. */
+/**
+ * 8-color categorical palette — curated for data visualization.
+ *
+ * Principles:
+ *   1. Moderate saturation ("less Crayola bright") for professional look
+ *   2. Balanced perceived lightness across all 8 hues
+ *   3. Full hue-circle coverage for maximum distinguishability
+ *   4. Warm/cool alternation to aid colorblind accessibility
+ *   5. Brand teal as the anchor color at position 0
+ */
 export const chartColors = {
-  /**
-   * Primary data series palette (use in order for multi-series charts).
-   * Uses 400-level tones for a softer, more cohesive look in filled areas
-   * (bars, pie slices, etc.). Brand teal stays at 500 as the anchor.
-   */
-  series: [
-    colors.primary[500],  // #1BA491 brand teal (anchor)
-    colors.info[400],     // #60a5fa soft blue
-    colors.neutral[400],  // #a1a1aa muted gray
-    colors.warning[400],  // #fbbf24 soft amber
-    colors.success[400],  // #4ade80 soft green
-    colors.error[300],    // #fca5a5 soft coral
-    colors.primary[300],  // #61ebd0 light teal
-    colors.info[300],     // #93c5fd light blue
+  /** Solid colors for bars, lines, dots, and legends */
+  categorical: [
+    '#1BA491', // teal    — brand anchor
+    '#4E79A7', // slate   — classic dataviz blue
+    '#E8A838', // amber   — warm gold
+    '#D4687A', // rose    — dusty pink-red
+    '#7C6BB1', // violet  — soft purple
+    '#6BA368', // sage    — muted green
+    '#5BA4CF', // sky     — lighter blue
+    '#B07A53', // sienna  — warm brown
   ] as const,
 
-  /**
-   * Stronger series — for line charts and small marks (dots, strokes)
-   * where higher contrast is needed against the background.
-   */
-  stroke: [
-    colors.primary[600],  // #138575 deep teal
-    colors.info[600],     // #2563eb deep blue
-    colors.neutral[500],  // #71717a medium gray
-    colors.warning[600],  // #d97706 deep amber
-    colors.success[600],  // #16a34a deep green
-    colors.error[500],    // #ef4444 red
-    colors.primary[700],  // #146b5f dark teal
-    colors.info[700],     // #1d4ed8 dark blue
+  /** Subtle tints — 1:1 paired with categorical for area fills and backgrounds */
+  subtle: [
+    '#E6F7F4', // teal
+    '#E8EEF4', // slate
+    '#FDF3E0', // amber
+    '#FCEAED', // rose
+    '#EEEBF5', // violet
+    '#EAF3EA', // sage
+    '#E6F1F8', // sky
+    '#F4EDE6', // sienna
   ] as const,
 
-  /** Semantic colors for status-based charts */
+  /** Dark-mode subtle tints — 1:1 paired with categorical */
+  subtleDark: [
+    '#0C2B26', // teal
+    '#1A2535', // slate
+    '#2C2312', // amber
+    '#2C1A1E', // rose
+    '#1E1A2C', // violet
+    '#1A2C1A', // sage
+    '#1A2535', // sky
+    '#2C2418', // sienna
+  ] as const,
+
+  /** Semantic colors for status-meaning charts (P&L, health scores, etc.) */
   semantic: {
-    positive: colors.success[400],
-    negative: colors.error[400],
-    neutral: colors.neutral[400],
-    warning: colors.warning[400],
-    info: colors.info[400],
-    primary: colors.primary[500],
+    positive: '#1BA491',
+    negative: '#D4687A',
+    neutral: '#94939B',
+    warning: '#E8A838',
   } as const,
 
-  /** Light fills for area/background (light mode) — very subtle */
-  areaLight: [
-    colors.primary[50],
-    colors.info[50],
-    colors.neutral[100],
-    colors.warning[50],
-    colors.success[50],
-  ] as const,
-
-  /** Dark fills for area/background (dark mode) */
-  areaDark: [
-    colors.primary[950],
-    colors.info[950],
-    colors.neutral[800],
-    colors.warning[950],
-    colors.success[950],
-  ] as const,
-
-  /** Grid and axis colors (use CSS variables for dark mode compatibility) */
+  /** Grid lines and axis strokes */
   grid: {
-    light: colors.neutral[200],
-    dark: colors.neutral[700],
+    light: '#E4E4E7', // neutral-200
+    dark: '#3F3F46',  // neutral-700
   } as const,
 
-  /** Text colors for labels and legends */
+  /** Text for tick labels, legends, and annotations */
   text: {
-    light: colors.neutral[500],
-    dark: colors.neutral[400],
+    light: '#71717A', // neutral-500
+    dark: '#A1A1AA',  // neutral-400
   } as const,
 } as const;
 
-export type ChartColorSeries = typeof chartColors.series;
-export type ChartStrokeColors = typeof chartColors.stroke;
+export type ChartCategoricalColors = typeof chartColors.categorical;
 export type ChartSemanticColors = typeof chartColors.semantic;

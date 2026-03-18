@@ -272,7 +272,6 @@ export { StatCard, type StatCardProps } from './components/stat-card';
 export { ChartContainer, type ChartContainerProps } from './components/chart-container';
 export {
   chartColors,
-  type ChartColorSeries,
-  type ChartStrokeColors,
+  type ChartCategoricalColors,
   type ChartSemanticColors,
 } from './tokens/chart-theme';
