@@ -90,7 +90,7 @@ export const AvatarFallback = React.forwardRef<
     <span
       ref={ref}
       className={cn(
-        'flex h-full w-full items-center justify-center rounded-full bg-[--color-surface-muted] font-medium text-[--color-on-surface-secondary]',
+        'flex h-full w-full items-center justify-center rounded-full bg-[var(--color-surface-muted)] font-medium text-[var(--color-on-surface-secondary)]',
         className,
       )}
       {...props}

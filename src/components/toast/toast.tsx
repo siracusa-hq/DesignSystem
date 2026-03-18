@@ -25,7 +25,7 @@ export const toastVariants = cva(
   {
     variants: {
       variant: {
-        default: 'border-[--color-border] bg-[--color-surface-raised] text-[--color-on-surface]',
+        default: 'border-[var(--color-border)] bg-[var(--color-surface-raised)] text-[var(--color-on-surface)]',
         success: 'border-success-200 bg-success-50 text-success-900 dark:border-success-800 dark:bg-success-950 dark:text-success-200',
         error: 'border-error-200 bg-error-50 text-error-900 dark:border-error-800 dark:bg-error-950 dark:text-error-200',
       },
@@ -59,7 +59,7 @@ export const ToastAction = React.forwardRef<
   <ToastPrimitive.Action
     ref={ref}
     className={cn(
-      'inline-flex h-8 shrink-0 items-center justify-center rounded-md border border-[--color-border] bg-transparent px-3 text-xs font-medium transition-colors hover:bg-[--color-surface-muted] focus:outline-none focus:ring-2 focus:ring-[--color-ring] focus:ring-offset-2 ring-offset-[--color-ring-offset] disabled:pointer-events-none disabled:opacity-50',
+      'inline-flex h-8 shrink-0 items-center justify-center rounded-md border border-[var(--color-border)] bg-transparent px-3 text-xs font-medium transition-colors hover:bg-[var(--color-surface-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-ring)] focus:ring-offset-2 ring-offset-[var(--color-ring-offset)] disabled:pointer-events-none disabled:opacity-50',
       className,
     )}
     {...props}
@@ -74,7 +74,7 @@ export const ToastClose = React.forwardRef<
   <ToastPrimitive.Close
     ref={ref}
     className={cn(
-      'absolute right-2 top-2 rounded-md p-1 text-[--color-on-surface-muted] opacity-0 transition-opacity hover:text-[--color-on-surface] focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100',
+      'absolute right-2 top-2 rounded-md p-1 text-[var(--color-on-surface-muted)] opacity-0 transition-opacity hover:text-[var(--color-on-surface)] focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100',
       className,
     )}
     toast-close=""

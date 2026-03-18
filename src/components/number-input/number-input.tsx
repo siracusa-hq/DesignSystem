@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/cn';
 
 const numberInputVariants = cva(
-  'flex w-full rounded-md border border-[--color-border-input] bg-[--color-surface-raised] text-[--color-on-surface] transition-colors duration-fast focus-within:ring-2 focus-within:ring-[--color-ring] focus-within:ring-offset-2 ring-offset-[--color-ring-offset] aria-[invalid=true]:border-error-500 aria-[invalid=true]:focus-within:ring-error-500',
+  'flex w-full rounded-md border border-[var(--color-border-input)] bg-[var(--color-surface-raised)] text-[var(--color-on-surface)] transition-colors duration-fast focus-within:ring-2 focus-within:ring-[var(--color-ring)] focus-within:ring-offset-2 ring-offset-[var(--color-ring-offset)] aria-[invalid=true]:border-error-500 aria-[invalid=true]:focus-within:ring-error-500',
   {
     variants: {
       size: {
@@ -161,13 +161,13 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
           {...props}
         />
         {!readOnly && !disabled && (
-          <div className="flex flex-col border-l border-[--color-border-input]">
+          <div className="flex flex-col border-l border-[var(--color-border-input)]">
             <button
               type="button"
               tabIndex={-1}
               onClick={increment}
               disabled={max != null && parseFloat(displayValue) >= max}
-              className="flex flex-1 items-center justify-center px-1.5 text-[--color-on-surface-muted] hover:bg-[--color-surface-muted] disabled:opacity-30"
+              className="flex flex-1 items-center justify-center px-1.5 text-[var(--color-on-surface-muted)] hover:bg-[var(--color-surface-muted)] disabled:opacity-30"
               aria-label="Increment"
             >
               <svg
@@ -188,7 +188,7 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
               tabIndex={-1}
               onClick={decrement}
               disabled={min != null && parseFloat(displayValue) <= min}
-              className="flex flex-1 items-center justify-center border-t border-[--color-border-input] px-1.5 text-[--color-on-surface-muted] hover:bg-[--color-surface-muted] disabled:opacity-30"
+              className="flex flex-1 items-center justify-center border-t border-[var(--color-border-input)] px-1.5 text-[var(--color-on-surface-muted)] hover:bg-[var(--color-surface-muted)] disabled:opacity-30"
               aria-label="Decrement"
             >
               <svg

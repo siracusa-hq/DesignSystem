@@ -96,8 +96,8 @@ function CrudScreen() {
     <div className="p-6 max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-[--color-on-surface]">Employees</h1>
-          <p className="text-sm text-[--color-on-surface-muted]">Manage your team members</p>
+          <h1 className="text-2xl font-semibold text-[var(--color-on-surface)]">Employees</h1>
+          <p className="text-sm text-[var(--color-on-surface-muted)]">Manage your team members</p>
         </div>
 
         <Dialog>

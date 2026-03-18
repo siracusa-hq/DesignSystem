@@ -75,9 +75,9 @@ export const FormSection = React.forwardRef<
     className={cn('space-y-4 border-0 p-0', className)}
     {...props}
   >
-    <legend className="text-sm font-semibold text-[--color-on-surface]">{title}</legend>
+    <legend className="text-sm font-semibold text-[var(--color-on-surface)]">{title}</legend>
     {description && (
-      <p className="-mt-2 text-xs text-[--color-on-surface-muted]">{description}</p>
+      <p className="-mt-2 text-xs text-[var(--color-on-surface-muted)]">{description}</p>
     )}
     {children}
   </fieldset>
@@ -101,7 +101,7 @@ export const FormActions = React.forwardRef<HTMLDivElement, FormActionsProps>(
     <div
       ref={ref}
       className={cn(
-        'flex items-center gap-3 pt-4 border-t border-[--color-border]',
+        'flex items-center gap-3 pt-4 border-t border-[var(--color-border)]',
         alignClasses[align],
         className,
       )}

@@ -95,7 +95,7 @@ export const PullToRefresh = React.forwardRef<HTMLDivElement, PullToRefreshProps
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 className={cn(
-                  'text-[--color-on-surface-muted] transition-transform duration-normal',
+                  'text-[var(--color-on-surface-muted)] transition-transform duration-normal',
                   shouldTrigger && 'rotate-180 text-primary-500',
                 )}
               >

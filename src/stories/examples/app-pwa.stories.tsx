@@ -55,7 +55,7 @@ function PWAApp() {
   const [page, setPage] = useState<Page>('home');
 
   return (
-    <div className="h-[667px] w-[375px] mx-auto border border-[--color-border] rounded-xl overflow-hidden bg-[--color-surface]">
+    <div className="h-[667px] w-[375px] mx-auto border border-[var(--color-border)] rounded-xl overflow-hidden bg-[var(--color-surface)]">
       <AppShell withBottomNav>
         <div className="flex flex-col flex-1">
           <AppShellHeader>
@@ -113,7 +113,7 @@ function HomeContent() {
           <CardTitle className="text-base">Welcome back!</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-[--color-on-surface-secondary]">
+          <p className="text-sm text-[var(--color-on-surface-secondary)]">
             You have 3 tasks due today and 2 new notifications.
           </p>
           <Button size="sm" className="mt-3">View Tasks</Button>
@@ -132,8 +132,8 @@ function HomeContent() {
               { label: 'Overdue', value: '2', variant: 'error' as const },
               { label: 'Total', value: '24', variant: 'info' as const },
             ].map((stat) => (
-              <div key={stat.label} className="rounded-md bg-[--color-surface-sunken] p-3">
-                <p className="text-xs text-[--color-on-surface-muted]">{stat.label}</p>
+              <div key={stat.label} className="rounded-md bg-[var(--color-surface-sunken)] p-3">
+                <p className="text-xs text-[var(--color-on-surface-muted)]">{stat.label}</p>
                 <div className="flex items-center gap-2 mt-1">
                   <span className="text-xl font-bold">{stat.value}</span>
                   <Badge variant={stat.variant} className="text-xs">{stat.label}</Badge>
@@ -164,7 +164,7 @@ function TasksContent() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium">{task.title}</p>
-                <p className="text-xs text-[--color-on-surface-muted] mt-1">{task.status}</p>
+                <p className="text-xs text-[var(--color-on-surface-muted)] mt-1">{task.status}</p>
               </div>
               <Badge
                 variant={
@@ -190,7 +190,7 @@ function ProfileContent() {
       </Avatar>
       <div className="text-center">
         <p className="text-lg font-semibold">Tanaka Taro</p>
-        <p className="text-sm text-[--color-on-surface-muted]">tanaka@example.com</p>
+        <p className="text-sm text-[var(--color-on-surface-muted)]">tanaka@example.com</p>
       </div>
       <Separator className="w-full" />
       <div className="w-full flex flex-col gap-2">
@@ -198,7 +198,7 @@ function ProfileContent() {
           <button
             key={item}
             type="button"
-            className="w-full px-4 py-3 text-left text-sm rounded-md hover:bg-[--color-surface-muted] transition-colors"
+            className="w-full px-4 py-3 text-left text-sm rounded-md hover:bg-[var(--color-surface-muted)] transition-colors"
           >
             {item}
           </button>
