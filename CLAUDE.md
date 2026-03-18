@@ -28,6 +28,13 @@
 - success: Green系（primaryのティールと区別）
 - warning: Amber、error: Red、info: Blue
 
+## リリース運用
+
+- PRをmainにマージした際は、必ずパッチバージョン（リビジョン）をカウントアップする
+- `package.json` の `version` を更新し、mainにコミット・プッシュ
+- `git tag vX.Y.Z` でタグを作成・プッシュし、`gh release create` で GitHub Release を公開する
+- Release ワークフロー（`on: release [published]`）が npm パッケージを自動公開する
+
 ## 品質ゲート（Phase 2以降の全コンポーネント）
 
 - Vitest + Testing Library ユニットテスト
