@@ -22,6 +22,7 @@ const navItems = ['Dashboard', 'Users', 'Projects', 'Settings'];
 export const Default: Story = {
   render: () => {
     const [collapsed, setCollapsed] = useState(false);
+    const [currentPage, setCurrentPage] = useState('Dashboard');
 
     return (
       <AppShell
@@ -33,15 +34,20 @@ export const Default: Story = {
             <h2 className="text-lg font-bold text-primary-500 mb-4">
               Polastack
             </h2>
-            <nav className="space-y-1">
+            <nav className="space-y-0.5">
               {navItems.map((item) => (
-                <a
+                <button
                   key={item}
-                  href="#"
-                  className="block rounded-md px-3 py-2 text-sm hover:bg-neutral-100 transition-colors"
+                  type="button"
+                  onClick={() => setCurrentPage(item)}
+                  className={`block w-full text-left rounded-md px-3 py-2 text-sm transition-colors ${
+                    currentPage === item
+                      ? 'bg-[var(--color-surface-accent)] text-[var(--color-on-surface-accent)] font-medium'
+                      : 'text-[var(--color-on-surface-secondary)] hover:bg-[var(--color-surface-muted)] hover:text-[var(--color-on-surface)]'
+                  }`}
                 >
                   {!collapsed && item}
-                </a>
+                </button>
               ))}
             </nav>
           </div>
@@ -56,18 +62,18 @@ export const Default: Story = {
             >
               {collapsed ? 'Expand' : 'Collapse'}
             </Button>
-            <span className="text-sm font-medium">Dashboard</span>
+            <span className="text-sm font-medium">{currentPage}</span>
           </AppShellHeader>
           <AppShellContent>
             <div className="p-6">
-              <h1 className="text-2xl font-bold mb-4">Welcome</h1>
-              <p className="text-neutral-600">
+              <h1 className="text-2xl font-bold mb-4">{currentPage}</h1>
+              <p className="text-[var(--color-on-surface-secondary)]">
                 This is the main content area of the application shell.
               </p>
             </div>
           </AppShellContent>
           <AppShellFooter>
-            <span className="text-xs text-neutral-400">
+            <span className="text-xs text-[var(--color-on-surface-muted)]">
               Polastack Design System v0.1.0
             </span>
           </AppShellFooter>
@@ -86,7 +92,7 @@ export const WithBottomNav: Story = {
         </AppShellHeader>
         <AppShellContent>
           <div className="p-6">
-            <p className="text-neutral-600">
+            <p className="text-[var(--color-on-surface-secondary)]">
               Content area with bottom navigation padding.
             </p>
           </div>

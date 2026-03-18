@@ -260,6 +260,9 @@
   --color-tooltip-bg: var(--color-neutral-900);
   --color-tooltip-text: #ffffff;
   --color-skeleton: var(--color-neutral-200);
+  /* Accent surface — for selected/active nav items, highlighted rows, etc. */
+  --color-surface-accent: #E4F5F1;
+  --color-on-surface-accent: var(--color-primary-700);
 }
 
 .dark {
@@ -289,6 +292,9 @@
   --color-tooltip-bg: var(--color-neutral-100);
   --color-tooltip-text: var(--color-neutral-900);
   --color-skeleton: #232327;
+  /* Accent surface — brand-tinted for selected/active states */
+  --color-surface-accent: #0F2926;
+  --color-on-surface-accent: var(--color-primary-400);
   color-scheme: dark;
 }
 
