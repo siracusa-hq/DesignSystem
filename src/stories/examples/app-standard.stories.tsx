@@ -155,14 +155,18 @@ function StandardApp() {
                     onClick={() => setCurrentPage(item.label)}
                     className={`flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm transition-colors ${
                       currentPage === item.label
-                        ? 'bg-[var(--color-surface-muted)] text-[var(--color-on-surface)] font-medium'
+                        ? 'bg-[var(--color-surface-accent)] text-[var(--color-on-surface-accent)] font-medium'
                         : 'text-[var(--color-on-surface-secondary)] hover:bg-[var(--color-surface-muted)] hover:text-[var(--color-on-surface)]'
                     }`}
                   >
-                    <span className="shrink-0 opacity-70">{item.icon}</span>
+                    <span className={`shrink-0 ${currentPage === item.label ? 'opacity-100' : 'opacity-70'}`}>{item.icon}</span>
                     <span className="flex-1 text-left">{item.label}</span>
                     {item.badge && (
-                      <span className="min-w-[20px] rounded-full bg-[var(--color-surface-sunken)] px-1.5 py-0.5 text-center text-xs font-medium text-[var(--color-on-surface-muted)]">
+                      <span className={`min-w-[20px] rounded-full px-1.5 py-0.5 text-center text-xs font-medium ${
+                        currentPage === item.label
+                          ? 'bg-[var(--color-primary-100)] text-[var(--color-primary-700)] dark:bg-[var(--color-primary-950)] dark:text-[var(--color-primary-300)]'
+                          : 'bg-[var(--color-surface-sunken)] text-[var(--color-on-surface-muted)]'
+                      }`}>
                         {item.badge}
                       </span>
                     )}
@@ -181,11 +185,11 @@ function StandardApp() {
                   onClick={() => setCurrentPage(item.label)}
                   className={`flex w-full items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm transition-colors ${
                     currentPage === item.label
-                      ? 'bg-[var(--color-surface-muted)] text-[var(--color-on-surface)] font-medium'
+                      ? 'bg-[var(--color-surface-accent)] text-[var(--color-on-surface-accent)] font-medium'
                       : 'text-[var(--color-on-surface-secondary)] hover:bg-[var(--color-surface-muted)] hover:text-[var(--color-on-surface)]'
                   }`}
                 >
-                  <span className="shrink-0 opacity-70">{item.icon}</span>
+                  <span className={`shrink-0 ${currentPage === item.label ? 'opacity-100' : 'opacity-70'}`}>{item.icon}</span>
                   <span className="flex-1 text-left">{item.label}</span>
                 </button>
               ))}
