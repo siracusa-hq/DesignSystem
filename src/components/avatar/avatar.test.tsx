@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { axe } from 'vitest-axe';
-import { Avatar, AvatarImage, AvatarFallback } from './avatar';
+import { Avatar, AvatarImage, AvatarFallback, AvatarStatus } from './avatar';
 
 describe('Avatar', () => {
   it('renders fallback when no image', () => {
@@ -66,6 +66,106 @@ describe('Avatar', () => {
       <Avatar>
         <AvatarImage src="test.jpg" alt="User avatar" />
         <AvatarFallback>AB</AvatarFallback>
+      </Avatar>,
+    );
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
+  });
+
+  /* ----- Shape variant ----- */
+
+  it('renders circle shape by default', () => {
+    const { container } = render(
+      <Avatar>
+        <AvatarFallback>AB</AvatarFallback>
+      </Avatar>,
+    );
+    const avatar = container.firstChild as HTMLElement;
+    expect(avatar.className).toContain('rounded-full');
+    expect(avatar.className).not.toContain('rounded-lg');
+  });
+
+  it('renders square shape', () => {
+    const { container } = render(
+      <Avatar shape="square">
+        <AvatarFallback>AB</AvatarFallback>
+      </Avatar>,
+    );
+    const avatar = container.firstChild as HTMLElement;
+    expect(avatar.className).toContain('rounded-lg');
+    expect(avatar.className).not.toContain('rounded-full');
+  });
+
+  /* ----- Colorful fallback ----- */
+
+  it('uses neutral gray when no colorSeed', () => {
+    render(
+      <Avatar>
+        <AvatarFallback>AB</AvatarFallback>
+      </Avatar>,
+    );
+    const fallback = screen.getByText('AB');
+    expect(fallback.className).toContain('bg-[var(--color-surface-muted)]');
+  });
+
+  it('uses colorful background when colorSeed is provided', () => {
+    render(
+      <Avatar>
+        <AvatarFallback colorSeed="alice@example.com">AL</AvatarFallback>
+      </Avatar>,
+    );
+    const fallback = screen.getByText('AL');
+    expect(fallback.className).not.toContain('bg-[var(--color-surface-muted)]');
+  });
+
+  it('produces same color for same seed', () => {
+    const { container: c1 } = render(
+      <Avatar>
+        <AvatarFallback colorSeed="test@test.com">A</AvatarFallback>
+      </Avatar>,
+    );
+    const { container: c2 } = render(
+      <Avatar>
+        <AvatarFallback colorSeed="test@test.com">A</AvatarFallback>
+      </Avatar>,
+    );
+    const f1 = c1.querySelector('[class*="bg-"]')!;
+    const f2 = c2.querySelector('[class*="bg-"]')!;
+    expect(f1.className).toBe(f2.className);
+  });
+
+  /* ----- AvatarStatus ----- */
+
+  it('renders status indicator', () => {
+    render(
+      <Avatar>
+        <AvatarFallback>AB</AvatarFallback>
+        <AvatarStatus status="online" />
+      </Avatar>,
+    );
+    const status = screen.getByRole('status');
+    expect(status).toBeInTheDocument();
+    expect(status).toHaveAttribute('aria-label', 'Online');
+    expect(status.className).toContain('bg-success-500');
+  });
+
+  it('renders busy status', () => {
+    render(
+      <Avatar>
+        <AvatarFallback>AB</AvatarFallback>
+        <AvatarStatus status="busy" />
+      </Avatar>,
+    );
+    const status = screen.getByRole('status');
+    expect(status.className).toContain('bg-error-500');
+    expect(status).toHaveAttribute('aria-label', 'Busy');
+  });
+
+  it('avatar with status has no accessibility violations', async () => {
+    const { container } = render(
+      <Avatar>
+        <AvatarFallback>AB</AvatarFallback>
+        <AvatarStatus status="online" />
       </Avatar>,
     );
     const results = await axe(container);

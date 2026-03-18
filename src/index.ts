@@ -26,11 +26,15 @@ export {
   Avatar,
   AvatarImage,
   AvatarFallback,
+  AvatarStatus,
   avatarVariants,
   type AvatarProps,
   type AvatarImageProps,
   type AvatarFallbackProps,
+  type AvatarStatusProps,
+  type AvatarStatusType,
 } from './components/avatar';
+export { AvatarGroup, type AvatarGroupProps } from './components/avatar-group';
 export { Separator, type SeparatorProps } from './components/separator';
 export { Skeleton, type SkeletonProps } from './components/skeleton';
 export { Spinner, spinnerVariants, type SpinnerProps } from './components/spinner';
