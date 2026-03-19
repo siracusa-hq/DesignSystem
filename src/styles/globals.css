@@ -433,3 +433,20 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* ============================================================
+   Print: PDF / 帳票出力用スタイル
+   pdfg (Puppeteer/Chromium) との統合を前提
+   ============================================================ */
+
+@media print {
+  @page {
+    margin: 0;
+  }
+
+  .print-document {
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+}
