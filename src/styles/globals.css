@@ -237,6 +237,7 @@
   --animate-slide-out-right: slide-out-right var(--duration-slow) var(--ease-in);
   --animate-slide-in-left: slide-in-left var(--duration-slow) var(--ease-out);
   --animate-slide-out-left: slide-out-left var(--duration-slow) var(--ease-in);
+  --animate-spinner: spinner-fade 0.8s ease-in-out infinite;
 }
 
 /* ============================================================
@@ -326,6 +327,11 @@
 @keyframes slide-out-left {
   from { transform: translateX(0); }
   to { transform: translateX(-100%); }
+}
+
+@keyframes spinner-fade {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.15; }
 }
 
 /* ============================================================

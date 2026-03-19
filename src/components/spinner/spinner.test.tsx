@@ -19,10 +19,12 @@ describe('Spinner', () => {
     expect(screen.getByText('Loading...')).toBeInTheDocument();
   });
 
-  it('renders SVG element', () => {
+  it('renders SVG with 8 bar segments', () => {
     render(<Spinner />);
-    const status = screen.getByRole('status');
-    expect(status.querySelector('svg')).toBeInTheDocument();
+    const svg = screen.getByRole('status').querySelector('svg')!;
+    expect(svg).toBeInTheDocument();
+    const rects = svg.querySelectorAll('rect');
+    expect(rects).toHaveLength(8);
   });
 
   it('applies size variants', () => {
@@ -33,6 +35,14 @@ describe('Spinner', () => {
     rerender(<Spinner size="lg" />);
     svg = screen.getByRole('status').querySelector('svg')!;
     expect(svg.className.baseVal || svg.getAttribute('class')).toContain('h-8');
+  });
+
+  it('each bar has animation delay', () => {
+    render(<Spinner />);
+    const rects = screen.getByRole('status').querySelectorAll('rect');
+    rects.forEach((rect, i) => {
+      expect(rect.style.animationDelay).toBe(`${-i * 0.1}s`);
+    });
   });
 
   it('forwards ref', () => {
