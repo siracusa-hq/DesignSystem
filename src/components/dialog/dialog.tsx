@@ -38,7 +38,7 @@ export const DialogContent = React.forwardRef<
         'inset-0',
         // Desktop: centered modal
         'sm:inset-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2',
-        'sm:w-full sm:max-w-lg sm:rounded-xl sm:border sm:border-[var(--color-border)]',
+        'sm:w-full sm:max-w-lg md:max-w-xl sm:rounded-xl sm:border sm:border-[var(--color-border)]',
         // Animations
         'animate-in fade-in-0',
         'sm:zoom-in-95 sm:slide-in-from-left-1/2 sm:slide-in-from-top-[48%]',

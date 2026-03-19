@@ -43,7 +43,7 @@ export const StatCard = React.forwardRef<HTMLDivElement, StatCardProps>(
       <div
         ref={ref}
         className={cn(
-          'rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-5',
+          'rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-4 sm:p-5',
           className,
         )}
         {...props}
@@ -57,7 +57,7 @@ export const StatCard = React.forwardRef<HTMLDivElement, StatCardProps>(
           )}
         </div>
         <div className="flex items-baseline gap-2 mt-2">
-          <span className="text-2xl font-bold tabular-nums">{value}</span>
+          <span className="text-xl sm:text-2xl font-bold tabular-nums">{value}</span>
           {trend && (
             <span className={cn('inline-flex items-center gap-0.5 text-xs font-medium', TREND_STYLES[direction])}>
               {direction !== 'neutral' && (

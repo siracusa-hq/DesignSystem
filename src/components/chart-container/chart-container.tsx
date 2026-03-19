@@ -22,7 +22,7 @@ export const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerPro
       )}
       {...props}
     >
-      <div className="flex items-start justify-between gap-4 p-5 pb-0">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4 p-4 sm:p-5 pb-0">
         <div>
           <h3 className="text-sm font-semibold leading-none tracking-tight">
             {title}
@@ -35,7 +35,7 @@ export const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerPro
         </div>
         {actions && <div className="flex items-center gap-2 shrink-0">{actions}</div>}
       </div>
-      <div className="p-5">{children}</div>
+      <div className="p-4 sm:p-5">{children}</div>
     </div>
   ),
 );

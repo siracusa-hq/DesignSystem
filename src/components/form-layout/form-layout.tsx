@@ -41,22 +41,29 @@ export const formLayoutVariants = cva('', {
 export interface FormLayoutProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof formLayoutVariants> {
-  columns?: number;
+  columns?: number | 'responsive';
 }
 
 export const FormLayout = React.forwardRef<HTMLDivElement, FormLayoutProps>(
-  ({ className, layout, size, columns = 2, style, ...props }, ref) => (
-    <div
-      ref={ref}
-      className={cn(formLayoutVariants({ layout, size }), className)}
-      style={
-        layout === 'grid'
-          ? { gridTemplateColumns: `repeat(${columns}, 1fr)`, ...style }
-          : style
-      }
-      {...props}
-    />
-  ),
+  ({ className, layout, size, columns = 2, style, ...props }, ref) => {
+    const isResponsive = columns === 'responsive';
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          formLayoutVariants({ layout, size }),
+          isResponsive && layout === 'grid' && 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
+          className,
+        )}
+        style={
+          layout === 'grid' && !isResponsive
+            ? { gridTemplateColumns: `repeat(${columns}, 1fr)`, ...style }
+            : style
+        }
+        {...props}
+      />
+    );
+  },
 );
 FormLayout.displayName = 'FormLayout';
 

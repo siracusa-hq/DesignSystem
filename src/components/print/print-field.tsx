@@ -33,6 +33,7 @@ const printFieldGroupVariants = cva('grid gap-x-6 gap-y-2', {
       1: 'grid-cols-1',
       2: 'grid-cols-2',
       3: 'grid-cols-3',
+      responsive: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
     },
   },
   defaultVariants: {

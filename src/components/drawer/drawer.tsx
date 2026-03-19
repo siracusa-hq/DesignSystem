@@ -166,7 +166,7 @@ export const DrawerContent = React.forwardRef<
       <DialogPrimitive.Content
         ref={ref}
         className={cn(
-          'fixed top-0 h-full bg-[var(--color-surface-raised)] shadow-xl',
+          'fixed top-0 h-full max-w-full bg-[var(--color-surface-raised)] shadow-xl',
           'focus-visible:outline-none',
           side === 'right' && 'right-0 border-l border-[var(--color-border)] animate-slide-in-right data-[state=closed]:animate-slide-out-right',
           side === 'left' && 'left-0 border-r border-[var(--color-border)] animate-slide-in-left data-[state=closed]:animate-slide-out-left',
@@ -195,7 +195,7 @@ export const DrawerHeader = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        'flex items-center justify-between border-b border-[var(--color-border)] px-6 py-4',
+        'flex items-center justify-between border-b border-[var(--color-border)] px-4 py-3 sm:px-6 sm:py-4',
         className,
       )}
       {...props}
@@ -284,7 +284,7 @@ export const DrawerFooter = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'flex items-center justify-end gap-2 border-t border-[var(--color-border)] px-6 py-4',
+      'flex items-center justify-end gap-2 border-t border-[var(--color-border)] px-4 py-3 sm:px-6 sm:py-4',
       className,
     )}
     {...props}

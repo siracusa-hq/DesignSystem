@@ -21,12 +21,12 @@ export function DataTablePagination<TData>({
   return (
     <div
       className={cn(
-        'flex items-center justify-between px-3 py-3 text-sm text-[var(--color-on-surface-secondary)]',
+        'flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between px-3 py-3 text-sm text-[var(--color-on-surface-secondary)]',
         className,
       )}
     >
       <div className="flex items-center gap-2">
-        <span>Rows per page</span>
+        <span className="hidden sm:inline">Rows per page</span>
         <select
           value={pageSize}
           onChange={(e) => table.setPageSize(Number(e.target.value))}
