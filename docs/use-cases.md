@@ -215,7 +215,7 @@ function DashboardApp() {
     <AppShell>
       <AppShellSidebar>
         <nav className="flex flex-col gap-1 p-4">
-          <a href="#" className="px-3 py-2 rounded-md bg-[--color-surface-muted]">Dashboard</a>
+          <a href="#" className="px-3 py-2 rounded-md bg-[var(--color-surface-muted)]">Dashboard</a>
           <a href="#" className="px-3 py-2 rounded-md">Projects</a>
           <a href="#" className="px-3 py-2 rounded-md">Settings</a>
         </nav>
@@ -231,7 +231,7 @@ function DashboardApp() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <Card>
               <CardHeader>
-                <CardTitle className="text-sm font-medium text-[--color-on-surface-secondary]">
+                <CardTitle className="text-sm font-medium text-[var(--color-on-surface-secondary)]">
                   Total Revenue
                 </CardTitle>
               </CardHeader>
