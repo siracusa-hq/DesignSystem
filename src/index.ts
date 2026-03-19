@@ -307,3 +307,12 @@ export {
   type ChartCategoricalColors,
   type ChartSemanticColors,
 } from './tokens/chart-theme';
+export {
+  getChartColors,
+  getChartSubtleColors,
+  getChartTheme,
+  ChartTooltip,
+  ChartLegend,
+  type ChartTooltipProps,
+  type ChartLegendProps,
+} from './components/chart';
