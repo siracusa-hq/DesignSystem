@@ -138,7 +138,7 @@ export const InvoiceTemplate: StoryObj = {
           </div>
 
           {/* Total amount highlight */}
-          <div className="rounded-lg px-5 py-4 mb-6 flex items-center justify-between bg-primary-50 border-2 border-primary-200">
+          <div className="border-l-2 border-primary-500 pl-4 py-2 mb-6 flex items-center justify-between">
             <p className="text-[9pt] font-medium text-neutral-600">ご請求金額（税込）</p>
             <span style={{ fontSize: '18pt', fontWeight: 700 }} className="text-neutral-900">
               {formatCurrency(total)}
@@ -207,7 +207,7 @@ export const InvoiceTemplate: StoryObj = {
           </div>
 
           {/* Notes */}
-          <div className="border-l-2 border-primary-200 pl-3 py-1.5 text-[8pt] text-neutral-500 mb-5">
+          <div className="border-l-2 border-primary-500 pl-3 py-1.5 text-[8pt] text-neutral-500 mb-5">
             <p className="font-semibold text-neutral-600 mb-0.5">備考</p>
             <ul className="space-y-0.5">
               <li>本請求書の有効期限は発行日より30日間です。</li>

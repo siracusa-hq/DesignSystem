@@ -91,7 +91,7 @@ const PrintHeader = React.forwardRef<HTMLDivElement, PrintHeaderProps>(
         <div className="flex items-center gap-3">
           {logo && <div className="shrink-0">{logo}</div>}
           <div>
-            {title && <h1 className="text-xl font-bold text-neutral-900 leading-tight">{title}</h1>}
+            {title && <h1 className="text-2xl font-bold text-neutral-900 leading-tight">{title}</h1>}
             {subtitle && (
               <p className="text-[8pt] font-medium tracking-widest uppercase text-neutral-400 mt-0.5">
                 {subtitle}
