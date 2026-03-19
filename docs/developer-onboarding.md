@@ -120,7 +120,7 @@ export { MyComponent, myComponentVariants };
 2. **`displayName`** — DevToolsでの識別用
 3. **CVA** — バリアント管理に使用
 4. **`cn()`** — クラス名のマージに使用（`className` propを最後に適用）
-5. **セマンティックカラートークン** — `bg-white` ではなく `bg-[--color-surface-raised]` を使用
+5. **セマンティックカラートークン** — `bg-white` ではなく `bg-[var(--color-surface-raised)]` を使用
 
 ### バレルエクスポート
 
@@ -143,16 +143,18 @@ export { MyComponent, myComponentVariants, type MyComponentProps } from './compo
 
 | 用途 | クラス |
 |------|--------|
-| メイン背景 | `bg-[--color-surface]` |
-| カード/ダイアログ背景 | `bg-[--color-surface-raised]` |
-| 凹み背景 | `bg-[--color-surface-sunken]` |
-| ホバー背景 | `bg-[--color-surface-muted]` |
-| メインテキスト | `text-[--color-on-surface]` |
-| 補足テキスト | `text-[--color-on-surface-secondary]` |
-| プレースホルダー | `text-[--color-on-surface-muted]` |
-| ボーダー | `border-[--color-border]` |
-| 入力ボーダー | `border-[--color-border-input]` |
-| フォーカスリング | `ring-[--color-ring]` |
+| メイン背景 | `bg-[var(--color-surface)]` |
+| カード/ダイアログ背景 | `bg-[var(--color-surface-raised)]` |
+| 凹み背景 | `bg-[var(--color-surface-sunken)]` |
+| ホバー背景 | `bg-[var(--color-surface-muted)]` |
+| 選択/アクティブ背景 | `bg-[var(--color-surface-accent)]` |
+| メインテキスト | `text-[var(--color-on-surface)]` |
+| 補足テキスト | `text-[var(--color-on-surface-secondary)]` |
+| プレースホルダー | `text-[var(--color-on-surface-muted)]` |
+| 選択/アクティブテキスト | `text-[var(--color-on-surface-accent)]` |
+| ボーダー | `border-[var(--color-border)]` |
+| 入力ボーダー | `border-[var(--color-border-input)]` |
+| フォーカスリング | `ring-[var(--color-ring)]` |
 
 これらのトークンはダークモードで自動的に切り替わります。
 

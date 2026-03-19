@@ -63,7 +63,7 @@ function App() {
 ## コンポーネント一覧
 
 ### コアアトム
-Button, Badge, Avatar, Separator, Skeleton, Spinner, Card, Tooltip, Toast
+Button, Badge, Avatar, AvatarGroup, Separator, Skeleton, Spinner, Card, Tooltip, Toast
 
 ### フォーム
 Label, Input, Textarea, Checkbox, RadioGroup, Switch, Select, Combobox, DatePicker, NumberInput, FormField, DynamicFormField, FormLayout
@@ -76,6 +76,9 @@ Popover, DropdownMenu, Dialog, CommandPalette, Drawer, AppShell
 
 ### PWA
 BottomNavigation, OfflineIndicator, InstallPrompt, PullToRefresh
+
+### チャート / ダッシュボード
+StatCard, ChartContainer, chartColors (tokens)
 
 ### テーマ
 ThemeProvider, useTheme
