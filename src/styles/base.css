@@ -1,0 +1,150 @@
+/* ============================================================
+   Base Styles, Keyframes, PWA, Print
+
+   Tailwind の @layer base やグローバルスタイルを定義。
+   tokens.css + semantic.css の後に読み込むこと。
+   ============================================================ */
+
+/* --------------------------------------------------------
+   Keyframes
+   -------------------------------------------------------- */
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes slide-in-right {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes slide-out-right {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
+}
+
+@keyframes slide-in-left {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes slide-out-left {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
+}
+
+@keyframes spinner-fade {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.15; }
+}
+
+/* --------------------------------------------------------
+   Base Layer
+   -------------------------------------------------------- */
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    border-color: var(--color-border);
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
+    color: var(--color-on-surface);
+    background-color: var(--color-surface);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Clickable elements should show pointer cursor */
+  button:not(:disabled),
+  [role='button']:not(:disabled),
+  [role='tab'],
+  [role='checkbox'],
+  [role='radio'],
+  [role='menuitem'],
+  [role='menuitemcheckbox'],
+  [role='menuitemradio'],
+  [role='option'],
+  [role='switch'],
+  label,
+  select:not(:disabled),
+  summary {
+    cursor: pointer;
+  }
+}
+
+/* ============================================================
+   PWA: Standalone Mode
+   ============================================================ */
+
+@media (display-mode: standalone) {
+  body {
+    overscroll-behavior-y: contain;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  input,
+  textarea,
+  [contenteditable='true'] {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+}
+
+/* ============================================================
+   PWA: Viewport Height
+   ============================================================ */
+
+@supports (height: 100dvh) {
+  :root {
+    --vh-full: 100dvh;
+  }
+}
+
+@supports not (height: 100dvh) {
+  :root {
+    --vh-full: 100vh;
+  }
+}
+
+/* ============================================================
+   Accessibility: Reduced Motion
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+   Print: PDF / 帳票出力用スタイル
+   ============================================================ */
+
+@media print {
+  @page {
+    margin: 0;
+  }
+
+  .print-document {
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+}

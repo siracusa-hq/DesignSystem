@@ -24,7 +24,10 @@
       "import": "./dist/tokens/index.js",
       "types": "./dist/tokens/index.d.ts"
     },
-    "./globals.css": "./src/styles/globals.css"
+    "./globals.css": "./src/styles/globals.css",
+    "./styles/tokens.css": "./src/styles/tokens.css",
+    "./styles/semantic.css": "./src/styles/semantic.css",
+    "./styles/base.css": "./src/styles/base.css"
   },
   "files": [
     "dist",
