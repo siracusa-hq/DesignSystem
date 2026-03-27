@@ -1,0 +1,60 @@
+/* ============================================================
+   Semantic Color Tokens
+   ライト/ダークモードで自動切替されるセマンティック変数
+
+   @theme トークンを参照するため、tokens.css の後に読み込むこと。
+   ============================================================ */
+
+:root {
+  --color-surface: #ffffff;
+  --color-surface-raised: #ffffff;
+  --color-surface-sunken: var(--color-neutral-50);
+  --color-surface-muted: var(--color-neutral-100);
+  --color-on-surface: var(--color-neutral-900);
+  --color-on-surface-secondary: var(--color-neutral-600);
+  --color-on-surface-muted: var(--color-neutral-500);
+  --color-border: var(--color-neutral-200);
+  --color-border-input: var(--color-neutral-300);
+  --color-ring: var(--color-primary-500);
+  --color-ring-offset: #ffffff;
+  --color-surface-overlay: rgb(0 0 0 / 0.5);
+  --color-tooltip-bg: var(--color-neutral-900);
+  --color-tooltip-text: #ffffff;
+  --color-skeleton: var(--color-neutral-200);
+  /* Accent surface — for selected/active nav items, highlighted rows, etc. */
+  --color-surface-accent: #E4F5F1;
+  --color-on-surface-accent: var(--color-primary-700);
+}
+
+.dark {
+  /*
+   * Surface elevation ladder (darkest → lightest):
+   *   sunken  #0A0A0C  — recessed/inset areas
+   *   surface #121215  — main background (≈ Material Design / Linear range)
+   *   raised  #1A1A1E  — cards, panels, modals
+   *   muted   #232327  — hover states, subtle fills
+   *
+   * Values are hand-picked (not from the neutral scale) to sit between
+   * Material Design #121212 and Radix Gray #111111, with a very subtle
+   * cool tint that complements the teal brand.
+   */
+  --color-surface: #121215;
+  --color-surface-raised: #1A1A1E;
+  --color-surface-sunken: #0A0A0C;
+  --color-surface-muted: #232327;
+  --color-on-surface: var(--color-neutral-50);
+  --color-on-surface-secondary: var(--color-neutral-400);
+  --color-on-surface-muted: var(--color-neutral-400);
+  --color-border: #28282C;
+  --color-border-input: #38383E;
+  --color-ring: var(--color-primary-400);
+  --color-ring-offset: #121215;
+  --color-surface-overlay: rgb(0 0 0 / 0.6);
+  --color-tooltip-bg: var(--color-neutral-100);
+  --color-tooltip-text: var(--color-neutral-900);
+  --color-skeleton: #232327;
+  /* Accent surface — brand-tinted for selected/active states */
+  --color-surface-accent: #0F2926;
+  --color-on-surface-accent: var(--color-primary-400);
+  color-scheme: dark;
+}
