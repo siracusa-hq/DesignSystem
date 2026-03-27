@@ -13,7 +13,7 @@ BtoB業務アプリケーション向けReactデザインシステム。
 
 ## Storybook
 
-コンポーネントカタログ: https://tkaneko-siracusa.github.io/DesignSystem/
+コンポーネントカタログ: https://siracusa-hq.github.io/DesignSystem/
 
 ## インストール
 

@@ -33,6 +33,8 @@ jobs:
 
       - name: Build Storybook
         run: pnpm build-storybook
+        env:
+          STORYBOOK_BASE: /DesignSystem/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
