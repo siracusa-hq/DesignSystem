@@ -16,8 +16,8 @@ export const Checkbox = React.forwardRef<
       'peer h-4 w-4 shrink-0 rounded-sm border border-[var(--color-border-input)] transition-colors duration-fast',
       'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] focus-visible:ring-offset-2 ring-offset-[var(--color-ring-offset)]',
       'disabled:cursor-not-allowed disabled:opacity-50',
-      'data-[state=checked]:border-primary-500 data-[state=checked]:bg-primary-500 data-[state=checked]:text-white',
-      'data-[state=indeterminate]:border-primary-500 data-[state=indeterminate]:bg-primary-500 data-[state=indeterminate]:text-white',
+      'data-[state=checked]:border-primary-400 data-[state=checked]:bg-primary-400 data-[state=checked]:text-white',
+      'data-[state=indeterminate]:border-primary-400 data-[state=indeterminate]:bg-primary-400 data-[state=indeterminate]:text-white',
       'touch:min-h-[--touch-target-min] touch:min-w-[--touch-target-min]',
       className,
     )}

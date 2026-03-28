@@ -86,7 +86,7 @@ const PrintHeader = React.forwardRef<HTMLDivElement, PrintHeaderProps>(
   ({ className, logo, title, subtitle, meta, children, ...props }, ref) => (
     <div ref={ref} className={cn('mb-6', className)} {...props}>
       {/* Brand accent bar */}
-      <div className="h-1 bg-primary-500 rounded-full mb-5" />
+      <div className="h-1 bg-primary-400 rounded-full mb-5" />
       <div className="flex items-start justify-between pb-4 border-b border-neutral-200">
         <div className="flex items-center gap-3">
           {logo && <div className="shrink-0">{logo}</div>}

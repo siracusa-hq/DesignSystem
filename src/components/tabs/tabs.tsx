@@ -61,7 +61,7 @@ const tabsTriggerVariantStyles: Record<TabsVariant, string> = {
   default:
     'rounded-md data-[state=active]:bg-[var(--color-surface-raised)] data-[state=active]:shadow-sm data-[state=active]:text-[var(--color-on-surface)] text-[var(--color-on-surface-secondary)]',
   underline:
-    'border-b-2 border-transparent rounded-none data-[state=active]:border-primary-500 data-[state=active]:text-[var(--color-on-surface)] text-[var(--color-on-surface-secondary)]',
+    'border-b-2 border-transparent rounded-none data-[state=active]:border-primary-400 data-[state=active]:text-[var(--color-on-surface)] text-[var(--color-on-surface-secondary)]',
 };
 
 export const TabsTrigger = React.forwardRef<

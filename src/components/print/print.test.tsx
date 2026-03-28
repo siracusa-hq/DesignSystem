@@ -107,7 +107,7 @@ describe('PrintHeader', () => {
     const { container } = render(<PrintHeader title="Test" />);
     const header = container.firstChild as HTMLElement;
     // Accent bar as first child
-    const accentBar = header.querySelector('.bg-primary-500');
+    const accentBar = header.querySelector('.bg-primary-400');
     expect(accentBar).toBeInTheDocument();
     // Border on inner content area
     const innerContent = header.querySelector('.border-b');
