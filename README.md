@@ -23,9 +23,10 @@ pnpm add @polastack/design-system
 
 ### CSS の読み込み
 
-```ts
-// アプリのエントリポイントで
-import '@polastack/design-system/globals.css';
+```css
+/* index.css */
+@import '@polastack/design-system/globals.css';
+@source "../node_modules/@polastack/design-system/dist";
 ```
 
 ### フォント
