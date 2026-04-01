@@ -232,4 +232,5 @@
   --animate-slide-in-left: slide-in-left var(--duration-slow) var(--ease-out);
   --animate-slide-out-left: slide-out-left var(--duration-slow) var(--ease-in);
   --animate-spinner: spinner-fade 0.8s ease-in-out infinite;
+  --animate-progress-indeterminate: progress-indeterminate 2s ease-in-out infinite;
 }

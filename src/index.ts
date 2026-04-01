@@ -134,6 +134,16 @@ export {
   type FormActionsProps,
 } from './components/form-layout';
 
+// Feedback
+export { Progress, progressVariants, type ProgressProps } from './components/progress';
+export {
+  Stepper,
+  stepIndicatorVariants,
+  type StepperProps,
+  type StepItem,
+  type StepStatus,
+} from './components/stepper';
+
 // Data Display
 export {
   Tabs,
