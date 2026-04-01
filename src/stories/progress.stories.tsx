@@ -25,7 +25,7 @@ const meta: Meta<typeof Progress> = {
     },
     labelPosition: {
       control: 'select',
-      options: ['right', 'top'],
+      options: ['right', 'top', 'floating'],
     },
   },
 };
@@ -119,6 +119,80 @@ export const CustomLabel: Story = {
       />
     </div>
   ),
+};
+
+export const FloatingLabel: Story = {
+  render: () => (
+    <div className="flex flex-col gap-10 w-80 pt-10">
+      <Progress
+        value={35}
+        showLabel
+        labelPosition="floating"
+        aria-label="Upload progress"
+      />
+      <Progress
+        value={72}
+        showLabel
+        labelPosition="floating"
+        variant="success"
+        aria-label="Completion"
+      />
+      <Progress
+        value={50}
+        showLabel={(v) => `${v} / 100`}
+        labelPosition="floating"
+        variant="info"
+        aria-label="Items"
+      />
+    </div>
+  ),
+};
+
+export const WithMarker: Story = {
+  render: () => (
+    <div className="flex flex-col gap-8 w-80">
+      {(['default', 'success', 'warning', 'error', 'info'] as const).map(
+        (variant) => (
+          <div key={variant} className="flex flex-col gap-1">
+            <span className="text-xs font-medium text-[var(--color-on-surface-secondary)] capitalize">
+              {variant}
+            </span>
+            <Progress
+              value={55}
+              variant={variant}
+              showMarker
+              aria-label={variant}
+            />
+          </div>
+        ),
+      )}
+    </div>
+  ),
+};
+
+export const FloatingLabelWithMarker: Story = {
+  render: () => {
+    const [value, setValue] = useState(40);
+
+    useEffect(() => {
+      const timer = setInterval(() => {
+        setValue((prev) => (prev >= 100 ? 0 : prev + 5));
+      }, 600);
+      return () => clearInterval(timer);
+    }, []);
+
+    return (
+      <div className="w-80 pt-10">
+        <Progress
+          value={value}
+          showLabel
+          labelPosition="floating"
+          showMarker
+          aria-label="Auto progress"
+        />
+      </div>
+    );
+  },
 };
 
 export const Indeterminate: Story = {

@@ -116,4 +116,41 @@ describe('Progress', () => {
     const results = await axe(container);
     expect(results).toHaveNoViolations();
   });
+
+  it('renders floating label at progress position', () => {
+    render(
+      <Progress value={60} showLabel labelPosition="floating" aria-label="Progress" />,
+    );
+    // Floating label should render as aria-hidden (decorative)
+    const bubble = screen.getByText('60%');
+    expect(bubble).toBeInTheDocument();
+    // The parent with aria-hidden wraps the bubble
+    expect(bubble.closest('[aria-hidden="true"]')).toBeInTheDocument();
+  });
+
+  it('renders dot marker at progress edge', () => {
+    const { container } = render(
+      <Progress value={50} showMarker aria-label="Progress" />,
+    );
+    // Marker should be rendered as aria-hidden decorative element
+    const marker = container.querySelector('[aria-hidden="true"]');
+    expect(marker).toBeInTheDocument();
+  });
+
+  it('does not render marker in indeterminate mode', () => {
+    const { container } = render(
+      <Progress value={null} showMarker aria-label="Loading" />,
+    );
+    // No marker elements in indeterminate mode
+    const markers = container.querySelectorAll('[aria-hidden="true"]');
+    expect(markers).toHaveLength(0);
+  });
+
+  it('has no accessibility violations (floating label)', async () => {
+    const { container } = render(
+      <Progress value={50} showLabel labelPosition="floating" aria-label="Progress" />,
+    );
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
+  });
 });
