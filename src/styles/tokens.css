@@ -234,4 +234,6 @@
   --animate-slide-out-left: slide-out-left var(--duration-slow) var(--ease-in);
   --animate-spinner: spinner-fade 0.8s ease-in-out infinite;
   --animate-progress-indeterminate: progress-indeterminate 2s ease-in-out infinite;
+  --animate-collapsible-down: collapsible-down var(--duration-normal) var(--ease-out);
+  --animate-collapsible-up: collapsible-up var(--duration-normal) var(--ease-in);
 }
