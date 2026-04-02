@@ -134,11 +134,11 @@ pnpm size
 
 ## ブランドカラー
 
-メインカラー: **#1BA491**（ティール）
+メインカラー: **#13C3A0**（ティール）
 
 | カテゴリ | カラー |
 |---------|--------|
-| Primary | Teal (#1BA491) |
+| Primary | Teal (#13C3A0) |
 | Success | Green |
 | Warning | Amber |
 | Error | Red |

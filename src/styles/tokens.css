@@ -9,19 +9,20 @@
 @theme {
   /* --------------------------------------------------------
      Colors: Brand (Primary)
-     Teal系 - #1BA491をベースにしたPolastackブランドカラー
+     Vivid Teal系 - #13C3A0をベースにしたPolastackブランドカラー
+     セマンティックカラーと彩度・明度を揃えた統一パレット
      -------------------------------------------------------- */
-  --color-primary-50: #f0fdfb;
-  --color-primary-100: #cdfbf0;
-  --color-primary-200: #9bf7e2;
-  --color-primary-300: #61ebd0;
-  --color-primary-400: #2fd4ba;
-  --color-primary-500: #1BA491;
-  --color-primary-600: #138575;
-  --color-primary-700: #146b5f;
-  --color-primary-800: #15564e;
-  --color-primary-900: #134841;
-  --color-primary-950: #042c28;
+  --color-primary-50: #f2fdfb;
+  --color-primary-100: #dbfaf4;
+  --color-primary-200: #b4f3e6;
+  --color-primary-300: #7ee7d2;
+  --color-primary-400: #2ee0bc;
+  --color-primary-500: #13c3a0;
+  --color-primary-600: #109e81;
+  --color-primary-700: #137663;
+  --color-primary-800: #165a4c;
+  --color-primary-900: #164b40;
+  --color-primary-950: #072c25;
 
   /* --------------------------------------------------------
      Colors: Neutral (Zinc系)
@@ -40,20 +41,20 @@
   --color-neutral-950: #09090b;
 
   /* --------------------------------------------------------
-     Colors: Semantic - Success (Lime)
-     Primaryのティール(青緑)と色相差を大きくした黄緑系
+     Colors: Semantic - Success (True Green)
+     H≈130の自然な緑。Primary Teal(H≈168)と43°の色相差で明確に区別
      -------------------------------------------------------- */
-  --color-success-50: #f7fee7;
-  --color-success-100: #ecfccb;
-  --color-success-200: #d9f99d;
-  --color-success-300: #bef264;
-  --color-success-400: #a3e635;
-  --color-success-500: #84cc16;
-  --color-success-600: #65a30d;
-  --color-success-700: #4d7c0f;
-  --color-success-800: #3f6212;
-  --color-success-900: #365314;
-  --color-success-950: #1a2e05;
+  --color-success-50: #f3fcf5;
+  --color-success-100: #d9f7df;
+  --color-success-200: #b6edbf;
+  --color-success-300: #80db8f;
+  --color-success-400: #3ecc55;
+  --color-success-500: #22b43b;
+  --color-success-600: #1c922f;
+  --color-success-700: #1d6d2a;
+  --color-success-800: #1d5326;
+  --color-success-900: #1c4523;
+  --color-success-950: #0a290f;
 
   /* --------------------------------------------------------
      Colors: Semantic - Warning (Amber)

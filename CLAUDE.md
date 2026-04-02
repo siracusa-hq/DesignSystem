@@ -24,8 +24,8 @@
 
 ## カラー
 
-- メインカラー: `#1BA491`（ティール系）
-- success: Green系（primaryのティールと区別）
+- メインカラー: `#13C3A0`（Vivid Teal系、H≈168 S≈82% L≈42%）
+- success: True Green系（H≈130、primaryのティールと43°の色相差で区別）
 - warning: Amber、error: Red、info: Blue
 
 ## リリース運用

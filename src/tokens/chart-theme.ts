@@ -29,7 +29,7 @@
 export const chartColors = {
   /** Solid colors for bars, lines, dots, and legends */
   categorical: [
-    '#1BA491', // teal    — brand anchor
+    '#13C3A0', // teal    — brand anchor
     '#4E79A7', // slate   — classic dataviz blue
     '#E8A838', // amber   — warm gold
     '#D4687A', // rose    — dusty pink-red
@@ -41,7 +41,7 @@ export const chartColors = {
 
   /** Subtle tints — 1:1 paired with categorical for area fills and backgrounds */
   subtle: [
-    '#E6F7F4', // teal
+    '#E8FAF6', // teal
     '#E8EEF4', // slate
     '#FDF3E0', // amber
     '#FCEAED', // rose
@@ -65,7 +65,7 @@ export const chartColors = {
 
   /** Semantic colors for status-meaning charts (P&L, health scores, etc.) */
   semantic: {
-    positive: '#1BA491',
+    positive: '#13C3A0',
     negative: '#D4687A',
     neutral: '#94939B',
     warning: '#E8A838',

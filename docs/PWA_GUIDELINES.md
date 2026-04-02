@@ -29,7 +29,7 @@
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#1BA491",
+  "theme_color": "#13C3A0",
   "icons": [
     { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
@@ -40,7 +40,7 @@
 HTMLに追加:
 ```html
 <link rel="manifest" href="/manifest.json" />
-<meta name="theme-color" content="#1BA491" />
+<meta name="theme-color" content="#13C3A0" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 ```
 

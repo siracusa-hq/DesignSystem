@@ -36,7 +36,7 @@ describe('getChartTheme', () => {
 
 describe('ChartTooltip', () => {
   const payload = [
-    { name: 'Revenue', value: 1234, color: '#1BA491', dataKey: 'revenue' },
+    { name: 'Revenue', value: 1234, color: '#13C3A0', dataKey: 'revenue' },
     { name: 'Cost', value: 567, color: '#ef4444', dataKey: 'cost' },
   ];
 
@@ -96,7 +96,7 @@ describe('ChartTooltip', () => {
     const dots = container.querySelectorAll('.rounded-full');
     expect(dots).toHaveLength(2);
     expect((dots[0] as HTMLElement).style.backgroundColor).toBe(
-      'rgb(27, 164, 145)',
+      'rgb(19, 195, 160)',
     );
   });
 });
@@ -107,7 +107,7 @@ describe('ChartTooltip', () => {
 
 describe('ChartLegend', () => {
   const payload = [
-    { value: 'Revenue', color: '#1BA491' },
+    { value: 'Revenue', color: '#13C3A0' },
     { value: 'Cost', color: '#ef4444' },
   ];
 

@@ -82,7 +82,7 @@ shadcn/ui型アプローチを採用：
 - [x] デザイン原則ドキュメント（明快さ、一貫性、効率性、適応的密度、段階的開示）
 - [x] ブランドアイデンティティ定義（カラー方針、タイポグラフィ、アイコン、ボイス&トーン）
 - [x] デザイントークン実装（`globals.css` - Tailwind v4 `@theme`）
-  - カラー: primary(teal #1BA491, 50-950), neutral(zinc系), semantic(success/warning/error/info)
+  - カラー: primary(teal #13C3A0, 50-950), neutral(zinc系), semantic(success/warning/error/info)
   - タイポグラフィ: Inter + Noto Sans JP, サイズスケール(base=14px), ウェイト
   - スペーシング: 4pxグリッド
   - エレベーション: shadow-xs～xl + shadow-drawer, radius-none～full
