@@ -22,6 +22,10 @@ const meta: Meta<typeof Stepper> = {
       control: 'select',
       options: ['sm', 'md', 'lg'],
     },
+    connector: {
+      control: 'select',
+      options: ['line', 'arrow', 'chevron'],
+    },
     clickable: {
       control: 'boolean',
     },
@@ -130,6 +134,59 @@ export const Sizes: Story = {
             {size}
           </span>
           <Stepper steps={basicSteps} activeStep={1} size={size} />
+        </div>
+      ))}
+    </div>
+  ),
+};
+
+export const ConnectorArrow: Story = {
+  render: () => (
+    <div className="flex flex-col gap-8">
+      <Stepper steps={basicSteps} activeStep={2} connector="arrow" />
+      <Stepper
+        steps={[
+          { label: 'Order Placed', description: 'Confirmed' },
+          { label: 'Processing', description: 'Preparing items' },
+          { label: 'Shipped', description: 'On the way' },
+          { label: 'Delivered', description: 'At your address' },
+        ]}
+        activeStep={2}
+        orientation="vertical"
+        connector="arrow"
+      />
+    </div>
+  ),
+};
+
+export const ConnectorChevron: Story = {
+  render: () => (
+    <div className="flex flex-col gap-8">
+      <Stepper steps={basicSteps} activeStep={2} connector="chevron" />
+      <Stepper
+        steps={[
+          { label: 'Order Placed', description: 'Confirmed' },
+          { label: 'Processing', description: 'Preparing items' },
+          { label: 'Shipped', description: 'On the way' },
+          { label: 'Delivered', description: 'At your address' },
+        ]}
+        activeStep={2}
+        orientation="vertical"
+        connector="chevron"
+      />
+    </div>
+  ),
+};
+
+export const ConnectorComparison: Story = {
+  render: () => (
+    <div className="flex flex-col gap-6">
+      {(['line', 'arrow', 'chevron'] as const).map((type) => (
+        <div key={type} className="flex flex-col gap-2">
+          <span className="text-xs font-medium text-[var(--color-on-surface-secondary)]">
+            connector=&quot;{type}&quot;
+          </span>
+          <Stepper steps={basicSteps} activeStep={2} connector={type} />
         </div>
       ))}
     </div>

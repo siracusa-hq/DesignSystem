@@ -177,6 +177,50 @@ describe('Stepper', () => {
     expect(screen.getByRole('list').className).toContain('custom-stepper');
   });
 
+  it('renders arrow connector', () => {
+    const { container } = render(
+      <Stepper steps={defaultSteps} activeStep={1} connector="arrow" />,
+    );
+    // Arrow uses CSS border triangles (border-l-* classes)
+    const triangles = container.querySelectorAll('.border-l-primary-500, .border-l-\\[var\\(--color-border\\)\\]');
+    expect(triangles.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('renders chevron connector', () => {
+    render(
+      <Stepper steps={defaultSteps} activeStep={1} connector="chevron" />,
+    );
+    // Chevron connector renders — component should not throw
+    const items = screen.getAllByRole('listitem');
+    expect(items).toHaveLength(3);
+  });
+
+  it('renders arrow connector in vertical orientation', () => {
+    render(
+      <Stepper
+        steps={defaultSteps}
+        activeStep={1}
+        orientation="vertical"
+        connector="arrow"
+      />,
+    );
+    const items = screen.getAllByRole('listitem');
+    expect(items).toHaveLength(3);
+  });
+
+  it('renders chevron connector in vertical orientation', () => {
+    render(
+      <Stepper
+        steps={defaultSteps}
+        activeStep={1}
+        orientation="vertical"
+        connector="chevron"
+      />,
+    );
+    const items = screen.getAllByRole('listitem');
+    expect(items).toHaveLength(3);
+  });
+
   it('has no accessibility violations (horizontal)', async () => {
     const { container } = render(
       <Stepper steps={defaultSteps} activeStep={1} />,
@@ -192,6 +236,22 @@ describe('Stepper', () => {
         activeStep={1}
         orientation="vertical"
       />,
+    );
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
+  });
+
+  it('has no accessibility violations (arrow connector)', async () => {
+    const { container } = render(
+      <Stepper steps={defaultSteps} activeStep={1} connector="arrow" />,
+    );
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
+  });
+
+  it('has no accessibility violations (chevron connector)', async () => {
+    const { container } = render(
+      <Stepper steps={defaultSteps} activeStep={1} connector="chevron" />,
     );
     const results = await axe(container);
     expect(results).toHaveNoViolations();

@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { cva, type VariantProps } from 'class-variance-authority';
-import { Check } from 'lucide-react';
+import { cva } from 'class-variance-authority';
+import { Check, ChevronRight, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { Spinner } from '@/components/spinner';
 
@@ -9,6 +9,7 @@ import { Spinner } from '@/components/spinner';
    -------------------------------------------------------- */
 
 export type StepStatus = 'pending' | 'active' | 'completed' | 'error' | 'loading';
+export type StepperConnector = 'line' | 'arrow' | 'chevron';
 
 export interface StepItem {
   label: string;
@@ -26,6 +27,7 @@ export interface StepperProps
   activeStep: number;
   orientation?: StepperOrientation;
   size?: StepperSize;
+  connector?: StepperConnector;
   clickable?: boolean;
   onStepClick?: (index: number) => void;
 }
@@ -59,23 +61,6 @@ export const stepIndicatorVariants = cva(
   },
 );
 
-const connectorVariants = cva('transition-colors duration-normal', {
-  variants: {
-    completed: {
-      true: 'bg-primary-500',
-      false: 'bg-[var(--color-border)]',
-    },
-    orientation: {
-      horizontal: 'h-0.5 flex-1 mx-2',
-      vertical: 'w-0.5 min-h-6',
-    },
-  },
-  defaultVariants: {
-    completed: false,
-    orientation: 'horizontal',
-  },
-});
-
 const spinnerSizeMap: Record<StepperSize, 'sm' | 'sm' | 'sm'> = {
   sm: 'sm',
   md: 'sm',
@@ -86,6 +71,18 @@ const checkSizeMap: Record<StepperSize, number> = {
   sm: 12,
   md: 16,
   lg: 20,
+};
+
+const chevronSizeMap: Record<StepperSize, number> = {
+  sm: 14,
+  md: 16,
+  lg: 20,
+};
+
+const indicatorHeight: Record<StepperSize, string> = {
+  sm: 'h-6',
+  md: 'h-8',
+  lg: 'h-10',
 };
 
 /* --------------------------------------------------------
@@ -117,6 +114,147 @@ function StepIndicatorContent({
 }
 
 /* --------------------------------------------------------
+   Internal: StepConnector
+   -------------------------------------------------------- */
+
+function StepConnector({
+  completed,
+  orientation,
+  connectorType,
+  size,
+}: {
+  completed: boolean;
+  orientation: StepperOrientation;
+  connectorType: StepperConnector;
+  size: StepperSize;
+}) {
+  const isH = orientation === 'horizontal';
+  const lineColor = completed ? 'bg-primary-500' : 'bg-[var(--color-border)]';
+  const iconColor = completed
+    ? 'text-primary-500'
+    : 'text-[var(--color-border)]';
+
+  if (connectorType === 'arrow') {
+    if (isH) {
+      return (
+        <div
+          className={cn('flex items-center flex-1', indicatorHeight[size])}
+          aria-hidden="true"
+        >
+          <div className="flex items-center flex-1 mx-1.5">
+            <div
+              className={cn(
+                'h-0.5 flex-1 transition-colors duration-normal',
+                lineColor,
+              )}
+            />
+            <div
+              className={cn(
+                'w-0 h-0 shrink-0 border-y-[5px] border-y-transparent border-l-[7px] transition-colors duration-normal',
+                completed
+                  ? 'border-l-primary-500'
+                  : 'border-l-[var(--color-border)]',
+              )}
+            />
+          </div>
+        </div>
+      );
+    }
+    return (
+      <div
+        className="flex flex-col items-center min-h-6"
+        aria-hidden="true"
+      >
+        <div
+          className={cn(
+            'w-0.5 flex-1 transition-colors duration-normal',
+            lineColor,
+          )}
+        />
+        <div
+          className={cn(
+            'w-0 h-0 shrink-0 border-x-[5px] border-x-transparent border-t-[7px] transition-colors duration-normal',
+            completed
+              ? 'border-t-primary-500'
+              : 'border-t-[var(--color-border)]',
+          )}
+        />
+      </div>
+    );
+  }
+
+  if (connectorType === 'chevron') {
+    const cSize = chevronSizeMap[size];
+    if (isH) {
+      return (
+        <div
+          className={cn('flex items-center flex-1', indicatorHeight[size])}
+          aria-hidden="true"
+        >
+          <div
+            className={cn(
+              'flex items-center flex-1 mx-1 transition-colors duration-normal',
+              iconColor,
+            )}
+          >
+            <div className={cn('h-0.5 flex-1', lineColor)} />
+            <ChevronRight
+              size={cSize}
+              className="shrink-0 mx-0.5"
+              strokeWidth={2.5}
+            />
+            <div className={cn('h-0.5 flex-1', lineColor)} />
+          </div>
+        </div>
+      );
+    }
+    return (
+      <div
+        className={cn(
+          'flex flex-col items-center min-h-6 transition-colors duration-normal',
+          iconColor,
+        )}
+        aria-hidden="true"
+      >
+        <div className={cn('w-0.5 flex-1', lineColor)} />
+        <ChevronDown
+          size={cSize}
+          className="shrink-0 my-0.5"
+          strokeWidth={2.5}
+        />
+        <div className={cn('w-0.5 flex-1', lineColor)} />
+      </div>
+    );
+  }
+
+  // Default: line
+  if (isH) {
+    return (
+      <div
+        className={cn('flex items-center flex-1', indicatorHeight[size])}
+        aria-hidden="true"
+      >
+        <div
+          className={cn(
+            'h-0.5 flex-1 mx-2 transition-colors duration-normal',
+            lineColor,
+          )}
+        />
+      </div>
+    );
+  }
+  return (
+    <div
+      className={cn(
+        'w-0.5 min-h-6 transition-colors duration-normal',
+        lineColor,
+      )}
+      aria-hidden="true"
+    />
+  );
+}
+
+/* --------------------------------------------------------
    Stepper
    -------------------------------------------------------- */
 
@@ -128,6 +266,7 @@ export const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
       activeStep,
       orientation = 'horizontal',
       size = 'md',
+      connector: connectorType = 'line',
       clickable = false,
       onStepClick,
       ...props
@@ -165,15 +304,12 @@ export const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
             if (isClickable && onStepClick) onStepClick(index);
           };
 
-          const connector = !isLast ? (
-            <div
-              className={cn(
-                connectorVariants({
-                  completed: index < activeStep,
-                  orientation,
-                }),
-              )}
-              aria-hidden="true"
+          const connectorEl = !isLast ? (
+            <StepConnector
+              completed={index < activeStep}
+              orientation={orientation}
+              connectorType={connectorType}
+              size={size}
             />
           ) : null;
 
@@ -241,7 +377,7 @@ export const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
                   {labelEl}
                   {descEl}
                 </li>
-                {connector}
+                {connectorEl}
               </React.Fragment>
             );
           }
@@ -258,7 +394,7 @@ export const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
             >
               <div className="flex flex-col items-center">
                 {indicatorButton}
-                {connector}
+                {connectorEl}
               </div>
               <div className={cn('flex flex-col gap-0.5', !isLast && 'pb-6')}>
                 {labelEl}
