@@ -93,6 +93,7 @@ export const BarChartExample: StoryObj = {
             />
             <RechartsTooltip
               content={<ChartTooltip formatter={(v) => `¥${v.toLocaleString()}`} />}
+              cursor={{ fill: theme.cursorFill, opacity: 0.5 }}
             />
             <RechartsLegend content={<ChartLegend />} />
             <Bar dataKey="revenue" name="Revenue" fill={colors[0]} radius={[4, 4, 0, 0]} />
@@ -129,6 +130,7 @@ export const LineChartExample: StoryObj = {
             />
             <RechartsTooltip
               content={<ChartTooltip formatter={(v) => `¥${v.toLocaleString()}`} />}
+              cursor={{ stroke: theme.cursorFill, strokeWidth: 1 }}
             />
             <RechartsLegend content={<ChartLegend />} />
             <Line
@@ -191,6 +193,7 @@ export const AreaChartExample: StoryObj = {
             />
             <RechartsTooltip
               content={<ChartTooltip formatter={(v) => `¥${v.toLocaleString()}`} />}
+              cursor={{ stroke: theme.cursorFill, strokeWidth: 1 }}
             />
             <RechartsLegend content={<ChartLegend />} />
             <Area
@@ -240,7 +243,7 @@ export const PieChartExample: StoryObj = {
                 <Cell key={i} fill={colors[i % colors.length]} />
               ))}
             </Pie>
-            <RechartsTooltip content={<ChartTooltip />} />
+            <RechartsTooltip content={<ChartTooltip />} cursor={false} />
             <RechartsLegend content={<ChartLegend />} />
           </PieChart>
         </ResponsiveContainer>

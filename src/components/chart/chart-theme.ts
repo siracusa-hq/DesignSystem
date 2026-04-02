@@ -35,6 +35,8 @@ export function getChartTheme() {
     textColor: cssVar('--color-neutral-500', chartColors.text.light),
     tooltipBg: cssVar('--color-surface-raised', '#ffffff'),
     tooltipBorder: cssVar('--color-border', '#e4e4e7'),
+    /** Hover cursor fill — theme-aware for dark mode */
+    cursorFill: cssVar('--color-surface-muted', '#f4f4f5'),
     fontSize: 12,
     fontFamily: 'Inter, "Noto Sans JP", sans-serif',
   };
