@@ -257,6 +257,13 @@ export {
   useAppShell,
   type AppShellProps,
 } from './components/app-shell';
+export {
+  SidebarNav,
+  SidebarNavGroup,
+  SidebarNavItem,
+  type SidebarNavGroupProps,
+  type SidebarNavItemProps,
+} from './components/sidebar-nav';
 
 // PWA Components
 export {
