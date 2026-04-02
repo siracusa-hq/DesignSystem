@@ -40,20 +40,20 @@
   --color-neutral-950: #09090b;
 
   /* --------------------------------------------------------
-     Colors: Semantic - Success (Green)
-     Primaryのティールと区別しやすい純粋なグリーン系
+     Colors: Semantic - Success (Lime)
+     Primaryのティール(青緑)と色相差を大きくした黄緑系
      -------------------------------------------------------- */
-  --color-success-50: #f0fdf4;
-  --color-success-100: #dcfce7;
-  --color-success-200: #bbf7d0;
-  --color-success-300: #86efac;
-  --color-success-400: #4ade80;
-  --color-success-500: #22c55e;
-  --color-success-600: #16a34a;
-  --color-success-700: #15803d;
-  --color-success-800: #166534;
-  --color-success-900: #14532d;
-  --color-success-950: #052e16;
+  --color-success-50: #f7fee7;
+  --color-success-100: #ecfccb;
+  --color-success-200: #d9f99d;
+  --color-success-300: #bef264;
+  --color-success-400: #a3e635;
+  --color-success-500: #84cc16;
+  --color-success-600: #65a30d;
+  --color-success-700: #4d7c0f;
+  --color-success-800: #3f6212;
+  --color-success-900: #365314;
+  --color-success-950: #1a2e05;
 
   /* --------------------------------------------------------
      Colors: Semantic - Warning (Amber)
