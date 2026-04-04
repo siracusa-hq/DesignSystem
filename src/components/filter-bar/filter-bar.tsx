@@ -181,11 +181,11 @@ export function FilterSelector({
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full z-popover mt-1 min-w-[10rem] rounded-md border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-2 shadow-md">
+        <div className="absolute right-0 top-full z-popover mt-1 min-w-[10rem] rounded-md border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-1 shadow-md">
           {options.map((opt) => (
             <label
               key={opt.id}
-              className="flex items-center gap-2 rounded px-2 py-1 text-sm hover:bg-[var(--color-surface-sunken)] cursor-pointer"
+              className="flex items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-[var(--color-surface-sunken)] cursor-pointer"
             >
               <input
                 type="checkbox"

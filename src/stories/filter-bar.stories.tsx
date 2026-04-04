@@ -89,13 +89,6 @@ export const WithFilterSelector: Story = {
 
     return (
       <FilterBar>
-        <FilterBarActions>
-          <FilterSelector
-            options={allFilters}
-            selected={enabled}
-            onToggle={handleToggle}
-          />
-        </FilterBarActions>
         <ActiveFilters onClearAll={() => setFilters([])}>
           {filters
             .filter((f) => enabled.includes(f.label.toLowerCase()))
@@ -114,6 +107,13 @@ export const WithFilterSelector: Story = {
               />
             ))}
         </ActiveFilters>
+        <FilterBarActions>
+          <FilterSelector
+            options={allFilters}
+            selected={enabled}
+            onToggle={handleToggle}
+          />
+        </FilterBarActions>
       </FilterBar>
     );
   },
