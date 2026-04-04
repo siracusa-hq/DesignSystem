@@ -158,7 +158,7 @@ export function DataTable<TData>({
 
   const stickyHeadClass = (colIndex: number) =>
     colIndex < stickyColumns
-      ? 'bg-[var(--color-surface-sunken)]'
+      ? 'bg-[var(--color-surface-muted)]'
       : '';
 
   const showToolbar = enableRowSelection || enableColumnVisibility;

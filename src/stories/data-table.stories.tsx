@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Users } from 'lucide-react';
-import { DataTable } from '../components/data-table';
+import { DataTable, ColumnPinSelector } from '../components/data-table';
 import {
   EmptyState,
   EmptyStateIcon,
@@ -133,6 +133,30 @@ export const FullFeatured: Story = {
 
 export const WithStickyColumns: Story = {
   render: () => {
+    const allColumns = [
+      { id: 'name', label: 'Name' },
+      { id: 'email', label: 'Email' },
+      { id: 'role', label: 'Role' },
+      { id: 'status', label: 'Status' },
+      { id: 'department', label: 'Department' },
+      { id: 'location', label: 'Location' },
+      { id: 'phone', label: 'Phone' },
+      { id: 'joinDate', label: 'Join Date' },
+    ];
+    const [pinnedIds, setPinnedIds] = useState(['name', 'email']);
+
+    const handleToggle = (id: string, checked: boolean) => {
+      if (checked) {
+        // 元のカラム順序を保持して追加
+        const ordered = allColumns
+          .map((c) => c.id)
+          .filter((cid) => pinnedIds.includes(cid) || cid === id);
+        setPinnedIds(ordered);
+      } else {
+        setPinnedIds((prev) => prev.filter((p) => p !== id));
+      }
+    };
+
     const wideColumns: ColumnDef<User & { department: string; location: string; phone: string; joinDate: string }, unknown>[] = [
       { accessorKey: 'name', header: 'Name', size: 150 },
       { accessorKey: 'email', header: 'Email', size: 220 },
@@ -150,12 +174,23 @@ export const WithStickyColumns: Story = {
       phone: `+81-90-${String(u.id).padStart(4, '0')}-0000`,
       joinDate: `2024-${String((u.id % 12) + 1).padStart(2, '0')}-01`,
     }));
+
+    // stickyColumns は連続した左端からの列数なので、pinnedIds の順序で数える
+    const stickyCount = pinnedIds.length;
+
     return (
       <div style={{ maxWidth: 600 }}>
+        <div className="mb-2 flex justify-end">
+          <ColumnPinSelector
+            options={allColumns}
+            pinned={pinnedIds}
+            onToggle={handleToggle}
+          />
+        </div>
         <DataTable
           columns={wideColumns}
           data={wideData}
-          stickyColumns={2}
+          stickyColumns={stickyCount}
           aria-label="Users with sticky columns"
         />
       </div>
