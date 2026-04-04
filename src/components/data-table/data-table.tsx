@@ -168,6 +168,10 @@ export function DataTable<TData>({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() ? 'selected' : undefined}
+                {...(enableRowSelection && {
+                  onClick: () => row.toggleSelected(),
+                  className: 'cursor-pointer',
+                })}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
