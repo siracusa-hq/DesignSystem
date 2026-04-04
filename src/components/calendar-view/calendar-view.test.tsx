@@ -161,14 +161,16 @@ describe('CalendarView — month', () => {
     // 2024-06-02 is Sunday
     const { container } = render(<CalendarView defaultMonth="2024-06" />);
     const sundayCell = container.querySelector('button[data-date="2024-06-02"]');
-    expect(sundayCell!.className).toContain('bg-[var(--color-error)]');
+    expect(sundayCell!.className).toContain('color-mix');
+    expect(sundayCell!.className).toContain('--color-error');
   });
 
   it('applies Saturday background and text color', () => {
     // 2024-06-01 is Saturday
     const { container } = render(<CalendarView defaultMonth="2024-06" />);
     const saturdayCell = container.querySelector('button[data-date="2024-06-01"]');
-    expect(saturdayCell!.className).toContain('bg-[var(--color-info)]');
+    expect(saturdayCell!.className).toContain('color-mix');
+    expect(saturdayCell!.className).toContain('--color-info');
   });
 
   it('applies holiday styling to weekday dates in holidays prop', () => {
@@ -177,7 +179,8 @@ describe('CalendarView — month', () => {
       <CalendarView defaultMonth="2024-06" holidays={['2024-06-11']} />,
     );
     const holidayCell = container.querySelector('button[data-date="2024-06-11"]');
-    expect(holidayCell!.className).toContain('bg-[var(--color-error)]');
+    expect(holidayCell!.className).toContain('color-mix');
+    expect(holidayCell!.className).toContain('--color-error');
   });
 
   it('applies Saturday/Sunday text color to weekday headers', () => {

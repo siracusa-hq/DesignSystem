@@ -107,11 +107,13 @@ const DOT_COLORS: Record<string, string> = {
 };
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
+/** Default scroll offset: start at 6:30 → 6 hours × 48px = 288px */
+const DEFAULT_SCROLL_TOP = 288;
 
-/* Weekend / holiday cell styling */
-const SATURDAY_BG = 'bg-[var(--color-info)]/[0.06]';
+/* Weekend / holiday cell styling — use color-mix for reliable opacity with CSS vars */
+const SATURDAY_BG = 'bg-[color-mix(in_srgb,var(--color-info)_8%,transparent)]';
 const SATURDAY_TEXT = 'text-[var(--color-info)]';
-const SUNDAY_HOLIDAY_BG = 'bg-[var(--color-error)]/[0.06]';
+const SUNDAY_HOLIDAY_BG = 'bg-[color-mix(in_srgb,var(--color-error)_8%,transparent)]';
 const SUNDAY_HOLIDAY_TEXT = 'text-[var(--color-error)]';
 
 function getDayTypeClasses(
@@ -197,6 +199,14 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
       d.setHours(0, 0, 0, 0);
       return d;
     }, []);
+
+    /* Scroll refs for week/day time grids — scroll to 6:30 on mount */
+    const weekGridRef = React.useRef<HTMLDivElement>(null);
+    const dayGridRef = React.useRef<HTMLDivElement>(null);
+    React.useEffect(() => {
+      if (weekGridRef.current) weekGridRef.current.scrollTop = DEFAULT_SCROLL_TOP;
+      if (dayGridRef.current) dayGridRef.current.scrollTop = DEFAULT_SCROLL_TOP;
+    }, [view]);
 
     /* --- Month-level state (for month view) --- */
     const defaultMonthParsed = parseMonth(defaultMonth);
@@ -325,7 +335,7 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
           </div>
 
           {/* Day grid */}
-          <div role="grid" aria-label={`${viewYear}年${viewMonth + 1}月`} className="border-l border-[var(--color-border)]">
+          <div role="grid" aria-label={`${viewYear}年${viewMonth + 1}月`} className="overflow-hidden rounded-md border-l border-[var(--color-border)]">
             {weeks.map((week, wi) => (
               <div key={wi} role="row" className="grid grid-cols-7">
                 {week.map((date, di) => {
@@ -412,15 +422,15 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
           </div>
 
           {/* Column headers */}
-          <div className="grid grid-cols-[3rem_repeat(7,1fr)] border-b border-[var(--color-border)]">
-            <div className="h-8" />
+          <div className="grid grid-cols-[3rem_repeat(7,1fr)] border-b border-[var(--color-border)] pb-2 mb-2">
+            <div className="h-10" />
             {weekDates.map((date, i) => {
               const isToday = isSameDay(date, today);
               const dayType = getDayTypeClasses(date.getDay(), formatDate(date), holidaySet);
               return (
-                <div key={i} className={cn('flex h-8 flex-col items-center justify-center text-xs font-medium text-[var(--color-on-surface-muted)]', dayType.text)}>
+                <div key={i} className={cn('flex h-10 flex-col items-center justify-center gap-0.5 text-xs font-medium text-[var(--color-on-surface-muted)]', dayType.text)}>
                   <span>{WEEKDAYS[date.getDay()]}</span>
-                  <span className={cn('inline-flex h-5 w-5 items-center justify-center rounded-full text-[10px]', isToday && 'bg-primary-500 text-white font-semibold')}>
+                  <span className={cn('inline-flex h-6 w-6 items-center justify-center rounded-full text-xs', isToday && 'bg-primary-500 text-white font-semibold')}>
                     {date.getDate()}
                   </span>
                 </div>
@@ -430,14 +440,15 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
 
           {/* Time grid — 48px/hour, 16h visible ≈ 768px */}
           <div
+            ref={weekGridRef}
             role="grid"
             aria-label={headerLabel}
-            className="h-[768px] overflow-y-auto border-l border-[var(--color-border)]"
+            className="h-[768px] overflow-y-auto overflow-hidden rounded-md border-l border-[var(--color-border)]"
           >
             {HOURS.map((hour) => (
               <div key={hour} role="row" className="grid grid-cols-[3rem_repeat(7,1fr)]">
                 {/* Time label */}
-                <div className="flex h-12 items-start justify-end pr-2 border-r border-[var(--color-border)] text-[10px] text-[var(--color-on-surface-muted)] -translate-y-1.5">
+                <div className="flex h-12 items-start justify-end pr-2 pt-px border-r border-[var(--color-border)] text-[10px] leading-none text-[var(--color-on-surface-muted)]">
                   {String(hour).padStart(2, '0')}:00
                 </div>
                 {/* Day columns */}
@@ -461,14 +472,14 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
                       aria-label={`${date.getMonth() + 1}月${date.getDate()}日 ${String(hour).padStart(2, '0')}:00`}
                       onClick={() => onDateClick?.(dateStr, dayEvents)}
                       className={cn(
-                        'relative flex flex-col h-12 border-r border-[var(--color-border)] text-left',
+                        'flex flex-col h-12 overflow-hidden border-r border-[var(--color-border)] text-left',
                         dayType.bg,
                         'hover:bg-[var(--color-surface-muted)]',
                         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-ring)]',
                       )}
                     >
                       {/* :00 half — solid bottom border */}
-                      <div className="h-1/2 border-b border-[var(--color-border)] p-0.5">
+                      <div className="h-1/2 min-h-0 overflow-hidden border-b border-[var(--color-border)] p-0.5">
                         {hourEvents.map((event, idx) => (
                           <div
                             key={idx}
@@ -530,9 +541,10 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
 
         {/* Time grid — 48px/hour, 16h visible ≈ 768px */}
         <div
+          ref={dayGridRef}
           role="grid"
           aria-label={dayLabel}
-          className="h-[768px] overflow-y-auto border-l border-t border-[var(--color-border)]"
+          className="h-[768px] overflow-y-auto overflow-hidden rounded-md border-l border-t border-[var(--color-border)]"
         >
           {HOURS.map((hour) => {
             const hourEvents = dayEvents.filter((e) => {
@@ -544,7 +556,7 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
             return (
               <div key={hour} role="row" className="grid grid-cols-[3.5rem_1fr]">
                 {/* Time label */}
-                <div className="flex h-12 items-start justify-end pr-2 border-r border-[var(--color-border)] text-xs text-[var(--color-on-surface-muted)] -translate-y-2">
+                <div className="flex h-12 items-start justify-end pr-2 pt-px border-r border-[var(--color-border)] text-xs leading-none text-[var(--color-on-surface-muted)]">
                   {String(hour).padStart(2, '0')}:00
                 </div>
                 {/* Event area */}
@@ -556,20 +568,20 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
                   aria-label={`${String(hour).padStart(2, '0')}:00`}
                   onClick={() => onDateClick?.(dateStr, dayEvents)}
                   className={cn(
-                    'relative flex flex-col h-12 text-left',
+                    'flex flex-col h-12 overflow-hidden text-left',
                     dayType.bg,
                     'hover:bg-[var(--color-surface-muted)]',
                     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-ring)]',
                   )}
                 >
                   {/* :00 half — solid bottom border */}
-                  <div className="h-1/2 border-b border-[var(--color-border)] px-2 py-0.5">
-                    <div className="flex flex-col gap-0.5">
+                  <div className="h-1/2 min-h-0 overflow-hidden border-b border-[var(--color-border)] px-2 py-0.5">
+                    <div className="flex flex-col gap-0.5 overflow-hidden">
                       {hourEvents.map((event, idx) => (
                         <div
                           key={idx}
                           className={cn(
-                            'rounded px-2 py-0.5 text-xs leading-tight text-white',
+                            'rounded px-2 py-0.5 text-xs leading-tight truncate text-white',
                             DOT_COLORS[event.color ?? 'primary'],
                           )}
                         >
