@@ -142,9 +142,13 @@ export function DataTable<TData>({
     }
   }, [stickyColumns, columnVisibility]);
 
-  const getStickyStyle = (colIndex: number): React.CSSProperties | undefined => {
-    if (colIndex >= stickyColumns || stickyOffsets.length === 0) return undefined;
+  const getCellStyle = (cell: { column: { getSize: () => number } }, colIndex: number): React.CSSProperties | undefined => {
+    if (stickyColumns <= 0) return undefined;
+    const size = cell.column.getSize();
+    const base: React.CSSProperties = { minWidth: size, width: size };
+    if (colIndex >= stickyColumns || stickyOffsets.length === 0) return base;
     return {
+      ...base,
       position: 'sticky',
       left: stickyOffsets[colIndex] ?? 0,
       zIndex: 1,
@@ -177,7 +181,7 @@ export function DataTable<TData>({
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} ref={headerRowRef}>
               {headerGroup.headers.map((header, colIndex) => (
-                <TableHead key={header.id} className={cn(gridCellClass, stickyHeadClass(colIndex))} style={getStickyStyle(colIndex)}>
+                <TableHead key={header.id} className={cn(gridCellClass, stickyHeadClass(colIndex))} style={getCellStyle(header, colIndex)}>
                   {header.isPlaceholder ? null : header.column.getCanSort() ? (
                     <button
                       className="flex items-center gap-1 -ml-2 px-2 py-1 rounded-md hover:bg-[var(--color-surface-muted)] transition-colors duration-fast"
@@ -218,7 +222,7 @@ export function DataTable<TData>({
                 })}
               >
                 {row.getVisibleCells().map((cell, colIndex) => (
-                  <TableCell key={cell.id} className={cn(gridCellClass, stickyCellClass(colIndex))} style={getStickyStyle(colIndex)}>
+                  <TableCell key={cell.id} className={cn(gridCellClass, stickyCellClass(colIndex))} style={getCellStyle(cell, colIndex)}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
