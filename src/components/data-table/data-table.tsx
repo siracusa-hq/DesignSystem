@@ -172,7 +172,7 @@ export function DataTable<TData>({
         />
       )}
 
-      <Table aria-label={ariaLabel}>
+      <Table aria-label={ariaLabel} className={stickyColumns > 0 ? 'min-w-max' : undefined}>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} ref={headerRowRef}>

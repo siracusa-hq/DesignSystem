@@ -180,7 +180,7 @@ export const WithStickyColumns: Story = {
 
     return (
       <div style={{ maxWidth: 600 }}>
-        <div className="mb-2 flex justify-end">
+        <div className="relative z-popover mb-2 flex justify-end">
           <ColumnPinSelector
             options={allColumns}
             pinned={pinnedIds}
