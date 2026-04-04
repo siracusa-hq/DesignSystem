@@ -334,6 +334,16 @@ export {
 export { StatCard, type StatCardProps } from './components/stat-card';
 export { ChartContainer, type ChartContainerProps } from './components/chart-container';
 export {
+  DashboardGrid,
+  dashboardGridVariants,
+  DashboardSection,
+  DashboardPanel,
+  type DashboardGridProps,
+  type DashboardSectionProps,
+  type DashboardPanelProps,
+  type ResponsiveColSpan,
+} from './components/dashboard-grid';
+export {
   chartColors,
   type ChartCategoricalColors,
   type ChartSemanticColors,

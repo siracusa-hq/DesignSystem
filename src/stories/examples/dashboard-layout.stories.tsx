@@ -12,6 +12,12 @@ import { DataTable } from '../../components/data-table';
 import { Badge } from '../../components/badge';
 import { Button } from '../../components/button';
 import { Separator } from '../../components/separator';
+import { StatCard } from '../../components/stat-card';
+import {
+  DashboardGrid,
+  DashboardSection,
+  DashboardPanel,
+} from '../../components/dashboard-grid';
 
 const meta: Meta = {
   title: 'Examples/Dashboard Layout',
@@ -97,43 +103,41 @@ function DashboardLayout() {
 
         <AppShellContent>
           <div className="p-6">
-            {/* Metric Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              {[
-                { title: 'Total Revenue', value: '¥1,234,567', change: '+12.5%' },
-                { title: 'Active Projects', value: '24', change: '+3' },
-                { title: 'Team Members', value: '18', change: '+2' },
-                { title: 'Open Issues', value: '7', change: '-5' },
-              ].map((metric) => (
-                <Card key={metric.title}>
-                  <CardHeader className="pb-2">
-                    <CardDescription>{metric.title}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-bold">{metric.value}</span>
-                      <Badge variant="success" className="text-xs">{metric.change}</Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            <DashboardGrid>
+              <DashboardSection>
+                <DashboardPanel colSpan={{ default: 6, lg: 3 }}>
+                  <StatCard label="Total Revenue" value="¥1,234,567" trend="+12.5%" />
+                </DashboardPanel>
+                <DashboardPanel colSpan={{ default: 6, lg: 3 }}>
+                  <StatCard label="Active Projects" value="24" trend="+3" />
+                </DashboardPanel>
+                <DashboardPanel colSpan={{ default: 6, lg: 3 }}>
+                  <StatCard label="Team Members" value="18" trend="+2" />
+                </DashboardPanel>
+                <DashboardPanel colSpan={{ default: 6, lg: 3 }}>
+                  <StatCard label="Open Issues" value="7" trend="-5" />
+                </DashboardPanel>
+              </DashboardSection>
 
-            {/* Recent Activity */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
-                <CardDescription>Latest actions across all projects</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <DataTable
-                  columns={activityColumns}
-                  data={activityData}
-                  enableSorting
-                  aria-label="Recent activity"
-                />
-              </CardContent>
-            </Card>
+              <DashboardSection>
+                <DashboardPanel colSpan={12}>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Recent Activity</CardTitle>
+                      <CardDescription>Latest actions across all projects</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <DataTable
+                        columns={activityColumns}
+                        data={activityData}
+                        enableSorting
+                        aria-label="Recent activity"
+                      />
+                    </CardContent>
+                  </Card>
+                </DashboardPanel>
+              </DashboardSection>
+            </DashboardGrid>
           </div>
         </AppShellContent>
       </div>
