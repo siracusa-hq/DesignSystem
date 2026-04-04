@@ -1,0 +1,164 @@
+import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, it, expect, vi } from 'vitest';
+import { axe } from 'vitest-axe';
+import { CalendarView, type CalendarEvent } from './calendar-view';
+
+const SAMPLE_EVENTS: CalendarEvent[] = [
+  { date: '2024-06-05', title: 'ミーティング', color: 'primary' },
+  { date: '2024-06-05', title: 'レビュー', color: 'error' },
+  { date: '2024-06-10', title: 'デプロイ', color: 'success' },
+  { date: '2024-06-20', title: 'リリース', color: 'warning' },
+];
+
+describe('CalendarView', () => {
+  it('renders the current month by default', () => {
+    render(<CalendarView />);
+    const today = new Date();
+    expect(
+      screen.getByText(`${today.getFullYear()}年${today.getMonth() + 1}月`),
+    ).toBeInTheDocument();
+  });
+
+  it('renders a specified default month', () => {
+    render(<CalendarView defaultMonth="2024-06" />);
+    expect(screen.getByText('2024年6月')).toBeInTheDocument();
+  });
+
+  it('renders controlled month', () => {
+    render(<CalendarView month="2024-12" />);
+    expect(screen.getByText('2024年12月')).toBeInTheDocument();
+  });
+
+  it('displays events on their dates', () => {
+    render(<CalendarView defaultMonth="2024-06" events={SAMPLE_EVENTS} />);
+    // Day 5 should have 2 events
+    const day5 = screen.getByLabelText('6月5日 2件のイベント');
+    expect(within(day5).getByText('ミーティング')).toBeInTheDocument();
+    expect(within(day5).getByText('レビュー')).toBeInTheDocument();
+  });
+
+  it('truncates events when more than 3', () => {
+    const manyEvents: CalendarEvent[] = [
+      { date: '2024-06-15', title: 'A' },
+      { date: '2024-06-15', title: 'B' },
+      { date: '2024-06-15', title: 'C' },
+      { date: '2024-06-15', title: 'D' },
+    ];
+    render(<CalendarView defaultMonth="2024-06" events={manyEvents} />);
+    const day15 = screen.getByLabelText('6月15日 4件のイベント');
+    expect(within(day15).getByText('+1件')).toBeInTheDocument();
+  });
+
+  it('navigates to next month', async () => {
+    const user = userEvent.setup();
+    render(<CalendarView defaultMonth="2024-06" />);
+
+    await user.click(screen.getByLabelText('次の月'));
+    expect(screen.getByText('2024年7月')).toBeInTheDocument();
+  });
+
+  it('navigates to previous month', async () => {
+    const user = userEvent.setup();
+    render(<CalendarView defaultMonth="2024-06" />);
+
+    await user.click(screen.getByLabelText('前の月'));
+    expect(screen.getByText('2024年5月')).toBeInTheDocument();
+  });
+
+  it('calls onMonthChange when navigating', async () => {
+    const onMonthChange = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <CalendarView defaultMonth="2024-06" onMonthChange={onMonthChange} />,
+    );
+
+    await user.click(screen.getByLabelText('次の月'));
+    expect(onMonthChange).toHaveBeenCalledWith('2024-07');
+  });
+
+  it('calls onDateClick with date and events', async () => {
+    const onDateClick = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <CalendarView
+        defaultMonth="2024-06"
+        events={SAMPLE_EVENTS}
+        onDateClick={onDateClick}
+      />,
+    );
+
+    await user.click(screen.getByLabelText('6月5日 2件のイベント'));
+    expect(onDateClick).toHaveBeenCalledWith('2024-06-05', [
+      SAMPLE_EVENTS[0],
+      SAMPLE_EVENTS[1],
+    ]);
+  });
+
+  it('calls onDateClick for empty dates with empty events array', async () => {
+    const onDateClick = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <CalendarView defaultMonth="2024-06" onDateClick={onDateClick} />,
+    );
+
+    await user.click(screen.getByLabelText('6月1日'));
+    expect(onDateClick).toHaveBeenCalledWith('2024-06-01', []);
+  });
+
+  it('supports renderDay for custom cell content', () => {
+    render(
+      <CalendarView
+        defaultMonth="2024-06"
+        events={SAMPLE_EVENTS}
+        renderDay={(date, events) => (
+          <span data-testid={`custom-${date.getDate()}`}>
+            {events.length > 0 ? `${events.length}件` : ''}
+          </span>
+        )}
+      />,
+    );
+
+    expect(screen.getByTestId('custom-5')).toHaveTextContent('2件');
+    expect(screen.getByTestId('custom-1')).toHaveTextContent('');
+  });
+
+  it('highlights today', () => {
+    render(<CalendarView />);
+    const today = new Date();
+    const todayLabel = `${today.getMonth() + 1}月${today.getDate()}日`;
+    const todayCell = screen.getByLabelText(todayLabel);
+    const dayNumber = within(todayCell).getByText(String(today.getDate()));
+    expect(dayNumber.className).toContain('bg-primary-500');
+  });
+
+  it('wraps across year boundary (December → January)', async () => {
+    const user = userEvent.setup();
+    render(<CalendarView defaultMonth="2024-12" />);
+
+    expect(screen.getByText('2024年12月')).toBeInTheDocument();
+    await user.click(screen.getByLabelText('次の月'));
+    expect(screen.getByText('2025年1月')).toBeInTheDocument();
+  });
+
+  it('wraps across year boundary (January → December)', async () => {
+    const user = userEvent.setup();
+    render(<CalendarView defaultMonth="2025-01" />);
+
+    await user.click(screen.getByLabelText('前の月'));
+    expect(screen.getByText('2024年12月')).toBeInTheDocument();
+  });
+
+  it('merges className', () => {
+    const { container } = render(<CalendarView className="custom-class" />);
+    expect(container.firstElementChild).toHaveClass('custom-class');
+  });
+
+  it('has no accessibility violations', async () => {
+    const { container } = render(
+      <CalendarView defaultMonth="2024-06" events={SAMPLE_EVENTS} />,
+    );
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
+  });
+});

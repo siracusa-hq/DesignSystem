@@ -322,6 +322,13 @@ export {
   type PrintDividerProps,
 } from './components/print';
 
+// Calendar
+export {
+  CalendarView,
+  type CalendarViewProps,
+  type CalendarEvent,
+} from './components/calendar-view';
+
 // Chart / Dashboard
 export { StatCard, type StatCardProps } from './components/stat-card';
 export { ChartContainer, type ChartContainerProps } from './components/chart-container';
