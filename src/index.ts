@@ -98,6 +98,11 @@ export {
 export { NumberInput, type NumberInputProps } from './components/number-input';
 export { DatePicker, type DatePickerProps } from './components/date-picker';
 export {
+  DateRangePicker,
+  type DateRangePickerProps,
+  type DateRange,
+} from './components/date-picker';
+export {
   Combobox,
   type ComboboxProps,
   type ComboboxOption,
