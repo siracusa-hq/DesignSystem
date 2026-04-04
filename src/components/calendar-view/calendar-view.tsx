@@ -335,7 +335,7 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
           </div>
 
           {/* Day grid */}
-          <div role="grid" aria-label={`${viewYear}年${viewMonth + 1}月`} className="overflow-hidden rounded-md border-l border-[var(--color-border)]">
+          <div role="grid" aria-label={`${viewYear}年${viewMonth + 1}月`} className="overflow-hidden rounded-md border border-[var(--color-border)]">
             {weeks.map((week, wi) => (
               <div key={wi} role="row" className="grid grid-cols-7">
                 {week.map((date, di) => {
@@ -443,7 +443,7 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
             ref={weekGridRef}
             role="grid"
             aria-label={headerLabel}
-            className="h-[768px] overflow-y-auto overflow-hidden rounded-md border-l border-[var(--color-border)]"
+            className="h-[768px] overflow-y-auto rounded-md border border-[var(--color-border)]"
           >
             {HOURS.map((hour) => (
               <div key={hour} role="row" className="grid grid-cols-[3rem_repeat(7,1fr)]">
@@ -544,7 +544,7 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
           ref={dayGridRef}
           role="grid"
           aria-label={dayLabel}
-          className="h-[768px] overflow-y-auto overflow-hidden rounded-md border-l border-t border-[var(--color-border)]"
+          className="h-[768px] overflow-y-auto rounded-md border border-[var(--color-border)]"
         >
           {HOURS.map((hour) => {
             const hourEvents = dayEvents.filter((e) => {
