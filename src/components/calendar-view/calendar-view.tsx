@@ -321,23 +321,21 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
             </Button>
           </div>
 
-          {/* Grid wrapper — single border + rounded corners */}
-          <div className="overflow-hidden rounded-md border border-[var(--color-border)]">
-            {/* Weekday headers */}
-            <div className="grid grid-cols-7 border-b border-[var(--color-border)]">
-              {WEEKDAYS.map((day, i) => (
-                <div key={day} className={cn(
-                  'flex h-8 items-center justify-center text-xs font-medium text-[var(--color-on-surface-muted)]',
-                  i === 0 && SUNDAY_HOLIDAY_TEXT,
-                  i === 6 && SATURDAY_TEXT,
-                )}>
-                  {day}
-                </div>
-              ))}
-            </div>
+          {/* Weekday headers — no border, sits above the grid */}
+          <div className="grid grid-cols-7 mb-1">
+            {WEEKDAYS.map((day, i) => (
+              <div key={day} className={cn(
+                'flex h-8 items-center justify-center text-xs font-medium text-[var(--color-on-surface-muted)]',
+                i === 0 && SUNDAY_HOLIDAY_TEXT,
+                i === 6 && SATURDAY_TEXT,
+              )}>
+                {day}
+              </div>
+            ))}
+          </div>
 
-            {/* Day grid */}
-            <div role="grid" aria-label={`${viewYear}年${viewMonth + 1}月`}>
+          {/* Day grid — rounded border */}
+          <div role="grid" aria-label={`${viewYear}年${viewMonth + 1}月`} className="overflow-hidden rounded-md border border-[var(--color-border)]">
             {weeks.map((week, wi) => (
               <div key={wi} role="row" className="grid grid-cols-7">
                 {week.map((date, di) => {
@@ -387,7 +385,6 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
                 })}
               </div>
             ))}
-          </div>
           </div>
         </div>
       );

@@ -182,7 +182,7 @@ describe('CalendarView — month', () => {
 
   it('applies Saturday/Sunday text color to weekday headers', () => {
     const { container } = render(<CalendarView defaultMonth="2024-06" />);
-    const headers = container.querySelectorAll('.grid.grid-cols-7.border-b > div');
+    const headers = container.querySelectorAll('.grid.grid-cols-7.mb-1 > div');
     // Index 0 = 日 (Sunday) → error text, Index 6 = 土 (Saturday) → info text
     expect(headers[0].className).toContain('--color-error-500');
     expect(headers[6].className).toContain('--color-info-500');
