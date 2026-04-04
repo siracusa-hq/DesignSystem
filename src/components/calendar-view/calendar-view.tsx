@@ -334,17 +334,21 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
             ))}
           </div>
 
-          {/* Day grid — rounded border */}
-          <div role="grid" aria-label={`${viewYear}年${viewMonth + 1}月`} className="overflow-hidden rounded-md border border-[var(--color-border)]">
+          {/* Day grid — gap technique: container bg = border color, cell bg = surface */}
+          <div
+            role="grid"
+            aria-label={`${viewYear}年${viewMonth + 1}月`}
+            className="overflow-hidden rounded-md border border-[var(--color-border)] grid grid-cols-7 gap-px bg-[var(--color-border)]"
+          >
             {weeks.map((week, wi) => (
-              <div key={wi} role="row" className="grid grid-cols-7">
+              <div key={wi} role="row" className="contents">
                 {week.map((date, di) => {
                   if (!date) {
                     return (
                       <div
                         key={`empty-${wi}-${di}`}
                         role="gridcell"
-                        className="min-h-16 border-r border-b border-[var(--color-border)] bg-[var(--color-surface-muted)]/30"
+                        className="min-h-16 bg-[var(--color-surface-muted)]"
                       />
                     );
                   }
@@ -364,8 +368,7 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
                       onClick={() => onDateClick?.(dateStr, dayEvents)}
                       className={cn(
                         'relative flex min-h-16 flex-col items-start p-1 text-left transition-colors duration-fast',
-                        'border-r border-b border-[var(--color-border)]',
-                        dayType.bg,
+                        dayType.bg || 'bg-[var(--color-surface)]',
                         'hover:bg-[var(--color-surface-muted)]',
                         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-ring)]',
                       )}
@@ -421,8 +424,8 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
             </Button>
           </div>
 
-          {/* Column headers */}
-          <div className="grid grid-cols-[3rem_repeat(7,1fr)] border-b border-[var(--color-border)] pb-2 mb-2">
+          {/* Column headers — no border */}
+          <div className="grid grid-cols-[3rem_repeat(7,1fr)] pb-2 mb-2">
             <div className="h-10" />
             {weekDates.map((date, i) => {
               const isToday = isSameDay(date, today);
@@ -438,17 +441,17 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
             })}
           </div>
 
-          {/* Time grid — 48px/hour, 16h visible ≈ 768px */}
+          {/* Time grid — gap technique */}
           <div
             ref={weekGridRef}
             role="grid"
             aria-label={headerLabel}
-            className="h-[768px] overflow-y-auto rounded-md border border-[var(--color-border)]"
+            className="h-[768px] overflow-y-auto overflow-hidden rounded-md border border-[var(--color-border)] grid grid-cols-[3rem_repeat(7,1fr)] gap-px bg-[var(--color-border)]"
           >
             {HOURS.map((hour) => (
-              <div key={hour} role="row" className="grid grid-cols-[3rem_repeat(7,1fr)]">
+              <div key={hour} role="row" className="contents">
                 {/* Time label */}
-                <div className="flex h-12 items-start justify-end pr-2 pt-px border-r border-[var(--color-border)] text-[10px] leading-none text-[var(--color-on-surface-muted)]">
+                <div className="flex h-12 items-start justify-end pr-2 pt-px bg-[var(--color-surface)] text-[10px] leading-none text-[var(--color-on-surface-muted)]">
                   {String(hour).padStart(2, '0')}:00
                 </div>
                 {/* Day columns */}
@@ -472,14 +475,14 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
                       aria-label={`${date.getMonth() + 1}月${date.getDate()}日 ${String(hour).padStart(2, '0')}:00`}
                       onClick={() => onDateClick?.(dateStr, dayEvents)}
                       className={cn(
-                        'flex flex-col h-12 overflow-hidden border-r border-[var(--color-border)] text-left',
-                        dayType.bg,
+                        'flex flex-col h-12 overflow-hidden text-left',
+                        dayType.bg || 'bg-[var(--color-surface)]',
                         'hover:bg-[var(--color-surface-muted)]',
                         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-ring)]',
                       )}
                     >
-                      {/* :00 half — solid bottom border */}
-                      <div className="h-1/2 min-h-0 overflow-hidden border-b border-[var(--color-border)] p-0.5">
+                      {/* :00 half — solid line via gap; :30 half — dashed internal line */}
+                      <div className="h-1/2 min-h-0 overflow-hidden p-0.5">
                         {hourEvents.map((event, idx) => (
                           <div
                             key={idx}
@@ -495,8 +498,7 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
                           </div>
                         ))}
                       </div>
-                      {/* :30 half — dashed bottom border */}
-                      <div className="h-1/2 border-b border-dashed border-[var(--color-border)]" />
+                      <div className="h-1/2 border-t border-dashed border-[var(--color-border)]" />
                     </button>
                   );
                 })}
@@ -539,12 +541,12 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
           </Button>
         </div>
 
-        {/* Time grid — 48px/hour, 16h visible ≈ 768px */}
+        {/* Time grid — gap technique */}
         <div
           ref={dayGridRef}
           role="grid"
           aria-label={dayLabel}
-          className="h-[768px] overflow-y-auto rounded-md border border-[var(--color-border)]"
+          className="h-[768px] overflow-y-auto overflow-hidden rounded-md border border-[var(--color-border)] grid grid-cols-[3.5rem_1fr] gap-px bg-[var(--color-border)]"
         >
           {HOURS.map((hour) => {
             const hourEvents = dayEvents.filter((e) => {
@@ -554,9 +556,9 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
             });
 
             return (
-              <div key={hour} role="row" className="grid grid-cols-[3.5rem_1fr]">
+              <div key={hour} role="row" className="contents">
                 {/* Time label */}
-                <div className="flex h-12 items-start justify-end pr-2 pt-px border-r border-[var(--color-border)] text-xs leading-none text-[var(--color-on-surface-muted)]">
+                <div className="flex h-12 items-start justify-end pr-2 pt-px bg-[var(--color-surface)] text-xs leading-none text-[var(--color-on-surface-muted)]">
                   {String(hour).padStart(2, '0')}:00
                 </div>
                 {/* Event area */}
@@ -569,13 +571,13 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
                   onClick={() => onDateClick?.(dateStr, dayEvents)}
                   className={cn(
                     'flex flex-col h-12 overflow-hidden text-left',
-                    dayType.bg,
+                    dayType.bg || 'bg-[var(--color-surface)]',
                     'hover:bg-[var(--color-surface-muted)]',
                     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-ring)]',
                   )}
                 >
-                  {/* :00 half — solid bottom border */}
-                  <div className="h-1/2 min-h-0 overflow-hidden border-b border-[var(--color-border)] px-2 py-0.5">
+                  {/* :00 half; :30 half — dashed internal line */}
+                  <div className="h-1/2 min-h-0 overflow-hidden px-2 py-0.5">
                     <div className="flex flex-col gap-0.5 overflow-hidden">
                       {hourEvents.map((event, idx) => (
                         <div
@@ -596,8 +598,7 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
                       ))}
                     </div>
                   </div>
-                  {/* :30 half — dashed bottom border */}
-                  <div className="h-1/2 border-b border-dashed border-[var(--color-border)]" />
+                  <div className="h-1/2 border-t border-dashed border-[var(--color-border)]" />
                 </button>
               </div>
             );

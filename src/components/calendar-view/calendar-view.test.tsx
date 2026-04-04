@@ -149,12 +149,16 @@ describe('CalendarView — month', () => {
     });
   });
 
-  it('has visible cell borders (border-r and border-b on day cells)', () => {
+  it('uses gap technique for grid lines (no cell borders)', () => {
     const { container } = render(<CalendarView defaultMonth="2024-06" />);
+    const grid = container.querySelector('[role="grid"]');
+    expect(grid!.className).toContain('gap-px');
+    expect(grid!.className).toContain('bg-[var(--color-border)]');
+    // Cells should have surface bg, not border classes
     const dayButton = container.querySelector('button[data-date="2024-06-01"]');
     expect(dayButton).toBeInTheDocument();
-    expect(dayButton!.className).toContain('border-r');
-    expect(dayButton!.className).toContain('border-b');
+    expect(dayButton!.className).not.toContain('border-r');
+    expect(dayButton!.className).not.toContain('border-b');
   });
 
   it('applies Sunday background and text color', () => {
