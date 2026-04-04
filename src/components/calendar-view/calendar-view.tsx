@@ -110,11 +110,11 @@ const HOURS = Array.from({ length: 24 }, (_, i) => i);
 /** Default scroll offset: start at 6:30 → 6 hours × 48px = 288px */
 const DEFAULT_SCROLL_TOP = 288;
 
-/* Weekend / holiday cell styling — use color-mix for reliable opacity with CSS vars */
-const SATURDAY_BG = 'bg-[color-mix(in_srgb,var(--color-info)_8%,transparent)]';
-const SATURDAY_TEXT = 'text-[var(--color-info)]';
-const SUNDAY_HOLIDAY_BG = 'bg-[color-mix(in_srgb,var(--color-error)_8%,transparent)]';
-const SUNDAY_HOLIDAY_TEXT = 'text-[var(--color-error)]';
+/* Weekend / holiday cell styling */
+const SATURDAY_BG = 'bg-[var(--color-info-50)]';
+const SATURDAY_TEXT = 'text-[var(--color-info-500)]';
+const SUNDAY_HOLIDAY_BG = 'bg-[var(--color-error-50)]';
+const SUNDAY_HOLIDAY_TEXT = 'text-[var(--color-error-500)]';
 
 function getDayTypeClasses(
   dayOfWeek: number,
@@ -321,21 +321,23 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
             </Button>
           </div>
 
-          {/* Weekday headers */}
-          <div className="grid grid-cols-7 border-b border-[var(--color-border)]">
-            {WEEKDAYS.map((day, i) => (
-              <div key={day} className={cn(
-                'flex h-8 items-center justify-center text-xs font-medium text-[var(--color-on-surface-muted)]',
-                i === 0 && SUNDAY_HOLIDAY_TEXT,
-                i === 6 && SATURDAY_TEXT,
-              )}>
-                {day}
-              </div>
-            ))}
-          </div>
+          {/* Grid wrapper — single border + rounded corners */}
+          <div className="overflow-hidden rounded-md border border-[var(--color-border)]">
+            {/* Weekday headers */}
+            <div className="grid grid-cols-7 border-b border-[var(--color-border)]">
+              {WEEKDAYS.map((day, i) => (
+                <div key={day} className={cn(
+                  'flex h-8 items-center justify-center text-xs font-medium text-[var(--color-on-surface-muted)]',
+                  i === 0 && SUNDAY_HOLIDAY_TEXT,
+                  i === 6 && SATURDAY_TEXT,
+                )}>
+                  {day}
+                </div>
+              ))}
+            </div>
 
-          {/* Day grid */}
-          <div role="grid" aria-label={`${viewYear}年${viewMonth + 1}月`} className="overflow-hidden rounded-md border border-[var(--color-border)]">
+            {/* Day grid */}
+            <div role="grid" aria-label={`${viewYear}年${viewMonth + 1}月`}>
             {weeks.map((week, wi) => (
               <div key={wi} role="row" className="grid grid-cols-7">
                 {week.map((date, di) => {
@@ -385,6 +387,7 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
                 })}
               </div>
             ))}
+          </div>
           </div>
         </div>
       );
