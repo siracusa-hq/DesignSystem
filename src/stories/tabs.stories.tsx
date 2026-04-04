@@ -36,6 +36,34 @@ export const Default: Story = {
   ),
 };
 
+export const DefaultColored: Story = {
+  name: 'Default (Colored)',
+  render: () => (
+    <Tabs defaultValue="account" className="w-96">
+      <TabsList colorScheme="colored">
+        <TabsTrigger value="account">Account</TabsTrigger>
+        <TabsTrigger value="password">Password</TabsTrigger>
+        <TabsTrigger value="settings">Settings</TabsTrigger>
+      </TabsList>
+      <TabsContent value="account">
+        <p className="text-sm text-neutral-600 p-4">
+          Manage your account settings and preferences.
+        </p>
+      </TabsContent>
+      <TabsContent value="password">
+        <p className="text-sm text-neutral-600 p-4">
+          Change your password and security settings.
+        </p>
+      </TabsContent>
+      <TabsContent value="settings">
+        <p className="text-sm text-neutral-600 p-4">
+          Configure your application settings.
+        </p>
+      </TabsContent>
+    </Tabs>
+  ),
+};
+
 export const Underline: Story = {
   render: () => (
     <Tabs defaultValue="overview" className="w-96">
