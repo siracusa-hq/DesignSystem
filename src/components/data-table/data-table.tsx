@@ -24,9 +24,12 @@ import { Checkbox } from '@/components/checkbox';
 import { DataTablePagination } from './data-table-pagination';
 import { DataTableToolbar } from './data-table-toolbar';
 
+export type DataTableVariant = 'rows' | 'grid';
+
 export interface DataTableProps<TData> {
   columns: ColumnDef<TData, unknown>[];
   data: TData[];
+  variant?: DataTableVariant;
   enableSorting?: boolean;
   enableRowSelection?: boolean;
   enableColumnVisibility?: boolean;
@@ -42,6 +45,7 @@ export interface DataTableProps<TData> {
 export function DataTable<TData>({
   columns,
   data,
+  variant = 'rows',
   enableSorting = false,
   enableRowSelection = false,
   enableColumnVisibility = false,
@@ -53,6 +57,10 @@ export function DataTable<TData>({
   className,
   'aria-label': ariaLabel,
 }: DataTableProps<TData>) {
+  const isGrid = variant === 'grid';
+  const gridCellClass = isGrid
+    ? 'border-r border-[var(--color-border)] last:border-r-0'
+    : '';
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
   const [columnVisibility, setColumnVisibility] =
@@ -133,7 +141,7 @@ export function DataTable<TData>({
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
+                <TableHead key={header.id} className={gridCellClass}>
                   {header.isPlaceholder ? null : header.column.getCanSort() ? (
                     <button
                       className="flex items-center gap-1 -ml-2 px-2 py-1 rounded-md hover:bg-[var(--color-surface-muted)] transition-colors duration-fast"
@@ -174,7 +182,7 @@ export function DataTable<TData>({
                 })}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell key={cell.id} className={gridCellClass}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

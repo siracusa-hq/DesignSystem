@@ -63,6 +63,17 @@ export const WithPagination: Story = {
   ),
 };
 
+export const GridVariant: Story = {
+  render: () => (
+    <DataTable
+      columns={columns}
+      data={users.slice(0, 5)}
+      variant="grid"
+      aria-label="Users"
+    />
+  ),
+};
+
 export const WithSorting: Story = {
   render: () => (
     <DataTable

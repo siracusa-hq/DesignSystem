@@ -228,6 +228,31 @@ describe('DataTable', () => {
     expect(container.firstChild).toHaveClass('custom-dt');
   });
 
+  it('renders grid variant with column borders', () => {
+    const { container } = render(
+      <DataTable
+        columns={columns}
+        data={testData.slice(0, 2)}
+        variant="grid"
+        aria-label="Test table"
+      />,
+    );
+    const cells = container.querySelectorAll('td');
+    expect(cells[0].className).toContain('border-r');
+  });
+
+  it('rows variant has no column borders by default', () => {
+    const { container } = render(
+      <DataTable
+        columns={columns}
+        data={testData.slice(0, 2)}
+        aria-label="Test table"
+      />,
+    );
+    const cells = container.querySelectorAll('td');
+    expect(cells[0].className).not.toContain('border-r');
+  });
+
   it('passes axe accessibility check', async () => {
     const { container } = render(
       <DataTable columns={columns} data={testData.slice(0, 3)} aria-label="Test table" />,
