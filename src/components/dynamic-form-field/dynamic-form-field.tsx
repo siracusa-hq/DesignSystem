@@ -179,7 +179,7 @@ export const DynamicFormField = React.forwardRef<
             <DatePicker
               name={name}
               value={value as string | undefined}
-              onChange={(e) => onChange?.(e.target.value)}
+              onValueChange={(v) => onChange?.(v)}
               min={min as string | undefined}
               max={max as string | undefined}
             />

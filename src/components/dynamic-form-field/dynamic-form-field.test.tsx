@@ -69,8 +69,9 @@ describe('DynamicFormField', () => {
 
   it('renders date picker', () => {
     render(<DynamicFormField type="date" name="dob" label="Date of Birth" />);
-    const input = document.querySelector('input[type="date"]');
-    expect(input).toBeInTheDocument();
+    expect(screen.getByText('Date of Birth')).toBeInTheDocument();
+    const hidden = document.querySelector('input[type="hidden"][name="dob"]');
+    expect(hidden).toBeInTheDocument();
   });
 
   it('renders number input', () => {
