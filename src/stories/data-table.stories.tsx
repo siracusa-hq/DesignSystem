@@ -179,7 +179,7 @@ export const WithStickyColumns: Story = {
     const stickyCount = pinnedIds.length;
 
     return (
-      <div style={{ maxWidth: 600 }}>
+      <div style={{ maxWidth: 800 }}>
         <div className="relative z-popover mb-2 flex justify-end">
           <ColumnPinSelector
             options={allColumns}
