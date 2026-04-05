@@ -102,12 +102,15 @@ describe('generateColumns', () => {
 /* ------------------------------------------------------------------ */
 
 describe('TimelineAxis', () => {
-  it('renders day labels', () => {
+  it('renders day numbers and month grouping', () => {
     const cols = generateColumns(new Date(2025, 3, 1), new Date(2025, 3, 3), 'day');
     render(<TimelineAxis columns={cols} granularity="day" />);
-    expect(screen.getByText('4/1')).toBeInTheDocument();
-    expect(screen.getByText('4/2')).toBeInTheDocument();
-    expect(screen.getByText('4/3')).toBeInTheDocument();
+    // Day numbers in lower tier
+    expect(screen.getByText('1')).toBeInTheDocument();
+    expect(screen.getByText('2')).toBeInTheDocument();
+    expect(screen.getByText('3')).toBeInTheDocument();
+    // Month grouping in upper tier
+    expect(screen.getByText('2025年4月')).toBeInTheDocument();
   });
 
   it('renders weekday names in day granularity', () => {

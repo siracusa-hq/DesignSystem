@@ -80,14 +80,15 @@ const RANGE_END = new Date(2025, 3, 30);
 export const Default: Story = {
   name: '日粒度 — Default',
   render: () => (
-    <TimelineGrid rangeStart={RANGE_START} rangeEnd={RANGE_END} granularity="day">
+    <TimelineGrid
+      rangeStart={RANGE_START}
+      rangeEnd={RANGE_END}
+      granularity="day"
+      today={new Date(2025, 3, 15)}
+    >
       {GANTT_ITEMS.map((item) => (
         <TimelineRow key={item.id} label={item.label}>
-          <TimelineBar
-            item={item}
-            rangeStart={RANGE_START}
-            totalDays={30}
-          />
+          <TimelineBar item={item} rangeStart={RANGE_START} totalDays={30} />
         </TimelineRow>
       ))}
     </TimelineGrid>
@@ -97,14 +98,16 @@ export const Default: Story = {
 export const WithProgress: Story = {
   name: '日粒度 — 進捗表示',
   render: () => (
-    <TimelineGrid rangeStart={RANGE_START} rangeEnd={RANGE_END} granularity="day" rowHeight="2.5rem">
+    <TimelineGrid
+      rangeStart={RANGE_START}
+      rangeEnd={RANGE_END}
+      granularity="day"
+      rowHeight="2.5rem"
+      today={new Date(2025, 3, 15)}
+    >
       {GANTT_ITEMS.map((item) => (
         <TimelineRow key={item.id} label={item.label}>
-          <TimelineBar
-            item={item}
-            rangeStart={RANGE_START}
-            totalDays={30}
-          />
+          <TimelineBar item={item} rangeStart={RANGE_START} totalDays={30} />
         </TimelineRow>
       ))}
     </TimelineGrid>
@@ -122,11 +125,10 @@ export const WeekGranularity: Story = {
       { id: '3', label: 'フェーズ3: テスト', start: new Date(2025, 4, 19), end: new Date(2025, 5, 15), color: 'warning' },
       { id: '4', label: 'フェーズ4: リリース', start: new Date(2025, 5, 16), end: new Date(2025, 5, 30), color: 'error' },
     ];
-    // Calculate total days for the range
     const totalDays = Math.ceil((end.getTime() - start.getTime()) / 86_400_000) + 1;
 
     return (
-      <TimelineGrid rangeStart={start} rangeEnd={end} granularity="week">
+      <TimelineGrid rangeStart={start} rangeEnd={end} granularity="week" today={new Date(2025, 4, 1)}>
         {items.map((item) => (
           <TimelineRow key={item.id} label={item.label}>
             <TimelineBar item={item} rangeStart={start} totalDays={totalDays} />
@@ -151,7 +153,13 @@ export const MonthGranularity: Story = {
     const totalDays = 365;
 
     return (
-      <TimelineGrid rangeStart={start} rangeEnd={end} granularity="month" labelWidth="12rem">
+      <TimelineGrid
+        rangeStart={start}
+        rangeEnd={end}
+        granularity="month"
+        labelWidth="12rem"
+        today={new Date(2025, 3, 5)}
+      >
         {items.map((item) => (
           <TimelineRow key={item.id} label={item.label}>
             <TimelineBar item={item} rangeStart={start} totalDays={totalDays} />
@@ -169,7 +177,12 @@ export const WithClickHandler: Story = {
 
     return (
       <div className="space-y-3">
-        <TimelineGrid rangeStart={RANGE_START} rangeEnd={RANGE_END} granularity="day">
+        <TimelineGrid
+          rangeStart={RANGE_START}
+          rangeEnd={RANGE_END}
+          granularity="day"
+          today={new Date(2025, 3, 15)}
+        >
           {GANTT_ITEMS.map((item) => (
             <TimelineRow key={item.id} label={item.label}>
               <TimelineBar
@@ -177,7 +190,11 @@ export const WithClickHandler: Story = {
                 rangeStart={RANGE_START}
                 totalDays={30}
                 onClick={(it) => setSelected(it.id)}
-                className={selected === item.id ? 'ring-2 ring-[var(--color-ring)]' : ''}
+                className={
+                  selected === item.id
+                    ? 'ring-2 ring-[var(--color-ring)] ring-offset-1'
+                    : ''
+                }
               />
             </TimelineRow>
           ))}
@@ -195,7 +212,13 @@ export const WithClickHandler: Story = {
 export const NoLabels: Story = {
   name: 'ラベルなし（バーのみ）',
   render: () => (
-    <TimelineGrid rangeStart={RANGE_START} rangeEnd={RANGE_END} granularity="day" labelWidth="0px">
+    <TimelineGrid
+      rangeStart={RANGE_START}
+      rangeEnd={RANGE_END}
+      granularity="day"
+      labelWidth="0px"
+      today={new Date(2025, 3, 15)}
+    >
       {GANTT_ITEMS.slice(0, 3).map((item) => (
         <TimelineRow key={item.id}>
           <TimelineBar item={item} rangeStart={RANGE_START} totalDays={30} />
@@ -205,15 +228,39 @@ export const NoLabels: Story = {
   ),
 };
 
-export const CustomRowHeight: Story = {
-  name: 'カスタム行高',
-  render: () => (
-    <TimelineGrid rangeStart={RANGE_START} rangeEnd={RANGE_END} granularity="day" rowHeight="3.5rem">
-      {GANTT_ITEMS.map((item) => (
-        <TimelineRow key={item.id} label={item.label}>
-          <TimelineBar item={item} rangeStart={RANGE_START} totalDays={30} />
-        </TimelineRow>
-      ))}
-    </TimelineGrid>
-  ),
+export const ManyRows: Story = {
+  name: '多数行',
+  render: () => {
+    const items: TimelineItem[] = Array.from({ length: 15 }, (_, i) => ({
+      id: String(i + 1),
+      label: `タスク ${i + 1}`,
+      start: addDaysHelper(RANGE_START, Math.floor(Math.random() * 15)),
+      end: addDaysHelper(RANGE_START, 15 + Math.floor(Math.random() * 14)),
+      color: (['primary', 'info', 'success', 'warning', 'error'] as const)[i % 5],
+      progress: Math.floor(Math.random() * 101),
+    }));
+
+    return (
+      <TimelineGrid
+        rangeStart={RANGE_START}
+        rangeEnd={RANGE_END}
+        granularity="day"
+        className="max-h-[420px]"
+        today={new Date(2025, 3, 15)}
+      >
+        {items.map((item) => (
+          <TimelineRow key={item.id} label={item.label}>
+            <TimelineBar item={item} rangeStart={RANGE_START} totalDays={30} />
+          </TimelineRow>
+        ))}
+      </TimelineGrid>
+    );
+  },
 };
+
+/** Helper used only in story — seeded for consistent snapshots */
+function addDaysHelper(d: Date, n: number): Date {
+  const r = new Date(d);
+  r.setDate(r.getDate() + n);
+  return r;
+}

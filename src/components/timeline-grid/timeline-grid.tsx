@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { cn } from '@/lib/cn';
 
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 /*  Types                                                              */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 
 export type TimelineGranularity = 'day' | 'week' | 'month';
 
@@ -31,9 +31,9 @@ export interface TimelineItem {
   group?: string;
 }
 
-/* ------------------------------------------------------------------ */
-/*  Helpers                                                            */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
+/*  Date helpers                                                       */
+/* ================================================================== */
 
 /** Strip time portion for date-only comparison */
 function startOfDay(d: Date): Date {
@@ -45,7 +45,9 @@ function startOfDay(d: Date): Date {
 /** Difference in calendar days between two dates */
 function diffDays(a: Date, b: Date): number {
   const msPerDay = 86_400_000;
-  return Math.round((startOfDay(b).getTime() - startOfDay(a).getTime()) / msPerDay);
+  return Math.round(
+    (startOfDay(b).getTime() - startOfDay(a).getTime()) / msPerDay,
+  );
 }
 
 /** Add N days to a date */
@@ -55,25 +57,34 @@ function addDays(d: Date, n: number): Date {
   return r;
 }
 
-/** Format date for display */
+/** Short date label: 1, 2, … 31 */
+function formatDayNum(d: Date): string {
+  return String(d.getDate());
+}
+
+/** M/D format */
 function formatDay(d: Date): string {
   return `${d.getMonth() + 1}/${d.getDate()}`;
 }
 
-function formatMonthLabel(d: Date): string {
-  return `${d.getFullYear()}年${d.getMonth() + 1}月`;
-}
+/** Short month label */
+const MONTH_SHORT = [
+  '1月',
+  '2月',
+  '3月',
+  '4月',
+  '5月',
+  '6月',
+  '7月',
+  '8月',
+  '9月',
+  '10月',
+  '11月',
+  '12月',
+] as const;
 
-/** Get Monday-start week label */
-function getWeekLabel(d: Date): string {
-  const start = new Date(d);
-  // Align to Monday
-  const day = start.getDay();
-  const diff = day === 0 ? -6 : 1 - day;
-  start.setDate(start.getDate() + diff);
-  const end = addDays(start, 6);
-  return `${formatDay(start)}〜${formatDay(end)}`;
-}
+/** Weekday abbreviation */
+const WEEKDAY_SHORT = ['日', '月', '火', '水', '木', '金', '土'] as const;
 
 /** Generate date columns based on range and granularity */
 function generateColumns(
@@ -100,7 +111,6 @@ function generateColumns(
       current.setDate(current.getDate() + 7);
     }
   } else {
-    // month
     current.setDate(1);
     while (current <= end) {
       cols.push(new Date(current));
@@ -115,41 +125,80 @@ function generateColumns(
 function getColumnSpanDays(d: Date, granularity: TimelineGranularity): number {
   if (granularity === 'day') return 1;
   if (granularity === 'week') return 7;
-  // month: days in that month
   return new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
 }
 
-/* ------------------------------------------------------------------ */
-/*  Color maps                                                         */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
+/*  Month groupings for the upper axis tier                            */
+/* ================================================================== */
 
-const BAR_COLORS: Record<string, string> = {
-  primary: 'bg-primary-500',
-  error: 'bg-[var(--color-error)]',
-  warning: 'bg-[var(--color-warning)]',
-  success: 'bg-[var(--color-success)]',
-  info: 'bg-[var(--color-info)]',
+interface MonthGroup {
+  label: string;
+  colSpan: number;
+}
+
+function buildMonthGroups(
+  columns: Date[],
+  granularity: TimelineGranularity,
+): MonthGroup[] {
+  if (granularity === 'month') return [];
+
+  const groups: MonthGroup[] = [];
+  let prev = '';
+
+  for (const col of columns) {
+    const label = `${col.getFullYear()}年${MONTH_SHORT[col.getMonth()]}`;
+    if (label === prev) {
+      groups[groups.length - 1].colSpan += 1;
+    } else {
+      groups.push({ label, colSpan: 1 });
+      prev = label;
+    }
+  }
+  return groups;
+}
+
+/* ================================================================== */
+/*  Color tokens                                                       */
+/* ================================================================== */
+
+/*
+ * Modern approach: muted / translucent bar fills with a subtle left border
+ * accent for color identification — inspired by Linear / GitHub Projects.
+ */
+
+const BAR_BG: Record<string, string> = {
+  primary:
+    'bg-primary-100 dark:bg-primary-900/40 border-l-primary-500',
+  error:
+    'bg-[var(--color-error-100)] dark:bg-[var(--color-error-900)]/40 border-l-[var(--color-error)]',
+  warning:
+    'bg-[var(--color-warning-100)] dark:bg-[var(--color-warning-900)]/40 border-l-[var(--color-warning)]',
+  success:
+    'bg-[var(--color-success-100)] dark:bg-[var(--color-success-900)]/40 border-l-[var(--color-success)]',
+  info:
+    'bg-[var(--color-info-100)] dark:bg-[var(--color-info-900)]/40 border-l-[var(--color-info)]',
 };
 
-const BAR_PROGRESS_COLORS: Record<string, string> = {
-  primary: 'bg-primary-700',
-  error: 'bg-[var(--color-error-700)]',
-  warning: 'bg-[var(--color-warning-700)]',
-  success: 'bg-[var(--color-success-700)]',
-  info: 'bg-[var(--color-info-700)]',
+const BAR_TEXT: Record<string, string> = {
+  primary: 'text-primary-700 dark:text-primary-300',
+  error: 'text-[var(--color-error-700)] dark:text-[var(--color-error-300)]',
+  warning: 'text-[var(--color-warning-700)] dark:text-[var(--color-warning-300)]',
+  success: 'text-[var(--color-success-700)] dark:text-[var(--color-success-300)]',
+  info: 'text-[var(--color-info-700)] dark:text-[var(--color-info-300)]',
 };
 
-const BAR_SUBTLE_COLORS: Record<string, string> = {
-  primary: 'bg-primary-100',
-  error: 'bg-[var(--color-error-100)]',
-  warning: 'bg-[var(--color-warning-100)]',
-  success: 'bg-[var(--color-success-100)]',
-  info: 'bg-[var(--color-info-100)]',
+const PROGRESS_FILL: Record<string, string> = {
+  primary: 'bg-primary-500/25 dark:bg-primary-400/20',
+  error: 'bg-[var(--color-error)]/25 dark:bg-[var(--color-error)]/20',
+  warning: 'bg-[var(--color-warning)]/25 dark:bg-[var(--color-warning)]/20',
+  success: 'bg-[var(--color-success)]/25 dark:bg-[var(--color-success)]/20',
+  info: 'bg-[var(--color-info)]/25 dark:bg-[var(--color-info)]/20',
 };
 
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 /*  TimelineBar                                                        */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 
 export interface TimelineBarProps {
   /** The timeline item to render */
@@ -173,7 +222,8 @@ export const TimelineBar = React.forwardRef<HTMLDivElement, TimelineBarProps>(
     const widthPercent = (durationDays / totalDays) * 100;
 
     const color = item.color ?? 'primary';
-    const hasProgress = item.progress != null && item.progress >= 0 && item.progress <= 100;
+    const hasProgress =
+      item.progress != null && item.progress >= 0 && item.progress <= 100;
 
     return (
       <div
@@ -182,9 +232,17 @@ export const TimelineBar = React.forwardRef<HTMLDivElement, TimelineBarProps>(
         aria-label={`${item.label}: ${formatDay(item.start)}〜${formatDay(item.end)}${hasProgress ? ` ${item.progress}%` : ''}`}
         data-timeline-item-id={item.id}
         className={cn(
-          'absolute top-1 bottom-1 rounded-md cursor-default transition-opacity duration-fast',
-          hasProgress ? BAR_SUBTLE_COLORS[color] : BAR_COLORS[color],
-          onClick && 'cursor-pointer hover:opacity-80',
+          // Layout
+          'absolute top-1.5 bottom-1.5 min-w-1',
+          // Shape — subtle rounding, left accent border
+          'rounded-[5px] border-l-[3px]',
+          // Color
+          BAR_BG[color],
+          // Interaction
+          'transition-all duration-normal',
+          onClick
+            ? 'cursor-pointer hover:shadow-sm hover:brightness-95 dark:hover:brightness-110 active:scale-[0.995]'
+            : 'cursor-default',
           className,
         )}
         style={{
@@ -193,19 +251,31 @@ export const TimelineBar = React.forwardRef<HTMLDivElement, TimelineBarProps>(
         }}
         onClick={onClick ? () => onClick(item) : undefined}
       >
+        {/* Progress fill */}
         {hasProgress && (
           <div
-            className={cn('absolute inset-y-0 left-0 rounded-md', BAR_COLORS[color])}
+            className={cn(
+              'absolute inset-0 rounded-r-[5px]',
+              PROGRESS_FILL[color],
+            )}
             style={{ width: `${item.progress}%` }}
           />
         )}
+
+        {/* Label */}
         <span
           className={cn(
-            'relative z-10 block truncate px-2 py-0.5 text-xs leading-snug font-medium',
-            hasProgress ? 'text-white' : 'text-white',
+            'relative z-10 flex items-center gap-1 h-full px-2',
+            'text-[11px] leading-none font-medium truncate',
+            BAR_TEXT[color],
           )}
         >
-          {item.label}
+          <span className="truncate">{item.label}</span>
+          {hasProgress && (
+            <span className="shrink-0 tabular-nums opacity-60 text-[10px]">
+              {item.progress}%
+            </span>
+          )}
         </span>
       </div>
     );
@@ -213,9 +283,9 @@ export const TimelineBar = React.forwardRef<HTMLDivElement, TimelineBarProps>(
 );
 TimelineBar.displayName = 'TimelineBar';
 
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 /*  TimelineTodayLine                                                  */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 
 export interface TimelineTodayLineProps {
   /** Range start for positioning */
@@ -245,85 +315,137 @@ export const TimelineTodayLine: React.FC<TimelineTodayLineProps> = ({
     <div
       aria-hidden="true"
       className={cn(
-        'pointer-events-none absolute inset-y-0 z-20 w-0.5 bg-[var(--color-error)]',
+        'pointer-events-none absolute inset-y-0 z-20',
         className,
       )}
       style={{ left: `${leftPercent}%` }}
-    />
+    >
+      {/* Marker dot at top */}
+      <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 h-2 w-2 rounded-full bg-primary-500 dark:bg-primary-400" />
+      {/* Vertical line */}
+      <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-px bg-primary-500/70 dark:bg-primary-400/70" />
+    </div>
   );
 };
 TimelineTodayLine.displayName = 'TimelineTodayLine';
 
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 /*  TimelineAxis                                                       */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 
 export interface TimelineAxisProps {
   /** Column dates */
   columns: Date[];
   /** Granularity */
   granularity: TimelineGranularity;
+  /** Today override */
+  today?: Date;
   /** Additional class name */
   className?: string;
 }
 
 export const TimelineAxis = React.forwardRef<HTMLDivElement, TimelineAxisProps>(
-  ({ columns, granularity, className }, ref) => {
+  ({ columns, granularity, today: todayProp, className }, ref) => {
+    const todayStr = React.useMemo(() => {
+      const t = todayProp ?? new Date();
+      return `${t.getFullYear()}-${t.getMonth()}-${t.getDate()}`;
+    }, [todayProp]);
+
+    const monthGroups = React.useMemo(
+      () => buildMonthGroups(columns, granularity),
+      [columns, granularity],
+    );
+
+    const hasUpperTier = monthGroups.length > 0;
+
     return (
-      <div
-        ref={ref}
-        role="row"
-        aria-label="タイムライン軸"
-        className={cn(
-          'flex border-b border-[var(--color-border)] bg-[var(--color-surface-muted)]',
-          className,
+      <div ref={ref} role="row" aria-label="タイムライン軸" className={cn('select-none', className)}>
+        {/* Upper tier — month groupings */}
+        {hasUpperTier && (
+          <div className="flex border-b border-[var(--color-border)]">
+            {monthGroups.map((group, i) => (
+              <div
+                key={i}
+                className="flex items-center justify-start px-2 py-1 text-[11px] font-semibold text-[var(--color-on-surface-secondary)] border-r border-[var(--color-border)] last:border-r-0"
+                style={{ flex: group.colSpan }}
+              >
+                {group.label}
+              </div>
+            ))}
+          </div>
         )}
-      >
-        {columns.map((col, i) => {
-          const isWeekend =
-            granularity === 'day' && (col.getDay() === 0 || col.getDay() === 6);
 
-          let label: string;
-          if (granularity === 'day') {
-            label = formatDay(col);
-          } else if (granularity === 'week') {
-            label = getWeekLabel(col);
-          } else {
-            label = formatMonthLabel(col);
-          }
+        {/* Lower tier — individual columns */}
+        <div className="flex">
+          {columns.map((col, i) => {
+            const isWeekend =
+              granularity === 'day' &&
+              (col.getDay() === 0 || col.getDay() === 6);
+            const colKey = `${col.getFullYear()}-${col.getMonth()}-${col.getDate()}`;
+            const isToday = granularity === 'day' && colKey === todayStr;
 
-          return (
-            <div
-              key={i}
-              role="columnheader"
-              className={cn(
-                'flex-1 min-w-0 border-r border-[var(--color-border)] last:border-r-0',
-                'px-1 py-1.5 text-center text-[10px] font-medium text-[var(--color-on-surface-muted)]',
-                isWeekend && 'bg-[var(--color-surface-muted)] text-[var(--color-on-surface-muted)]',
-              )}
-            >
-              <span className="truncate block">{label}</span>
-              {granularity === 'day' && (
-                <span className={cn(
-                  'block text-[9px]',
-                  col.getDay() === 0 && 'text-[var(--color-error)]',
-                  col.getDay() === 6 && 'text-[var(--color-info)]',
-                )}>
-                  {['日', '月', '火', '水', '木', '金', '土'][col.getDay()]}
+            let label: string;
+            if (granularity === 'day') {
+              label = formatDayNum(col);
+            } else if (granularity === 'week') {
+              label = `${formatDay(col)}〜`;
+            } else {
+              label = `${col.getFullYear()}年${MONTH_SHORT[col.getMonth()]}`;
+            }
+
+            return (
+              <div
+                key={i}
+                role="columnheader"
+                className={cn(
+                  'flex-1 min-w-0 border-r border-[var(--color-border)] last:border-r-0',
+                  'flex flex-col items-center justify-center py-1',
+                  isWeekend && 'bg-[var(--color-surface-sunken)]',
+                )}
+              >
+                {/* Day number / label */}
+                <span
+                  className={cn(
+                    'text-[11px] leading-tight tabular-nums',
+                    isToday
+                      ? 'inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary-500 text-white font-semibold text-[10px]'
+                      : cn(
+                          'font-medium text-[var(--color-on-surface-muted)]',
+                          isWeekend && 'opacity-60',
+                        ),
+                  )}
+                >
+                  {label}
                 </span>
-              )}
-            </div>
-          );
-        })}
+
+                {/* Weekday abbreviation for day granularity */}
+                {granularity === 'day' && !isToday && (
+                  <span
+                    className={cn(
+                      'text-[9px] leading-tight mt-px',
+                      col.getDay() === 0
+                        ? 'text-[var(--color-error)] font-medium'
+                        : col.getDay() === 6
+                          ? 'text-[var(--color-info)] font-medium'
+                          : 'text-[var(--color-on-surface-muted)] opacity-50',
+                    )}
+                  >
+                    {WEEKDAY_SHORT[col.getDay()]}
+                  </span>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
     );
   },
 );
 TimelineAxis.displayName = 'TimelineAxis';
 
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 /*  TimelineRow                                                        */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 
 export interface TimelineRowProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Label for the row (shown in left gutter) */
@@ -341,8 +463,10 @@ export const TimelineRow = React.forwardRef<HTMLDivElement, TimelineRowProps>(
         ref={ref}
         role="row"
         className={cn(
-          'group relative flex border-b border-[var(--color-border)] last:border-b-0',
-          'hover:bg-[var(--color-surface-muted)] transition-colors duration-fast',
+          'group relative flex',
+          'border-b border-[var(--color-border)]/60 last:border-b-0',
+          'transition-colors duration-fast',
+          'hover:bg-[var(--color-surface-sunken)] dark:hover:bg-[var(--color-surface-muted)]/50',
           className,
         )}
         {...props}
@@ -351,18 +475,23 @@ export const TimelineRow = React.forwardRef<HTMLDivElement, TimelineRowProps>(
           <div
             role="rowheader"
             className={cn(
-              'sticky left-0 z-10 flex w-[var(--timeline-label-width,10rem)] shrink-0 items-center',
-              'border-r border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2',
-              'text-xs font-medium text-[var(--color-on-surface)] truncate',
-              'group-hover:bg-[var(--color-surface-muted)]',
+              'sticky left-0 z-10',
+              'flex w-[var(--timeline-label-width,12rem)] shrink-0 items-center',
+              'border-r border-[var(--color-border)] px-3',
+              // Opaque bg for sticky overlap
+              'bg-[var(--color-surface)]',
+              'group-hover:bg-[var(--color-surface-sunken)] dark:group-hover:bg-[var(--color-surface-muted)]/50',
+              'transition-colors duration-fast',
             )}
           >
-            <span className="truncate">{label}</span>
+            <span className="truncate text-[13px] text-[var(--color-on-surface)]">
+              {label}
+            </span>
           </div>
         )}
         <div
           role="cell"
-          className="relative flex-1 min-h-[var(--timeline-row-height,2rem)]"
+          className="relative flex-1 min-h-[var(--timeline-row-height,2.25rem)]"
         >
           {children}
         </div>
@@ -372,9 +501,9 @@ export const TimelineRow = React.forwardRef<HTMLDivElement, TimelineRowProps>(
 );
 TimelineRow.displayName = 'TimelineRow';
 
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 /*  TimelineGrid                                                       */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 
 export interface TimelineGridProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Start of the visible range */
@@ -405,11 +534,11 @@ export const TimelineGrid = React.forwardRef<HTMLDivElement, TimelineGridProps>(
       rangeStart,
       rangeEnd,
       granularity = 'day',
-      rowHeight = '2.5rem',
-      labelWidth = '10rem',
+      rowHeight = '2.25rem',
+      labelWidth = '12rem',
       showToday = true,
       today: todayOverride,
-      columnMinWidth = '2rem',
+      columnMinWidth = '1.75rem',
       children,
       className,
       style,
@@ -424,10 +553,12 @@ export const TimelineGrid = React.forwardRef<HTMLDivElement, TimelineGridProps>(
 
     const totalDays = React.useMemo(() => {
       if (columns.length === 0) return 0;
-      return columns.reduce((sum, col) => sum + getColumnSpanDays(col, granularity), 0);
+      return columns.reduce(
+        (sum, col) => sum + getColumnSpanDays(col, granularity),
+        0,
+      );
     }, [columns, granularity]);
 
-    // Min-width so columns don't collapse below threshold
     const gridMinWidth = `calc(${columns.length} * ${columnMinWidth} + var(--timeline-label-width, ${labelWidth}))`;
 
     return (
@@ -436,47 +567,72 @@ export const TimelineGrid = React.forwardRef<HTMLDivElement, TimelineGridProps>(
         role="grid"
         aria-label="タイムライン"
         className={cn(
-          'overflow-auto rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]',
+          'overflow-auto',
+          'rounded-lg border border-[var(--color-border)]',
+          'bg-[var(--color-surface)]',
           className,
         )}
-        style={{
-          '--timeline-row-height': rowHeight,
-          '--timeline-label-width': labelWidth,
-          ...style,
-        } as React.CSSProperties}
+        style={
+          {
+            '--timeline-row-height': rowHeight,
+            '--timeline-label-width': labelWidth,
+            ...style,
+          } as React.CSSProperties
+        }
         {...props}
       >
         <div style={{ minWidth: gridMinWidth }}>
-          {/* Axis header */}
-          <div className="sticky top-0 z-30 flex">
+          {/* ---- Sticky header ---- */}
+          <div className="sticky top-0 z-30 flex bg-[var(--color-surface)]">
             {/* Label gutter header */}
             <div
               className={cn(
-                'sticky left-0 z-40 flex w-[var(--timeline-label-width)] shrink-0 items-center',
-                'border-b border-r border-[var(--color-border)] bg-[var(--color-surface-muted)]',
-                'px-3 py-1.5 text-[10px] font-medium text-[var(--color-on-surface-muted)]',
+                'sticky left-0 z-40',
+                'flex w-[var(--timeline-label-width)] shrink-0 items-end',
+                'border-b border-r border-[var(--color-border)]',
+                'bg-[var(--color-surface)]',
+                'px-3 pb-1',
               )}
             />
-            <div className="flex-1">
-              <TimelineAxis columns={columns} granularity={granularity} />
+            {/* Axis */}
+            <div className="flex-1 border-b border-[var(--color-border)] bg-[var(--color-surface)]">
+              <TimelineAxis
+                columns={columns}
+                granularity={granularity}
+                today={todayOverride}
+              />
             </div>
           </div>
 
-          {/* Row body with column grid lines */}
+          {/* ---- Body with grid lines ---- */}
           <div className="relative">
-            {/* Vertical grid lines */}
-            <div className="pointer-events-none absolute inset-0 flex" aria-hidden="true">
+            {/* Vertical grid lines (background layer) */}
+            <div
+              className="pointer-events-none absolute inset-0 flex"
+              aria-hidden="true"
+            >
               <div className="w-[var(--timeline-label-width)] shrink-0" />
               <div className="flex flex-1">
                 {columns.map((col, i) => {
                   const isWeekend =
-                    granularity === 'day' && (col.getDay() === 0 || col.getDay() === 6);
+                    granularity === 'day' &&
+                    (col.getDay() === 0 || col.getDay() === 6);
+                  // Month boundary gets a slightly stronger line
+                  const isMonthStart =
+                    granularity === 'day' && col.getDate() === 1 && i > 0;
+
                   return (
                     <div
                       key={i}
                       className={cn(
-                        'flex-1 border-r border-[var(--color-border)] last:border-r-0',
-                        isWeekend && 'bg-[var(--color-surface-muted)]/50',
+                        'flex-1',
+                        // Grid line — extremely subtle by default
+                        i < columns.length - 1 &&
+                          (isMonthStart
+                            ? 'border-r border-[var(--color-border)]'
+                            : 'border-r border-[var(--color-border)]/30'),
+                        // Weekend fill
+                        isWeekend && 'bg-[var(--color-surface-sunken)]/50',
                       )}
                     />
                   );
@@ -489,39 +645,39 @@ export const TimelineGrid = React.forwardRef<HTMLDivElement, TimelineGridProps>(
               {React.Children.map(children, (child) => {
                 if (!React.isValidElement(child)) return child;
 
-                // Inject rangeStart/totalDays into row's bar children
-                return React.cloneElement(child as React.ReactElement<TimelineRowProps>, {
-                  children: (
-                    <>
-                      {showToday && (
-                        <TimelineTodayLine
-                          rangeStart={rangeStart}
-                          totalDays={totalDays}
-                          today={todayOverride}
-                        />
-                      )}
-                      {React.Children.map(
-                        (child as React.ReactElement<TimelineRowProps>).props.children,
-                        (barChild) => {
-                          if (
-                            React.isValidElement(barChild) &&
-                            (barChild.type as { displayName?: string })?.displayName ===
-                              'TimelineBar'
-                          ) {
-                            return React.cloneElement(
-                              barChild as React.ReactElement<TimelineBarProps>,
-                              {
-                                rangeStart,
-                                totalDays,
-                              },
-                            );
-                          }
-                          return barChild;
-                        },
-                      )}
-                    </>
-                  ),
-                });
+                return React.cloneElement(
+                  child as React.ReactElement<TimelineRowProps>,
+                  {
+                    children: (
+                      <>
+                        {showToday && (
+                          <TimelineTodayLine
+                            rangeStart={rangeStart}
+                            totalDays={totalDays}
+                            today={todayOverride}
+                          />
+                        )}
+                        {React.Children.map(
+                          (child as React.ReactElement<TimelineRowProps>).props
+                            .children,
+                          (barChild) => {
+                            if (
+                              React.isValidElement(barChild) &&
+                              (barChild.type as { displayName?: string })
+                                ?.displayName === 'TimelineBar'
+                            ) {
+                              return React.cloneElement(
+                                barChild as React.ReactElement<TimelineBarProps>,
+                                { rangeStart, totalDays },
+                              );
+                            }
+                            return barChild;
+                          },
+                        )}
+                      </>
+                    ),
+                  },
+                );
               })}
             </div>
           </div>
@@ -532,8 +688,8 @@ export const TimelineGrid = React.forwardRef<HTMLDivElement, TimelineGridProps>(
 );
 TimelineGrid.displayName = 'TimelineGrid';
 
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 /*  Re-export helpers for advanced usage                               */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 
 export { generateColumns, getColumnSpanDays, diffDays, addDays, formatDay, startOfDay };
