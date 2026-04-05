@@ -1,4 +1,3 @@
-import React, { useState, useCallback } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import {
   BarChart,
@@ -20,11 +19,9 @@ import {
 import { ChartContainer } from '../components/chart-container';
 import {
   getChartColors,
-  getChartSubtleColors,
   getChartTheme,
   axisDefaults,
   gridDefaults,
-  INACTIVE_OPACITY,
   ACTIVE_DOT_RADIUS,
   ChartTooltip,
   ChartLegend,
@@ -87,21 +84,11 @@ export const BarChartExample: StoryObj = {
   render: () => {
     const colors = getChartColors();
     const theme = getChartTheme();
-    const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
     return (
       <ChartContainer title="月次売上" description="Revenue vs Cost (¥K)" className="w-[600px]">
         <ResponsiveContainer width="100%" height={300}>
-          <BarChart
-            data={monthlyData}
-            barGap={4}
-            onMouseMove={(state) => {
-              if (state?.activeTooltipIndex !== undefined) {
-                setActiveIndex(state.activeTooltipIndex);
-              }
-            }}
-            onMouseLeave={() => setActiveIndex(null)}
-          >
+          <BarChart data={monthlyData} barGap={4}>
             <CartesianGrid stroke={theme.gridColor} {...gridDefaults} />
             <XAxis
               dataKey="month"
@@ -124,14 +111,12 @@ export const BarChartExample: StoryObj = {
               name="Revenue"
               fill={colors[0]}
               radius={[4, 4, 0, 0]}
-              opacity={activeIndex !== null ? INACTIVE_OPACITY : 1}
             />
             <Bar
               dataKey="cost"
               name="Cost"
               fill={colors[1]}
               radius={[4, 4, 0, 0]}
-              opacity={activeIndex !== null ? INACTIVE_OPACITY : 1}
             />
           </BarChart>
         </ResponsiveContainer>
