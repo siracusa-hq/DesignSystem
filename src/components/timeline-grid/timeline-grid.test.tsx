@@ -6,6 +6,7 @@ import {
   TimelineGrid,
   TimelineRow,
   TimelineBar,
+  TimelineGroup,
   TimelineTodayLine,
   TimelineAxis,
   type TimelineItem,
@@ -321,5 +322,107 @@ describe('TimelineGrid', () => {
     );
     const results = await axe(container);
     expect(results).toHaveNoViolations();
+  });
+});
+
+/* ------------------------------------------------------------------ */
+/*  TimelineGroup                                                      */
+/* ------------------------------------------------------------------ */
+
+describe('TimelineGroup', () => {
+  const MS_ITEM: TimelineItem = {
+    id: 'ms1',
+    label: 'マイルストーン1',
+    start: new Date(2025, 3, 1),
+    end: new Date(2025, 3, 20),
+    color: 'primary',
+    progress: 60,
+  };
+
+  it('renders group label with expand/collapse button', () => {
+    render(
+      <TimelineGroup label="MS1: リリース">
+        <TimelineRow label="タスクA" />
+      </TimelineGroup>,
+    );
+    expect(screen.getByText('MS1: リリース')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /折りたたむ/ })).toBeInTheDocument();
+  });
+
+  it('shows children when expanded (default)', () => {
+    render(
+      <TimelineGroup label="MS1">
+        <TimelineRow label="子タスク" />
+      </TimelineGroup>,
+    );
+    expect(screen.getByText('子タスク')).toBeInTheDocument();
+  });
+
+  it('hides children when defaultExpanded is false', () => {
+    render(
+      <TimelineGroup label="MS1" defaultExpanded={false}>
+        <TimelineRow label="非表示タスク" />
+      </TimelineGroup>,
+    );
+    expect(screen.queryByText('非表示タスク')).toBeNull();
+  });
+
+  it('toggles children on button click', async () => {
+    const user = userEvent.setup();
+    render(
+      <TimelineGroup label="MS1">
+        <TimelineRow label="トグルタスク" />
+      </TimelineGroup>,
+    );
+    expect(screen.getByText('トグルタスク')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: /折りたたむ/ }));
+    expect(screen.queryByText('トグルタスク')).toBeNull();
+
+    await user.click(screen.getByRole('button', { name: /展開する/ }));
+    expect(screen.getByText('トグルタスク')).toBeInTheDocument();
+  });
+
+  it('calls onExpandedChange callback', async () => {
+    const user = userEvent.setup();
+    const handler = vi.fn();
+    render(
+      <TimelineGroup label="MS1" onExpandedChange={handler}>
+        <TimelineRow label="タスク" />
+      </TimelineGroup>,
+    );
+    await user.click(screen.getByRole('button', { name: /折りたたむ/ }));
+    expect(handler).toHaveBeenCalledWith(false);
+  });
+
+  it('renders summary bar in group header', () => {
+    render(
+      <TimelineGroup
+        label="MS1"
+        bar={<TimelineBar item={MS_ITEM} rangeStart={RANGE_START} totalDays={TOTAL_DAYS} />}
+      >
+        <TimelineRow label="タスク" />
+      </TimelineGroup>,
+    );
+    // The bar label should appear in the header
+    expect(screen.getByText('マイルストーン1')).toBeInTheDocument();
+  });
+
+  it('works inside TimelineGrid with bar injection', () => {
+    render(
+      <TimelineGrid rangeStart={RANGE_START} rangeEnd={RANGE_END}>
+        <TimelineGroup
+          label="グループ1"
+          bar={<TimelineBar item={MS_ITEM} rangeStart={RANGE_START} totalDays={TOTAL_DAYS} />}
+        >
+          <TimelineRow label="子タスク1">
+            <TimelineBar item={ITEMS[0]} rangeStart={RANGE_START} totalDays={TOTAL_DAYS} />
+          </TimelineRow>
+        </TimelineGroup>
+      </TimelineGrid>,
+    );
+    expect(screen.getByText('グループ1')).toBeInTheDocument();
+    expect(screen.getByText('子タスク1')).toBeInTheDocument();
+    expect(screen.getByText('マイルストーン1')).toBeInTheDocument();
   });
 });
