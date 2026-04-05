@@ -330,6 +330,29 @@ export {
   type CalendarEvent,
 } from './components/calendar-view';
 
+// Timeline
+export {
+  TimelineGrid,
+  TimelineAxis,
+  TimelineRow,
+  TimelineBar,
+  TimelineTodayLine,
+  generateColumns,
+  getColumnSpanDays,
+  diffDays,
+  addDays,
+  formatDay,
+  startOfDay,
+  type TimelineGridProps,
+  type TimelineAxisProps,
+  type TimelineRowProps,
+  type TimelineBarProps,
+  type TimelineTodayLineProps,
+  type TimelineItem,
+  type TimelineGranularity,
+  type TimelineColorVariant,
+} from './components/timeline-grid';
+
 // Chart / Dashboard
 export { StatCard, type StatCardProps } from './components/stat-card';
 export { ChartContainer, type ChartContainerProps } from './components/chart-container';
