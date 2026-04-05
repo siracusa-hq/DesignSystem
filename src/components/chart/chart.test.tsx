@@ -1,18 +1,34 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { getChartColors, getChartTheme } from './chart-theme';
+import {
+  getChartColors,
+  getChartSubtleColors,
+  getChartTheme,
+  axisDefaults,
+  gridDefaults,
+  INACTIVE_OPACITY,
+  ACTIVE_DOT_RADIUS,
+} from './chart-theme';
 import { ChartTooltip } from './chart-tooltip';
 import { ChartLegend } from './chart-legend';
 
 /* ----------------------------------------------------------------
-   getChartColors / getChartTheme
+   getChartColors / getChartSubtleColors / getChartTheme
    ---------------------------------------------------------------- */
 
 describe('getChartColors', () => {
-  it('returns an array of 8 colors', () => {
+  it('returns an array of 5 CSS variable references', () => {
     const colors = getChartColors();
-    expect(colors).toHaveLength(8);
-    colors.forEach((c) => expect(c).toMatch(/^#[0-9a-fA-F]{6}$/));
+    expect(colors).toHaveLength(5);
+    colors.forEach((c) => expect(c).toMatch(/^var\(--color-chart-\d\)$/));
+  });
+});
+
+describe('getChartSubtleColors', () => {
+  it('returns an array of 5 CSS variable references', () => {
+    const colors = getChartSubtleColors();
+    expect(colors).toHaveLength(5);
+    colors.forEach((c) => expect(c).toMatch(/^var\(--color-chart-\d-subtle\)$/));
   });
 });
 
@@ -20,13 +36,41 @@ describe('getChartTheme', () => {
   it('returns theme object with expected keys', () => {
     const theme = getChartTheme();
     expect(theme).toHaveProperty('gridColor');
-    expect(theme).toHaveProperty('axisColor');
     expect(theme).toHaveProperty('textColor');
-    expect(theme).toHaveProperty('tooltipBg');
-    expect(theme).toHaveProperty('tooltipBorder');
+    expect(theme).toHaveProperty('cursorStroke');
     expect(theme).toHaveProperty('fontSize');
     expect(theme).toHaveProperty('fontFamily');
     expect(theme.fontSize).toBe(12);
+  });
+
+  it('returns CSS variable references for colors', () => {
+    const theme = getChartTheme();
+    expect(theme.gridColor).toMatch(/^var\(/);
+    expect(theme.textColor).toMatch(/^var\(/);
+    expect(theme.cursorStroke).toMatch(/^var\(/);
+  });
+});
+
+describe('axisDefaults', () => {
+  it('hides axis line and tick line', () => {
+    expect(axisDefaults.axisLine).toBe(false);
+    expect(axisDefaults.tickLine).toBe(false);
+    expect(axisDefaults.tickMargin).toBe(8);
+  });
+});
+
+describe('gridDefaults', () => {
+  it('uses horizontal-only dashed grid', () => {
+    expect(gridDefaults.vertical).toBe(false);
+    expect(gridDefaults.strokeDasharray).toBe('4 4');
+    expect(gridDefaults.strokeOpacity).toBe(0.5);
+  });
+});
+
+describe('constants', () => {
+  it('exports correct interaction constants', () => {
+    expect(INACTIVE_OPACITY).toBe(0.3);
+    expect(ACTIVE_DOT_RADIUS).toBe(5);
   });
 });
 
@@ -89,15 +133,47 @@ describe('ChartTooltip', () => {
     expect(screen.getByText('Period: 2026-01')).toBeInTheDocument();
   });
 
-  it('renders color indicators', () => {
+  it('renders rounded-square color indicators by default', () => {
     const { container } = render(
       <ChartTooltip active={true} payload={payload} label="Jan" />,
     );
-    const dots = container.querySelectorAll('.rounded-full');
+    const dots = container.querySelectorAll('.rounded-\\[2px\\]');
     expect(dots).toHaveLength(2);
     expect((dots[0] as HTMLElement).style.backgroundColor).toBe(
       'rgb(19, 195, 160)',
     );
+  });
+
+  it('renders line indicator variant', () => {
+    const { container } = render(
+      <ChartTooltip active={true} payload={payload} label="Jan" indicator="line" />,
+    );
+    const lines = container.querySelectorAll('.w-1');
+    expect(lines).toHaveLength(2);
+  });
+
+  it('renders dashed indicator variant', () => {
+    const { container } = render(
+      <ChartTooltip active={true} payload={payload} label="Jan" indicator="dashed" />,
+    );
+    const dashed = container.querySelectorAll('.border-dashed');
+    expect(dashed).toHaveLength(2);
+  });
+
+  it('applies shadow-xl for elevated appearance', () => {
+    const { container } = render(
+      <ChartTooltip active={true} payload={payload} label="Jan" />,
+    );
+    const tooltip = container.firstElementChild;
+    expect(tooltip?.className).toContain('shadow-xl');
+  });
+
+  it('uses grid layout for value alignment', () => {
+    const { container } = render(
+      <ChartTooltip active={true} payload={payload} label="Jan" />,
+    );
+    const grid = container.querySelector('.grid');
+    expect(grid).toBeTruthy();
   });
 });
 
@@ -122,9 +198,9 @@ describe('ChartLegend', () => {
     expect(screen.getByText('Cost')).toBeInTheDocument();
   });
 
-  it('renders color dots', () => {
+  it('renders rounded-square color indicators', () => {
     const { container } = render(<ChartLegend payload={payload} />);
-    const dots = container.querySelectorAll('.rounded-full');
+    const dots = container.querySelectorAll('.rounded-\\[2px\\]');
     expect(dots).toHaveLength(2);
   });
 });

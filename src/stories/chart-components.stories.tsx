@@ -7,7 +7,7 @@ import { Button } from '../components/button';
 import { Badge } from '../components/badge';
 import { chartColors } from '../tokens/chart-theme';
 
-const COLOR_NAMES = ['Teal', 'Slate', 'Amber', 'Rose', 'Violet', 'Sage', 'Sky', 'Sienna'];
+const COLOR_NAMES = ['Teal', 'Slate', 'Amber', 'Rose', 'Violet'];
 
 /* ----- StatCard Stories ----- */
 
@@ -88,7 +88,7 @@ export const ChartContainerDefault: Story = {
           {[40, 65, 45, 80, 55, 90, 70, 85, 60, 75, 95, 88].map((h, i) => (
             <div key={i} className="flex-1 flex flex-col items-center gap-1">
               <div
-                className="w-full rounded-t-sm transition-all"
+                className="w-full rounded-t-sm transition-opacity duration-150"
                 style={{
                   height: `${h}%`,
                   backgroundColor: chartColors.categorical[0],
@@ -110,7 +110,7 @@ export const ChartColorPalette: Story = {
   name: 'Chart Color Palette',
   render: () => (
     <div className="max-w-xl">
-      <ChartContainer title="Chart Color Palette" description="Hand-curated, perceptually balanced tokens for data visualization">
+      <ChartContainer title="Chart Color Palette" description="5-color categorical palette with CSS variable–based dark mode support">
         <div className="flex flex-col gap-6">
           {/* Categorical + Subtle paired */}
           <div>
@@ -168,7 +168,7 @@ export const DashboardExample: Story = {
             {[35, 42, 58, 45, 62, 78, 65, 82, 72, 88, 92, 95].map((h, i) => (
               <div key={i} className="flex-1 flex flex-col items-center gap-1">
                 <div
-                  className="w-full rounded-t-sm"
+                  className="w-full rounded-t-sm transition-opacity duration-150"
                   style={{ height: `${h}%`, backgroundColor: chartColors.categorical[0], opacity: 0.8 }}
                 />
               </div>
@@ -195,9 +195,9 @@ export const DashboardExample: Story = {
                 { label: 'Social', pct: '10%', color: chartColors.categorical[3] },
               ].map((s) => (
                 <div key={s.label} className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-sm shrink-0" style={{ backgroundColor: s.color }} />
+                  <div className="w-3 h-3 rounded-[2px] shrink-0" style={{ backgroundColor: s.color }} />
                   <span className="text-[var(--color-on-surface-secondary)]">{s.label}</span>
-                  <span className="font-medium ml-auto tabular-nums">{s.pct}</span>
+                  <span className="font-mono font-medium ml-auto tabular-nums">{s.pct}</span>
                 </div>
               ))}
             </div>
@@ -214,8 +214,8 @@ export const DashboardExample: Story = {
                 {[70, 55, 40, 25].map((h, j) => (
                   <div
                     key={j}
-                    className="flex-1 rounded-t-sm"
-                    style={{ height: `${h + Math.random() * 20}%`, backgroundColor: chartColors.categorical[j] }}
+                    className="flex-1 rounded-t-sm transition-opacity duration-150"
+                    style={{ height: `${h + Math.random() * 20}%`, backgroundColor: chartColors.categorical[j % chartColors.categorical.length] }}
                   />
                 ))}
               </div>
@@ -226,7 +226,7 @@ export const DashboardExample: Story = {
         <div className="flex gap-4 justify-center mt-3">
           {['APAC', 'EMEA', 'Americas', 'Other'].map((region, i) => (
             <div key={region} className="flex items-center gap-1.5 text-xs text-[var(--color-on-surface-secondary)]">
-              <div className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: chartColors.categorical[i] }} />
+              <div className="w-2 h-2 rounded-[2px]" style={{ backgroundColor: chartColors.categorical[i % chartColors.categorical.length] }} />
               {region}
             </div>
           ))}

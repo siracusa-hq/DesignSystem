@@ -3,41 +3,59 @@ import { chartColors } from '@/tokens/chart-theme';
 /**
  * Chart theme utilities for Recharts integration.
  *
- * Uses the curated categorical palette from `tokens/chart-theme.ts`
- * and resolves CSS variables at runtime for dark mode support.
+ * Uses CSS variable–based tokens from `tokens/chart-theme.ts`
+ * so dark mode is handled automatically via semantic.css overrides.
  */
 
-/** Resolve a CSS variable with fallback */
-const cssVar = (variable: string, fallback: string): string => {
-  if (typeof window === 'undefined') return fallback;
-  return (
-    getComputedStyle(document.documentElement)
-      .getPropertyValue(variable)
-      .trim() || fallback
-  );
-};
-
-/** Categorical palette — 8 curated dataviz colors */
+/** Categorical palette — 5 curated dataviz colors (CSS variables) */
 export function getChartColors(): readonly string[] {
   return chartColors.categorical;
 }
 
-/** Subtle fill palette — 1:1 paired with categorical */
-export function getChartSubtleColors(dark = false): readonly string[] {
-  return dark ? chartColors.subtleDark : chartColors.subtle;
+/** Subtle fill palette — 1:1 paired with categorical (CSS variables) */
+export function getChartSubtleColors(): readonly string[] {
+  return chartColors.subtle;
 }
 
-/** Theme object for Recharts axes, grid, and tooltip styling */
+/**
+ * Theme config for Recharts axes, grid, tooltip, and cursor.
+ *
+ * All values are CSS variable references — they resolve correctly
+ * in both light and dark mode without runtime `getComputedStyle`.
+ */
 export function getChartTheme() {
   return {
-    gridColor: cssVar('--color-neutral-200', chartColors.grid.light),
-    axisColor: cssVar('--color-neutral-400', '#a1a1aa'),
-    textColor: cssVar('--color-neutral-500', chartColors.text.light),
-    tooltipBg: cssVar('--color-surface-raised', '#ffffff'),
-    tooltipBorder: cssVar('--color-border', '#e4e4e7'),
-    /** Hover cursor fill — theme-aware for dark mode */
-    cursorFill: cssVar('--color-surface-muted', '#f4f4f5'),
+    gridColor: chartColors.grid,
+    textColor: chartColors.text,
+    cursorStroke: chartColors.cursor,
+    /** Tooltip uses surface tokens directly via Tailwind classes */
     fontSize: 12,
     fontFamily: 'Inter, "Noto Sans JP", sans-serif',
-  };
+  } as const;
 }
+
+/**
+ * Default Recharts axis props — removes visual noise (Linear/Tremor pattern).
+ * Spread onto <XAxis> or <YAxis>.
+ */
+export const axisDefaults = {
+  axisLine: false,
+  tickLine: false,
+  tickMargin: 8,
+} as const;
+
+/**
+ * Default CartesianGrid props — horizontal-only, subtle, wider dash spacing.
+ */
+export const gridDefaults = {
+  vertical: false,
+  strokeDasharray: '4 4',
+  strokeOpacity: 0.5,
+} as const;
+
+/**
+ * Inactive series opacity for hover-dimming (Tremor pattern).
+ * Apply via CSS or Recharts `opacity` prop on non-hovered series.
+ */
+export const INACTIVE_OPACITY = 0.3;
+export const ACTIVE_DOT_RADIUS = 5;

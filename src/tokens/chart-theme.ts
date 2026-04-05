@@ -3,85 +3,73 @@
  * with the Polastack design system.
  *
  * Design approach:
- *   - Categorical palette is hand-curated for perceptual balance (Tableau 10 methodology)
- *   - Colors are independent from UI semantic tokens (Primer / shadcn best practice)
- *   - Each categorical color has a 1:1 paired subtle variant for area fills (Primer emphasis/muted pattern)
- *   - Brand teal anchors position 0; remaining hues span the full wheel for maximum distinction
+ *   - 5 categorical colors via CSS variables (shadcn/ui convention)
+ *   - Light/dark mode handled entirely through CSS variable overrides in semantic.css
+ *   - Each categorical color has a 1:1 paired subtle variant for area fills
+ *   - Brand teal anchors position 0; remaining hues span the wheel for max distinction
  *
  * Usage with Recharts:
  *   <Bar fill={chartColors.categorical[0]} />
  *   <Area fill={chartColors.subtle[0]} stroke={chartColors.categorical[0]} />
  *
- * Usage with Chart.js:
- *   datasets: [{ backgroundColor: chartColors.categorical }]
+ * For theme-aware runtime resolution, use getChartColors() from chart-theme utility.
  */
 
 /**
- * 8-color categorical palette — curated for data visualization.
+ * 5-color categorical palette — CSS variable references.
  *
  * Principles:
- *   1. Moderate saturation ("less Crayola bright") for professional look
- *   2. Balanced perceived lightness across all 8 hues
+ *   1. Max 5 series recommended (GitHub Primer guideline) for readability
+ *   2. Moderate saturation for professional look
  *   3. Full hue-circle coverage for maximum distinguishability
  *   4. Warm/cool alternation to aid colorblind accessibility
  *   5. Brand teal as the anchor color at position 0
  */
 export const chartColors = {
-  /** Solid colors for bars, lines, dots, and legends */
+  /** CSS variable references — resolve at runtime for dark mode support */
   categorical: [
-    '#13C3A0', // teal    — brand anchor
-    '#4E79A7', // slate   — classic dataviz blue
-    '#E8A838', // amber   — warm gold
-    '#D4687A', // rose    — dusty pink-red
-    '#7C6BB1', // violet  — soft purple
-    '#6BA368', // sage    — muted green
-    '#5BA4CF', // sky     — lighter blue
-    '#B07A53', // sienna  — warm brown
+    'var(--color-chart-1)',
+    'var(--color-chart-2)',
+    'var(--color-chart-3)',
+    'var(--color-chart-4)',
+    'var(--color-chart-5)',
   ] as const,
 
   /** Subtle tints — 1:1 paired with categorical for area fills and backgrounds */
   subtle: [
-    '#E8FAF6', // teal
-    '#E8EEF4', // slate
-    '#FDF3E0', // amber
-    '#FCEAED', // rose
-    '#EEEBF5', // violet
-    '#EAF3EA', // sage
-    '#E6F1F8', // sky
-    '#F4EDE6', // sienna
-  ] as const,
-
-  /** Dark-mode subtle tints — 1:1 paired with categorical */
-  subtleDark: [
-    '#0C2B26', // teal
-    '#1A2535', // slate
-    '#2C2312', // amber
-    '#2C1A1E', // rose
-    '#1E1A2C', // violet
-    '#1A2C1A', // sage
-    '#1A2535', // sky
-    '#2C2418', // sienna
+    'var(--color-chart-1-subtle)',
+    'var(--color-chart-2-subtle)',
+    'var(--color-chart-3-subtle)',
+    'var(--color-chart-4-subtle)',
+    'var(--color-chart-5-subtle)',
   ] as const,
 
   /** Semantic colors for status-meaning charts (P&L, health scores, etc.) */
   semantic: {
-    positive: '#13C3A0',
-    negative: '#D4687A',
-    neutral: '#94939B',
-    warning: '#E8A838',
+    positive: 'var(--color-chart-1)',
+    negative: 'var(--color-chart-4)',
+    neutral: 'var(--color-on-surface-muted)',
+    warning: 'var(--color-chart-3)',
   } as const,
 
-  /** Grid lines and axis strokes */
-  grid: {
-    light: '#E4E4E7', // neutral-200
-    dark: '#3F3F46',  // neutral-700
-  } as const,
+  /** Grid & axis — reference semantic.css chart tokens */
+  grid: 'var(--color-chart-grid)',
+  text: 'var(--color-chart-text)',
+  cursor: 'var(--color-chart-cursor)',
 
-  /** Text for tick labels, legends, and annotations */
-  text: {
-    light: '#71717A', // neutral-500
-    dark: '#A1A1AA',  // neutral-400
-  } as const,
+  /**
+   * Static hex fallbacks — only for server-side rendering or non-CSS contexts.
+   * Prefer the CSS variable references above for all client-side usage.
+   */
+  hex: {
+    categorical: [
+      '#13C3A0', // teal
+      '#4E79A7', // slate
+      '#E8A838', // amber
+      '#D4687A', // rose
+      '#7C6BB1', // violet
+    ] as const,
+  },
 } as const;
 
 export type ChartCategoricalColors = typeof chartColors.categorical;

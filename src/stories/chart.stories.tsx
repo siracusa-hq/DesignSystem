@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import {
   BarChart,
@@ -18,7 +18,17 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { ChartContainer } from '../components/chart-container';
-import { getChartColors, getChartTheme, ChartTooltip, ChartLegend } from '../components/chart';
+import {
+  getChartColors,
+  getChartSubtleColors,
+  getChartTheme,
+  axisDefaults,
+  gridDefaults,
+  INACTIVE_OPACITY,
+  ACTIVE_DOT_RADIUS,
+  ChartTooltip,
+  ChartLegend,
+} from '../components/chart';
 
 const meta: Meta = {
   title: 'Data Display/Chart',
@@ -30,11 +40,15 @@ const meta: Meta = {
           '## Chart Components',
           '',
           'Recharts をラップしたチャートユーティリティ。',
-          '`getChartColors()` と `getChartTheme()` でデザイントークンに準拠したスタイルを適用します。',
+          '`getChartColors()` と `getChartTheme()` でデザイントークンに準拠したスタイルを適用。',
           '',
-          '- `ChartTooltip` — ツールチップのスタイリング',
-          '- `ChartLegend` — 凡例のスタイリング',
-          '- `ChartContainer` — ヘッダー付きカードラッパー（既存）',
+          '### 改善点 (v2)',
+          '- CSS変数ベースの5色カテゴリカルパレット（ダークモード自動対応）',
+          '- shadcn/ui準拠のTooltip（`shadow-xl`, 半透明ボーダー, gridレイアウト, monoフォント）',
+          '- 角丸四角インジケーター（Linear/Vercel風）',
+          '- 軸線・ティックライン非表示（Tremor/Supabase準拠）',
+          '- ホバー時の非アクティブ系列dimming',
+          '- ドット非表示 + activeDotリング（Linear風）',
         ].join('\n'),
       },
     },
@@ -73,31 +87,52 @@ export const BarChartExample: StoryObj = {
   render: () => {
     const colors = getChartColors();
     const theme = getChartTheme();
+    const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
     return (
       <ChartContainer title="月次売上" description="Revenue vs Cost (¥K)" className="w-[600px]">
         <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={monthlyData} barGap={4}>
-            <CartesianGrid strokeDasharray="3 3" stroke={theme.gridColor} vertical={false} />
+          <BarChart
+            data={monthlyData}
+            barGap={4}
+            onMouseMove={(state) => {
+              if (state?.activeTooltipIndex !== undefined) {
+                setActiveIndex(state.activeTooltipIndex);
+              }
+            }}
+            onMouseLeave={() => setActiveIndex(null)}
+          >
+            <CartesianGrid stroke={theme.gridColor} {...gridDefaults} />
             <XAxis
               dataKey="month"
               tick={{ fill: theme.textColor, fontSize: theme.fontSize }}
-              axisLine={{ stroke: theme.axisColor }}
-              tickLine={false}
+              {...axisDefaults}
             />
             <YAxis
               tick={{ fill: theme.textColor, fontSize: theme.fontSize }}
-              axisLine={false}
-              tickLine={false}
               tickFormatter={formatCurrency}
+              {...axisDefaults}
             />
             <RechartsTooltip
               content={<ChartTooltip formatter={(v) => `¥${v.toLocaleString()}`} />}
-              cursor={{ fill: theme.cursorFill, opacity: 0.5 }}
+              cursor={{ stroke: theme.cursorStroke, strokeWidth: 1, fill: 'transparent' }}
+              isAnimationActive={false}
             />
             <RechartsLegend content={<ChartLegend />} />
-            <Bar dataKey="revenue" name="Revenue" fill={colors[0]} radius={[4, 4, 0, 0]} />
-            <Bar dataKey="cost" name="Cost" fill={colors[1]} radius={[4, 4, 0, 0]} />
+            <Bar
+              dataKey="revenue"
+              name="Revenue"
+              fill={colors[0]}
+              radius={[4, 4, 0, 0]}
+              opacity={activeIndex !== null ? INACTIVE_OPACITY : 1}
+            />
+            <Bar
+              dataKey="cost"
+              name="Cost"
+              fill={colors[1]}
+              radius={[4, 4, 0, 0]}
+              opacity={activeIndex !== null ? INACTIVE_OPACITY : 1}
+            />
           </BarChart>
         </ResponsiveContainer>
       </ChartContainer>
@@ -115,22 +150,21 @@ export const LineChartExample: StoryObj = {
       <ChartContainer title="利益推移" description="Monthly profit trend" className="w-[600px]">
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={monthlyData}>
-            <CartesianGrid strokeDasharray="3 3" stroke={theme.gridColor} vertical={false} />
+            <CartesianGrid stroke={theme.gridColor} {...gridDefaults} />
             <XAxis
               dataKey="month"
               tick={{ fill: theme.textColor, fontSize: theme.fontSize }}
-              axisLine={{ stroke: theme.axisColor }}
-              tickLine={false}
+              {...axisDefaults}
             />
             <YAxis
               tick={{ fill: theme.textColor, fontSize: theme.fontSize }}
-              axisLine={false}
-              tickLine={false}
               tickFormatter={formatCurrency}
+              {...axisDefaults}
             />
             <RechartsTooltip
               content={<ChartTooltip formatter={(v) => `¥${v.toLocaleString()}`} />}
-              cursor={{ stroke: theme.cursorFill, strokeWidth: 1 }}
+              cursor={{ stroke: theme.cursorStroke, strokeWidth: 1 }}
+              isAnimationActive={false}
             />
             <RechartsLegend content={<ChartLegend />} />
             <Line
@@ -139,8 +173,15 @@ export const LineChartExample: StoryObj = {
               name="Revenue"
               stroke={colors[0]}
               strokeWidth={2}
-              dot={{ r: 4, fill: colors[0] }}
-              activeDot={{ r: 6 }}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              dot={false}
+              activeDot={{
+                r: ACTIVE_DOT_RADIUS,
+                fill: colors[0],
+                stroke: 'var(--color-surface-raised)',
+                strokeWidth: 2,
+              }}
             />
             <Line
               type="monotone"
@@ -148,8 +189,15 @@ export const LineChartExample: StoryObj = {
               name="Profit"
               stroke={colors[4]}
               strokeWidth={2}
-              dot={{ r: 4, fill: colors[4] }}
-              activeDot={{ r: 6 }}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              dot={false}
+              activeDot={{
+                r: ACTIVE_DOT_RADIUS,
+                fill: colors[4],
+                stroke: 'var(--color-surface-raised)',
+                strokeWidth: 2,
+              }}
             />
           </LineChart>
         </ResponsiveContainer>
@@ -170,30 +218,29 @@ export const AreaChartExample: StoryObj = {
           <AreaChart data={monthlyData}>
             <defs>
               <linearGradient id="gradRevenue" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={colors[0]} stopOpacity={0.3} />
+                <stop offset="5%" stopColor={colors[0]} stopOpacity={0.4} />
                 <stop offset="95%" stopColor={colors[0]} stopOpacity={0} />
               </linearGradient>
               <linearGradient id="gradCost" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={colors[1]} stopOpacity={0.3} />
+                <stop offset="5%" stopColor={colors[1]} stopOpacity={0.4} />
                 <stop offset="95%" stopColor={colors[1]} stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke={theme.gridColor} vertical={false} />
+            <CartesianGrid stroke={theme.gridColor} {...gridDefaults} />
             <XAxis
               dataKey="month"
               tick={{ fill: theme.textColor, fontSize: theme.fontSize }}
-              axisLine={{ stroke: theme.axisColor }}
-              tickLine={false}
+              {...axisDefaults}
             />
             <YAxis
               tick={{ fill: theme.textColor, fontSize: theme.fontSize }}
-              axisLine={false}
-              tickLine={false}
               tickFormatter={formatCurrency}
+              {...axisDefaults}
             />
             <RechartsTooltip
               content={<ChartTooltip formatter={(v) => `¥${v.toLocaleString()}`} />}
-              cursor={{ stroke: theme.cursorFill, strokeWidth: 1 }}
+              cursor={{ stroke: theme.cursorStroke, strokeWidth: 1 }}
+              isAnimationActive={false}
             />
             <RechartsLegend content={<ChartLegend />} />
             <Area
@@ -202,7 +249,15 @@ export const AreaChartExample: StoryObj = {
               name="Revenue"
               stroke={colors[0]}
               strokeWidth={2}
+              strokeLinecap="round"
               fill="url(#gradRevenue)"
+              dot={false}
+              activeDot={{
+                r: ACTIVE_DOT_RADIUS,
+                fill: colors[0],
+                stroke: 'var(--color-surface-raised)',
+                strokeWidth: 2,
+              }}
             />
             <Area
               type="monotone"
@@ -210,7 +265,15 @@ export const AreaChartExample: StoryObj = {
               name="Cost"
               stroke={colors[1]}
               strokeWidth={2}
+              strokeLinecap="round"
               fill="url(#gradCost)"
+              dot={false}
+              activeDot={{
+                r: ACTIVE_DOT_RADIUS,
+                fill: colors[1],
+                stroke: 'var(--color-surface-raised)',
+                strokeWidth: 2,
+              }}
             />
           </AreaChart>
         </ResponsiveContainer>
@@ -243,11 +306,42 @@ export const PieChartExample: StoryObj = {
                 <Cell key={i} fill={colors[i % colors.length]} />
               ))}
             </Pie>
-            <RechartsTooltip content={<ChartTooltip />} cursor={false} />
+            <RechartsTooltip content={<ChartTooltip />} cursor={false} isAnimationActive={false} />
             <RechartsLegend content={<ChartLegend />} />
           </PieChart>
         </ResponsiveContainer>
       </ChartContainer>
+    );
+  },
+};
+
+export const TooltipVariants: StoryObj = {
+  name: 'Tooltip Indicators',
+  render: () => {
+    const colors = getChartColors();
+    const theme = getChartTheme();
+
+    return (
+      <div className="flex gap-6">
+        {(['dot', 'line', 'dashed'] as const).map((indicator) => (
+          <ChartContainer key={indicator} title={`Indicator: ${indicator}`} className="w-[350px]">
+            <ResponsiveContainer width="100%" height={200}>
+              <LineChart data={monthlyData}>
+                <CartesianGrid stroke={theme.gridColor} {...gridDefaults} />
+                <XAxis dataKey="month" tick={{ fill: theme.textColor, fontSize: theme.fontSize }} {...axisDefaults} />
+                <YAxis tick={{ fill: theme.textColor, fontSize: theme.fontSize }} tickFormatter={formatCurrency} {...axisDefaults} />
+                <RechartsTooltip
+                  content={<ChartTooltip indicator={indicator} formatter={(v) => `¥${v.toLocaleString()}`} />}
+                  cursor={{ stroke: theme.cursorStroke, strokeWidth: 1 }}
+                  isAnimationActive={false}
+                />
+                <Line type="monotone" dataKey="revenue" name="Revenue" stroke={colors[0]} strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="cost" name="Cost" stroke={colors[1]} strokeWidth={2} dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </ChartContainer>
+        ))}
+      </div>
     );
   },
 };
