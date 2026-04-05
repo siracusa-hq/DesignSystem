@@ -160,6 +160,36 @@ export {
   type StepperConnector,
 } from './components/stepper';
 
+// Accordion / Collapsible
+export {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from './components/accordion';
+export {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from './components/collapsible';
+
+// TagInput
+export {
+  TagInput,
+  type TagInputProps,
+  type TagInputOption,
+} from './components/tag-input';
+
+// FileUpload
+export {
+  FileUpload,
+  FileUploadDropzone,
+  FileUploadList,
+  type FileUploadProps,
+  type FileUploadDropzoneProps,
+  type FileUploadListProps,
+} from './components/file-upload';
+
 // Data Display
 export {
   Tabs,

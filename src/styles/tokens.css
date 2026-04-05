@@ -236,4 +236,6 @@
   --animate-progress-indeterminate: progress-indeterminate 2s ease-in-out infinite;
   --animate-collapsible-down: collapsible-down var(--duration-normal) var(--ease-out);
   --animate-collapsible-up: collapsible-up var(--duration-normal) var(--ease-in);
+  --animate-accordion-down: accordion-down var(--duration-normal) var(--ease-out);
+  --animate-accordion-up: accordion-up var(--duration-normal) var(--ease-in);
 }
