@@ -4,6 +4,7 @@ import {
   TimelineGrid,
   TimelineRow,
   TimelineBar,
+  TimelineGroup,
   type TimelineItem,
 } from '../components/timeline-grid';
 
@@ -258,7 +259,142 @@ export const ManyRows: Story = {
   },
 };
 
-/** Helper used only in story — seeded for consistent snapshots */
+export const GroupedMilestones: Story = {
+  name: '親子構造（マイルストーン＋タスク）',
+  render: () => {
+    const start = new Date(2025, 3, 1);
+    const end = new Date(2025, 4, 15);
+    const totalDays = Math.ceil((end.getTime() - start.getTime()) / 86_400_000) + 1;
+
+    // Milestone 1
+    const ms1: TimelineItem = {
+      id: 'ms1',
+      label: 'MS1: MVP リリース',
+      start: new Date(2025, 3, 1),
+      end: new Date(2025, 3, 20),
+      color: 'primary',
+      progress: 75,
+    };
+    const ms1Tasks: TimelineItem[] = [
+      { id: 't1', label: 'ユーザー認証', start: new Date(2025, 3, 1), end: new Date(2025, 3, 7), color: 'primary', progress: 100 },
+      { id: 't2', label: 'ダッシュボード', start: new Date(2025, 3, 5), end: new Date(2025, 3, 14), color: 'info', progress: 80 },
+      { id: 't3', label: '設定画面', start: new Date(2025, 3, 10), end: new Date(2025, 3, 18), color: 'success', progress: 40 },
+      { id: 't4', label: 'E2Eテスト', start: new Date(2025, 3, 15), end: new Date(2025, 3, 20), color: 'warning', progress: 20 },
+    ];
+
+    // Milestone 2
+    const ms2: TimelineItem = {
+      id: 'ms2',
+      label: 'MS2: β版公開',
+      start: new Date(2025, 3, 18),
+      end: new Date(2025, 4, 10),
+      color: 'warning',
+    };
+    const ms2Tasks: TimelineItem[] = [
+      { id: 't5', label: 'パフォーマンス最適化', start: new Date(2025, 3, 18), end: new Date(2025, 3, 28), color: 'error' },
+      { id: 't6', label: 'ドキュメント整備', start: new Date(2025, 3, 22), end: new Date(2025, 4, 5), color: 'info' },
+      { id: 't7', label: 'β環境構築', start: new Date(2025, 4, 1), end: new Date(2025, 4, 10), color: 'success' },
+    ];
+
+    return (
+      <TimelineGrid
+        rangeStart={start}
+        rangeEnd={end}
+        granularity="day"
+        today={new Date(2025, 3, 12)}
+      >
+        <TimelineGroup
+          label="MS1: MVP リリース"
+          bar={<TimelineBar item={ms1} rangeStart={start} totalDays={totalDays} />}
+        >
+          {ms1Tasks.map((task) => (
+            <TimelineRow key={task.id} label={task.label}>
+              <TimelineBar item={task} rangeStart={start} totalDays={totalDays} />
+            </TimelineRow>
+          ))}
+        </TimelineGroup>
+
+        <TimelineGroup
+          label="MS2: β版公開"
+          bar={<TimelineBar item={ms2} rangeStart={start} totalDays={totalDays} />}
+        >
+          {ms2Tasks.map((task) => (
+            <TimelineRow key={task.id} label={task.label}>
+              <TimelineBar item={task} rangeStart={start} totalDays={totalDays} />
+            </TimelineRow>
+          ))}
+        </TimelineGroup>
+      </TimelineGrid>
+    );
+  },
+};
+
+export const CollapsedGroups: Story = {
+  name: '親子構造（折りたたみ状態）',
+  render: () => {
+    const start = new Date(2025, 3, 1);
+    const end = new Date(2025, 4, 15);
+    const totalDays = Math.ceil((end.getTime() - start.getTime()) / 86_400_000) + 1;
+
+    const milestones: Array<{
+      ms: TimelineItem;
+      tasks: TimelineItem[];
+      defaultExpanded: boolean;
+    }> = [
+      {
+        ms: { id: 'ms1', label: 'MS1: 完了済み', start: new Date(2025, 3, 1), end: new Date(2025, 3, 14), color: 'success', progress: 100 },
+        tasks: [
+          { id: 't1', label: '設計', start: new Date(2025, 3, 1), end: new Date(2025, 3, 5), color: 'success', progress: 100 },
+          { id: 't2', label: '実装', start: new Date(2025, 3, 5), end: new Date(2025, 3, 14), color: 'success', progress: 100 },
+        ],
+        defaultExpanded: false,
+      },
+      {
+        ms: { id: 'ms2', label: 'MS2: 進行中', start: new Date(2025, 3, 10), end: new Date(2025, 3, 30), color: 'primary', progress: 40 },
+        tasks: [
+          { id: 't3', label: 'API開発', start: new Date(2025, 3, 10), end: new Date(2025, 3, 22), color: 'info', progress: 60 },
+          { id: 't4', label: 'フロント実装', start: new Date(2025, 3, 15), end: new Date(2025, 3, 28), color: 'warning', progress: 25 },
+          { id: 't5', label: 'テスト', start: new Date(2025, 3, 25), end: new Date(2025, 3, 30), color: 'error' },
+        ],
+        defaultExpanded: true,
+      },
+      {
+        ms: { id: 'ms3', label: 'MS3: 未着手', start: new Date(2025, 4, 1), end: new Date(2025, 4, 15), color: 'warning' },
+        tasks: [
+          { id: 't6', label: 'リリース準備', start: new Date(2025, 4, 1), end: new Date(2025, 4, 10), color: 'warning' },
+          { id: 't7', label: '本番デプロイ', start: new Date(2025, 4, 10), end: new Date(2025, 4, 15), color: 'error' },
+        ],
+        defaultExpanded: false,
+      },
+    ];
+
+    return (
+      <TimelineGrid
+        rangeStart={start}
+        rangeEnd={end}
+        granularity="day"
+        today={new Date(2025, 3, 18)}
+      >
+        {milestones.map(({ ms, tasks, defaultExpanded }) => (
+          <TimelineGroup
+            key={ms.id}
+            label={ms.label}
+            defaultExpanded={defaultExpanded}
+            bar={<TimelineBar item={ms} rangeStart={start} totalDays={totalDays} />}
+          >
+            {tasks.map((task) => (
+              <TimelineRow key={task.id} label={task.label}>
+                <TimelineBar item={task} rangeStart={start} totalDays={totalDays} />
+              </TimelineRow>
+            ))}
+          </TimelineGroup>
+        ))}
+      </TimelineGrid>
+    );
+  },
+};
+
+/** Helper used only in story */
 function addDaysHelper(d: Date, n: number): Date {
   const r = new Date(d);
   r.setDate(r.getDate() + n);

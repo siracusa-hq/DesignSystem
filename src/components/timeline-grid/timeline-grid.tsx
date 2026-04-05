@@ -498,6 +498,219 @@ export const TimelineRow = React.forwardRef<HTMLDivElement, TimelineRowProps>(
 TimelineRow.displayName = 'TimelineRow';
 
 /* ================================================================== */
+/*  TimelineGroup                                                      */
+/* ================================================================== */
+
+export interface TimelineGroupProps {
+  /** Group label (e.g. milestone name) */
+  label: string;
+  /** Whether the group is initially expanded */
+  defaultExpanded?: boolean;
+  /** Controlled expanded state */
+  expanded?: boolean;
+  /** Called when expanded state changes */
+  onExpandedChange?: (expanded: boolean) => void;
+  /** Optional summary bar spanning the group's date range */
+  bar?: React.ReactNode;
+  /** Child rows */
+  children?: React.ReactNode;
+  /** Additional class name */
+  className?: string;
+}
+
+export const TimelineGroup = React.forwardRef<
+  HTMLDivElement,
+  TimelineGroupProps
+>(
+  (
+    {
+      label,
+      defaultExpanded = true,
+      expanded: controlledExpanded,
+      onExpandedChange,
+      bar,
+      children,
+      className,
+    },
+    ref,
+  ) => {
+    const [internalExpanded, setInternalExpanded] =
+      React.useState(defaultExpanded);
+    const isExpanded = controlledExpanded ?? internalExpanded;
+
+    const toggle = () => {
+      const next = !isExpanded;
+      if (controlledExpanded === undefined) {
+        setInternalExpanded(next);
+      }
+      onExpandedChange?.(next);
+    };
+
+    return (
+      <div ref={ref} role="rowgroup" className={className}>
+        {/* Group header row */}
+        <div
+          role="row"
+          className={cn(
+            'group relative flex',
+            'border-b border-[var(--color-border)]/60',
+            'bg-[var(--color-surface-sunken)] dark:bg-[var(--color-surface-muted)]/30',
+            'transition-colors duration-fast',
+            'hover:bg-[var(--color-surface-muted)] dark:hover:bg-[var(--color-surface-muted)]/50',
+          )}
+        >
+          {/* Label with chevron */}
+          <div
+            role="rowheader"
+            className={cn(
+              'sticky left-0 z-10',
+              'flex w-[var(--timeline-label-width,12rem)] shrink-0 items-center gap-1',
+              'border-r border-[var(--color-border)] px-2',
+              'bg-[var(--color-surface-sunken)] dark:bg-[var(--color-surface-muted)]/30',
+              'group-hover:bg-[var(--color-surface-muted)] dark:group-hover:bg-[var(--color-surface-muted)]/50',
+              'transition-colors duration-fast',
+            )}
+          >
+            <button
+              type="button"
+              onClick={toggle}
+              aria-expanded={isExpanded}
+              aria-label={`${label}を${isExpanded ? '折りたたむ' : '展開する'}`}
+              className={cn(
+                'flex h-5 w-5 shrink-0 items-center justify-center rounded',
+                'text-[var(--color-on-surface-muted)]',
+                'hover:bg-[var(--color-surface-muted)] dark:hover:bg-[var(--color-surface-muted)]',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)]',
+                'transition-transform duration-fast',
+                isExpanded && 'rotate-90',
+              )}
+            >
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                fill="none"
+                className="shrink-0"
+              >
+                <path
+                  d="M4.5 2.5L8 6L4.5 9.5"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+            <span className="truncate text-[13px] font-semibold text-[var(--color-on-surface)]">
+              {label}
+            </span>
+          </div>
+
+          {/* Summary bar area */}
+          <div
+            role="cell"
+            className="relative flex-1 min-h-[var(--timeline-row-height,2.25rem)]"
+          >
+            {bar}
+          </div>
+        </div>
+
+        {/* Child rows — collapsible */}
+        {isExpanded && children}
+      </div>
+    );
+  },
+);
+TimelineGroup.displayName = 'TimelineGroup';
+
+/* ================================================================== */
+/*  Internal: recursive bar injection                                  */
+/* ================================================================== */
+
+function getDisplayName(type: unknown): string | undefined {
+  return (type as { displayName?: string })?.displayName;
+}
+
+/** Inject rangeStart/totalDays into TimelineBar children, and TodayLine into row cells. */
+function injectCellChildren(
+  cellChildren: React.ReactNode,
+  rangeStart: Date,
+  totalDays: number,
+  showToday: boolean,
+  todayOverride?: Date,
+): React.ReactNode {
+  return (
+    <>
+      {showToday && (
+        <TimelineTodayLine
+          rangeStart={rangeStart}
+          totalDays={totalDays}
+          today={todayOverride}
+        />
+      )}
+      {React.Children.map(cellChildren, (barChild) => {
+        if (
+          React.isValidElement(barChild) &&
+          getDisplayName(barChild.type) === 'TimelineBar'
+        ) {
+          return React.cloneElement(
+            barChild as React.ReactElement<TimelineBarProps>,
+            { rangeStart, totalDays },
+          );
+        }
+        return barChild;
+      })}
+    </>
+  );
+}
+
+/** Recursively process children: handle TimelineRow and TimelineGroup. */
+function injectBarProps(
+  child: React.ReactNode,
+  rangeStart: Date,
+  totalDays: number,
+  showToday: boolean,
+  todayOverride?: Date,
+): React.ReactNode {
+  if (!React.isValidElement(child)) return child;
+
+  const name = getDisplayName(child.type);
+
+  if (name === 'TimelineRow') {
+    const rowProps = child.props as TimelineRowProps;
+    return React.cloneElement(child as React.ReactElement<TimelineRowProps>, {
+      children: injectCellChildren(
+        rowProps.children,
+        rangeStart,
+        totalDays,
+        showToday,
+        todayOverride,
+      ),
+    });
+  }
+
+  if (name === 'TimelineGroup') {
+    const groupProps = child.props as TimelineGroupProps;
+    // Inject into the group's summary bar
+    const injectedBar = groupProps.bar
+      ? injectCellChildren(groupProps.bar, rangeStart, totalDays, showToday, todayOverride)
+      : undefined;
+    // Recursively inject into child rows
+    const injectedChildren = React.Children.map(
+      groupProps.children,
+      (groupChild) =>
+        injectBarProps(groupChild, rangeStart, totalDays, showToday, todayOverride),
+    );
+    return React.cloneElement(child as React.ReactElement<TimelineGroupProps>, {
+      bar: injectedBar,
+      children: injectedChildren,
+    });
+  }
+
+  return child;
+}
+
+/* ================================================================== */
 /*  TimelineGrid                                                       */
 /* ================================================================== */
 
@@ -638,43 +851,9 @@ export const TimelineGrid = React.forwardRef<HTMLDivElement, TimelineGridProps>(
 
             {/* Rows */}
             <div role="rowgroup">
-              {React.Children.map(children, (child) => {
-                if (!React.isValidElement(child)) return child;
-
-                return React.cloneElement(
-                  child as React.ReactElement<TimelineRowProps>,
-                  {
-                    children: (
-                      <>
-                        {showToday && (
-                          <TimelineTodayLine
-                            rangeStart={rangeStart}
-                            totalDays={totalDays}
-                            today={todayOverride}
-                          />
-                        )}
-                        {React.Children.map(
-                          (child as React.ReactElement<TimelineRowProps>).props
-                            .children,
-                          (barChild) => {
-                            if (
-                              React.isValidElement(barChild) &&
-                              (barChild.type as { displayName?: string })
-                                ?.displayName === 'TimelineBar'
-                            ) {
-                              return React.cloneElement(
-                                barChild as React.ReactElement<TimelineBarProps>,
-                                { rangeStart, totalDays },
-                              );
-                            }
-                            return barChild;
-                          },
-                        )}
-                      </>
-                    ),
-                  },
-                );
-              })}
+              {React.Children.map(children, (child) =>
+                injectBarProps(child, rangeStart, totalDays, showToday, todayOverride),
+              )}
             </div>
           </div>
         </div>
