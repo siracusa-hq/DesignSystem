@@ -280,12 +280,10 @@ export const PieChartExample: StoryObj = {
               data={pieData}
               cx="50%"
               cy="50%"
-              innerRadius={50}
-              outerRadius={80}
+              innerRadius={60}
+              outerRadius={100}
               paddingAngle={3}
               dataKey="value"
-              label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
-              labelLine={false}
             >
               {pieData.map((_, i) => (
                 <Cell key={i} fill={colors[i % colors.length]} />
