@@ -93,6 +93,18 @@ export const InlineWithText: Story = {
       <p className="flex items-center gap-2 text-[var(--color-on-surface-secondary)]">
         <Spinner size="sm" /> Syncing changes...
       </p>
+      <p className="flex items-center gap-2 text-primary-500">
+        <Spinner size="sm" className="text-current" /> Connecting...
+      </p>
+      <p className="flex items-center gap-2 text-error-500">
+        <Spinner size="sm" className="text-current" /> Retrying...
+      </p>
+      <p className="flex items-center gap-2 text-warning-500">
+        <Spinner size="sm" className="text-current" /> Pending approval...
+      </p>
+      <p className="flex items-center gap-2 text-info-500">
+        <Spinner size="sm" className="text-current" /> Fetching updates...
+      </p>
     </div>
   ),
 };
