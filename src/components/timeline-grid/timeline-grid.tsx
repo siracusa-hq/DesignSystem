@@ -171,13 +171,13 @@ const BAR_BG: Record<string, string> = {
   primary:
     'bg-primary-100 dark:bg-primary-900/40 border-l-primary-500',
   error:
-    'bg-[var(--color-error-100)] dark:bg-[var(--color-error-900)]/40 border-l-[var(--color-error)]',
+    'bg-[var(--color-error-100)] dark:bg-[var(--color-error-900)]/40 border-l-[var(--color-error-500)]',
   warning:
-    'bg-[var(--color-warning-100)] dark:bg-[var(--color-warning-900)]/40 border-l-[var(--color-warning)]',
+    'bg-[var(--color-warning-100)] dark:bg-[var(--color-warning-900)]/40 border-l-[var(--color-warning-500)]',
   success:
-    'bg-[var(--color-success-100)] dark:bg-[var(--color-success-900)]/40 border-l-[var(--color-success)]',
+    'bg-[var(--color-success-100)] dark:bg-[var(--color-success-900)]/40 border-l-[var(--color-success-500)]',
   info:
-    'bg-[var(--color-info-100)] dark:bg-[var(--color-info-900)]/40 border-l-[var(--color-info)]',
+    'bg-[var(--color-info-100)] dark:bg-[var(--color-info-900)]/40 border-l-[var(--color-info-500)]',
 };
 
 const BAR_TEXT: Record<string, string> = {
@@ -315,16 +315,12 @@ export const TimelineTodayLine: React.FC<TimelineTodayLineProps> = ({
     <div
       aria-hidden="true"
       className={cn(
-        'pointer-events-none absolute inset-y-0 z-20',
+        'pointer-events-none absolute inset-y-0 left-1/2 -translate-x-1/2 z-20 w-px',
+        'bg-primary-500/60 dark:bg-primary-400/60',
         className,
       )}
       style={{ left: `${leftPercent}%` }}
-    >
-      {/* Marker dot at top */}
-      <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 h-2 w-2 rounded-full bg-primary-500 dark:bg-primary-400" />
-      {/* Vertical line */}
-      <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-px bg-primary-500/70 dark:bg-primary-400/70" />
-    </div>
+    />
   );
 };
 TimelineTodayLine.displayName = 'TimelineTodayLine';
