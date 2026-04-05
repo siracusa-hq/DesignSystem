@@ -24,6 +24,23 @@
   /* Accent surface — for selected/active nav items, highlighted rows, etc. */
   --color-surface-accent: #E4F5F1;
   --color-on-surface-accent: var(--color-primary-700);
+
+  /* Chart — categorical data-viz palette (5 tokens, shadcn/ui convention) */
+  --color-chart-1: #13C3A0; /* teal — brand anchor */
+  --color-chart-2: #4E79A7; /* slate — classic dataviz blue */
+  --color-chart-3: #E8A838; /* amber — warm gold */
+  --color-chart-4: #D4687A; /* rose — dusty pink-red */
+  --color-chart-5: #7C6BB1; /* violet — soft purple */
+  /* Chart subtle fills — 1:1 paired with categorical */
+  --color-chart-1-subtle: #E8FAF6;
+  --color-chart-2-subtle: #E8EEF4;
+  --color-chart-3-subtle: #FDF3E0;
+  --color-chart-4-subtle: #FCEAED;
+  --color-chart-5-subtle: #EEEBF5;
+  /* Chart chrome */
+  --color-chart-grid: var(--color-neutral-200);
+  --color-chart-text: var(--color-neutral-500);
+  --color-chart-cursor: var(--color-neutral-300);
 }
 
 .dark {
@@ -56,5 +73,20 @@
   /* Accent surface — brand-tinted for selected/active states */
   --color-surface-accent: #0F2926;
   --color-on-surface-accent: var(--color-primary-400);
+
+  /* Chart — dark mode overrides */
+  --color-chart-1: #2EE0BC; /* brighter teal for dark bg */
+  --color-chart-2: #6A9FD8; /* brighter slate */
+  --color-chart-3: #F0BD5C; /* brighter amber */
+  --color-chart-4: #E08A9A; /* brighter rose */
+  --color-chart-5: #9B8DD4; /* brighter violet */
+  --color-chart-1-subtle: #0C2B26;
+  --color-chart-2-subtle: #1A2535;
+  --color-chart-3-subtle: #2C2312;
+  --color-chart-4-subtle: #2C1A1E;
+  --color-chart-5-subtle: #1E1A2C;
+  --color-chart-grid: #28282C;
+  --color-chart-text: var(--color-neutral-400);
+  --color-chart-cursor: #3F3F46;
   color-scheme: dark;
 }

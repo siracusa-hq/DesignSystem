@@ -4,6 +4,9 @@ import { cn } from '@/lib/cn';
 /**
  * ChartLegend — Styled legend content for Recharts.
  *
+ * Design: centered row of rounded-square color indicators with muted labels.
+ * Follows shadcn/ui legend patterns.
+ *
  * Usage with Recharts:
  * ```tsx
  * <RechartsLegend content={<ChartLegend />} />
@@ -31,7 +34,7 @@ export const ChartLegend: React.FC<ChartLegendProps> = ({
       {payload.map((entry, i) => (
         <div key={i} className="flex items-center gap-1.5 text-xs text-[var(--color-on-surface-muted)]">
           <span
-            className="inline-block h-2.5 w-2.5 shrink-0 rounded-full"
+            className="inline-block h-2 w-2 shrink-0 rounded-[2px]"
             style={{ backgroundColor: entry.color }}
           />
           <span>{entry.value}</span>
