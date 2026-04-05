@@ -98,17 +98,13 @@ function getWeekDates(date: Date): Date[] {
   return week;
 }
 
-const DOT_COLORS: Record<string, string> = {
-  primary: 'bg-primary-500',
-  error: 'bg-[var(--color-error)]',
-  warning: 'bg-[var(--color-warning)]',
-  success: 'bg-[var(--color-success)]',
-  info: 'bg-[var(--color-info)]',
-};
-
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
 /** Default scroll offset: start at 6:30 → 6 hours × 48px = 288px */
 const DEFAULT_SCROLL_TOP = 288;
+
+/* ------------------------------------------------------------------ */
+/*  Color maps                                                         */
+/* ------------------------------------------------------------------ */
 
 /* Weekend / holiday cell styling */
 const SATURDAY_BG = 'bg-[var(--color-info-50)]';
@@ -130,20 +126,44 @@ function getDayTypeClasses(
   return { bg: '', text: '' };
 }
 
+/** Event pill styling — muted background + left accent bar (Linear/Google style) */
+const EVENT_BG: Record<string, string> = {
+  primary: 'bg-primary-100 dark:bg-primary-900/40 border-l-primary-500',
+  error: 'bg-[var(--color-error-100)] dark:bg-[var(--color-error-900)]/40 border-l-[var(--color-error-500)]',
+  warning: 'bg-[var(--color-warning-100)] dark:bg-[var(--color-warning-900)]/40 border-l-[var(--color-warning-500)]',
+  success: 'bg-[var(--color-success-100)] dark:bg-[var(--color-success-900)]/40 border-l-[var(--color-success-500)]',
+  info: 'bg-[var(--color-info-100)] dark:bg-[var(--color-info-900)]/40 border-l-[var(--color-info-500)]',
+};
+
+const EVENT_TEXT: Record<string, string> = {
+  primary: 'text-primary-700 dark:text-primary-300',
+  error: 'text-[var(--color-error-700)] dark:text-[var(--color-error-300)]',
+  warning: 'text-[var(--color-warning-700)] dark:text-[var(--color-warning-300)]',
+  success: 'text-[var(--color-success-700)] dark:text-[var(--color-success-300)]',
+  info: 'text-[var(--color-info-700)] dark:text-[var(--color-info-300)]',
+};
+
 /* ------------------------------------------------------------------ */
 /*  Shared sub-components                                              */
 /* ------------------------------------------------------------------ */
 
-function EventDot({ event }: { event: CalendarEvent }) {
+/** Month view: full-width event pill with left accent border */
+function EventPill({ event }: { event: CalendarEvent }) {
+  const color = event.color ?? 'primary';
   return (
-    <div className="flex items-center gap-1 min-w-0">
+    <div
+      className={cn(
+        'flex items-center min-w-0',
+        'rounded-[3px] border-l-2 px-1 py-px',
+        EVENT_BG[color],
+      )}
+    >
       <span
         className={cn(
-          'h-1.5 w-1.5 shrink-0 rounded-full',
-          DOT_COLORS[event.color ?? 'primary'],
+          'truncate text-[10px] leading-tight font-medium',
+          EVENT_TEXT[color],
         )}
-      />
-      <span className="truncate text-[10px] leading-tight text-[var(--color-on-surface)]">
+      >
         {event.title}
       </span>
     </div>
@@ -159,15 +179,43 @@ function EventList({
 }) {
   if (events.length === 0) return null;
   return (
-    <div className="mt-0.5 flex w-full flex-col gap-0.5 overflow-hidden">
+    <div className="mt-0.5 flex w-full flex-col gap-px overflow-hidden">
       {events.slice(0, maxVisible).map((event, idx) => (
-        <EventDot key={idx} event={event} />
+        <EventPill key={idx} event={event} />
       ))}
       {events.length > maxVisible && (
-        <span className="text-[10px] text-[var(--color-on-surface-muted)]">
+        <span className="text-[10px] leading-tight font-medium text-[var(--color-on-surface-muted)] pl-1">
           +{events.length - maxVisible}件
         </span>
       )}
+    </div>
+  );
+}
+
+/** Week/day view: event block with left accent bar + muted fill */
+function TimeEvent({ event }: { event: CalendarEvent }) {
+  const color = event.color ?? 'primary';
+  return (
+    <div
+      className={cn(
+        'rounded border-l-[3px] px-1.5 py-0.5',
+        EVENT_BG[color],
+      )}
+    >
+      {event.startTime && (
+        <span className={cn('text-[10px] font-semibold leading-tight', EVENT_TEXT[color])}>
+          {event.startTime}
+          {event.endTime && `〜${event.endTime}`}
+        </span>
+      )}
+      <span
+        className={cn(
+          'block truncate text-[11px] leading-tight font-medium',
+          EVENT_TEXT[color],
+        )}
+      >
+        {event.title}
+      </span>
     </div>
   );
 }
@@ -321,11 +369,11 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
             </Button>
           </div>
 
-          {/* Weekday headers — no border, sits above the grid */}
+          {/* Weekday headers */}
           <div className="grid grid-cols-7 mb-1">
             {WEEKDAYS.map((day, i) => (
               <div key={day} className={cn(
-                'flex h-8 items-center justify-center text-xs font-medium text-[var(--color-on-surface-muted)]',
+                'flex h-7 items-center justify-center text-[11px] font-medium text-[var(--color-on-surface-muted)]',
                 i === 0 && SUNDAY_HOLIDAY_TEXT,
                 i === 6 && SATURDAY_TEXT,
               )}>
@@ -334,7 +382,7 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
             ))}
           </div>
 
-          {/* Day grid — gap technique: container bg = border color, cell bg = surface */}
+          {/* Day grid — gap technique */}
           <div
             role="grid"
             aria-label={`${viewYear}年${viewMonth + 1}月`}
@@ -348,7 +396,7 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
                       <div
                         key={`empty-${wi}-${di}`}
                         role="gridcell"
-                        className="min-h-16 bg-[var(--color-surface-muted)]"
+                        className="min-h-[4.5rem] bg-[var(--color-surface-muted)]"
                       />
                     );
                   }
@@ -367,7 +415,8 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
                       aria-label={`${date.getMonth() + 1}月${date.getDate()}日${dayEvents.length > 0 ? ` ${dayEvents.length}件のイベント` : ''}`}
                       onClick={() => onDateClick?.(dateStr, dayEvents)}
                       className={cn(
-                        'relative flex min-h-16 flex-col items-start p-1 text-left transition-colors duration-fast',
+                        'relative flex min-h-[4.5rem] flex-col items-start p-1 text-left',
+                        'transition-colors duration-fast',
                         dayType.bg || 'bg-[var(--color-surface)]',
                         'hover:bg-[var(--color-surface-muted)]',
                         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-ring)]',
@@ -377,7 +426,7 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
                         className={cn(
                           'inline-flex h-6 w-6 items-center justify-center rounded-full text-xs',
                           isToday && 'bg-primary-500 text-white font-semibold',
-                          !isToday && dayType.text,
+                          !isToday && (dayType.text || 'text-[var(--color-on-surface)]'),
                         )}
                       >
                         {date.getDate()}
@@ -424,16 +473,25 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
             </Button>
           </div>
 
-          {/* Column headers — no border */}
+          {/* Column headers */}
           <div className="grid grid-cols-[3rem_repeat(7,1fr)] pb-2 mb-2">
             <div className="h-10" />
             {weekDates.map((date, i) => {
               const isToday = isSameDay(date, today);
               const dayType = getDayTypeClasses(date.getDay(), formatDate(date), holidaySet);
               return (
-                <div key={i} className={cn('flex h-10 flex-col items-center justify-center gap-0.5 text-xs font-medium text-[var(--color-on-surface-muted)]', dayType.text)}>
-                  <span>{WEEKDAYS[date.getDay()]}</span>
-                  <span className={cn('inline-flex h-6 w-6 items-center justify-center rounded-full text-xs', isToday && 'bg-primary-500 text-white font-semibold')}>
+                <div key={i} className="flex h-10 flex-col items-center justify-center gap-0.5">
+                  <span className={cn(
+                    'text-[10px] font-medium',
+                    dayType.text || 'text-[var(--color-on-surface-muted)]',
+                  )}>
+                    {WEEKDAYS[date.getDay()]}
+                  </span>
+                  <span className={cn(
+                    'inline-flex h-6 w-6 items-center justify-center rounded-full text-xs',
+                    isToday && 'bg-primary-500 text-white font-semibold',
+                    !isToday && (dayType.text || 'text-[var(--color-on-surface)] font-medium'),
+                  )}>
                     {date.getDate()}
                   </span>
                 </div>
@@ -479,26 +537,33 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
                         dayType.bg || 'bg-[var(--color-surface)]',
                         'hover:bg-[var(--color-surface-muted)]',
                         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-ring)]',
+                        'transition-colors duration-fast',
                       )}
                     >
-                      {/* :00 half — solid line via gap; :30 half — dashed internal line */}
+                      {/* :00 half */}
                       <div className="h-1/2 min-h-0 overflow-hidden p-0.5">
                         {hourEvents.map((event, idx) => (
                           <div
                             key={idx}
                             className={cn(
-                              'rounded px-1 py-0.5 text-[10px] leading-tight truncate text-white',
-                              DOT_COLORS[event.color ?? 'primary'],
+                              'rounded-[3px] border-l-2 px-1 py-px',
+                              EVENT_BG[event.color ?? 'primary'],
                             )}
                           >
-                            {event.startTime && (
-                              <span className="font-medium">{event.startTime} </span>
-                            )}
-                            {event.title}
+                            <span className={cn(
+                              'block truncate text-[10px] leading-tight font-medium',
+                              EVENT_TEXT[event.color ?? 'primary'],
+                            )}>
+                              {event.startTime && (
+                                <span className="font-semibold">{event.startTime} </span>
+                              )}
+                              {event.title}
+                            </span>
                           </div>
                         ))}
                       </div>
-                      <div className="h-1/2 border-t border-dashed border-[var(--color-border)]" />
+                      {/* :30 half — dashed line */}
+                      <div className="h-1/2 border-t border-dashed border-[var(--color-border)]/50" />
                     </button>
                   );
                 })}
@@ -558,7 +623,7 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
             return (
               <div key={hour} role="row" className="contents">
                 {/* Time label */}
-                <div className="flex h-12 items-start justify-end pr-2 pt-px bg-[var(--color-surface)] text-xs leading-none text-[var(--color-on-surface-muted)]">
+                <div className="flex h-12 items-start justify-end pr-2 pt-px bg-[var(--color-surface)] text-[10px] leading-none text-[var(--color-on-surface-muted)]">
                   {String(hour).padStart(2, '0')}:00
                 </div>
                 {/* Event area */}
@@ -574,31 +639,19 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
                     dayType.bg || 'bg-[var(--color-surface)]',
                     'hover:bg-[var(--color-surface-muted)]',
                     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-ring)]',
+                    'transition-colors duration-fast',
                   )}
                 >
-                  {/* :00 half; :30 half — dashed internal line */}
+                  {/* :00 half */}
                   <div className="h-1/2 min-h-0 overflow-hidden px-2 py-0.5">
                     <div className="flex flex-col gap-0.5 overflow-hidden">
                       {hourEvents.map((event, idx) => (
-                        <div
-                          key={idx}
-                          className={cn(
-                            'rounded px-2 py-0.5 text-xs leading-tight truncate text-white',
-                            DOT_COLORS[event.color ?? 'primary'],
-                          )}
-                        >
-                          {event.startTime && (
-                            <span className="font-medium">
-                              {event.startTime}
-                              {event.endTime && `〜${event.endTime}`}{' '}
-                            </span>
-                          )}
-                          {event.title}
-                        </div>
+                        <TimeEvent key={idx} event={event} />
                       ))}
                     </div>
                   </div>
-                  <div className="h-1/2 border-t border-dashed border-[var(--color-border)]" />
+                  {/* :30 half — dashed line */}
+                  <div className="h-1/2 border-t border-dashed border-[var(--color-border)]/50" />
                 </button>
               </div>
             );
