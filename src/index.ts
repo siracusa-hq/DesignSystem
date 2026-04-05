@@ -139,6 +139,16 @@ export {
   type FormActionsProps,
 } from './components/form-layout';
 
+// Alert
+export {
+  Alert,
+  AlertTitle,
+  AlertDescription,
+  AlertAction,
+  alertVariants,
+  type AlertProps,
+} from './components/alert';
+
 // Feedback
 export { Progress, progressVariants, type ProgressProps } from './components/progress';
 export {
@@ -192,6 +202,33 @@ export {
   type FilterChipProps,
   type ActiveFiltersProps,
 } from './components/filter-bar';
+
+// Breadcrumb
+export {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+  BreadcrumbEllipsis,
+  type BreadcrumbLinkProps,
+} from './components/breadcrumb';
+
+// AlertDialog
+export {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogPortal,
+  AlertDialogOverlay,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from './components/alert-dialog';
 
 // Navigation + Layout
 export {
