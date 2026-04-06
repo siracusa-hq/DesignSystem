@@ -9,6 +9,8 @@ export { useOnlineStatus } from './hooks';
 export { useViewportHeight } from './hooks';
 export { useInstallPrompt } from './hooks';
 export { useTheme, type UseThemeOptions, type UseThemeReturn } from './hooks/use-theme';
+export { useDebounce, useDebouncedCallback, type DebouncedFunction } from './hooks';
+export { useThrottle, useThrottledCallback, type ThrottledFunction } from './hooks';
 
 // Theme
 export {
@@ -322,6 +324,47 @@ export {
   type NotificationCenterProps,
   type NotificationItem,
 } from './components/notification-center';
+
+// ScrollArea
+export { ScrollArea, ScrollBar } from './components/scroll-area';
+
+// Timeline (Vertical)
+export {
+  Timeline,
+  TimelineItem as VerticalTimelineItem,
+  TimelineIcon,
+  TimelineConnector,
+  TimelineContent,
+  TimelineTime,
+  timelineIconVariants,
+  type TimelineIconProps,
+} from './components/timeline';
+
+// CodeBlock
+export { CodeBlock, type CodeBlockProps } from './components/code-block';
+
+// MaskedInput
+export {
+  MaskedInput,
+  MASK_PHONE_JP,
+  MASK_POSTAL_JP,
+  MASK_CREDIT_CARD,
+  MASK_DATE,
+  type MaskedInputProps,
+} from './components/masked-input';
+
+// EditableCell
+export { EditableCell, type EditableCellProps } from './components/editable-cell';
+
+// Kanban
+export {
+  KanbanBoard,
+  KanbanColumn,
+  KanbanCard,
+  type KanbanBoardProps,
+  type KanbanColumnProps,
+  type KanbanCardProps,
+} from './components/kanban';
 
 // Navigation + Layout
 export {

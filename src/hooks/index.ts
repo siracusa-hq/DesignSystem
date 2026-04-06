@@ -3,3 +3,5 @@ export { useDisplayMode, type DisplayMode } from './use-display-mode';
 export { useOnlineStatus } from './use-online-status';
 export { useViewportHeight } from './use-viewport-height';
 export { useInstallPrompt } from './use-install-prompt';
+export { useDebounce, useDebouncedCallback, type DebouncedFunction } from './use-debounce';
+export { useThrottle, useThrottledCallback, type ThrottledFunction } from './use-throttle';
