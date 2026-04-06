@@ -15,7 +15,7 @@ type Story = StoryObj;
 
 export const Horizontal: Story = {
   render: () => (
-    <ResizablePanelGroup direction="horizontal" className="min-h-[300px] max-w-2xl rounded-lg border border-[var(--color-outline)]">
+    <ResizablePanelGroup orientation="horizontal" className="min-h-[300px] max-w-2xl rounded-lg border border-[var(--color-outline)]">
       <ResizablePanel defaultSize={25}>
         <div className="flex h-full items-center justify-center bg-[var(--color-surface-variant)] p-6">
           <span className="text-sm font-medium text-[var(--color-on-surface-secondary)]">
@@ -37,7 +37,7 @@ export const Horizontal: Story = {
 
 export const Vertical: Story = {
   render: () => (
-    <ResizablePanelGroup direction="vertical" className="min-h-[400px] max-w-md rounded-lg border border-[var(--color-outline)]">
+    <ResizablePanelGroup orientation="vertical" className="min-h-[400px] max-w-md rounded-lg border border-[var(--color-outline)]">
       <ResizablePanel defaultSize={30}>
         <div className="flex h-full items-center justify-center bg-[var(--color-surface-variant)] p-6">
           <span className="text-sm font-medium text-[var(--color-on-surface-secondary)]">
@@ -59,7 +59,7 @@ export const Vertical: Story = {
 
 export const WithHandle: Story = {
   render: () => (
-    <ResizablePanelGroup direction="horizontal" className="min-h-[300px] max-w-2xl rounded-lg border border-[var(--color-outline)]">
+    <ResizablePanelGroup orientation="horizontal" className="min-h-[300px] max-w-2xl rounded-lg border border-[var(--color-outline)]">
       <ResizablePanel defaultSize={30}>
         <div className="flex h-full items-center justify-center bg-[var(--color-surface-variant)] p-6">
           <span className="text-sm font-medium text-[var(--color-on-surface-secondary)]">
@@ -81,7 +81,7 @@ export const WithHandle: Story = {
 
 export const Nested: Story = {
   render: () => (
-    <ResizablePanelGroup direction="horizontal" className="min-h-[400px] max-w-3xl rounded-lg border border-[var(--color-outline)]">
+    <ResizablePanelGroup orientation="horizontal" className="min-h-[400px] max-w-3xl rounded-lg border border-[var(--color-outline)]">
       <ResizablePanel defaultSize={25}>
         <div className="flex h-full items-center justify-center bg-[var(--color-surface-variant)] p-6">
           <span className="text-sm font-medium text-[var(--color-on-surface-secondary)]">
@@ -91,7 +91,7 @@ export const Nested: Story = {
       </ResizablePanel>
       <ResizableHandle withHandle />
       <ResizablePanel defaultSize={75}>
-        <ResizablePanelGroup direction="vertical">
+        <ResizablePanelGroup orientation="vertical">
           <ResizablePanel defaultSize={60}>
             <div className="flex h-full items-center justify-center p-6">
               <span className="text-sm font-medium text-[var(--color-on-surface-secondary)]">

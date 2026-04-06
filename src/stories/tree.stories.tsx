@@ -1,11 +1,6 @@
-import React from 'react';
+import * as React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import {
-  Tree,
-  TreeItem,
-  TreeItemGroup,
-  TreeItemLabel,
-} from '../components/tree';
+import { Tree, type TreeNode } from '../components/tree';
 
 const meta: Meta<typeof Tree> = {
   title: 'Components/Tree',
@@ -16,77 +11,45 @@ const meta: Meta<typeof Tree> = {
 export default meta;
 type Story = StoryObj<typeof Tree>;
 
+const fileExplorerData: TreeNode[] = [
+  {
+    id: 'src',
+    label: 'src',
+    children: [
+      {
+        id: 'components',
+        label: 'components',
+        children: [
+          { id: 'button.tsx', label: 'button.tsx' },
+          { id: 'card.tsx', label: 'card.tsx' },
+          { id: 'dialog.tsx', label: 'dialog.tsx' },
+        ],
+      },
+      {
+        id: 'hooks',
+        label: 'hooks',
+        children: [
+          { id: 'use-theme.ts', label: 'use-theme.ts' },
+          { id: 'use-breakpoint.ts', label: 'use-breakpoint.ts' },
+        ],
+      },
+      { id: 'index.ts', label: 'index.ts' },
+      { id: 'app.tsx', label: 'app.tsx' },
+    ],
+  },
+];
+
 export const FileExplorer: Story = {
-  render: () => (
-    <Tree className="max-w-xs">
-      <TreeItem value="src">
-        <TreeItemLabel>src</TreeItemLabel>
-        <TreeItemGroup>
-          <TreeItem value="components">
-            <TreeItemLabel>components</TreeItemLabel>
-            <TreeItemGroup>
-              <TreeItem value="button.tsx">
-                <TreeItemLabel>button.tsx</TreeItemLabel>
-              </TreeItem>
-              <TreeItem value="card.tsx">
-                <TreeItemLabel>card.tsx</TreeItemLabel>
-              </TreeItem>
-              <TreeItem value="dialog.tsx">
-                <TreeItemLabel>dialog.tsx</TreeItemLabel>
-              </TreeItem>
-            </TreeItemGroup>
-          </TreeItem>
-          <TreeItem value="hooks">
-            <TreeItemLabel>hooks</TreeItemLabel>
-            <TreeItemGroup>
-              <TreeItem value="use-theme.ts">
-                <TreeItemLabel>use-theme.ts</TreeItemLabel>
-              </TreeItem>
-              <TreeItem value="use-media-query.ts">
-                <TreeItemLabel>use-media-query.ts</TreeItemLabel>
-              </TreeItem>
-            </TreeItemGroup>
-          </TreeItem>
-          <TreeItem value="index.ts">
-            <TreeItemLabel>index.ts</TreeItemLabel>
-          </TreeItem>
-          <TreeItem value="app.tsx">
-            <TreeItemLabel>app.tsx</TreeItemLabel>
-          </TreeItem>
-        </TreeItemGroup>
-      </TreeItem>
-    </Tree>
-  ),
+  render: () => <Tree data={fileExplorerData} className="max-w-xs" />,
 };
 
 export const WithDefaultExpanded: Story = {
   render: () => (
-    <Tree className="max-w-xs" defaultExpanded={['src', 'components']}>
-      <TreeItem value="src">
-        <TreeItemLabel>src</TreeItemLabel>
-        <TreeItemGroup>
-          <TreeItem value="components">
-            <TreeItemLabel>components</TreeItemLabel>
-            <TreeItemGroup>
-              <TreeItem value="button.tsx">
-                <TreeItemLabel>button.tsx</TreeItemLabel>
-              </TreeItem>
-              <TreeItem value="card.tsx">
-                <TreeItemLabel>card.tsx</TreeItemLabel>
-              </TreeItem>
-            </TreeItemGroup>
-          </TreeItem>
-          <TreeItem value="utils">
-            <TreeItemLabel>utils</TreeItemLabel>
-            <TreeItemGroup>
-              <TreeItem value="cn.ts">
-                <TreeItemLabel>cn.ts</TreeItemLabel>
-              </TreeItem>
-            </TreeItemGroup>
-          </TreeItem>
-        </TreeItemGroup>
-      </TreeItem>
-    </Tree>
+    <Tree
+      data={fileExplorerData}
+      defaultExpandedIds={['src', 'components']}
+      className="max-w-xs"
+    />
   ),
 };
 
@@ -95,37 +58,14 @@ export const WithSelection: Story = {
     const [selected, setSelected] = React.useState<string | undefined>(
       'button.tsx',
     );
-
     return (
       <Tree
+        data={fileExplorerData}
+        defaultExpandedIds={['src', 'components']}
+        selectedId={selected}
+        onSelect={setSelected}
         className="max-w-xs"
-        defaultExpanded={['src', 'components']}
-        value={selected}
-        onValueChange={setSelected}
-      >
-        <TreeItem value="src">
-          <TreeItemLabel>src</TreeItemLabel>
-          <TreeItemGroup>
-            <TreeItem value="components">
-              <TreeItemLabel>components</TreeItemLabel>
-              <TreeItemGroup>
-                <TreeItem value="button.tsx">
-                  <TreeItemLabel>button.tsx</TreeItemLabel>
-                </TreeItem>
-                <TreeItem value="card.tsx">
-                  <TreeItemLabel>card.tsx</TreeItemLabel>
-                </TreeItem>
-                <TreeItem value="dialog.tsx">
-                  <TreeItemLabel>dialog.tsx</TreeItemLabel>
-                </TreeItem>
-              </TreeItemGroup>
-            </TreeItem>
-            <TreeItem value="index.ts">
-              <TreeItemLabel>index.ts</TreeItemLabel>
-            </TreeItem>
-          </TreeItemGroup>
-        </TreeItem>
-      </Tree>
+      />
     );
   },
 };
