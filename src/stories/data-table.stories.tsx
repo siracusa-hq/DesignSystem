@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Users } from 'lucide-react';
 import { DataTable, ColumnPinSelector } from '../components/data-table';
+import { EditableCell } from '../components/editable-cell';
 import {
   EmptyState,
   EmptyStateIcon,
@@ -217,4 +218,71 @@ export const Empty: Story = {
       aria-label="Users"
     />
   ),
+};
+
+export const Editable: Story = {
+  render: () => {
+    const [data, setData] = useState<User[]>(
+      users.slice(0, 5).map((u) => ({ ...u })),
+    );
+
+    const handleUpdate = (rowIndex: number, columnId: string, value: string) => {
+      setData((prev) =>
+        prev.map((row, i) =>
+          i === rowIndex ? { ...row, [columnId]: value } : row,
+        ),
+      );
+    };
+
+    const editableColumns: ColumnDef<User, unknown>[] = [
+      {
+        accessorKey: 'name',
+        header: 'Name',
+        cell: ({ getValue, row, column }) => (
+          <EditableCell
+            value={getValue() as string}
+            onValueChange={(v) => handleUpdate(row.index, column.id, v)}
+          />
+        ),
+      },
+      {
+        accessorKey: 'email',
+        header: 'Email',
+        cell: ({ getValue, row, column }) => (
+          <EditableCell
+            value={getValue() as string}
+            onValueChange={(v) => handleUpdate(row.index, column.id, v)}
+          />
+        ),
+      },
+      {
+        accessorKey: 'role',
+        header: 'Role',
+        cell: ({ getValue, row, column }) => (
+          <EditableCell
+            value={getValue() as string}
+            onValueChange={(v) => handleUpdate(row.index, column.id, v)}
+          />
+        ),
+      },
+      {
+        accessorKey: 'status',
+        header: 'Status',
+      },
+    ];
+
+    return (
+      <div>
+        <p className="mb-2 text-sm text-[var(--color-on-surface-muted)]">
+          セルをクリックして編集できます。Enter で確定、Escape でキャンセル。
+        </p>
+        <DataTable
+          columns={editableColumns}
+          data={data}
+          variant="grid"
+          aria-label="Editable Users"
+        />
+      </div>
+    );
+  },
 };

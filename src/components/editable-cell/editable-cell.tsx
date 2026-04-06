@@ -1,11 +1,28 @@
 import * as React from 'react';
-import { Check, X } from 'lucide-react';
 import { cn } from '@/lib/cn';
 
+/**
+ * EditableCell — DataTable のセルレンダラーとして使用する。
+ *
+ * TanStack Table の ColumnDef.cell 内で使う:
+ * ```
+ * cell: ({ getValue, row, column, table }) => (
+ *   <EditableCell
+ *     value={getValue() as string}
+ *     onValueChange={(v) => handleUpdate(row.index, column.id, v)}
+ *   />
+ * )
+ * ```
+ */
+
 export interface EditableCellProps {
+  /** 現在の値 */
   value: string;
+  /** 値確定時のコールバック（Promiseを返すと保存中UIを表示） */
   onValueChange?: (value: string) => void | Promise<void>;
+  /** 入力タイプ */
   type?: 'text' | 'number';
+  /** 無効化 */
   disabled?: boolean;
   className?: string;
 }
@@ -17,9 +34,10 @@ export const EditableCell = React.forwardRef<HTMLDivElement, EditableCellProps>(
     const [saving, setSaving] = React.useState(false);
     const inputRef = React.useRef<HTMLInputElement>(null);
 
+    // 外部から value が変わったら draft を同期
     React.useEffect(() => {
-      setDraft(value);
-    }, [value]);
+      if (!editing) setDraft(value);
+    }, [value, editing]);
 
     React.useEffect(() => {
       if (editing) {
@@ -29,6 +47,7 @@ export const EditableCell = React.forwardRef<HTMLDivElement, EditableCellProps>(
     }, [editing]);
 
     const handleConfirm = async () => {
+      setEditing(false);
       if (draft !== value && onValueChange) {
         setSaving(true);
         try {
@@ -39,7 +58,6 @@ export const EditableCell = React.forwardRef<HTMLDivElement, EditableCellProps>(
           setSaving(false);
         }
       }
-      setEditing(false);
     };
 
     const handleCancel = () => {
@@ -54,14 +72,13 @@ export const EditableCell = React.forwardRef<HTMLDivElement, EditableCellProps>(
       } else if (e.key === 'Escape') {
         e.preventDefault();
         handleCancel();
-      } else if (e.key === 'Tab') {
-        handleConfirm();
       }
     };
 
+    // 編集モード
     if (editing) {
       return (
-        <div ref={ref} className={cn('flex items-center gap-1', className)}>
+        <div ref={ref} className={cn('-m-1', className)}>
           <input
             ref={inputRef}
             type={type}
@@ -71,8 +88,8 @@ export const EditableCell = React.forwardRef<HTMLDivElement, EditableCellProps>(
             onBlur={handleConfirm}
             disabled={saving}
             className={cn(
-              'h-7 w-full rounded border border-primary-500 bg-[var(--color-surface-raised)] px-2 text-sm outline-none',
-              'focus:ring-2 focus:ring-primary-500 focus:ring-offset-1',
+              'h-8 w-full rounded border border-primary-500 bg-[var(--color-surface-raised)] px-2 text-sm outline-none',
+              'ring-2 ring-primary-500/20',
               saving && 'opacity-50',
             )}
           />
@@ -80,12 +97,18 @@ export const EditableCell = React.forwardRef<HTMLDivElement, EditableCellProps>(
       );
     }
 
+    // 表示モード（クリックで編集開始）
     return (
       <div
         ref={ref}
         role="button"
         tabIndex={disabled ? -1 : 0}
-        onClick={() => !disabled && setEditing(true)}
+        onClick={(e) => {
+          if (!disabled) {
+            e.stopPropagation(); // DataTable の行選択クリックを防ぐ
+            setEditing(true);
+          }
+        }}
         onKeyDown={(e) => {
           if (!disabled && (e.key === 'Enter' || e.key === 'F2')) {
             e.preventDefault();
@@ -93,11 +116,10 @@ export const EditableCell = React.forwardRef<HTMLDivElement, EditableCellProps>(
           }
         }}
         className={cn(
-          'group h-7 cursor-pointer rounded px-2 text-sm leading-7 transition-colors',
+          '-m-1 h-8 cursor-pointer rounded px-2 text-sm leading-8 transition-colors',
           'hover:bg-[var(--color-surface-muted)]',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/30',
           disabled && 'cursor-default opacity-50',
-          draft !== value && 'border-l-2 border-l-warning-500',
           className,
         )}
       >
