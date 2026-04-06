@@ -24,8 +24,11 @@ export const Default: Story = {
   render: () => (
     <ContextMenu>
       <ContextMenuTrigger>
-        <div className="flex h-[200px] w-[300px] items-center justify-center rounded-md border border-dashed border-[var(--color-outline)] text-sm text-[var(--color-on-surface-secondary)]">
-          Right-click here
+        <div className="flex h-[200px] w-[300px] items-center justify-center rounded-md border border-dashed border-[var(--color-border)] bg-[var(--color-surface-muted)] text-sm text-[var(--color-on-surface-muted)]">
+          <div className="text-center">
+            <p className="font-medium text-[var(--color-on-surface)]">Context Menu</p>
+            <p className="mt-1 text-xs">右クリックでメニューを表示</p>
+          </div>
         </div>
       </ContextMenuTrigger>
       <ContextMenuContent className="w-56">
@@ -59,8 +62,11 @@ export const WithSubmenu: Story = {
   render: () => (
     <ContextMenu>
       <ContextMenuTrigger>
-        <div className="flex h-[200px] w-[300px] items-center justify-center rounded-md border border-dashed border-[var(--color-outline)] text-sm text-[var(--color-on-surface-secondary)]">
-          Right-click here
+        <div className="flex h-[200px] w-[300px] items-center justify-center rounded-md border border-dashed border-[var(--color-border)] bg-[var(--color-surface-muted)] text-sm text-[var(--color-on-surface-muted)]">
+          <div className="text-center">
+            <p className="font-medium text-[var(--color-on-surface)]">Submenu Example</p>
+            <p className="mt-1 text-xs">右クリックでサブメニュー付きメニューを表示</p>
+          </div>
         </div>
       </ContextMenuTrigger>
       <ContextMenuContent className="w-56">
@@ -93,8 +99,11 @@ export const WithCheckbox: Story = {
   render: () => (
     <ContextMenu>
       <ContextMenuTrigger>
-        <div className="flex h-[200px] w-[300px] items-center justify-center rounded-md border border-dashed border-[var(--color-outline)] text-sm text-[var(--color-on-surface-secondary)]">
-          Right-click here
+        <div className="flex h-[200px] w-[300px] items-center justify-center rounded-md border border-dashed border-[var(--color-border)] bg-[var(--color-surface-muted)] text-sm text-[var(--color-on-surface-muted)]">
+          <div className="text-center">
+            <p className="font-medium text-[var(--color-on-surface)]">Checkbox Items</p>
+            <p className="mt-1 text-xs">右クリックでトグル可能な項目を表示</p>
+          </div>
         </div>
       </ContextMenuTrigger>
       <ContextMenuContent className="w-56">

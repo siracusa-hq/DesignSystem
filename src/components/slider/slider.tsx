@@ -22,16 +22,16 @@ export const Slider = React.forwardRef<
       value={value}
       {...props}
     >
-      <SliderPrimitive.Track className="relative h-1.5 w-full grow overflow-hidden rounded-full bg-[var(--color-surface-sunken)]">
+      <SliderPrimitive.Track className="relative h-1.5 w-full cursor-pointer grow overflow-hidden rounded-full bg-[var(--color-surface-sunken)]">
         <SliderPrimitive.Range className="absolute h-full bg-primary-500" />
       </SliderPrimitive.Track>
       {Array.from({ length: thumbCount }).map((_, i) => (
         <SliderPrimitive.Thumb
           key={i}
           className={cn(
-            'block size-4 rounded-full border-2 border-primary-500 bg-[var(--color-surface-raised)] shadow-sm',
+            'block size-4 cursor-pointer rounded-full border-2 border-primary-500 bg-[var(--color-surface-raised)] shadow-sm',
             'transition-colors',
-            'hover:border-primary-600',
+            'hover:border-primary-600 hover:scale-110',
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2',
             'disabled:pointer-events-none disabled:opacity-50',
           )}
