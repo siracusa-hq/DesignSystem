@@ -1,8 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import {
   DescriptionList,
-  DescriptionTerm,
-  DescriptionDetails,
+  DescriptionListItem,
+  DescriptionListTerm,
+  DescriptionListDetails,
 } from '../components/description-list';
 import { Badge } from '../components/badge';
 
@@ -18,35 +19,22 @@ type Story = StoryObj<typeof DescriptionList>;
 export const Default: Story = {
   render: () => (
     <DescriptionList className="max-w-md">
-      <DescriptionTerm>Name</DescriptionTerm>
-      <DescriptionDetails>Haruka Tanaka</DescriptionDetails>
-
-      <DescriptionTerm>Email</DescriptionTerm>
-      <DescriptionDetails>haruka.tanaka@example.com</DescriptionDetails>
-
-      <DescriptionTerm>Role</DescriptionTerm>
-      <DescriptionDetails>Product Manager</DescriptionDetails>
-
-      <DescriptionTerm>Status</DescriptionTerm>
-      <DescriptionDetails>Active</DescriptionDetails>
-    </DescriptionList>
-  ),
-};
-
-export const Vertical: Story = {
-  render: () => (
-    <DescriptionList direction="vertical" className="max-w-md">
-      <DescriptionTerm>Name</DescriptionTerm>
-      <DescriptionDetails>Haruka Tanaka</DescriptionDetails>
-
-      <DescriptionTerm>Email</DescriptionTerm>
-      <DescriptionDetails>haruka.tanaka@example.com</DescriptionDetails>
-
-      <DescriptionTerm>Role</DescriptionTerm>
-      <DescriptionDetails>Product Manager</DescriptionDetails>
-
-      <DescriptionTerm>Status</DescriptionTerm>
-      <DescriptionDetails>Active</DescriptionDetails>
+      <DescriptionListItem>
+        <DescriptionListTerm>Name</DescriptionListTerm>
+        <DescriptionListDetails>Haruka Tanaka</DescriptionListDetails>
+      </DescriptionListItem>
+      <DescriptionListItem>
+        <DescriptionListTerm>Email</DescriptionListTerm>
+        <DescriptionListDetails>haruka.tanaka@example.com</DescriptionListDetails>
+      </DescriptionListItem>
+      <DescriptionListItem>
+        <DescriptionListTerm>Role</DescriptionListTerm>
+        <DescriptionListDetails>Product Manager</DescriptionListDetails>
+      </DescriptionListItem>
+      <DescriptionListItem>
+        <DescriptionListTerm>Status</DescriptionListTerm>
+        <DescriptionListDetails>Active</DescriptionListDetails>
+      </DescriptionListItem>
     </DescriptionList>
   ),
 };
@@ -54,21 +42,26 @@ export const Vertical: Story = {
 export const WithBadges: Story = {
   render: () => (
     <DescriptionList className="max-w-md">
-      <DescriptionTerm>Name</DescriptionTerm>
-      <DescriptionDetails>Haruka Tanaka</DescriptionDetails>
-
-      <DescriptionTerm>Email</DescriptionTerm>
-      <DescriptionDetails>haruka.tanaka@example.com</DescriptionDetails>
-
-      <DescriptionTerm>Role</DescriptionTerm>
-      <DescriptionDetails>
-        <Badge variant="info">Product Manager</Badge>
-      </DescriptionDetails>
-
-      <DescriptionTerm>Status</DescriptionTerm>
-      <DescriptionDetails>
-        <Badge variant="success">Active</Badge>
-      </DescriptionDetails>
+      <DescriptionListItem>
+        <DescriptionListTerm>Name</DescriptionListTerm>
+        <DescriptionListDetails>Haruka Tanaka</DescriptionListDetails>
+      </DescriptionListItem>
+      <DescriptionListItem>
+        <DescriptionListTerm>Email</DescriptionListTerm>
+        <DescriptionListDetails>haruka.tanaka@example.com</DescriptionListDetails>
+      </DescriptionListItem>
+      <DescriptionListItem>
+        <DescriptionListTerm>Role</DescriptionListTerm>
+        <DescriptionListDetails>
+          <Badge variant="info">Product Manager</Badge>
+        </DescriptionListDetails>
+      </DescriptionListItem>
+      <DescriptionListItem>
+        <DescriptionListTerm>Status</DescriptionListTerm>
+        <DescriptionListDetails>
+          <Badge variant="success">Active</Badge>
+        </DescriptionListDetails>
+      </DescriptionListItem>
     </DescriptionList>
   ),
 };
