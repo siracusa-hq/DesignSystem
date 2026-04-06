@@ -260,6 +260,69 @@ export {
   AlertDialogCancel,
 } from './components/alert-dialog';
 
+// DescriptionList
+export {
+  DescriptionList,
+  DescriptionListItem,
+  DescriptionListTerm,
+  DescriptionListDetails,
+  descriptionListVariants,
+  type DescriptionListProps,
+} from './components/description-list';
+
+// ToggleGroup
+export {
+  ToggleGroup,
+  ToggleGroupItem,
+  toggleGroupItemVariants,
+  type ToggleGroupProps,
+  type ToggleGroupItemProps,
+} from './components/toggle-group';
+
+// ContextMenu
+export {
+  ContextMenu,
+  ContextMenuTrigger,
+  ContextMenuContent,
+  ContextMenuGroup,
+  ContextMenuPortal,
+  ContextMenuSub,
+  ContextMenuSubTrigger,
+  ContextMenuSubContent,
+  ContextMenuRadioGroup,
+  ContextMenuItem,
+  ContextMenuCheckboxItem,
+  ContextMenuRadioItem,
+  ContextMenuLabel,
+  ContextMenuSeparator,
+  ContextMenuShortcut,
+  type ContextMenuItemProps,
+} from './components/context-menu';
+
+// CopyButton
+export { CopyButton, type CopyButtonProps } from './components/copy-button';
+
+// Slider
+export { Slider, type SliderProps } from './components/slider';
+
+// Tree
+export { Tree, type TreeProps, type TreeNode } from './components/tree';
+
+// Resizable
+export {
+  ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle,
+  type ResizableHandleProps,
+} from './components/resizable';
+
+// NotificationCenter
+export {
+  NotificationCenter,
+  type NotificationCenterProps,
+  type NotificationItem,
+} from './components/notification-center';
+
 // Navigation + Layout
 export {
   Popover,
