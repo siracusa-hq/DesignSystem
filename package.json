@@ -1,6 +1,6 @@
 {
   "name": "@polastack/design-system",
-  "version": "0.1.68",
+  "version": "0.1.69",
   "description": "Polastack Design System - UI components and design tokens for business applications",
   "type": "module",
   "license": "MIT",
