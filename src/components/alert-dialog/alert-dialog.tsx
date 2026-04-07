@@ -35,8 +35,13 @@ export const AlertDialogContent = React.forwardRef<
       className={cn(
         'fixed z-modal bg-[var(--color-surface-raised)] p-6 shadow-xl',
         'focus-visible:outline-none',
-        // Mobile: full-screen
+        // Mobile: full-screen with safe area insets
         'inset-0',
+        'pt-[max(1.5rem,env(safe-area-inset-top))]',
+        'pb-[max(1.5rem,env(safe-area-inset-bottom))]',
+        'pl-[max(1.5rem,env(safe-area-inset-left))]',
+        'pr-[max(1.5rem,env(safe-area-inset-right))]',
+        'sm:p-6',
         // Desktop: centered modal
         'sm:inset-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2',
         'sm:w-full sm:max-w-lg sm:rounded-xl sm:border sm:border-[var(--color-border)]',

@@ -35,8 +35,13 @@ export const DialogContent = React.forwardRef<
       className={cn(
         'fixed z-modal bg-[var(--color-surface-raised)] p-6 shadow-xl',
         'focus-visible:outline-none',
-        // Mobile: full-screen
+        // Mobile: full-screen with safe area insets
         'inset-0',
+        'pt-[max(1.5rem,env(safe-area-inset-top))]',
+        'pb-[max(1.5rem,env(safe-area-inset-bottom))]',
+        'pl-[max(1.5rem,env(safe-area-inset-left))]',
+        'pr-[max(1.5rem,env(safe-area-inset-right))]',
+        'sm:p-6',
         // Desktop: centered modal
         'sm:inset-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2',
         'sm:w-full sm:max-w-lg md:max-w-xl sm:rounded-xl sm:border sm:border-[var(--color-border)]',
@@ -50,7 +55,7 @@ export const DialogContent = React.forwardRef<
       {...props}
     >
       {children}
-      <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:pointer-events-none">
+      <DialogPrimitive.Close className="absolute right-4 top-4 inline-flex items-center justify-center rounded-sm opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:pointer-events-none touch:min-h-[--touch-target-min] touch:min-w-[--touch-target-min]">
         <X className="h-4 w-4" />
         <span className="sr-only">Close</span>
       </DialogPrimitive.Close>
