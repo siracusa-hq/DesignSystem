@@ -57,7 +57,7 @@ export function DataTablePagination<TData>({
         </span>
         <div className="flex items-center gap-1">
           <button
-            className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[var(--color-border-input)] bg-[var(--color-surface-raised)] transition-colors hover:bg-[var(--color-surface-sunken)] disabled:opacity-50 disabled:pointer-events-none"
+            className="inline-flex h-8 w-8 touch:h-11 touch:w-11 items-center justify-center rounded-md border border-[var(--color-border-input)] bg-[var(--color-surface-raised)] transition-colors hover:bg-[var(--color-surface-sunken)] disabled:opacity-50 disabled:pointer-events-none"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
             aria-label="Previous page"
@@ -65,7 +65,7 @@ export function DataTablePagination<TData>({
             <ChevronLeft className="h-4 w-4" />
           </button>
           <button
-            className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[var(--color-border-input)] bg-[var(--color-surface-raised)] transition-colors hover:bg-[var(--color-surface-sunken)] disabled:opacity-50 disabled:pointer-events-none"
+            className="inline-flex h-8 w-8 touch:h-11 touch:w-11 items-center justify-center rounded-md border border-[var(--color-border-input)] bg-[var(--color-surface-raised)] transition-colors hover:bg-[var(--color-surface-sunken)] disabled:opacity-50 disabled:pointer-events-none"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
             aria-label="Next page"

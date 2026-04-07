@@ -122,7 +122,7 @@ export const KanbanColumn = React.forwardRef<HTMLDivElement, KanbanColumnProps>(
               type="button"
               onClick={onAddCard}
               aria-label={`Add card to ${title}`}
-              className="rounded-sm p-0.5 text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+              className="inline-flex items-center justify-center rounded-sm p-0.5 text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 touch:min-h-[--touch-target-min] touch:min-w-[--touch-target-min]"
             >
               <Plus className="size-4" />
             </button>
@@ -177,7 +177,7 @@ export const KanbanCard = React.forwardRef<HTMLDivElement, KanbanCardProps>(
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
         className={cn(
-          'cursor-grab rounded-md border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-3 text-sm shadow-sm transition-shadow',
+          'cursor-grab rounded-md border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-3 text-sm shadow-sm transition-shadow touch:min-h-[--touch-target-min]',
           'hover:shadow-md',
           'active:cursor-grabbing',
           dragging && 'opacity-50',

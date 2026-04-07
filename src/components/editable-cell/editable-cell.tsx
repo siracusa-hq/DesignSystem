@@ -88,7 +88,7 @@ export const EditableCell = React.forwardRef<HTMLDivElement, EditableCellProps>(
             onBlur={handleConfirm}
             disabled={saving}
             className={cn(
-              'h-8 w-full rounded border border-primary-500 bg-[var(--color-surface-raised)] px-2 text-sm outline-none',
+              'h-8 w-full touch:h-11 rounded border border-primary-500 bg-[var(--color-surface-raised)] px-2 text-sm outline-none',
               'ring-2 ring-primary-500/20',
               saving && 'opacity-50',
             )}
@@ -116,7 +116,7 @@ export const EditableCell = React.forwardRef<HTMLDivElement, EditableCellProps>(
           }
         }}
         className={cn(
-          '-m-1 h-8 cursor-pointer rounded px-2 text-sm leading-8 transition-colors',
+          '-m-1 h-8 cursor-pointer rounded px-2 text-sm leading-8 transition-colors touch:h-11 touch:leading-[2.75rem]',
           'hover:bg-[var(--color-surface-muted)]',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/30',
           disabled && 'cursor-default opacity-50',
