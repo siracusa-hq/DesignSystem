@@ -139,7 +139,7 @@ function TreeItem({ node, level }: { node: TreeNode; level: number }) {
     >
       <div
         className={cn(
-          'flex h-8 cursor-pointer items-center gap-1 rounded-md px-2 transition-colors',
+          'flex h-8 cursor-pointer items-center gap-1 rounded-md px-2 transition-colors touch:h-11',
           'hover:bg-[var(--color-surface-muted)]',
           'focus-within:ring-2 focus-within:ring-primary-500 focus-within:ring-offset-1',
           isSelected && 'bg-primary-100 text-primary-700 dark:bg-primary-950 dark:text-primary-300',

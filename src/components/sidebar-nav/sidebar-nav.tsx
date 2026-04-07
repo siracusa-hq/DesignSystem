@@ -58,7 +58,7 @@ export const SidebarNavGroup = React.forwardRef<
         className={cn('flex flex-col mt-4 first:mt-0', className)}
         {...props}
       >
-        <CollapsiblePrimitive.Trigger className="group flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-xs font-semibold uppercase tracking-wider text-[var(--color-on-surface-muted)] transition-colors hover:text-[var(--color-on-surface-secondary)] hover:bg-[var(--color-surface-muted)]">
+        <CollapsiblePrimitive.Trigger className="group flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-xs font-semibold uppercase tracking-wider text-[var(--color-on-surface-muted)] transition-colors hover:text-[var(--color-on-surface-secondary)] hover:bg-[var(--color-surface-muted)] touch:min-h-[--touch-target-min]">
           {icon && <span className="shrink-0 opacity-70">{icon}</span>}
           <span className="flex-1 text-left">{title}</span>
           <ChevronDown
@@ -96,7 +96,7 @@ export const SidebarNavItem = React.forwardRef<
     ref={ref}
     type="button"
     className={cn(
-      'flex w-full items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm transition-colors',
+      'flex w-full items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm transition-colors touch:min-h-[--touch-target-min]',
       active
         ? 'bg-[var(--color-surface-accent)] text-[var(--color-on-surface-accent)] font-medium'
         : 'text-[var(--color-on-surface-secondary)] hover:bg-[var(--color-surface-muted)] hover:text-[var(--color-on-surface)]',
