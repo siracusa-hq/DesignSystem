@@ -40,7 +40,7 @@ FilterBarGroup.displayName = 'FilterBarGroup';
 /* ----- FilterChip ----- */
 
 const filterChipVariants = cva(
-  'inline-flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium transition-colors duration-fast',
+  'inline-flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium transition-colors duration-fast touch:min-h-[--touch-target-min]',
   {
     variants: {
       variant: {
@@ -73,7 +73,7 @@ export const FilterChip = React.forwardRef<HTMLSpanElement, FilterChipProps>(
         <button
           type="button"
           onClick={onRemove}
-          className="ml-0.5 rounded-full p-0.5 hover:bg-black/10 transition-colors"
+          className="ml-0.5 inline-flex items-center justify-center rounded-full p-0.5 hover:bg-black/10 transition-colors touch:min-h-[--touch-target-min] touch:min-w-[--touch-target-min]"
           aria-label={`Remove ${label} filter`}
         >
           <X className="h-3 w-3" />
@@ -106,7 +106,7 @@ export const ActiveFilters = React.forwardRef<
       <button
         type="button"
         onClick={onClearAll}
-        className="text-sm text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface-secondary)] underline transition-colors"
+        className="inline-flex items-center text-sm text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface-secondary)] underline transition-colors touch:min-h-[--touch-target-min] touch:px-2"
       >
         {clearAllLabel}
       </button>
@@ -171,7 +171,7 @@ export function FilterSelector({
     <div className={cn('relative', className)} ref={menuRef}>
       <button
         type="button"
-        className="inline-flex items-center gap-1 rounded-md border border-[var(--color-border-input)] bg-[var(--color-surface-raised)] px-3 py-1.5 text-sm transition-colors hover:bg-[var(--color-surface-muted)]"
+        className="inline-flex items-center gap-1 rounded-md border border-[var(--color-border-input)] bg-[var(--color-surface-raised)] px-3 py-1.5 text-sm transition-colors hover:bg-[var(--color-surface-muted)] touch:min-h-[--touch-target-min]"
         onClick={() => setOpen(!open)}
         aria-label={label}
         aria-expanded={open}
@@ -185,7 +185,7 @@ export function FilterSelector({
           {options.map((opt) => (
             <label
               key={opt.id}
-              className="flex items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-[var(--color-surface-sunken)] cursor-pointer"
+              className="flex items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-[var(--color-surface-sunken)] cursor-pointer touch:min-h-[--touch-target-min]"
             >
               <input
                 type="checkbox"
