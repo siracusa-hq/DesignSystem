@@ -184,7 +184,7 @@ export function DataTable<TData>({
                 <TableHead key={header.id} className={cn(gridCellClass, stickyHeadClass(colIndex))} style={getCellStyle(header, colIndex)}>
                   {header.isPlaceholder ? null : header.column.getCanSort() ? (
                     <button
-                      className="flex items-center gap-1 -ml-2 px-2 py-1 rounded-md hover:bg-[var(--color-surface-muted)] transition-colors duration-fast"
+                      className="flex items-center gap-1 -ml-2 px-2 py-1 rounded-md hover:bg-[var(--color-surface-muted)] transition-colors duration-fast touch:min-h-[--touch-target-min]"
                       onClick={header.column.getToggleSortingHandler()}
                       aria-label={`Sort by ${typeof header.column.columnDef.header === 'string' ? header.column.columnDef.header : header.column.id}`}
                     >
