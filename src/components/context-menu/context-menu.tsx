@@ -42,7 +42,7 @@ export const ContextMenuItem = React.forwardRef<
   <ContextMenuPrimitive.Item
     ref={ref}
     className={cn(
-      'relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors',
+      'relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors touch:min-h-[--touch-target-min]',
       'focus:bg-[var(--color-surface-muted)] focus:text-[var(--color-on-surface)]',
       'data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
       destructive && 'text-error-600 focus:bg-error-50 focus:text-error-600',
@@ -61,7 +61,7 @@ export const ContextMenuCheckboxItem = React.forwardRef<
   <ContextMenuPrimitive.CheckboxItem
     ref={ref}
     className={cn(
-      'relative flex cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors',
+      'relative flex cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors touch:min-h-[--touch-target-min]',
       'focus:bg-[var(--color-surface-muted)]',
       'data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
       className,
@@ -86,7 +86,7 @@ export const ContextMenuRadioItem = React.forwardRef<
   <ContextMenuPrimitive.RadioItem
     ref={ref}
     className={cn(
-      'relative flex cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors',
+      'relative flex cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors touch:min-h-[--touch-target-min]',
       'focus:bg-[var(--color-surface-muted)]',
       'data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
       className,
@@ -114,7 +114,7 @@ export const ContextMenuSubTrigger = React.forwardRef<
   <ContextMenuPrimitive.SubTrigger
     ref={ref}
     className={cn(
-      'flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none',
+      'flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none touch:min-h-[--touch-target-min]',
       'focus:bg-[var(--color-surface-muted)]',
       'data-[state=open]:bg-[var(--color-surface-muted)]',
       inset && 'pl-8',

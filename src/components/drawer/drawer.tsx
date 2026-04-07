@@ -197,6 +197,7 @@ export const DrawerHeader = React.forwardRef<
       ref={ref}
       className={cn(
         'flex items-center justify-between border-b border-[var(--color-border)] px-4 py-3 sm:px-6 sm:py-4',
+        'pt-[max(0.75rem,env(safe-area-inset-top))] sm:pt-4',
         className,
       )}
       {...props}
@@ -208,7 +209,7 @@ export const DrawerHeader = React.forwardRef<
             type="button"
             onClick={() => onPinnedChange?.(!pinned)}
             className={cn(
-              'rounded-sm p-1 transition-opacity hover:opacity-100',
+              'inline-flex items-center justify-center rounded-sm p-1 transition-opacity hover:opacity-100 touch:min-h-[--touch-target-min] touch:min-w-[--touch-target-min]',
               pinned ? 'opacity-100 text-primary-500' : 'opacity-50',
             )}
             aria-label={pinned ? 'Unpin drawer' : 'Pin drawer'}
@@ -216,7 +217,7 @@ export const DrawerHeader = React.forwardRef<
             <Pin className="h-4 w-4" fill={pinned ? 'currentColor' : 'none'} />
           </button>
         )}
-        <DialogPrimitive.Close className="rounded-sm p-1 opacity-50 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+        <DialogPrimitive.Close className="inline-flex items-center justify-center rounded-sm p-1 opacity-50 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 touch:min-h-[--touch-target-min] touch:min-w-[--touch-target-min]">
           <X className="h-4 w-4" />
           <span className="sr-only">Close</span>
         </DialogPrimitive.Close>
@@ -264,6 +265,7 @@ export const DrawerFooter = React.forwardRef<
     ref={ref}
     className={cn(
       'flex items-center justify-end gap-2 border-t border-[var(--color-border)] px-4 py-3 sm:px-6 sm:py-4',
+      'pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pb-4',
       className,
     )}
     {...props}

@@ -70,7 +70,7 @@ export const NotificationCenter = React.forwardRef<
         <PopoverPrimitive.Portal>
           <PopoverPrimitive.Content
             className={cn(
-              'z-popover w-[380px] rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-raised)] shadow-lg',
+              'z-popover w-[380px] max-w-[calc(100vw-2rem)] rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-raised)] shadow-lg',
               'animate-in fade-in-0 zoom-in-95',
               'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
             )}
@@ -86,7 +86,7 @@ export const NotificationCenter = React.forwardRef<
                 <button
                   type="button"
                   onClick={onMarkAllAsRead}
-                  className="flex items-center gap-1 text-xs text-primary-600 hover:text-primary-700 dark:text-primary-400"
+                  className="inline-flex items-center gap-1 text-xs text-primary-600 hover:text-primary-700 dark:text-primary-400 touch:min-h-[--touch-target-min] touch:px-2"
                 >
                   <Check className="size-3" />
                   Mark all as read
@@ -118,7 +118,7 @@ export const NotificationCenter = React.forwardRef<
                       }
                     }}
                     className={cn(
-                      'flex cursor-pointer gap-3 px-4 py-3 text-sm transition-colors',
+                      'flex cursor-pointer gap-3 px-4 py-3 text-sm transition-colors touch:min-h-[--touch-target-min]',
                       'hover:bg-[var(--color-surface-muted)]',
                       !notification.read && 'bg-primary-50/50 dark:bg-primary-950/20',
                     )}

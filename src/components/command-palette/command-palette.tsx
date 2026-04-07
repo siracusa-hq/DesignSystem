@@ -27,7 +27,8 @@ export function CommandPalette({
         <DialogPrimitive.Overlay className="fixed inset-0 z-modal bg-[var(--color-surface-overlay)] animate-in fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0" />
         <DialogPrimitive.Content
           className={cn(
-            'fixed left-1/2 top-[20%] z-modal w-full max-w-xl -translate-x-1/2 overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-raised)] shadow-2xl',
+            'fixed left-1/2 top-[20%] z-modal w-full max-w-xl max-w-[calc(100vw-2rem)] -translate-x-1/2 overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-raised)] shadow-2xl',
+            'mt-[env(safe-area-inset-top)]',
             'animate-in fade-in-0 zoom-in-95 slide-in-from-left-1/2',
             'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
             className,
@@ -98,7 +99,7 @@ export function CommandPaletteItem({
       onSelect={onSelect}
       disabled={disabled}
       className={cn(
-        'relative flex cursor-pointer select-none items-center rounded-md px-2 py-2 text-sm outline-none',
+        'relative flex cursor-pointer select-none items-center rounded-md px-2 py-2 text-sm outline-none touch:min-h-[--touch-target-min]',
         'data-[selected=true]:bg-[var(--color-surface-muted)]',
         'data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50',
         className,
