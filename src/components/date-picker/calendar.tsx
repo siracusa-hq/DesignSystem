@@ -199,7 +199,7 @@ export function CalendarGrid({
         <Button
           variant="ghost"
           size="icon"
-          className="h-7 w-7"
+          className="h-7 w-7 touch:h-11 touch:w-11"
           disabled={isPrevDisabled}
           onClick={() => onNavigateMonth(-1)}
           aria-label="前の月"
@@ -214,7 +214,7 @@ export function CalendarGrid({
         <Button
           variant="ghost"
           size="icon"
-          className="h-7 w-7"
+          className="h-7 w-7 touch:h-11 touch:w-11"
           disabled={isNextDisabled}
           onClick={() => onNavigateMonth(1)}
           aria-label="次の月"
@@ -228,7 +228,7 @@ export function CalendarGrid({
         {WEEKDAYS.map((day) => (
           <div
             key={day}
-            className="flex h-8 w-8 items-center justify-center text-xs font-medium text-[var(--color-on-surface-muted)]"
+            className="flex h-8 w-8 items-center justify-center text-xs font-medium text-[var(--color-on-surface-muted)] touch:h-11 touch:w-11"
           >
             {day}
           </div>
@@ -245,7 +245,7 @@ export function CalendarGrid({
       >
         {calendarDays.map((date, i) => {
           if (!date) {
-            return <div key={`empty-${i}`} className="h-8 w-8" />;
+            return <div key={`empty-${i}`} className="h-8 w-8 touch:h-11 touch:w-11" />;
           }
 
           const isToday = isSameDay(date, today);
@@ -267,7 +267,7 @@ export function CalendarGrid({
               aria-current={isToday ? 'date' : undefined}
               onClick={() => onSelectDate(date)}
               className={cn(
-                'inline-flex h-8 w-8 items-center justify-center text-sm transition-colors duration-fast',
+                'inline-flex h-8 w-8 items-center justify-center text-sm transition-colors duration-fast touch:h-11 touch:w-11',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)]',
                 'disabled:pointer-events-none disabled:opacity-35',
                 customClassName,

@@ -251,7 +251,7 @@ function FileUploadItem({ file, index }: { file: File; index: number }) {
         aria-label={`Remove ${file.name}`}
         disabled={disabled}
         onClick={() => removeFile(index)}
-        className="shrink-0 rounded-sm p-1 text-[var(--color-on-surface-muted)] transition-colors hover:text-[var(--color-on-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:opacity-50"
+        className="inline-flex shrink-0 items-center justify-center rounded-sm p-1 text-[var(--color-on-surface-muted)] transition-colors hover:text-[var(--color-on-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:opacity-50 touch:min-h-[--touch-target-min] touch:min-w-[--touch-target-min]"
       >
         <X className="size-4" />
       </button>

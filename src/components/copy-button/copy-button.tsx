@@ -44,7 +44,7 @@ export const CopyButton = React.forwardRef<HTMLButtonElement, CopyButtonProps>(
         onClick={handleCopy}
         className={cn(
           buttonVariants({ variant: 'ghost', size: 'sm' }),
-          'size-8 p-0',
+          'size-8 p-0 touch:size-11',
           className,
         )}
         {...props}
