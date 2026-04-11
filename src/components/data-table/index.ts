@@ -1,4 +1,8 @@
 export { DataTable, type DataTableProps } from './data-table';
+export type {
+  DataTableColumnMeta,
+  DataTableMobileDisplay,
+} from './data-table.types';
 export { DataTableColumnHeader } from './data-table-column-header';
 export {
   ColumnPinSelector,

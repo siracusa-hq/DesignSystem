@@ -274,4 +274,126 @@ describe('DataTable', () => {
     const results = await axe(container);
     expect(results).toHaveNoViolations();
   });
+
+  /* ---------------------------------------------------------------
+     Card View (mobileDisplay)
+     --------------------------------------------------------------- */
+
+  it('renders cards when mobileDisplay is "cards"', () => {
+    render(
+      <DataTable
+        columns={columns}
+        data={testData.slice(0, 2)}
+        mobileDisplay="cards"
+        aria-label="Card table"
+      />,
+    );
+    const list = screen.getByRole('list', { name: 'Card table' });
+    const items = within(list).getAllByRole('listitem');
+    expect(items).toHaveLength(2);
+    expect(screen.getByText('Item 1')).toBeInTheDocument();
+    expect(screen.getByText('Item 2')).toBeInTheDocument();
+  });
+
+  it('renders label-value pairs in card view', () => {
+    render(
+      <DataTable
+        columns={columns}
+        data={testData.slice(0, 1)}
+        mobileDisplay="cards"
+        aria-label="Card table"
+      />,
+    );
+    // Columns become labels in the card
+    expect(screen.getByText('Name')).toBeInTheDocument();
+    expect(screen.getByText('Status')).toBeInTheDocument();
+    expect(screen.getByText('Item 1')).toBeInTheDocument();
+    expect(screen.getByText('Active')).toBeInTheDocument();
+  });
+
+  it('hides columns marked with hideInCardView', () => {
+    const columnsWithHide: ColumnDef<TestData, unknown>[] = [
+      { accessorKey: 'name', header: 'Name' },
+      { accessorKey: 'status', header: 'Status', meta: { hideInCardView: true } },
+    ];
+    render(
+      <DataTable
+        columns={columnsWithHide}
+        data={testData.slice(0, 1)}
+        mobileDisplay="cards"
+        aria-label="Card table"
+      />,
+    );
+    expect(screen.getByText('Item 1')).toBeInTheDocument();
+    expect(screen.queryByText('Status')).not.toBeInTheDocument();
+  });
+
+  it('supports renderCard custom render', () => {
+    render(
+      <DataTable
+        columns={columns}
+        data={testData.slice(0, 1)}
+        mobileDisplay="cards"
+        renderCard={(row) => <div data-testid="custom">{row.name}</div>}
+        aria-label="Card table"
+      />,
+    );
+    expect(screen.getByTestId('custom')).toHaveTextContent('Item 1');
+  });
+
+  it('shows checkboxes in card view with enableRowSelection', () => {
+    render(
+      <DataTable
+        columns={columns}
+        data={testData.slice(0, 1)}
+        mobileDisplay="cards"
+        enableRowSelection
+        aria-label="Card table"
+      />,
+    );
+    expect(screen.getByRole('checkbox', { name: 'Select row' })).toBeInTheDocument();
+  });
+
+  it('shows empty state in card view', () => {
+    render(
+      <DataTable
+        columns={columns}
+        data={[]}
+        mobileDisplay="cards"
+        aria-label="Card table"
+      />,
+    );
+    expect(screen.getByText('No results.')).toBeInTheDocument();
+  });
+
+  it('card view passes axe accessibility check', async () => {
+    const { container } = render(
+      <DataTable
+        columns={columns}
+        data={testData.slice(0, 3)}
+        mobileDisplay="cards"
+        aria-label="Card table"
+      />,
+    );
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
+  });
+
+  it('shows pagination in card view', () => {
+    render(
+      <DataTable
+        columns={columns}
+        data={testData}
+        mobileDisplay="cards"
+        enablePagination
+        pageSize={5}
+        aria-label="Card table"
+      />,
+    );
+    // Pagination should be present
+    expect(screen.getByLabelText('Next page')).toBeInTheDocument();
+    // Only first 5 items should show
+    const items = screen.getAllByRole('listitem');
+    expect(items).toHaveLength(5);
+  });
 });

@@ -23,6 +23,11 @@ import {
 import { Checkbox } from '@/components/checkbox';
 import { DataTablePagination } from './data-table-pagination';
 import { DataTableToolbar } from './data-table-toolbar';
+import { DataTableCardView } from './data-table-card-view';
+import { DataTablePopInRow } from './data-table-pop-in-row';
+import { useResponsiveColumns } from './use-responsive-columns';
+import { useBreakpoint } from '@/hooks/use-breakpoint';
+import type { DataTableMobileDisplay } from './data-table.types';
 
 export type DataTableVariant = 'rows' | 'grid';
 
@@ -41,6 +46,21 @@ export interface DataTableProps<TData> {
   emptyState?: React.ReactNode;
   className?: string;
   'aria-label'?: string;
+  /**
+   * Mobile display mode.
+   * - 'table': standard table with responsive column hiding + pop-in (default)
+   * - 'cards': rows render as vertical cards with label-value pairs
+   *
+   * Consumer controls when to switch:
+   *   const { isMobile } = useBreakpoint();
+   *   <DataTable mobileDisplay={isMobile ? 'cards' : 'table'} ... />
+   */
+  mobileDisplay?: DataTableMobileDisplay;
+  /**
+   * Custom render function for card view.
+   * If not provided, a default card layout is generated from columns.
+   */
+  renderCard?: (row: TData, index: number) => React.ReactNode;
 }
 
 export function DataTable<TData>({
@@ -58,6 +78,8 @@ export function DataTable<TData>({
   emptyState,
   className,
   'aria-label': ariaLabel,
+  mobileDisplay,
+  renderCard,
 }: DataTableProps<TData>) {
   const isGrid = variant === 'grid';
   const gridCellClass = isGrid
@@ -69,6 +91,19 @@ export function DataTable<TData>({
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+
+  // Responsive column hiding + pop-in
+  const { breakpoint } = useBreakpoint();
+  const { responsiveVisibility, poppedInColumnIds } = useResponsiveColumns(
+    columns,
+    breakpoint,
+  );
+
+  // Merge responsive visibility with user-controlled visibility
+  const mergedVisibility = React.useMemo(
+    () => ({ ...responsiveVisibility, ...columnVisibility }),
+    [responsiveVisibility, columnVisibility],
+  );
 
   const allColumns = React.useMemo(() => {
     if (!enableRowSelection) return columns;
@@ -107,7 +142,7 @@ export function DataTable<TData>({
   const table = useReactTable({
     data,
     columns: allColumns,
-    state: { sorting, rowSelection, columnVisibility },
+    state: { sorting, rowSelection, columnVisibility: mergedVisibility },
     onSortingChange: setSorting,
     onRowSelectionChange: setRowSelection,
     onColumnVisibilityChange: setColumnVisibility,
@@ -140,7 +175,7 @@ export function DataTable<TData>({
       }
       setStickyOffsets(offsets);
     }
-  }, [stickyColumns, columnVisibility]);
+  }, [stickyColumns, mergedVisibility]);
 
   const getCellStyle = (cell: { column: { getSize: () => number } }, colIndex: number): React.CSSProperties | undefined => {
     if (stickyColumns <= 0) return undefined;
@@ -166,6 +201,7 @@ export function DataTable<TData>({
       : '';
 
   const showToolbar = enableRowSelection || enableColumnVisibility;
+  const isCardView = mobileDisplay === 'cards';
 
   return (
     <div className={cn('rounded-md border border-[var(--color-border)]', className)}>
@@ -176,70 +212,89 @@ export function DataTable<TData>({
         />
       )}
 
-      <Table aria-label={ariaLabel} className={stickyColumns > 0 ? 'min-w-max' : undefined}>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id} ref={headerRowRef}>
-              {headerGroup.headers.map((header, colIndex) => (
-                <TableHead key={header.id} className={cn(gridCellClass, stickyHeadClass(colIndex))} style={getCellStyle(header, colIndex)}>
-                  {header.isPlaceholder ? null : header.column.getCanSort() ? (
-                    <button
-                      className="flex items-center gap-1 -ml-2 px-2 py-1 rounded-md hover:bg-[var(--color-surface-muted)] transition-colors duration-fast touch:min-h-[--touch-target-min]"
-                      onClick={header.column.getToggleSortingHandler()}
-                      aria-label={`Sort by ${typeof header.column.columnDef.header === 'string' ? header.column.columnDef.header : header.column.id}`}
-                    >
-                      {flexRender(
+      {isCardView ? (
+        <DataTableCardView
+          table={table}
+          columns={columns}
+          enableRowSelection={enableRowSelection}
+          renderCard={renderCard}
+          ariaLabel={ariaLabel}
+        />
+      ) : (
+        <Table aria-label={ariaLabel} className={stickyColumns > 0 ? 'min-w-max' : undefined}>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id} ref={headerRowRef}>
+                {headerGroup.headers.map((header, colIndex) => (
+                  <TableHead key={header.id} className={cn(gridCellClass, stickyHeadClass(colIndex))} style={getCellStyle(header, colIndex)}>
+                    {header.isPlaceholder ? null : header.column.getCanSort() ? (
+                      <button
+                        className="flex items-center gap-1 -ml-2 px-2 py-1 rounded-md hover:bg-[var(--color-surface-muted)] transition-colors duration-fast touch:min-h-[--touch-target-min]"
+                        onClick={header.column.getToggleSortingHandler()}
+                        aria-label={`Sort by ${typeof header.column.columnDef.header === 'string' ? header.column.columnDef.header : header.column.id}`}
+                      >
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                        <ChevronsUpDown
+                          className={cn(
+                            'h-3.5 w-3.5 shrink-0',
+                            header.column.getIsSorted() ? 'opacity-100' : 'opacity-30',
+                          )}
+                        />
+                      </button>
+                    ) : (
+                      flexRender(
                         header.column.columnDef.header,
                         header.getContext(),
-                      )}
-                      <ChevronsUpDown
-                        className={cn(
-                          'h-3.5 w-3.5 shrink-0',
-                          header.column.getIsSorted() ? 'opacity-100' : 'opacity-30',
-                        )}
-                      />
-                    </button>
-                  ) : (
-                    flexRender(
-                      header.column.columnDef.header,
-                      header.getContext(),
-                    )
-                  )}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows.length > 0 ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() ? 'selected' : undefined}
-                {...(enableRowSelection && {
-                  onClick: () => row.toggleSelected(),
-                  className: 'cursor-pointer',
-                })}
-              >
-                {row.getVisibleCells().map((cell, colIndex) => (
-                  <TableCell key={cell.id} className={cn(gridCellClass, stickyCellClass(colIndex))} style={getCellStyle(cell, colIndex)}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
+                      )
+                    )}
+                  </TableHead>
                 ))}
               </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell
-                colSpan={allColumns.length}
-                className="h-24 text-center"
-              >
-                {emptyState ?? 'No results.'}
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows.length > 0 ? (
+              table.getRowModel().rows.map((row) => (
+                <React.Fragment key={row.id}>
+                  <TableRow
+                    data-state={row.getIsSelected() ? 'selected' : undefined}
+                    {...(enableRowSelection && {
+                      onClick: () => row.toggleSelected(),
+                      className: 'cursor-pointer',
+                    })}
+                  >
+                    {row.getVisibleCells().map((cell, colIndex) => (
+                      <TableCell key={cell.id} className={cn(gridCellClass, stickyCellClass(colIndex))} style={getCellStyle(cell, colIndex)}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                  {poppedInColumnIds.length > 0 && (
+                    <DataTablePopInRow
+                      row={row}
+                      columns={columns}
+                      poppedInColumnIds={poppedInColumnIds}
+                      visibleColumnCount={row.getVisibleCells().length}
+                    />
+                  )}
+                </React.Fragment>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={allColumns.length}
+                  className="h-24 text-center"
+                >
+                  {emptyState ?? 'No results.'}
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      )}
 
       {enablePagination && (
         <DataTablePagination
