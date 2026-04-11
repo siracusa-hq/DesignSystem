@@ -9,19 +9,39 @@ export const KanbanScrollSnap = React.forwardRef<
   HTMLDivElement,
   KanbanScrollSnapProps
 >(({ columnCount, className, children, ...props }, ref) => {
+  const outerRef = React.useRef<HTMLDivElement>(null);
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = React.useState(0);
 
   React.useImperativeHandle(ref, () => scrollRef.current!);
 
+  // Measure outer container and set CSS variable for column width
+  React.useEffect(() => {
+    const outer = outerRef.current;
+    if (!outer) return;
+
+    const updateWidth = () => {
+      const w = outer.clientWidth;
+      outer.style.setProperty('--kanban-snap-col-w', `${w}px`);
+    };
+
+    updateWidth();
+    const ro = new ResizeObserver(updateWidth);
+    ro.observe(outer);
+    return () => ro.disconnect();
+  }, []);
+
+  // Track scroll position for dot indicator
   React.useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
 
     const handleScroll = () => {
-      const scrollLeft = el.scrollLeft;
-      const columnWidth = el.scrollWidth / columnCount;
-      const index = Math.round(scrollLeft / columnWidth);
+      const outer = outerRef.current;
+      if (!outer) return;
+      const colW = outer.clientWidth;
+      if (colW === 0) return;
+      const index = Math.round(el.scrollLeft / colW);
       setActiveIndex(Math.min(index, columnCount - 1));
     };
 
@@ -30,7 +50,7 @@ export const KanbanScrollSnap = React.forwardRef<
   }, [columnCount]);
 
   return (
-    <div className="flex flex-col">
+    <div ref={outerRef} className="flex w-full flex-col overflow-hidden">
       <div
         ref={scrollRef}
         className={cn(
@@ -54,9 +74,9 @@ export const KanbanScrollSnap = React.forwardRef<
               tabIndex={-1}
               onClick={() => {
                 const el = scrollRef.current;
-                if (!el) return;
-                const columnWidth = el.scrollWidth / columnCount;
-                el.scrollTo({ left: columnWidth * i, behavior: 'smooth' });
+                const outer = outerRef.current;
+                if (!el || !outer) return;
+                el.scrollTo({ left: outer.clientWidth * i, behavior: 'smooth' });
               }}
               className={cn(
                 'h-2 w-2 rounded-full transition-colors',
@@ -79,7 +99,8 @@ export const KanbanScrollSnapColumn = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn('w-full shrink-0 snap-start px-2', className)}
+    className={cn('shrink-0 snap-start px-4 box-border', className)}
+    style={{ width: 'var(--kanban-snap-col-w, 100%)' }}
     {...props}
   />
 ));

@@ -125,6 +125,7 @@ const allColumns = [
 ];
 
 export const ScrollSnap: Story = {
+  parameters: { layout: 'fullscreen' },
   render: () => {
     const { isMobile } = useBreakpoint();
     return (
@@ -162,6 +163,7 @@ export const ScrollSnap: Story = {
    --------------------------------------------------------------- */
 
 export const TouchDragAndMoveMenu: Story = {
+  parameters: { layout: 'fullscreen' },
   render: () => {
     const [cards, setCards] = useState([
       { id: 't1', col: 'todo', text: 'Design token audit' },
@@ -216,6 +218,7 @@ export const TouchDragAndMoveMenu: Story = {
    --------------------------------------------------------------- */
 
 export const MobileFullFeatured: Story = {
+  parameters: { layout: 'fullscreen' },
   render: () => {
     const [cards, setCards] = useState([
       { id: 't1', col: 'todo', text: 'Design token audit', badge: 'Design' as const },
