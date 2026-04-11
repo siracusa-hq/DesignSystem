@@ -2,7 +2,8 @@ import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Users } from 'lucide-react';
-import { DataTable, ColumnPinSelector } from '../components/data-table';
+import { DataTable, ColumnPinSelector, type DataTableColumnMeta } from '../components/data-table';
+import { useBreakpoint } from '../hooks/use-breakpoint';
 import { EditableCell } from '../components/editable-cell';
 import {
   EmptyState,
@@ -281,6 +282,102 @@ export const Editable: Story = {
           data={data}
           variant="grid"
           aria-label="Editable Users"
+        />
+      </div>
+    );
+  },
+};
+
+/* ---------------------------------------------------------------
+   Mobile: Card View
+   --------------------------------------------------------------- */
+
+export const CardView: Story = {
+  render: () => {
+    const { isMobile } = useBreakpoint();
+    return (
+      <div>
+        <p className="mb-2 text-sm text-[var(--color-on-surface-muted)]">
+          現在のモード: {isMobile ? 'カード' : 'テーブル'}（ブラウザ幅を640px以下にするとカードに切り替わります）
+        </p>
+        <DataTable
+          columns={columns}
+          data={users.slice(0, 5)}
+          mobileDisplay={isMobile ? 'cards' : 'table'}
+          aria-label="Users (responsive)"
+        />
+      </div>
+    );
+  },
+};
+
+export const CardViewAlwaysOn: Story = {
+  render: () => (
+    <DataTable
+      columns={columns}
+      data={users.slice(0, 5)}
+      mobileDisplay="cards"
+      aria-label="Users (card)"
+    />
+  ),
+};
+
+export const CardViewWithSelection: Story = {
+  render: () => (
+    <DataTable
+      columns={columns}
+      data={users.slice(0, 5)}
+      mobileDisplay="cards"
+      enableRowSelection
+      aria-label="Users (card + selection)"
+    />
+  ),
+};
+
+export const CardViewWithPagination: Story = {
+  render: () => (
+    <DataTable
+      columns={columns}
+      data={users}
+      mobileDisplay="cards"
+      enablePagination
+      pageSize={5}
+      aria-label="Users (card + pagination)"
+    />
+  ),
+};
+
+/* ---------------------------------------------------------------
+   Mobile: Responsive Columns + Pop-in
+   --------------------------------------------------------------- */
+
+const responsiveColumns: ColumnDef<User, unknown>[] = [
+  { accessorKey: 'name', header: 'Name', enableSorting: true },
+  {
+    accessorKey: 'email',
+    header: 'Email',
+    meta: { responsive: 'md', popIn: true, mobileLabel: 'Email' } satisfies DataTableColumnMeta,
+  },
+  {
+    accessorKey: 'role',
+    header: 'Role',
+    meta: { responsive: 'lg' } satisfies DataTableColumnMeta,
+  },
+  { accessorKey: 'status', header: 'Status' },
+];
+
+export const ResponsiveColumns: Story = {
+  render: () => {
+    const { breakpoint } = useBreakpoint();
+    return (
+      <div>
+        <p className="mb-2 text-sm text-[var(--color-on-surface-muted)]">
+          Breakpoint: {breakpoint} — Email は md 未満で pop-in、Role は lg 未満で非表示
+        </p>
+        <DataTable
+          columns={responsiveColumns}
+          data={users.slice(0, 5)}
+          aria-label="Users (responsive columns)"
         />
       </div>
     );
