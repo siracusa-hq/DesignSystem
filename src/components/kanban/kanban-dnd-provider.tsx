@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import {
   DndContext,
@@ -6,8 +8,16 @@ import {
   KeyboardSensor,
   useSensor,
   useSensors,
+  useDraggable,
+  useDroppable,
   type DragEndEvent,
+  type DraggableAttributes,
 } from '@dnd-kit/core';
+import type { SyntheticListenerMap } from '@dnd-kit/core/dist/hooks/utilities';
+
+/* ---------------------------------------------------------------
+   DnD Context Provider
+   --------------------------------------------------------------- */
 
 interface KanbanDndProviderProps {
   onCardMove?: (cardId: string, fromColumnId: string, toColumnId: string) => void;
@@ -50,3 +60,45 @@ export function KanbanDndProvider({
   );
 }
 KanbanDndProvider.displayName = 'KanbanDndProvider';
+
+/* ---------------------------------------------------------------
+   Droppable Column Wrapper
+   --------------------------------------------------------------- */
+
+interface DroppableColumnProps {
+  columnId: string;
+  children: (props: { setNodeRef: (node: HTMLElement | null) => void; isOver: boolean }) => React.ReactNode;
+}
+
+export function DroppableColumn({ columnId, children }: DroppableColumnProps) {
+  const { setNodeRef, isOver } = useDroppable({
+    id: `column-${columnId}`,
+    data: { columnId },
+  });
+  return <>{children({ setNodeRef, isOver })}</>;
+}
+DroppableColumn.displayName = 'DroppableColumn';
+
+/* ---------------------------------------------------------------
+   Draggable Card Wrapper
+   --------------------------------------------------------------- */
+
+interface DraggableCardProps {
+  cardId: string;
+  columnId: string;
+  children: (props: {
+    setNodeRef: (node: HTMLElement | null) => void;
+    isDragging: boolean;
+    attributes: DraggableAttributes;
+    listeners: SyntheticListenerMap | undefined;
+  }) => React.ReactNode;
+}
+
+export function DraggableCard({ cardId, columnId, children }: DraggableCardProps) {
+  const { setNodeRef, isDragging, attributes, listeners } = useDraggable({
+    id: cardId,
+    data: { columnId },
+  });
+  return <>{children({ setNodeRef, isDragging, attributes, listeners })}</>;
+}
+DraggableCard.displayName = 'DraggableCard';

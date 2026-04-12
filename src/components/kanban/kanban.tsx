@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { GripVertical, Plus } from 'lucide-react';
-import { useDraggable, useDroppable } from '@dnd-kit/core';
 import { cn } from '@/lib/cn';
-import { KanbanDndProvider } from './kanban-dnd-provider';
+import { KanbanDndProvider, DroppableColumn, DraggableCard } from './kanban-dnd-provider';
 import { KanbanMoveMenu } from './kanban-move-menu';
 import { KanbanScrollSnap, KanbanScrollSnapColumn } from './kanban-scroll-snap';
 
@@ -40,6 +39,7 @@ export interface KanbanBoardProps extends React.HTMLAttributes<HTMLDivElement> {
   /**
    * Enable touch-compatible drag and drop via @dnd-kit.
    * When false (default), uses HTML5 native DnD.
+   * Requires @dnd-kit/core to be installed as a peer dependency.
    */
   enableTouchDrag?: boolean;
 }
@@ -114,12 +114,6 @@ export const KanbanColumn = React.forwardRef<HTMLDivElement, KanbanColumnProps>(
     const { onCardMove, draggedCard, setDraggedCard, enableTouchDrag, mobileLayout } = React.useContext(KanbanContext);
     const [dragOver, setDragOver] = React.useState(false);
 
-    // @dnd-kit droppable (always called, but only used when enableTouchDrag)
-    const { setNodeRef: setDroppableRef, isOver } = useDroppable({
-      id: `column-${columnId}`,
-      data: { columnId },
-    });
-
     // HTML5 DnD handlers (only active when enableTouchDrag is false)
     const handleDragOver = (e: React.DragEvent) => {
       if (enableTouchDrag) return;
@@ -145,62 +139,75 @@ export const KanbanColumn = React.forwardRef<HTMLDivElement, KanbanColumnProps>(
       setDraggedCard(null);
     };
 
-    const showDropIndicator = enableTouchDrag ? isOver : dragOver;
     const isScrollSnap = mobileLayout === 'scroll-snap';
 
-    return (
-      <div
-        ref={(node) => {
-          if (typeof ref === 'function') ref(node);
-          else if (ref) (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
-          if (enableTouchDrag) setDroppableRef(node);
-        }}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        className={cn(
-          'flex shrink-0 flex-col rounded-lg bg-[var(--color-surface-muted)]',
-          isScrollSnap ? 'w-full' : 'w-72',
-          showDropIndicator && 'ring-2 ring-primary-500',
-          className,
-        )}
-        {...props}
-      >
-        {/* Column Header */}
-        <div className="flex items-center justify-between px-3 py-2.5">
-          <div className="flex items-center gap-2">
-            <h3 className="text-sm font-semibold text-[var(--color-on-surface)]">
-              {title}
-            </h3>
-            {count !== undefined && (
-              <span className="text-xs text-[var(--color-on-surface-muted)]">
-                {count}
-              </span>
+    const renderColumn = (droppableRef?: (node: HTMLElement | null) => void, isOver?: boolean) => {
+      const showDropIndicator = enableTouchDrag ? (isOver ?? false) : dragOver;
+
+      return (
+        <div
+          ref={(node) => {
+            if (typeof ref === 'function') ref(node);
+            else if (ref) (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+            droppableRef?.(node);
+          }}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          className={cn(
+            'flex shrink-0 flex-col rounded-lg bg-[var(--color-surface-muted)]',
+            isScrollSnap ? 'w-full' : 'w-72',
+            showDropIndicator && 'ring-2 ring-primary-500',
+            className,
+          )}
+          {...props}
+        >
+          {/* Column Header */}
+          <div className="flex items-center justify-between px-3 py-2.5">
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-[var(--color-on-surface)]">
+                {title}
+              </h3>
+              {count !== undefined && (
+                <span className="text-xs text-[var(--color-on-surface-muted)]">
+                  {count}
+                </span>
+              )}
+            </div>
+            {onAddCard && (
+              <button
+                type="button"
+                onClick={onAddCard}
+                aria-label={`Add card to ${title}`}
+                className="inline-flex items-center justify-center rounded-sm p-0.5 text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 touch:min-h-[--touch-target-min] touch:min-w-[--touch-target-min]"
+              >
+                <Plus className="size-4" />
+              </button>
             )}
           </div>
-          {onAddCard && (
-            <button
-              type="button"
-              onClick={onAddCard}
-              aria-label={`Add card to ${title}`}
-              className="inline-flex items-center justify-center rounded-sm p-0.5 text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 touch:min-h-[--touch-target-min] touch:min-w-[--touch-target-min]"
-            >
-              <Plus className="size-4" />
-            </button>
-          )}
-        </div>
 
-        {/* Cards */}
-        <div className="flex flex-1 flex-col gap-2 overflow-y-auto px-2 pb-2">
-          {children}
-          {!children && (
-            <div className="flex items-center justify-center py-8 text-xs text-[var(--color-on-surface-muted)]">
-              Drag cards here
-            </div>
-          )}
+          {/* Cards */}
+          <div className="flex flex-1 flex-col gap-2 overflow-y-auto px-2 pb-2">
+            {children}
+            {!children && (
+              <div className="flex items-center justify-center py-8 text-xs text-[var(--color-on-surface-muted)]">
+                Drag cards here
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    );
+      );
+    };
+
+    if (enableTouchDrag) {
+      return (
+        <DroppableColumn columnId={columnId}>
+          {({ setNodeRef, isOver }) => renderColumn(setNodeRef, isOver)}
+        </DroppableColumn>
+      );
+    }
+
+    return renderColumn();
   },
 );
 KanbanColumn.displayName = 'KanbanColumn';
@@ -224,17 +231,6 @@ export const KanbanCard = React.forwardRef<HTMLDivElement, KanbanCardProps>(
     const { setDraggedCard, enableTouchDrag, onCardMove } = React.useContext(KanbanContext);
     const [dragging, setDragging] = React.useState(false);
 
-    // @dnd-kit draggable (always called, but only used when enableTouchDrag)
-    const {
-      attributes: dndAttributes,
-      listeners: dndListeners,
-      setNodeRef: setDraggableRef,
-      isDragging,
-    } = useDraggable({
-      id: cardId,
-      data: { columnId },
-    });
-
     // HTML5 DnD handlers
     const handleDragStart = (e: React.DragEvent) => {
       if (enableTouchDrag) return;
@@ -250,49 +246,68 @@ export const KanbanCard = React.forwardRef<HTMLDivElement, KanbanCardProps>(
       setDraggedCard(null);
     };
 
-    const isDraggingState = enableTouchDrag ? isDragging : dragging;
+    const renderCard = (
+      draggableRef?: (node: HTMLElement | null) => void,
+      isDndDragging?: boolean,
+      dndAttributes?: Record<string, unknown>,
+      dndListeners?: Record<string, unknown>,
+    ) => {
+      const isDraggingState = enableTouchDrag ? (isDndDragging ?? false) : dragging;
 
-    return (
-      <div
-        ref={(node) => {
-          if (typeof ref === 'function') ref(node);
-          else if (ref) (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
-          if (enableTouchDrag) setDraggableRef(node);
-        }}
-        {...(!enableTouchDrag && { draggable: true, onDragStart: handleDragStart, onDragEnd: handleDragEnd })}
-        className={cn(
-          'group cursor-grab rounded-md border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-3 text-sm shadow-sm transition-shadow touch:min-h-[--touch-target-min]',
-          'hover:shadow-md',
-          'active:cursor-grabbing',
-          isDraggingState && 'opacity-50',
-          className,
-        )}
-        {...props}
-      >
-        <div className="flex items-start gap-2">
-          {enableTouchDrag && (
-            <button
-              type="button"
-              className="mt-0.5 shrink-0 cursor-grab touch:visible text-[var(--color-on-surface-muted)] active:cursor-grabbing"
-              aria-label="Drag handle"
-              {...dndAttributes}
-              {...dndListeners}
-            >
-              <GripVertical className="size-4" />
-            </button>
+      return (
+        <div
+          ref={(node) => {
+            if (typeof ref === 'function') ref(node);
+            else if (ref) (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+            draggableRef?.(node);
+          }}
+          {...(!enableTouchDrag && { draggable: true, onDragStart: handleDragStart, onDragEnd: handleDragEnd })}
+          className={cn(
+            'group cursor-grab rounded-md border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-3 text-sm shadow-sm transition-shadow touch:min-h-[--touch-target-min]',
+            'hover:shadow-md',
+            'active:cursor-grabbing',
+            isDraggingState && 'opacity-50',
+            className,
           )}
-          <div className="min-w-0 flex-1">{children}</div>
-          {moveToColumns && onCardMove && (
-            <KanbanMoveMenu
-              cardId={cardId}
-              currentColumnId={columnId}
-              columns={moveToColumns}
-              onMove={onCardMove}
-            />
-          )}
+          {...props}
+        >
+          <div className="flex items-start gap-2">
+            {enableTouchDrag && (
+              <button
+                type="button"
+                className="mt-0.5 shrink-0 cursor-grab touch:visible text-[var(--color-on-surface-muted)] active:cursor-grabbing"
+                aria-label="Drag handle"
+                {...(dndAttributes as React.ButtonHTMLAttributes<HTMLButtonElement>)}
+                {...(dndListeners as React.DOMAttributes<HTMLButtonElement>)}
+              >
+                <GripVertical className="size-4" />
+              </button>
+            )}
+            <div className="min-w-0 flex-1">{children}</div>
+            {moveToColumns && onCardMove && (
+              <KanbanMoveMenu
+                cardId={cardId}
+                currentColumnId={columnId}
+                columns={moveToColumns}
+                onMove={onCardMove}
+              />
+            )}
+          </div>
         </div>
-      </div>
-    );
+      );
+    };
+
+    if (enableTouchDrag) {
+      return (
+        <DraggableCard cardId={cardId} columnId={columnId}>
+          {({ setNodeRef, isDragging: isDndDragging, attributes, listeners }) =>
+            renderCard(setNodeRef, isDndDragging, attributes as unknown as Record<string, unknown>, listeners as unknown as Record<string, unknown>)
+          }
+        </DraggableCard>
+      );
+    }
+
+    return renderCard();
   },
 );
 KanbanCard.displayName = 'KanbanCard';
