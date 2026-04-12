@@ -1,6 +1,6 @@
 {
   "name": "@polastack/design-system",
-  "version": "0.1.75",
+  "version": "0.1.76",
   "description": "Polastack Design System - UI components and design tokens for business applications",
   "type": "module",
   "license": "MIT",
@@ -52,9 +52,15 @@
     "react-dom": "^18.0.0 || ^19.0.0"
   },
   "peerDependenciesMeta": {
-    "@dnd-kit/core": { "optional": true },
-    "@dnd-kit/sortable": { "optional": true },
-    "@dnd-kit/utilities": { "optional": true }
+    "@dnd-kit/core": {
+      "optional": true
+    },
+    "@dnd-kit/sortable": {
+      "optional": true
+    },
+    "@dnd-kit/utilities": {
+      "optional": true
+    }
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.12",
