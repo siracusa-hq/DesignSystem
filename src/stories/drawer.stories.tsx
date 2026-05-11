@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { useState } from 'react';
 import {
   Drawer,
   DrawerTrigger,
@@ -8,6 +9,7 @@ import {
   DrawerDescription,
   DrawerFooter,
   DrawerClose,
+  DrawerProvider,
 } from '../components/drawer';
 import { Button } from '../components/button';
 
@@ -115,4 +117,50 @@ export const WithPinning: Story = {
       </DrawerContent>
     </Drawer>
   ),
+};
+
+export const Stacked: Story = {
+  parameters: { layout: 'fullscreen' },
+  render: () => {
+    const StackedDemo = () => {
+      const [outerOpen, setOuterOpen] = useState(true);
+      const [innerOpen, setInnerOpen] = useState(true);
+      return (
+        <DrawerProvider>
+          <div className="p-8">
+            <Drawer open={outerOpen} onOpenChange={setOuterOpen} side="right">
+              <DrawerContent size="md">
+                <DrawerHeader>
+                  <DrawerTitle>First Drawer</DrawerTitle>
+                  <DrawerDescription>
+                    Opens a second drawer on top via stackOffset.
+                  </DrawerDescription>
+                </DrawerHeader>
+                <div className="p-6">
+                  <Drawer
+                    open={innerOpen}
+                    onOpenChange={setInnerOpen}
+                    side="right"
+                  >
+                    <DrawerContent size="sm">
+                      <DrawerHeader>
+                        <DrawerTitle>Second Drawer</DrawerTitle>
+                        <DrawerDescription>
+                          Stacked above the first drawer.
+                        </DrawerDescription>
+                      </DrawerHeader>
+                      <div className="p-6 text-sm text-neutral-600">
+                        Nested content.
+                      </div>
+                    </DrawerContent>
+                  </Drawer>
+                </div>
+              </DrawerContent>
+            </Drawer>
+          </div>
+        </DrawerProvider>
+      );
+    };
+    return <StackedDemo />;
+  },
 };

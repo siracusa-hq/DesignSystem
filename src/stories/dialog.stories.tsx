@@ -9,6 +9,19 @@ import {
   DialogDescription,
   DialogClose,
 } from '../components/dialog';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '../components/select';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '../components/dropdown-menu';
 import { Button } from '../components/button';
 import { Input } from '../components/input';
 import { Label } from '../components/label';
@@ -79,6 +92,79 @@ export const Confirmation: Story = {
             <Button variant="outline">Cancel</Button>
           </DialogClose>
           <Button className="bg-error-600 hover:bg-error-700">Delete</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  ),
+};
+
+export const WithSelect: Story = {
+  render: () => (
+    <Dialog defaultOpen>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Preferences</DialogTitle>
+          <DialogDescription>
+            Choose options from the select below. The dropdown list renders above
+            the dialog content.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="language" className="text-right">
+              Language
+            </Label>
+            <div className="col-span-3">
+              <Select defaultValue="en">
+                <SelectTrigger id="language">
+                  <SelectValue placeholder="Select language" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="en">English</SelectItem>
+                  <SelectItem value="ja">日本語</SelectItem>
+                  <SelectItem value="es">Español</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button variant="outline">Cancel</Button>
+          </DialogClose>
+          <Button>Save</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  ),
+};
+
+export const WithDropdownMenu: Story = {
+  render: () => (
+    <Dialog defaultOpen>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Item actions</DialogTitle>
+          <DialogDescription>
+            Open the action menu. Menu items render above the dialog content.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="py-4">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">Actions</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>Duplicate</DropdownMenuItem>
+              <DropdownMenuItem>Export</DropdownMenuItem>
+              <DropdownMenuItem>Archive</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button variant="outline">Close</Button>
+          </DialogClose>
         </DialogFooter>
       </DialogContent>
     </Dialog>

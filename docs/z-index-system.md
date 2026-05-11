@@ -92,6 +92,18 @@ const tabsListVariants = cva(
 
 Dialog / Drawer / Popover / Select / DropdownMenu / Tooltip / Toast 等は Radix Portal で document.body 直下に mount される。これらは backdrop floating または floating overlays の token を使う。
 
+## UX 設計ルール
+
+z-index 階層上は技術的に成立しても、UX として推奨しない / 設計判断として固定するパターンを記録する。
+
+### Drawer は閉じてから Dialog を開く
+
+Drawer 表示中に Dialog を重ねて開くことは技術上可能 (`z-modal=1200 > z-drawer=1100`) だが、視覚的なコンテキストの積層が深くなりユーザーが現在位置を見失いやすい。Drawer 内のアクションから Dialog を開く場合は、Drawer を閉じてから Dialog を表示する。
+
+### Toast は Modal 表示中も最前面で表示する
+
+Dialog / AlertDialog 表示中であっても Toast (`z-toast=1500`) は最前面で表示する。背景の重要操作 (保存完了、エラー通知等) はモーダル状態にかかわらずユーザーに届ける必要があるため、Modal の裏に隠さない。
+
 ## 組合せ別期待挙動
 
 | シナリオ | 期待 |
@@ -160,5 +172,6 @@ Dialog / Drawer / Popover / Select / DropdownMenu / Tooltip / Toast 等は Radix
 
 - `src/styles/tokens.css` — token 定義
 - `src/test/z-index-guard.test.ts` — 機械的防御 test
-- `src/stories/z-index-stacking.stories.tsx` — visual ref
+- `src/stories/dialog.stories.tsx` — `WithSelect` / `WithDropdownMenu` で Dialog 内 floating の UX を確認
+- `src/stories/drawer.stories.tsx` — `Stacked` で nested Drawer の stackOffset 挙動を確認
 - 各 overlay component の実装
