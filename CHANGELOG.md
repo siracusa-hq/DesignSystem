@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.2.1 (2026-05-11)
+
+### Refactor
+
+- **Storybook**: `Foundations/Z-Index Stacking` カテゴリを廃止し、Storybook の責務 (完成品の UX カタログ) と test の責務 (バグ再発防止) を分離。
+  - UX 確認価値のあるストーリーは個別 story の variant に移動: `Navigation/Dialog/WithSelect`, `Navigation/Dialog/WithDropdownMenu`, `Navigation/Drawer/Stacked`
+  - バグ再現専用ストーリー (`DialogInsideTabs` / `TooltipOverDialog` / `PopoverInsideDialog` / `DialogInsideDrawer` / `ToastOverModal`) は削除。バグ再発防止は `z-index-guard.test.ts` + 各 component の unit test で機械的に保証済み。
+
+### Docs
+
+- `docs/z-index-system.md` に UX 設計ルール追記
+  - 「Drawer は閉じてから Dialog を開く」
+  - 「Toast は Modal 表示中も最前面で表示する」
+
 ## 0.2.0 (2026-05-11)
 
 ### Breaking Changes
