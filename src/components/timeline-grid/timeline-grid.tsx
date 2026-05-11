@@ -776,7 +776,10 @@ export const TimelineGrid = React.forwardRef<HTMLDivElement, TimelineGridProps>(
         role="grid"
         aria-label="タイムライン"
         className={cn(
-          'overflow-auto',
+          // `isolate` で内部 z-10/20/30/40 (sticky cell, header 等) を root の
+          // stacking context 内に閉じ込める。Dialog (z-modal) 等の外部レイヤーに
+          // 漏れ出さない。詳細: docs/z-index-system.md
+          'isolate overflow-auto',
           'rounded-lg border border-[var(--color-border)]',
           'bg-[var(--color-surface)]',
           className,

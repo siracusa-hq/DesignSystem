@@ -51,7 +51,9 @@ export const ResizableHandle = ({
 }: ResizableHandleProps) => (
   <Separator
     className={cn(
-      'relative flex shrink-0 items-center justify-center bg-[var(--color-border)]',
+      // `isolate` で grip icon の z-10 を Separator 内に閉じる
+      // (Dialog 等の外部レイヤーに漏れない)。詳細: docs/z-index-system.md
+      'relative isolate flex shrink-0 items-center justify-center bg-[var(--color-border)]',
       'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-500 focus-visible:ring-offset-1',
       // Vertical divider (in horizontal group): aria-orientation="vertical"
       'aria-[orientation=vertical]:w-px aria-[orientation=vertical]:cursor-col-resize',

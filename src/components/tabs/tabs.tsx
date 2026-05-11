@@ -77,7 +77,10 @@ Tabs.displayName = 'Tabs';
 /* ----- TabsList ----- */
 
 const tabsListVariants = cva(
-  'inline-flex items-center justify-center overflow-x-auto max-w-full relative',
+  // `isolate` で stacking context を TabsList 内に閉じる。これにより
+  // TabsTrigger の `z-content` (= 1) が ancestor の Dialog/Drawer 等の上に
+  // 漏れ出さない。詳細: docs/z-index-system.md
+  'inline-flex items-center justify-center overflow-x-auto max-w-full relative isolate',
   {
     variants: {
       variant: {
@@ -211,7 +214,7 @@ const tabsTriggerBase =
   'inline-flex items-center justify-center whitespace-nowrap shrink-0 px-3 py-1.5 text-sm font-medium transition-colors duration-fast ' +
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 ' +
   'disabled:pointer-events-none disabled:opacity-50 ' +
-  'touch:min-h-[--touch-target-min] relative z-[1]';
+  'touch:min-h-[--touch-target-min] relative z-content';
 
 const getTabsTriggerVariantStyles = (
   variant: TabsVariant,

@@ -11,7 +11,9 @@ export const BottomNavigation = React.forwardRef<
   <nav
     ref={ref}
     className={cn(
-      'fixed bottom-0 left-0 right-0 z-sticky flex items-center justify-around border-t border-[var(--color-border)] bg-[var(--color-surface-raised)] pb-[var(--safe-area-bottom)]',
+      // `isolate` で stacking context を BottomNavigation 内に閉じる
+      // (子の z-index が外部レイヤーに干渉しないことを保証)。docs/z-index-system.md
+      'fixed bottom-0 left-0 right-0 z-sticky isolate flex items-center justify-around border-t border-[var(--color-border)] bg-[var(--color-surface-raised)] pb-[var(--safe-area-bottom)]',
       'h-[calc(var(--bottom-nav-height)+var(--safe-area-bottom))]',
       className,
     )}

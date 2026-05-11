@@ -104,4 +104,17 @@ describe('Timeline', () => {
     const results = await axe(container);
     expect(results).toHaveNoViolations();
   });
+
+  // z-index governance (docs/z-index-system.md)
+  it('Timeline root に isolate (TimelineIcon の z-10 を閉じ込め)', () => {
+    const { container } = render(
+      <Timeline>
+        <TimelineItem>
+          <TimelineIcon>1</TimelineIcon>
+        </TimelineItem>
+      </Timeline>,
+    );
+    const ol = container.querySelector('ol');
+    expect(ol?.className).toContain('isolate');
+  });
 });

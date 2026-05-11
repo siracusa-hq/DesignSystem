@@ -6,7 +6,9 @@ export const Timeline = React.forwardRef<
   HTMLOListElement,
   React.HTMLAttributes<HTMLOListElement>
 >(({ className, ...props }, ref) => (
-  <ol ref={ref} className={cn('relative space-y-0', className)} {...props} />
+  // `isolate` で TimelineIcon の z-10 を Timeline 内に閉じる
+  // (Dialog 等の外部レイヤーに漏れない)。詳細: docs/z-index-system.md
+  <ol ref={ref} className={cn('relative isolate space-y-0', className)} {...props} />
 ));
 Timeline.displayName = 'Timeline';
 

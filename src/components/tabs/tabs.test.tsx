@@ -99,4 +99,16 @@ describe('Tabs', () => {
     const results = await axe(container);
     expect(results).toHaveNoViolations();
   });
+
+  // z-index governance (docs/z-index-system.md)
+  it('TabsList の className に isolate が含まれる (stacking context 閉じ込め)', () => {
+    renderTabs();
+    expect(screen.getByRole('tablist').className).toContain('isolate');
+  });
+
+  it('TabsTrigger の className に z-content が含まれる (任意値 z-[1] 撲滅)', () => {
+    renderTabs();
+    const triggers = screen.getAllByRole('tab');
+    expect(triggers[0].className).toContain('z-content');
+  });
 });

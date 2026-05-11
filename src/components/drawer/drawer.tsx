@@ -158,23 +158,23 @@ export const DrawerContent = React.forwardRef<
     <DialogPrimitive.Portal>
       <DialogPrimitive.Overlay
         className={cn(
-          'fixed inset-0 bg-[var(--color-surface-overlay)]',
+          'fixed inset-0 z-drawer bg-[var(--color-surface-overlay)]',
           'animate-in fade-in-0',
           'data-[state=closed]:animate-out data-[state=closed]:fade-out-0',
         )}
-        style={{ zIndex: 200 + stackOffset }}
+        style={{ zIndex: `calc(var(--z-drawer) + ${stackOffset})` }}
       />
       <DialogPrimitive.Content
         ref={ref}
         className={cn(
-          'fixed top-0 h-full max-w-full bg-[var(--color-surface-raised)] shadow-xl',
+          'fixed top-0 h-full max-w-full z-drawer bg-[var(--color-surface-raised)] shadow-xl',
           'focus-visible:outline-none',
           side === 'right' && 'right-0 border-l border-[var(--color-border)] animate-slide-in-right data-[state=closed]:animate-slide-out-right',
           side === 'left' && 'left-0 border-r border-[var(--color-border)] animate-slide-in-left data-[state=closed]:animate-slide-out-left',
           drawerSizeVariants({ size }),
           className,
         )}
-        style={{ zIndex: 201 + stackOffset }}
+        style={{ zIndex: `calc(var(--z-drawer) + ${stackOffset + 1})` }}
         {...props}
       >
         <div className="flex h-full flex-col">{children}</div>
