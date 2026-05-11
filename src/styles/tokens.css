@@ -191,16 +191,28 @@
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 
   /* --------------------------------------------------------
-     Z-Index Scale
-     Drawer重ね表示パターン対応
+     Z-Index Scale - 3-tier hierarchy
+     in-flow (page content) / backdrop floating (Modal等) /
+     floating overlays (Modal の上に積む portal)
+     詳細: docs/z-index-system.md
      -------------------------------------------------------- */
-  --z-dropdown: 50;
-  --z-sticky: 100;
-  --z-drawer: 200;
-  --z-modal: 300;
-  --z-popover: 400;
-  --z-toast: 500;
-  --z-tooltip: 600;
+
+  /* In-flow layers (page content) */
+  --z-base: 0;
+  --z-content: 1;          /* Tabs trigger 等、flow 内インライン要素 */
+  --z-sticky: 10;          /* sticky row/column (DataTable, TimelineGrid 等) */
+  --z-header: 20;          /* AppShellHeader 等 sticky page header */
+  --z-overlay-inline: 30;  /* InstallPrompt 等 fixed bottom banner (背景遮断ではない) */
+
+  /* Backdrop floating (背景遮断系) */
+  --z-drawer: 1100;        /* Drawer (mobile sidebar, side panel) */
+  --z-modal: 1200;         /* Dialog, AlertDialog, CommandPalette */
+
+  /* Floating overlays (Modal の上に積む portal) */
+  --z-popover: 1300;       /* Popover, Select, Combobox, FilterBar dropdown 等 */
+  --z-dropdown: 1300;      /* DropdownMenu, ContextMenu (popover と同値 alias) */
+  --z-tooltip: 1400;       /* Tooltip */
+  --z-toast: 1500;         /* Toast, OfflineIndicator */
 
   /* --------------------------------------------------------
      PWA: Safe Area Insets

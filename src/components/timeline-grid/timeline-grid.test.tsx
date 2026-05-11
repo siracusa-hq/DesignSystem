@@ -425,4 +425,15 @@ describe('TimelineGroup', () => {
     expect(screen.getByText('子タスク1')).toBeInTheDocument();
     expect(screen.getByText('マイルストーン1')).toBeInTheDocument();
   });
+
+  // z-index governance (docs/z-index-system.md)
+  it('root に isolate (内部 z-10/20/30/40 を閉じ込め)', () => {
+    const { container } = render(
+      <TimelineGrid rangeStart={RANGE_START} rangeEnd={RANGE_END}>
+        <TimelineRow label="row" />
+      </TimelineGrid>,
+    );
+    const grid = container.querySelector('[role="grid"]');
+    expect(grid?.className).toContain('isolate');
+  });
 });

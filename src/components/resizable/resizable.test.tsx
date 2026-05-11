@@ -80,4 +80,11 @@ describe('Resizable', () => {
     const results = await axe(container);
     expect(results).toHaveNoViolations();
   });
+
+  // z-index governance (docs/z-index-system.md)
+  it('ResizableHandle (Separator) に isolate (grip icon z-10 を閉じ込め)', () => {
+    const { container } = renderPanels({ withHandle: true });
+    const handle = container.querySelector('[data-panel-resize-handle]');
+    expect(handle?.className).toContain('isolate');
+  });
 });

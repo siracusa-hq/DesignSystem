@@ -36,7 +36,10 @@ export const InstallPrompt = React.forwardRef<HTMLDivElement, InstallPromptProps
         role="dialog"
         aria-label={title}
         className={cn(
-          'fixed bottom-0 left-0 right-0 z-modal border-t border-[var(--color-border)] bg-[var(--color-surface-raised)] p-4 shadow-lg pb-[calc(1rem+var(--safe-area-bottom))]',
+          // fixed bottom banner は背景遮断系ではないため `z-overlay-inline` (= 30)。
+          // Drawer (1100) / Dialog (1200) より下に来る。`isolate` で stacking context
+          // を InstallPrompt 内に閉じる。詳細: docs/z-index-system.md
+          'fixed bottom-0 left-0 right-0 z-overlay-inline isolate border-t border-[var(--color-border)] bg-[var(--color-surface-raised)] p-4 shadow-lg pb-[calc(1rem+var(--safe-area-bottom))]',
           className,
         )}
         {...props}

@@ -193,4 +193,24 @@ describe('Drawer', () => {
     const results = await axe(container);
     expect(results).toHaveNoViolations();
   });
+
+  // z-index governance (docs/z-index-system.md)
+  it('Overlay と Content に z-drawer class が付与されている', async () => {
+    const user = userEvent.setup();
+    renderDrawer();
+    await user.click(screen.getByText('Open Drawer'));
+
+    // Content の className に z-drawer を含む
+    const content = screen.getByRole('dialog');
+    expect(content.className).toContain('z-drawer');
+  });
+
+  it('Overlay/Content の inline zIndex が calc(var(--z-drawer)) を含む', async () => {
+    const user = userEvent.setup();
+    renderDrawer();
+    await user.click(screen.getByText('Open Drawer'));
+
+    const content = screen.getByRole('dialog');
+    expect(content.style.zIndex).toContain('var(--z-drawer)');
+  });
 });

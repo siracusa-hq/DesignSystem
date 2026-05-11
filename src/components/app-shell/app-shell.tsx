@@ -137,7 +137,10 @@ export const AppShellHeader = React.forwardRef<
     <header
       ref={ref}
       className={cn(
-        'flex h-14 items-center gap-3 border-b border-[var(--color-border)] bg-[var(--color-surface-raised)] px-4 shrink-0',
+        // `z-header` (= 20) を予防適用。将来 header 内に sticky sub-element を
+        // 配置した時にも、Modal/Drawer 等の floating レイヤーに対して
+        // 安定した順序関係を持つ。詳細: docs/z-index-system.md
+        'flex h-14 items-center gap-3 border-b border-[var(--color-border)] bg-[var(--color-surface-raised)] px-4 shrink-0 relative isolate z-header',
         className,
       )}
       {...props}
