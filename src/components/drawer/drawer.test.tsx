@@ -205,12 +205,12 @@ describe('Drawer', () => {
     expect(content.className).toContain('z-drawer');
   });
 
-  it('Overlay/Content の inline zIndex が calc(var(--z-drawer)) を含む', async () => {
+  it('Overlay/Content の inline zIndex が calc(var(--z-index-drawer)) を含む', async () => {
     const user = userEvent.setup();
     renderDrawer();
     await user.click(screen.getByText('Open Drawer'));
 
     const content = screen.getByRole('dialog');
-    expect(content.style.zIndex).toContain('var(--z-drawer)');
+    expect(content.style.zIndex).toContain('var(--z-index-drawer)');
   });
 });

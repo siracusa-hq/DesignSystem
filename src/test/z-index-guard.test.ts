@@ -49,7 +49,7 @@ const ALLOWLIST_ARBITRARY = new Set<string>([]);
 /**
  * inline `zIndex` の例外 allowlist。
  *
- * - drawer: `stackOffset` を加算するため `calc(var(--z-drawer) + N)` を inline で渡す
+ * - drawer: `stackOffset` を加算するため `calc(var(--z-index-drawer) + N)` を inline で渡す
  * - avatar-group: 重ね表示で `visible.length - i` の小さな in-flow z-index
  * - data-table 系: 内部 sticky cell の局所階層
  */

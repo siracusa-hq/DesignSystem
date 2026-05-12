@@ -162,7 +162,7 @@ export const DrawerContent = React.forwardRef<
           'animate-in fade-in-0',
           'data-[state=closed]:animate-out data-[state=closed]:fade-out-0',
         )}
-        style={{ zIndex: `calc(var(--z-drawer) + ${stackOffset})` }}
+        style={{ zIndex: `calc(var(--z-index-drawer) + ${stackOffset})` }}
       />
       <DialogPrimitive.Content
         ref={ref}
@@ -174,7 +174,7 @@ export const DrawerContent = React.forwardRef<
           drawerSizeVariants({ size }),
           className,
         )}
-        style={{ zIndex: `calc(var(--z-drawer) + ${stackOffset + 1})` }}
+        style={{ zIndex: `calc(var(--z-index-drawer) + ${stackOffset + 1})` }}
         {...props}
       >
         <div className="flex h-full flex-col">{children}</div>

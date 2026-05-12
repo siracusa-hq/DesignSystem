@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.2.2 (2026-05-12)
+
+### Fixes
+
+- **Tailwind v4 で `z-*` utility が生成されない問題を修正**。Token namespace を `--z-*` から **`--z-index-*`** に rename し、Tailwind v4 公式の namespace 規約に準拠。
+  - 旧: `--z-modal: 1200` → CSS 変数のみ生成、`.z-modal` utility は **未生成** (= class が無効化されて `z-index: auto` に fallback、Drawer / Dialog の stacking が想定通り動かなかった)
+  - 新: `--z-index-modal: 1200` → Tailwind v4 が `.z-modal { z-index: var(--z-index-modal) }` を自動生成
+- 0.2.0 の Drawer/Tabs 等のバグ修正は class 付与までは済んでいたが、本 patch で実際に CSS 値が適用されるようになる
+- `drawer.tsx` inline style: `calc(var(--z-drawer) + N)` → `calc(var(--z-index-drawer) + N)`
+- `src/test/z-index-guard.test.ts` の allowlist 文書を `--z-index-*` に更新
+- `docs/z-index-system.md` の全 token 名を `--z-index-*` に更新
+
+### Breaking changes (token 変数名のみ)
+
+- CSS 変数名: `--z-{name}` → `--z-index-{name}` (11 個全部)
+- consumer が `var(--z-modal)` などを **直接参照** している場合のみ手動更新が必要
+- **token utility (`z-modal` 等の class) は不変** — Tailwind 経由の利用者は影響なし
+
 ## 0.2.1 (2026-05-11)
 
 ### Refactor

@@ -194,25 +194,30 @@
      Z-Index Scale - 3-tier hierarchy
      in-flow (page content) / backdrop floating (Modal等) /
      floating overlays (Modal の上に積む portal)
+
+     **重要**: Tailwind v4 で `z-modal` 等の utility を自動生成させるため、
+     namespace は `--z-index-*` (公式規約)。`--z-*` だと CSS 変数のみ作られて
+     utility は生成されない (= class が無効化される)。
+
      詳細: docs/z-index-system.md
      -------------------------------------------------------- */
 
   /* In-flow layers (page content) */
-  --z-base: 0;
-  --z-content: 1;          /* Tabs trigger 等、flow 内インライン要素 */
-  --z-sticky: 10;          /* sticky row/column (DataTable, TimelineGrid 等) */
-  --z-header: 20;          /* AppShellHeader 等 sticky page header */
-  --z-overlay-inline: 30;  /* InstallPrompt 等 fixed bottom banner (背景遮断ではない) */
+  --z-index-base: 0;
+  --z-index-content: 1;          /* Tabs trigger 等、flow 内インライン要素 */
+  --z-index-sticky: 10;          /* sticky row/column (DataTable, TimelineGrid 等) */
+  --z-index-header: 20;          /* AppShellHeader 等 sticky page header */
+  --z-index-overlay-inline: 30;  /* InstallPrompt 等 fixed bottom banner (背景遮断ではない) */
 
   /* Backdrop floating (背景遮断系) */
-  --z-drawer: 1100;        /* Drawer (mobile sidebar, side panel) */
-  --z-modal: 1200;         /* Dialog, AlertDialog, CommandPalette */
+  --z-index-drawer: 1100;        /* Drawer (mobile sidebar, side panel) */
+  --z-index-modal: 1200;         /* Dialog, AlertDialog, CommandPalette */
 
   /* Floating overlays (Modal の上に積む portal) */
-  --z-popover: 1300;       /* Popover, Select, Combobox, FilterBar dropdown 等 */
-  --z-dropdown: 1300;      /* DropdownMenu, ContextMenu (popover と同値 alias) */
-  --z-tooltip: 1400;       /* Tooltip */
-  --z-toast: 1500;         /* Toast, OfflineIndicator */
+  --z-index-popover: 1300;       /* Popover, Select, Combobox, FilterBar dropdown 等 */
+  --z-index-dropdown: 1300;      /* DropdownMenu, ContextMenu (popover と同値 alias) */
+  --z-index-tooltip: 1400;       /* Tooltip */
+  --z-index-toast: 1500;         /* Toast, OfflineIndicator */
 
   /* --------------------------------------------------------
      PWA: Safe Area Insets
