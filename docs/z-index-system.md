@@ -46,17 +46,17 @@ Polastack Design System の z-index 階層と利用規約。
 
 | Token | 値 | Tier | 利用箇所 |
 |---|---|---|---|
-| `--z-base` | 0 | flow | default、汎用 |
-| `--z-content` | 1 | flow | `tabs` (TabsTrigger) |
-| `--z-sticky` | 10 | flow | `bottom-navigation`、DataTable/TimelineGrid 内部 sticky cell |
-| `--z-header` | 20 | flow | `app-shell` (AppShellHeader) |
-| `--z-overlay-inline` | 30 | flow | `install-prompt` (fixed bottom banner) |
-| `--z-drawer` | 1100 | backdrop | `drawer` (Overlay + Content、stackOffset 加算) |
-| `--z-modal` | 1200 | backdrop | `dialog`, `alert-dialog`, `command-palette` |
-| `--z-popover` | 1300 | floating | `popover`, `select`, `combobox`, `notification-center`, `filter-bar`, `tag-input`, `data-table-toolbar`, `data-table-column-pin-selector` |
-| `--z-dropdown` | 1300 | floating | `dropdown-menu`, `context-menu` (popover と同値 alias) |
-| `--z-tooltip` | 1400 | floating | `tooltip` |
-| `--z-toast` | 1500 | floating | `toast`, `offline-indicator` |
+| `--z-index-base` | 0 | flow | default、汎用 |
+| `--z-index-content` | 1 | flow | `tabs` (TabsTrigger) |
+| `--z-index-sticky` | 10 | flow | `bottom-navigation`、DataTable/TimelineGrid 内部 sticky cell |
+| `--z-index-header` | 20 | flow | `app-shell` (AppShellHeader) |
+| `--z-index-overlay-inline` | 30 | flow | `install-prompt` (fixed bottom banner) |
+| `--z-index-drawer` | 1100 | backdrop | `drawer` (Overlay + Content、stackOffset 加算) |
+| `--z-index-modal` | 1200 | backdrop | `dialog`, `alert-dialog`, `command-palette` |
+| `--z-index-popover` | 1300 | floating | `popover`, `select`, `combobox`, `notification-center`, `filter-bar`, `tag-input`, `data-table-toolbar`, `data-table-column-pin-selector` |
+| `--z-index-dropdown` | 1300 | floating | `dropdown-menu`, `context-menu` (popover と同値 alias) |
+| `--z-index-tooltip` | 1400 | floating | `tooltip` |
+| `--z-index-toast` | 1500 | floating | `toast`, `offline-indicator` |
 
 ## 利用規約
 
@@ -69,7 +69,7 @@ Polastack Design System の z-index 階層と利用規約。
 
 // ✅ OK
 <div className="z-content" />
-<div style={{ zIndex: `calc(var(--z-drawer) + ${offset})` }} /> {/* allowlist 内 */}
+<div style={{ zIndex: `calc(var(--z-index-drawer) + ${offset})` }} /> {/* allowlist 内 */}
 ```
 
 機械的防御: `src/test/z-index-guard.test.ts` が repo 全体を grep して任意値を検出 → CI で fail。
@@ -151,19 +151,19 @@ Dialog / AlertDialog 表示中であっても Toast (`z-toast=1500`) は最前�
 | `className="z-[1000]"` | `className="z-modal"` または用途に応じた token |
 | `style={{ zIndex: 50 }}` | token utility 経由 (例: `className="z-dropdown"`)、allowlist 例外は test に登録 |
 | 内部で `z-10` を使う component の root に `isolate` 無し | root を `relative isolate` にして閉じ込める |
-| `--z-modal` の値だけ別 utility で上書き | tokens.css で値を変える (全体に伝播) |
+| `--z-index-modal` の値だけ別 utility で上書き | tokens.css で値を変える (全体に伝播) |
 
 ## 後方互換性メモ (0.2.0 リリース)
 
 | token | 旧値 (0.1.x) | 新値 (0.2.0) |
 |---|---|---|
-| `--z-dropdown` | 50 | **1300** (Modal 内で使う前提に変更) |
-| `--z-sticky` | 100 | **10** (in-flow 階層に再分類) |
-| `--z-drawer` | 200 | **1100** |
-| `--z-modal` | 300 | **1200** |
-| `--z-popover` | 400 | **1300** |
-| `--z-toast` | 500 | **1500** |
-| `--z-tooltip` | 600 | **1400** |
+| `--z-index-dropdown` | 50 | **1300** (Modal 内で使う前提に変更) |
+| `--z-index-sticky` | 100 | **10** (in-flow 階層に再分類) |
+| `--z-index-drawer` | 200 | **1100** |
+| `--z-index-modal` | 300 | **1200** |
+| `--z-index-popover` | 400 | **1300** |
+| `--z-index-toast` | 500 | **1500** |
+| `--z-index-tooltip` | 600 | **1400** |
 
 - 既存 utility 名 (`z-modal` 等) は不変、token 名利用なら自動追従
 - hardcoded 数値 (例: polastack 側で `style={{zIndex: 250}}`) は手動 audit が必要
