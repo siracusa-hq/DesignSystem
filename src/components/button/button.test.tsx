@@ -13,7 +13,9 @@ describe('Button', () => {
   it('applies default variant and size classes', () => {
     render(<Button>Default</Button>);
     const button = screen.getByRole('button');
-    expect(button.className).toContain('bg-primary-500');
+    // default variant uses primary-700 (WCAG AA pass: 5.34:1 vs white).
+    // primary-500 is reserved for accent decoration (Badge / Tabs indicator 等).
+    expect(button.className).toContain('bg-primary-700');
   });
 
   it('applies destructive variant', () => {
