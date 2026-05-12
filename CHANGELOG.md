@@ -1,5 +1,43 @@
 # Changelog
 
+## 0.2.3 (2026-05-12)
+
+### Fixes (WCAG 2.1 AA Color Contrast Compliance)
+
+**Brand color `primary-500` (#13c3a0) と white text の組み合わせは contrast 2.24:1 で
+WCAG AA (4.5:1 必須) 不適合**。Polastack のブランドカラー `#13c3a0` 自体は変えず、
+**操作 UI で白文字を載せる箇所のみ `primary-700` (#137663) に揃える** ことで AA pass
+(5.34:1) する設計に変更。primary-500 は Badge / Tabs indicator / Switch on state /
+ProgressBar fill / accent 装飾用途で継続利用 (text を載せない場面では問題なし)。
+
+業界の標準的アプローチ (Stripe / Linear / Atlassian 等が同様):
+- brand color → accent 装飾用
+- 操作 UI (Button, 選択状態の塗り) → brand color の暗いシェード (tonal palette 内)
+
+#### 修正対象
+
+| component | 変更前 | 変更後 |
+|---|---|---|
+| Button (default variant) | `bg-primary-500 hover:bg-primary-600 active:bg-primary-700` | `bg-primary-700 hover:bg-primary-800 active:bg-primary-900` |
+| Stepper (active / completed / loading) | `border-primary-500 bg-primary-500 text-white` | `border-primary-700 bg-primary-700 text-white` |
+| DatePicker (selected) | `bg-primary-500 hover:bg-primary-600` | `bg-primary-700 hover:bg-primary-800` |
+| DateRangePicker (range endpoint / in-range start) | 同上 | 同上 |
+| TimelineGrid (today marker) | `bg-primary-500` | `bg-primary-700` |
+| CalendarView (today) | `bg-primary-500` | `bg-primary-700` |
+
+その他の `bg-primary-500` 利用 (Tabs indicator / Switch on / Progress fill / Slider range /
+Stepper line / Kanban dot / FileUpload border / TimelineGrid milestone bar 等) は
+text を載せないため WCAG 非対象、変更なし。
+
+#### Tests
+
+- 既存の `bg-primary-500` 含有 assertion を `bg-primary-700` に更新 (button / calendar-view)
+
+### Notes
+
+- ブランド定義 `primary-500: #13c3a0` 自体は変更なし
+- consumer 側で hardcoded `bg-primary-500 text-white` パターンを使っているコードは手動 audit 推奨
+
 ## 0.2.2 (2026-05-12)
 
 ### Fixes

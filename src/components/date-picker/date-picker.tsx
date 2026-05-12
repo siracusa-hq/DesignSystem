@@ -150,7 +150,8 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(
           'border border-primary-500 text-primary-500 font-semibold',
         // Selected
         isSelected &&
-          'bg-primary-500 text-white font-semibold hover:bg-primary-600',
+          // primary-500 + white = 2.24:1 で WCAG AA 不適合 → primary-700 (5.34:1)
+          'bg-primary-700 text-white font-semibold hover:bg-primary-800',
       );
     };
 

@@ -213,13 +213,13 @@ export const DateRangePicker = React.forwardRef<
         // Range endpoints: rounded on the outer edge, flat on the inner edge
         isRangeStart &&
           isRangeEnd &&
-          'rounded-md bg-primary-500 text-white font-semibold hover:bg-primary-600',
+          'rounded-md bg-primary-700 text-white font-semibold hover:bg-primary-800',
         isRangeStart &&
           !isRangeEnd &&
-          'rounded-l-md rounded-r-none bg-primary-500 text-white font-semibold hover:bg-primary-600',
+          'rounded-l-md rounded-r-none bg-primary-700 text-white font-semibold hover:bg-primary-800',
         isRangeEnd &&
           !isRangeStart &&
-          'rounded-r-md rounded-l-none bg-primary-500 text-white font-semibold hover:bg-primary-600',
+          'rounded-r-md rounded-l-none bg-primary-700 text-white font-semibold hover:bg-primary-800',
         // In-range
         isInRange &&
           !isRangeStart &&
@@ -227,7 +227,7 @@ export const DateRangePicker = React.forwardRef<
           'rounded-none bg-primary-100 dark:bg-primary-900/30 text-[var(--color-on-surface)]',
         // Pending "from" with no hover
         isPendingFrom &&
-          'rounded-md bg-primary-500 text-white font-semibold hover:bg-primary-600',
+          'rounded-md bg-primary-700 text-white font-semibold hover:bg-primary-800',
         // Today (not part of range)
         isToday &&
           !isRangeStart &&

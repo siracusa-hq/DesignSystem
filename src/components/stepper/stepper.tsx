@@ -43,10 +43,12 @@ export const stepIndicatorVariants = cva(
       status: {
         pending:
           'border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-on-surface-muted)]',
-        active: 'border-primary-500 bg-primary-500 text-white',
-        completed: 'border-primary-500 bg-primary-500 text-white',
+        // primary-500 + white = 2.24:1 で WCAG AA 不適合。primary-700 (5.34:1) に揃える。
+        // 詳細: CHANGELOG 0.2.3
+        active: 'border-primary-700 bg-primary-700 text-white',
+        completed: 'border-primary-700 bg-primary-700 text-white',
         error: 'border-error-500 bg-error-500 text-white',
-        loading: 'border-primary-500 bg-primary-500 text-white',
+        loading: 'border-primary-700 bg-primary-700 text-white',
       },
       size: {
         sm: 'h-6 w-6 text-xs',
