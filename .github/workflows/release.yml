@@ -15,22 +15,31 @@ jobs:
 
       - uses: pnpm/action-setup@v4
 
-      # 注意: registry-url を指定しない。
-      # setup-node は registry-url 指定時に ~/.npmrc に
-      # `_authToken=${NODE_AUTH_TOKEN}` placeholder を書き込むが、
-      # NODE_AUTH_TOKEN 未設定時は `XXXXX-XXXXX-XXXXX-XXXXX` という無効な
-      # placeholder が入り、npm publish 時にこれが優先されて OIDC fallback
-      # が動かず 404 になる。Trusted Publishing 利用時は registry-url を
-      # 設定せず、npm のデフォルト registry (npmjs.org) に publish する。
+      # registry-url は OIDC trigger に必要 (.npmrc に registry エントリを書く)。
+      # 外すと npm CLI は OIDC を試みず ENEEDAUTH になる (v0.3.5 で確認)。
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: pnpm
+          registry-url: https://registry.npmjs.org
 
       # Trusted Publishing requires npm >= 11.5.1.
       # node 20 同梱の npm は古いため最新化する。
       - name: Update npm to latest (for trusted publishing support)
         run: npm install -g npm@latest
+
+      # setup-node は registry-url 指定時に `.npmrc` へ
+      # `//registry.npmjs.org/:_authToken=XXXXX-XXXXX-XXXXX-XXXXX` placeholder
+      # と `always-auth=true` を書き込む。NODE_AUTH_TOKEN 未設定時の placeholder
+      # を npm publish が優先送信して OIDC fallback が動かず 404 になる
+      # (v0.3.4 で確認)。registry エントリは残し、auth 行のみ削除して OIDC に倒す。
+      - name: Strip placeholder _authToken from .npmrc (force OIDC auth)
+        run: |
+          if [ -f ~/.npmrc ]; then
+            sed -i -e '/_authToken=XXXXX/d' -e '/always-auth/d' ~/.npmrc
+            echo "Cleaned ~/.npmrc:"
+            cat ~/.npmrc
+          fi
 
       - run: pnpm install --frozen-lockfile
 
