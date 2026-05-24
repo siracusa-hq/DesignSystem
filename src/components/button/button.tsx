@@ -7,12 +7,8 @@ export const buttonVariants = cva(
   {
     variants: {
       variant: {
-        // primary-500 (#13c3a0) は brand teal だが white text とのコントラストが
-        // 2.24:1 で WCAG AA (4.5:1) 不適合。操作 UI には暗めシェードを使う。
-        // primary-700 (#137663) / white = 5.34:1 ✅ AA pass、hover/active も繰り上げ。
-        // primary-500 自体は Badge/Tabs indicator 等のアクセント装飾用に温存。
         default:
-          'bg-primary-700 text-white hover:bg-primary-800 active:bg-primary-900',
+          'bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700',
         destructive:
           'bg-error-500 text-white hover:bg-error-600 active:bg-error-700',
         outline:

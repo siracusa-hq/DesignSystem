@@ -1,5 +1,50 @@
 # Changelog
 
+## Unreleased
+
+### Breaking changes (Brand color redesign)
+
+**`primary` パレット全面刷新**。旧 `#13C3A0` (Vivid Teal, H≈168 S≈82% L≈42%) は
+white text と組み合わせると contrast 2.24:1 で WCAG AA 不適合だったため、0.2.3
+では「brand 色は不変、操作 UI のみ `primary-700` (#137663) に逃がす」二段運用で
+回避していた。しかし結果として Button / Stepper / DatePicker など主要操作 UI が
+暗めの teal-700 になり、ブランド表現としての洗練さを損なっていた。
+
+本リリースでは **Material Design teal-700 (`#00796B`) を新 `primary-500` に据えた
+AA-first パレット**に再設計。500 単独で白文字 5.32:1 を満たすため、操作 UI に
+`primary-500` を直接適用しつつ AA 準拠を維持できる。
+
+| shade | 旧 (#13C3A0 系) | 新 (#00796B 系, Material teal) | contrast vs white |
+|---|---|---|---|
+| 50 | `#f2fdfb` | `#e0f2f1` | 1.16 |
+| 100 | `#dbfaf4` | `#b2dfdb` | 1.45 |
+| 200 | `#b4f3e6` | `#80cbc4` | 1.87 |
+| 300 | `#7ee7d2` | `#4db6ac` | 2.44 |
+| 400 | `#2ee0bc` | `#26a69a` | 3.00 |
+| **500** | **`#13c3a0`** | **`#00796b`** | **5.32 ✅ AA** |
+| 600 | `#109e81` | `#006d60` | 6.26 ✅ |
+| 700 | `#137663` | `#005850` | 8.36 ✅ |
+| 800 | `#165a4c` | `#004d44` | 9.79 ✅ |
+| 900 | `#164b40` | `#003830` | 13.06 ✅ |
+| 950 | `#072c25` | `#002822` | 15.83 ✅ |
+
+#### 連動変更
+
+- **0.2.3 で `primary-700` に逃がしていた箇所を `primary-500` に戻す** (Button default /
+  Stepper active|completed|loading / DatePicker selected / DateRangePicker
+  range endpoints / TimelineGrid today / CalendarView today)。新 500 が AA pass
+  するため二段運用は不要に。
+- `--color-surface-accent` (light: `#E4F5F1` → `#E6F3F2`, dark: `#0F2926` →
+  `#0E2926`) を新 brand hue (H≈174) に整合。視覚差は微少だが palette と一貫性を確保。
+- `CLAUDE.md` のメインカラー記載を更新。
+
+#### Breaking impact
+
+- `primary-{50..950}` を hex 直書きで参照している consumer は手動 audit が必要
+  (CSS `var(--color-primary-*)` または Tailwind class `bg-primary-*` 経由なら自動追従)。
+- ブランドカラーの hue が H≈168 (green-teal) → H≈174 (neutral teal) に約 6° シフト。
+  ロゴ/外部素材との並列展示が必要な場合は再確認推奨。
+
 ## 0.2.3 (2026-05-12)
 
 ### Fixes (WCAG 2.1 AA Color Contrast Compliance)
