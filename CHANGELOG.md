@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.3.5 (2026-05-24)
+
+### CI (Trusted Publishing 完成 — setup-node placeholder 問題の解消)
+
+0.3.4 で導入した Trusted Publishing は **provenance statement の発行までは
+成功** していたが、`setup-node` の `registry-url` 設定が `~/.npmrc` に書く
+`_authToken=XXXXX-XXXXX-XXXXX-XXXXX` placeholder が OIDC fallback を
+阻害し、publish は 404 で失敗していた。
+
+#96 で `setup-node` から `registry-url` を削除することで `.npmrc` に auth
+設定が書かれなくなり、npm CLI が OIDC ベースの Trusted Publishing を正しく
+使用するようになる。npmjs.org はデフォルト registry のため、`registry-url`
+は元々不要だった。
+
+本リリースは 0.3.4 と完全同一コード。Trusted Publishing 完全動作確認のため
+新 tag を切る。
+
 ## 0.3.4 (2026-05-24)
 
 ### CI (npm publish 復旧 — Trusted Publishing 移行)
