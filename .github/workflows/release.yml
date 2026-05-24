@@ -15,11 +15,17 @@ jobs:
 
       - uses: pnpm/action-setup@v4
 
+      # 注意: registry-url を指定しない。
+      # setup-node は registry-url 指定時に ~/.npmrc に
+      # `_authToken=${NODE_AUTH_TOKEN}` placeholder を書き込むが、
+      # NODE_AUTH_TOKEN 未設定時は `XXXXX-XXXXX-XXXXX-XXXXX` という無効な
+      # placeholder が入り、npm publish 時にこれが優先されて OIDC fallback
+      # が動かず 404 になる。Trusted Publishing 利用時は registry-url を
+      # 設定せず、npm のデフォルト registry (npmjs.org) に publish する。
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: pnpm
-          registry-url: https://registry.npmjs.org
 
       # Trusted Publishing requires npm >= 11.5.1.
       # node 20 同梱の npm は古いため最新化する。
