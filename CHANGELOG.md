@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.3.6 (2026-05-24)
+
+### CI (Trusted Publishing 完全動作 — registry-url 保持 + placeholder 削除)
+
+0.3.5 で `registry-url` を外したら ENEEDAUTH になり、OIDC trigger 条件が
+失われたことが判明。`registry-url` は復活させて registry エントリは保持しつつ、
+**placeholder `_authToken=XXXXX-XXXXX-XXXXX-XXXXX` の行のみを sed で削除**
+する step を追加する (#97)。これで:
+
+- registry エントリは残る → OIDC trigger 条件を満たす
+- placeholder token は削除 → npm publish が OIDC を取りに行く
+
+本リリースは 0.3.5 と完全同一コード。Trusted Publishing 完全動作確認の
+ための patch release。
+
+### 経緯
+
+| version | workflow 設定 | publish step ログ | 結果 |
+| ------- | ------------- | ----------------- | ---- |
+| v0.3.0 ~ v0.3.3 | `NPM_TOKEN` 使用 | token 期限切れ | 404 |
+| v0.3.4 | Trusted Publishing 移行、`registry-url` あり | Signed provenance + 404 | OIDC 取れたが placeholder 優先 |
+| v0.3.5 | `registry-url` 削除 | provenance 行ナシ + ENEEDAUTH | OIDC trigger されず |
+| **v0.3.6 (本リリース)** | `registry-url` 復活 + placeholder 削除 | (確認中) | publish 成功想定 |
+
 ## 0.3.5 (2026-05-24)
 
 ### CI (Trusted Publishing 完成 — setup-node placeholder 問題の解消)
