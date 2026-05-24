@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.3.4 (2026-05-24)
+
+### CI (npm publish 復旧 — Trusted Publishing 移行)
+
+0.3.0 〜 0.3.3 の Release workflow が npm publish step で `404 Not Found`
+を出し続けていた問題を解消。`NODE_AUTH_TOKEN` (=`secrets.NPM_TOKEN`) の
+期限切れが原因だったため、token を使わない **npm Trusted Publishing
+(OIDC ベース、2024-07 GA)** に切り替える。
+
+- `permissions.id-token: write` を追加 (OIDC token request)
+- npm CLI を最新化する step を追加 (Trusted Publishing は npm >= 11.5.1)
+- publish step から `NODE_AUTH_TOKEN` env を削除
+- `--provenance --access public` flag を追加 (SLSA 由来証明を npm 上に公開)
+
+本リリースが npm に publish できれば Trusted Publishing が動作することの
+動作確認も兼ねる。コードは 0.3.3 と完全同一 (workflow 改善のみ)。
+
+### Next steps
+
+1. npm 側 Publishing access を **strict (disallow tokens)** に切り替え
+2. GitHub repo secrets で `NPM_TOKEN` を削除
+
 ## 0.3.3 (2026-05-24)
 
 ### Fixes (0.3.2 follow-up — docs と chart-1-subtle dark の最終同期)
@@ -43,19 +65,19 @@
 50-400 は前 release の Material teal light shade を踏襲、600-950 は H=173 S=100%
 で L を 4% ずつ smooth に下げた hue-consistent な dark shade。
 
-| shade | 旧 (0.3.1) | 新 (0.3.2) | contrast vs white |
-|---|---|---|---|
-| 50 | `#e0f2f1` | `#e0f2f1` | 1.16 |
-| 100 | `#b2dfdb` | `#b2dfdb` | 1.45 |
-| 200 | `#80cbc4` | `#80cbc4` | 1.87 |
-| 300 | `#4db6ac` | `#4db6ac` | 2.44 |
-| 400 | `#26a69a` | `#26a69a` | 3.00 |
-| **500** | **`#00796b`** | **`#008575`** | **4.55 ✅ AA** |
-| 600 | `#006d60` | `#007567` | 5.61 ✅ |
-| 700 | `#005850` | `#006055` | 7.49 ✅ |
-| 800 | `#004d44` | `#004c43` | 9.93 ✅ |
-| 900 | `#003830` | `#003831` | 13.04 ✅ |
-| 950 | `#002822` | `#00231f` | 16.66 ✅ |
+| shade   | 旧 (0.3.1)    | 新 (0.3.2)    | contrast vs white |
+| ------- | ------------- | ------------- | ----------------- |
+| 50      | `#e0f2f1`     | `#e0f2f1`     | 1.16              |
+| 100     | `#b2dfdb`     | `#b2dfdb`     | 1.45              |
+| 200     | `#80cbc4`     | `#80cbc4`     | 1.87              |
+| 300     | `#4db6ac`     | `#4db6ac`     | 2.44              |
+| 400     | `#26a69a`     | `#26a69a`     | 3.00              |
+| **500** | **`#00796b`** | **`#008575`** | **4.55 ✅ AA**    |
+| 600     | `#006d60`     | `#007567`     | 5.61 ✅           |
+| 700     | `#005850`     | `#006055`     | 7.49 ✅           |
+| 800     | `#004d44`     | `#004c43`     | 9.93 ✅           |
+| 900     | `#003830`     | `#003831`     | 13.04 ✅          |
+| 950     | `#002822`     | `#00231f`     | 16.66 ✅          |
 
 ### 連動変更
 
@@ -82,7 +104,7 @@
 - **`src/tokens/colors.ts`** — TypeScript export の `colors.primary.{50..950}` を
   新 palette と同値に揃える。これが古いままだと、Storybook の Tokens > Colors
   Tokens 表示が旧 hex を出し続け、また `import { colors } from
-  '@polastack/design-system/tokens'` を使う consumer に旧値が返っていた。
+'@polastack/design-system/tokens'` を使う consumer に旧値が返っていた。
 - **`src/tokens/chart-theme.ts`** — `hex.categorical[0]` の brand anchor fallback
   を `#13C3A0` → `#00796B` に。
 - **`src/styles/semantic.css`** — chart-1 brand anchor を新 palette と整合:
@@ -113,19 +135,19 @@ white text と組み合わせると contrast 2.24:1 で WCAG AA 不適合だっ�
 AA-first パレット**に再設計。500 単独で白文字 5.32:1 を満たすため、操作 UI に
 `primary-500` を直接適用しつつ AA 準拠を維持できる。
 
-| shade | 旧 (#13C3A0 系) | 新 (#00796B 系, Material teal) | contrast vs white |
-|---|---|---|---|
-| 50 | `#f2fdfb` | `#e0f2f1` | 1.16 |
-| 100 | `#dbfaf4` | `#b2dfdb` | 1.45 |
-| 200 | `#b4f3e6` | `#80cbc4` | 1.87 |
-| 300 | `#7ee7d2` | `#4db6ac` | 2.44 |
-| 400 | `#2ee0bc` | `#26a69a` | 3.00 |
-| **500** | **`#13c3a0`** | **`#00796b`** | **5.32 ✅ AA** |
-| 600 | `#109e81` | `#006d60` | 6.26 ✅ |
-| 700 | `#137663` | `#005850` | 8.36 ✅ |
-| 800 | `#165a4c` | `#004d44` | 9.79 ✅ |
-| 900 | `#164b40` | `#003830` | 13.06 ✅ |
-| 950 | `#072c25` | `#002822` | 15.83 ✅ |
+| shade   | 旧 (#13C3A0 系) | 新 (#00796B 系, Material teal) | contrast vs white |
+| ------- | --------------- | ------------------------------ | ----------------- |
+| 50      | `#f2fdfb`       | `#e0f2f1`                      | 1.16              |
+| 100     | `#dbfaf4`       | `#b2dfdb`                      | 1.45              |
+| 200     | `#b4f3e6`       | `#80cbc4`                      | 1.87              |
+| 300     | `#7ee7d2`       | `#4db6ac`                      | 2.44              |
+| 400     | `#2ee0bc`       | `#26a69a`                      | 3.00              |
+| **500** | **`#13c3a0`**   | **`#00796b`**                  | **5.32 ✅ AA**    |
+| 600     | `#109e81`       | `#006d60`                      | 6.26 ✅           |
+| 700     | `#137663`       | `#005850`                      | 8.36 ✅           |
+| 800     | `#165a4c`       | `#004d44`                      | 9.79 ✅           |
+| 900     | `#164b40`       | `#003830`                      | 13.06 ✅          |
+| 950     | `#072c25`       | `#002822`                      | 15.83 ✅          |
 
 #### 連動変更
 
@@ -155,19 +177,20 @@ WCAG AA (4.5:1 必須) 不適合**。Polastack のブランドカラー `#13c3a0
 ProgressBar fill / accent 装飾用途で継続利用 (text を載せない場面では問題なし)。
 
 業界の標準的アプローチ (Stripe / Linear / Atlassian 等が同様):
+
 - brand color → accent 装飾用
 - 操作 UI (Button, 選択状態の塗り) → brand color の暗いシェード (tonal palette 内)
 
 #### 修正対象
 
-| component | 変更前 | 変更後 |
-|---|---|---|
-| Button (default variant) | `bg-primary-500 hover:bg-primary-600 active:bg-primary-700` | `bg-primary-700 hover:bg-primary-800 active:bg-primary-900` |
-| Stepper (active / completed / loading) | `border-primary-500 bg-primary-500 text-white` | `border-primary-700 bg-primary-700 text-white` |
-| DatePicker (selected) | `bg-primary-500 hover:bg-primary-600` | `bg-primary-700 hover:bg-primary-800` |
-| DateRangePicker (range endpoint / in-range start) | 同上 | 同上 |
-| TimelineGrid (today marker) | `bg-primary-500` | `bg-primary-700` |
-| CalendarView (today) | `bg-primary-500` | `bg-primary-700` |
+| component                                         | 変更前                                                      | 変更後                                                      |
+| ------------------------------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------- |
+| Button (default variant)                          | `bg-primary-500 hover:bg-primary-600 active:bg-primary-700` | `bg-primary-700 hover:bg-primary-800 active:bg-primary-900` |
+| Stepper (active / completed / loading)            | `border-primary-500 bg-primary-500 text-white`              | `border-primary-700 bg-primary-700 text-white`              |
+| DatePicker (selected)                             | `bg-primary-500 hover:bg-primary-600`                       | `bg-primary-700 hover:bg-primary-800`                       |
+| DateRangePicker (range endpoint / in-range start) | 同上                                                        | 同上                                                        |
+| TimelineGrid (today marker)                       | `bg-primary-500`                                            | `bg-primary-700`                                            |
+| CalendarView (today)                              | `bg-primary-500`                                            | `bg-primary-700`                                            |
 
 その他の `bg-primary-500` 利用 (Tabs indicator / Switch on / Progress fill / Slider range /
 Stepper line / Kanban dot / FileUpload border / TimelineGrid milestone bar 等) は
