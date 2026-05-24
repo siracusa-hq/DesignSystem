@@ -26,13 +26,13 @@
   --color-on-surface-accent: var(--color-primary-700);
 
   /* Chart — categorical data-viz palette (5 tokens, shadcn/ui convention) */
-  --color-chart-1: #13C3A0; /* teal — brand anchor */
+  --color-chart-1: #00796B; /* teal — brand anchor (Material teal-700) */
   --color-chart-2: #4E79A7; /* slate — classic dataviz blue */
   --color-chart-3: #E8A838; /* amber — warm gold */
   --color-chart-4: #D4687A; /* rose — dusty pink-red */
   --color-chart-5: #7C6BB1; /* violet — soft purple */
   /* Chart subtle fills — 1:1 paired with categorical */
-  --color-chart-1-subtle: #E8FAF6;
+  --color-chart-1-subtle: #E0F2F1;
   --color-chart-2-subtle: #E8EEF4;
   --color-chart-3-subtle: #FDF3E0;
   --color-chart-4-subtle: #FCEAED;
@@ -75,12 +75,12 @@
   --color-on-surface-accent: var(--color-primary-400);
 
   /* Chart — dark mode overrides */
-  --color-chart-1: #2EE0BC; /* brighter teal for dark bg */
+  --color-chart-1: #4DB6AC; /* brighter teal for dark bg (Material teal-300, primary-300) */
   --color-chart-2: #6A9FD8; /* brighter slate */
   --color-chart-3: #F0BD5C; /* brighter amber */
   --color-chart-4: #E08A9A; /* brighter rose */
   --color-chart-5: #9B8DD4; /* brighter violet */
-  --color-chart-1-subtle: #0C2B26;
+  --color-chart-1-subtle: #003830;
   --color-chart-2-subtle: #1A2535;
   --color-chart-3-subtle: #2C2312;
   --color-chart-4-subtle: #2C1A1E;

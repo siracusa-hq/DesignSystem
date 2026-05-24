@@ -63,7 +63,7 @@ export const chartColors = {
    */
   hex: {
     categorical: [
-      '#13C3A0', // teal
+      '#00796B', // teal (Material teal-700, brand primary-500)
       '#4E79A7', // slate
       '#E8A838', // amber
       '#D4687A', // rose
