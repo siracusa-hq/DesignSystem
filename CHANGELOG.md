@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.3.1 (2026-05-24)
+
+### Fixes (0.3.0 follow-up — token export & chart-1 brand anchor の同期漏れ修正)
+
+0.3.0 で `primary` パレットを Material teal-700 系に刷新したが、以下が
+**旧 hex (`#13C3A0` 系) のまま取り残されていた** ため、それらを新 brand に同期。
+
+- **`src/tokens/colors.ts`** — TypeScript export の `colors.primary.{50..950}` を
+  新 palette と同値に揃える。これが古いままだと、Storybook の Tokens > Colors
+  Tokens 表示が旧 hex を出し続け、また `import { colors } from
+  '@polastack/design-system/tokens'` を使う consumer に旧値が返っていた。
+- **`src/tokens/chart-theme.ts`** — `hex.categorical[0]` の brand anchor fallback
+  を `#13C3A0` → `#00796B` に。
+- **`src/styles/semantic.css`** — chart-1 brand anchor を新 palette と整合:
+  - light: `--color-chart-1: #13C3A0` → `#00796B` (primary-500)
+  - light: `--color-chart-1-subtle: #E8FAF6` → `#E0F2F1` (primary-50)
+  - dark : `--color-chart-1: #2EE0BC` → `#4DB6AC` (primary-300)
+  - dark : `--color-chart-1-subtle: #0C2B26` → `#003830` (primary-900)
+- **`src/components/chart/chart.test.tsx`** — test fixture の hardcoded
+  `#13C3A0` を `#00796B` に。
+
+### Notes
+
+- 0.3.0 で行うべきだった同期作業の追加分。consumer 側で 0.3.0 を pin している
+  場合は 0.3.1 に上げることで Storybook 表示・JS 定数・chart brand anchor が
+  全て一貫した状態になる。
+
 ## 0.3.0 (2026-05-24)
 
 ### Breaking changes (Brand color redesign)
