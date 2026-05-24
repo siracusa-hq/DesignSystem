@@ -130,7 +130,7 @@ export default defineConfig({
       manifest: {
         name: 'My App',
         short_name: 'MyApp',
-        theme_color: '#13C3A0',
+        theme_color: '#008575',
         display: 'standalone',
       },
     }),

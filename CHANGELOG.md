@@ -1,5 +1,35 @@
 # Changelog
 
+## 0.3.3 (2026-05-24)
+
+### Fixes (0.3.2 follow-up — docs と chart-1-subtle dark の最終同期)
+
+0.3.2 で primary palette を `#008575` 中心に再設計した際、**docs 配下のサンプル**
+と **dark mode の chart-1-subtle** が旧 hex のまま取り残されていたため修正。
+
+#### Docs sample 値の更新
+
+- `docs/BRAND_IDENTITY.md` — primary-50..950 全 shade を新 palette と同値に書き換え
+  (旧 0.2.x 時代のさらに古い hex がそのまま残っていた)
+- `docs/PWA_GUIDELINES.md` — PWA manifest sample と `<meta name="theme-color">`
+  サンプルの `#13C3A0` を `#008575` に
+- `docs/starter-templates.md` — VitePWA manifest sample の `theme_color` を更新
+- `docs/plan.md` — 戦略ドキュメントの brand 色記載を更新
+
+これらは consumer がそのままコピペするサンプル値なので、palette と乖離していると
+新規導入時に古い brand が広まる原因になる。
+
+#### Token 整合
+
+- `src/styles/semantic.css` — dark mode の `--color-chart-1-subtle` を
+  `#003830` → `#003831` に。新 `primary-900` (`#003831`) と完全一致させ、
+  palette の完全整合を達成。視覚差は 0 (R 値 1bit 違い) だが整合性のため。
+
+### Notes
+
+- ソースコード本体には旧 hex 残骸なし (前 release で完全置換済み)
+- 本 release で **docs / token / consumer-facing sample すべてが新 palette に統一**
+
 ## 0.3.2 (2026-05-24)
 
 ### Breaking changes (primary palette brightening)
