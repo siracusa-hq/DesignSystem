@@ -24,8 +24,8 @@
 
 ## カラー
 
-- メインカラー: `#00796B`（Material Design teal-700 由来、H≈174 S≈100% L≈24%）
-  - 500 単独で白文字 5.32:1 を満たし WCAG AA 適合。Button bg などの操作 UI に直接適用可能
+- メインカラー: `#008575`（H≈173 S≈100% L≈26%、AA 限界点を狙った明るめ teal）
+  - 500 単独で白文字 4.55:1 を満たし WCAG AA 適合。Button bg などの操作 UI に直接適用可能
   - 400 以下 (`#26A69A` ほか) は vivid accent (Badge / Switch on / Slider range / Tabs indicator) 用
 - success: True Green系（H≈130、primaryのティールと44°の色相差で区別）
 - warning: Amber、error: Red、info: Blue

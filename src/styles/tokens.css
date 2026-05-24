@@ -9,22 +9,23 @@
 @theme {
   /* --------------------------------------------------------
      Colors: Brand (Primary)
-     Material teal-700 (#00796B) を primary-500 に据えた
-     AA-first パレット。500 単独で白文字 4.5:1 を満たすため、
-     操作 UI (Button bg 等) に primary-500 を直接適用できる。
-     400 以下は vivid accent (Badge / Switch on / Slider) 用。
+     primary-500 = #008575 (H=173 S=100% L=26%) を AA 限界点に置き、
+     50-400 は Material teal の light shade を踏襲、600-950 は
+     H=173 S=100% で L を 4% ずつ smooth に下げた dark shade。
+     500 が white text 4.55:1 で AA pass するため、操作 UI に
+     primary-500 を直接適用できる。
      -------------------------------------------------------- */
   --color-primary-50: #e0f2f1;
   --color-primary-100: #b2dfdb;
   --color-primary-200: #80cbc4;
   --color-primary-300: #4db6ac;
   --color-primary-400: #26a69a;
-  --color-primary-500: #00796b;
-  --color-primary-600: #006d60;
-  --color-primary-700: #005850;
-  --color-primary-800: #004d44;
-  --color-primary-900: #003830;
-  --color-primary-950: #002822;
+  --color-primary-500: #008575;
+  --color-primary-600: #007567;
+  --color-primary-700: #006055;
+  --color-primary-800: #004c43;
+  --color-primary-900: #003831;
+  --color-primary-950: #00231f;
 
   /* --------------------------------------------------------
      Colors: Neutral (Zinc系)

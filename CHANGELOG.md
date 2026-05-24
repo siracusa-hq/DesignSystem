@@ -1,5 +1,47 @@
 # Changelog
 
+## 0.3.2 (2026-05-24)
+
+### Breaking changes (primary palette brightening)
+
+0.3.1 で確定した Material teal-700 (`#00796B`) ベースの palette は AA 余裕 (5.32:1)
+を持つが、ブランド表現として暗すぎた。WCAG AA 4.5:1 を満たす範囲内で限界まで
+明るくした `#008575` (4.55:1) を新 `primary-500` に据え、palette を再設計する。
+
+### Palette
+
+50-400 は前 release の Material teal light shade を踏襲、600-950 は H=173 S=100%
+で L を 4% ずつ smooth に下げた hue-consistent な dark shade。
+
+| shade | 旧 (0.3.1) | 新 (0.3.2) | contrast vs white |
+|---|---|---|---|
+| 50 | `#e0f2f1` | `#e0f2f1` | 1.16 |
+| 100 | `#b2dfdb` | `#b2dfdb` | 1.45 |
+| 200 | `#80cbc4` | `#80cbc4` | 1.87 |
+| 300 | `#4db6ac` | `#4db6ac` | 2.44 |
+| 400 | `#26a69a` | `#26a69a` | 3.00 |
+| **500** | **`#00796b`** | **`#008575`** | **4.55 ✅ AA** |
+| 600 | `#006d60` | `#007567` | 5.61 ✅ |
+| 700 | `#005850` | `#006055` | 7.49 ✅ |
+| 800 | `#004d44` | `#004c43` | 9.93 ✅ |
+| 900 | `#003830` | `#003831` | 13.04 ✅ |
+| 950 | `#002822` | `#00231f` | 16.66 ✅ |
+
+### 連動変更
+
+- `src/tokens/colors.ts` — TypeScript export を新 palette と同期
+- `src/tokens/chart-theme.ts` — `hex.categorical[0]` を `#00796B` → `#008575`
+- `src/styles/semantic.css` — `--color-chart-1` (light) を `#008575` に。
+  dark mode の chart-1 / surface-accent は brand hue (H≈173) が不変なので変更不要
+- `src/components/chart/chart.test.tsx` — fixture と rgb assertion を新 hex 対応に
+- `CLAUDE.md` — メインカラー記載を更新
+
+### Breaking impact
+
+- `primary-500` ~ `primary-950` の hex 値が変更。 hex 直書きで参照している
+  consumer は手動 audit が必要 (CSS var / Tailwind class 経由なら自動追従)
+- `primary-50` ~ `primary-400` は 0.3.1 と同値で変更なし
+
 ## 0.3.1 (2026-05-24)
 
 ### Fixes (0.3.0 follow-up — token export & chart-1 brand anchor の同期漏れ修正)
