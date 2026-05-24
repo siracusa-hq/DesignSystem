@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.3.7 (2026-05-24)
+
+### CI (Trusted Publishing 完全動作 — environment claim mismatch 解消)
+
+0.3.6 では Trusted Publishing の OIDC 取得まで成功していたが、npm 側
+Trusted Publisher 設定の **Environment name に `npm-publish` が入っていた**
+ため、workflow 側の OIDC claims (environment = 空) と mismatch を起こし、
+publish API が permission denied (404) を返していた。
+
+npm 側 Trusted Publisher 設定の Environment name を **空に変更**することで
+解決。本リリースは 0.3.6 と完全同一コード、動作確認のための patch release。
+
 ## 0.3.6 (2026-05-24)
 
 ### CI (Trusted Publishing 完全動作 — registry-url 保持 + placeholder 削除)
