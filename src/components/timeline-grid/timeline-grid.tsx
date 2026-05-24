@@ -404,7 +404,7 @@ export const TimelineAxis = React.forwardRef<HTMLDivElement, TimelineAxisProps>(
                   className={cn(
                     'text-[11px] leading-tight tabular-nums',
                     isToday
-                      ? 'inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary-700 text-white font-semibold text-[10px]'
+                      ? 'inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary-500 text-white font-semibold text-[10px]'
                       : cn(
                           'font-medium text-[var(--color-on-surface-muted)]',
                           isWeekend && 'opacity-60',

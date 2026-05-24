@@ -115,8 +115,7 @@ describe('CalendarView — month', () => {
     const todayLabel = `${today.getMonth() + 1}月${today.getDate()}日`;
     const todayCell = screen.getByLabelText(todayLabel);
     const dayNumber = within(todayCell).getByText(String(today.getDate()));
-    // today highlight uses primary-700 (WCAG AA pass: 5.34:1 vs white)
-    expect(dayNumber.className).toContain('bg-primary-700');
+    expect(dayNumber.className).toContain('bg-primary-500');
   });
 
   it('wraps across year boundary (December → January)', async () => {

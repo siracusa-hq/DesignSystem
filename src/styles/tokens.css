@@ -9,20 +9,22 @@
 @theme {
   /* --------------------------------------------------------
      Colors: Brand (Primary)
-     Vivid Teal系 - #13C3A0をベースにしたPolastackブランドカラー
-     セマンティックカラーと彩度・明度を揃えた統一パレット
+     Material teal-700 (#00796B) を primary-500 に据えた
+     AA-first パレット。500 単独で白文字 4.5:1 を満たすため、
+     操作 UI (Button bg 等) に primary-500 を直接適用できる。
+     400 以下は vivid accent (Badge / Switch on / Slider) 用。
      -------------------------------------------------------- */
-  --color-primary-50: #f2fdfb;
-  --color-primary-100: #dbfaf4;
-  --color-primary-200: #b4f3e6;
-  --color-primary-300: #7ee7d2;
-  --color-primary-400: #2ee0bc;
-  --color-primary-500: #13c3a0;
-  --color-primary-600: #109e81;
-  --color-primary-700: #137663;
-  --color-primary-800: #165a4c;
-  --color-primary-900: #164b40;
-  --color-primary-950: #072c25;
+  --color-primary-50: #e0f2f1;
+  --color-primary-100: #b2dfdb;
+  --color-primary-200: #80cbc4;
+  --color-primary-300: #4db6ac;
+  --color-primary-400: #26a69a;
+  --color-primary-500: #00796b;
+  --color-primary-600: #006d60;
+  --color-primary-700: #005850;
+  --color-primary-800: #004d44;
+  --color-primary-900: #003830;
+  --color-primary-950: #002822;
 
   /* --------------------------------------------------------
      Colors: Neutral (Zinc系)

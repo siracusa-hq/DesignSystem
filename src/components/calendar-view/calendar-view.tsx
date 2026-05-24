@@ -425,7 +425,7 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
                       <span
                         className={cn(
                           'inline-flex h-6 w-6 items-center justify-center rounded-full text-xs',
-                          isToday && 'bg-primary-700 text-white font-semibold',
+                          isToday && 'bg-primary-500 text-white font-semibold',
                           !isToday && (dayType.text || 'text-[var(--color-on-surface)]'),
                         )}
                       >
@@ -489,7 +489,7 @@ export const CalendarView = React.forwardRef<HTMLDivElement, CalendarViewProps>(
                   </span>
                   <span className={cn(
                     'inline-flex h-6 w-6 items-center justify-center rounded-full text-xs',
-                    isToday && 'bg-primary-700 text-white font-semibold',
+                    isToday && 'bg-primary-500 text-white font-semibold',
                     !isToday && (dayType.text || 'text-[var(--color-on-surface)] font-medium'),
                   )}>
                     {date.getDate()}
