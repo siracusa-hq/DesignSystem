@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+### Features
+
+- **SidebarNavItem: `asChild` 対応を追加** — `asChild` を渡すと Slot として単一子（例: Next.js の `Link`）へ className/props をマージし、icon・label・badge をその子（アンカー等）の内側に描画する。`asChild` 省略時は従来どおり `<button>` を描画し完全後方互換。消費側がナビ項目をリンク要素として描画でき、SPA のソフトナビ／prefetch を効かせられる。
+  - Slot の単一子制約は `Slottable` で解決（label 位置をホイスト）。asChild では label が `flex-1` span に包まれないため、badge を `ml-auto` で右寄せしてレイアウトを非 asChild と揃える。
+  - `forwardRef` の型は従来どおり `HTMLButtonElement`（非 asChild 要素に整合）。asChild では実体要素に ref が転送される。
+
 ## 0.3.7 (2026-05-24)
 
 ### CI (Trusted Publishing 完全動作 — environment claim mismatch 解消)
