@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -129,6 +130,42 @@ describe('SidebarNavItem', () => {
     render(<SidebarNavItem active>Dashboard</SidebarNavItem>);
     expect(screen.getByRole('button').className).toContain('font-medium');
   });
+
+  it('renders as a link and hoists icon/badge when asChild', () => {
+    render(
+      <SidebarNavItem
+        asChild
+        active
+        icon={<span data-testid="item-icon">I</span>}
+        badge="3"
+      >
+        <a href="/dashboard">Dashboard</a>
+      </SidebarNavItem>,
+    );
+    const link = screen.getByRole('link', { name: /Dashboard/ });
+    expect(link).toHaveAttribute('href', '/dashboard');
+    // base/active クラスが anchor にマージされる
+    expect(link.className).toContain('font-medium');
+    expect(link).toHaveAttribute('aria-current', 'page');
+    // button 固有の type は anchor に漏れない
+    expect(link).not.toHaveAttribute('type');
+    // icon / badge は anchor の内側にホイストされる
+    expect(link).toContainElement(screen.getByTestId('item-icon'));
+    expect(link).toContainElement(screen.getByText('3'));
+    // button ロールは存在しない
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+  });
+
+  it('forwards ref to the anchor element when asChild', () => {
+    const ref = React.createRef<HTMLButtonElement>();
+    render(
+      <SidebarNavItem asChild ref={ref}>
+        <a href="/x">X</a>
+      </SidebarNavItem>,
+    );
+    // 型は button だが、asChild では実体の anchor に ref が転送される
+    expect(ref.current).toBeInstanceOf(HTMLAnchorElement);
+  });
 });
 
 describe('SidebarNav a11y', () => {
@@ -141,6 +178,23 @@ describe('SidebarNav a11y', () => {
         </SidebarNavGroup>
         <SidebarNavGroup title="Settings" defaultOpen={false}>
           <SidebarNavItem>Preferences</SidebarNavItem>
+        </SidebarNavGroup>
+      </SidebarNav>,
+    );
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
+  });
+
+  it('has no accessibility violations with asChild links', async () => {
+    const { container } = render(
+      <SidebarNav aria-label="Sidebar navigation">
+        <SidebarNavGroup title="Main">
+          <SidebarNavItem asChild active icon={<span>I</span>}>
+            <a href="/dashboard">Dashboard</a>
+          </SidebarNavItem>
+          <SidebarNavItem asChild badge="3">
+            <a href="/projects">Projects</a>
+          </SidebarNavItem>
         </SidebarNavGroup>
       </SidebarNav>,
     );

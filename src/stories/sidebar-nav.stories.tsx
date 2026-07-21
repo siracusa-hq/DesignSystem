@@ -245,3 +245,34 @@ export const DeveloperPortal: Story = {
     );
   },
 };
+
+/**
+ * asChild で各項目をリンク要素として描画する例。消費側（例: Next.js の `Link`）を
+ * 単一子として渡すと、Slot が className/props をマージし icon・label・badge を内包する。
+ * ここでは Storybook 単体で動くよう素の `<a>` を使う。
+ */
+export const AsChildLinks: Story = {
+  render: () => (
+    <SidebarNav aria-label="Navigation">
+      <SidebarNavGroup title="As links (asChild)">
+        <SidebarNavItem
+          asChild
+          active
+          icon={<LayoutDashboard className={iconClass} />}
+        >
+          <a href="#dashboard">Dashboard</a>
+        </SidebarNavItem>
+        <SidebarNavItem
+          asChild
+          icon={<Folder className={iconClass} />}
+          badge="12"
+        >
+          <a href="#projects">Projects</a>
+        </SidebarNavItem>
+        <SidebarNavItem asChild icon={<Settings className={iconClass} />}>
+          <a href="#settings">Settings</a>
+        </SidebarNavItem>
+      </SidebarNavGroup>
+    </SidebarNav>
+  ),
+};

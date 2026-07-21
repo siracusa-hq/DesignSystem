@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as CollapsiblePrimitive from '@radix-ui/react-collapsible';
+import { Slot, Slottable } from '@radix-ui/react-slot';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/cn';
 
@@ -86,43 +87,71 @@ export interface SidebarNavItemProps
   active?: boolean;
   badge?: React.ReactNode;
   href?: string;
+  /**
+   * true のとき Slot として単一子（例: next/link の `Link`）へ props/className を
+   * マージし、icon・label・badge をその子の内側に描画する。button ではなくリンク
+   * 要素としてナビゲーション（prefetch / ソフトナビ）させたいときに使う。
+   */
+  asChild?: boolean;
 }
 
-export const SidebarNavItem = React.forwardRef<
-  HTMLButtonElement,
-  SidebarNavItemProps
->(({ className, icon, active = false, badge, children, ...props }, ref) => (
-  <button
-    ref={ref}
-    type="button"
-    className={cn(
-      'flex w-full items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm transition-colors touch:min-h-[--touch-target-min]',
-      active
-        ? 'bg-[var(--color-surface-accent)] text-[var(--color-on-surface-accent)] font-medium'
-        : 'text-[var(--color-on-surface-secondary)] hover:bg-[var(--color-surface-muted)] hover:text-[var(--color-on-surface)]',
+export const SidebarNavItem = React.forwardRef<HTMLButtonElement, SidebarNavItemProps>(
+  (
+    {
       className,
-    )}
-    aria-current={active ? 'page' : undefined}
-    {...props}
-  >
-    {icon && (
-      <span className={cn('shrink-0', active ? 'opacity-100' : 'opacity-70')}>
-        {icon}
-      </span>
-    )}
-    <span className="flex-1 text-left truncate">{children}</span>
-    {badge && (
-      <span
+      icon,
+      active = false,
+      badge,
+      asChild = false,
+      children,
+      ...props
+    },
+    ref,
+  ) => {
+    const Comp = asChild ? Slot : 'button';
+    return (
+      <Comp
+        ref={ref}
+        // Slot は子（Link 等）へ props をマージするため、button 固有の type は
+        // 非 asChild のときだけ付与する（<a type="button"> の無効属性化を防ぐ）。
+        {...(asChild ? {} : { type: 'button' as const })}
         className={cn(
-          'min-w-[20px] rounded-full px-1.5 py-0.5 text-center text-xs font-medium',
+          'flex w-full items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm transition-colors touch:min-h-[--touch-target-min]',
           active
-            ? 'bg-[var(--color-primary-100)] text-[var(--color-primary-700)] dark:bg-[var(--color-primary-950)] dark:text-[var(--color-primary-300)]'
-            : 'bg-[var(--color-surface-sunken)] text-[var(--color-on-surface-muted)]',
+            ? 'bg-[var(--color-surface-accent)] text-[var(--color-on-surface-accent)] font-medium'
+            : 'text-[var(--color-on-surface-secondary)] hover:bg-[var(--color-surface-muted)] hover:text-[var(--color-on-surface)]',
+          className,
         )}
+        aria-current={active ? 'page' : undefined}
+        {...props}
       >
-        {badge}
-      </span>
-    )}
-  </button>
-));
+        {icon && (
+          <span className={cn('shrink-0', active ? 'opacity-100' : 'opacity-70')}>
+            {icon}
+          </span>
+        )}
+        {asChild ? (
+          <Slottable>{children}</Slottable>
+        ) : (
+          <span className="flex-1 text-left truncate">{children}</span>
+        )}
+        {badge && (
+          <span
+            className={cn(
+              'min-w-[20px] rounded-full px-1.5 py-0.5 text-center text-xs font-medium',
+              // asChild では label が flex-1 span に包まれない（Slottable が子を直接
+              // ホイストする）ため、badge を ml-auto で右端に寄せて非 asChild と揃える。
+              asChild && 'ml-auto',
+              active
+                ? 'bg-[var(--color-primary-100)] text-[var(--color-primary-700)] dark:bg-[var(--color-primary-950)] dark:text-[var(--color-primary-300)]'
+                : 'bg-[var(--color-surface-sunken)] text-[var(--color-on-surface-muted)]',
+            )}
+          >
+            {badge}
+          </span>
+        )}
+      </Comp>
+    );
+  },
+);
 SidebarNavItem.displayName = 'SidebarNavItem';
