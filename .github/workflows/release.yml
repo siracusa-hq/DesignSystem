@@ -24,9 +24,10 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       # Trusted Publishing requires npm >= 11.5.1.
-      # node 20 同梱の npm は古いため最新化する。
-      - name: Update npm to latest (for trusted publishing support)
-        run: npm install -g npm@latest
+      # npm@latest(12+) は node 22+ を要求し node 20 と非互換(EBADENGINE)になるため、
+      # node 20 対応かつ Trusted Publishing 要件を満たす npm@11 系に固定する。
+      - name: Update npm to 11 (for trusted publishing support)
+        run: npm install -g npm@11
 
       # setup-node は registry-url 指定時に `.npmrc` へ
       # `//registry.npmjs.org/:_authToken=XXXXX-XXXXX-XXXXX-XXXXX` placeholder
