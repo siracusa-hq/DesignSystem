@@ -1,0 +1,357 @@
+@import 'tailwindcss';
+
+/* ============================================================
+   Dark Mode Variant
+   .dark クラスベースのダークモード切替
+   ============================================================ */
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ============================================================
+   Polastack GTM Design System - Design Tokens
+   Tailwind CSS v4 @theme directive
+   マーケティングコミュニケーション向け
+   ============================================================ */
+
+@theme {
+  /* --------------------------------------------------------
+     Colors: Brand (Primary)
+     Teal系 - #13c3a0をベースにしたPolastackブランドカラー
+     @polastack/design-system と同一値
+     -------------------------------------------------------- */
+  --color-primary-50: #f2fdfb;
+  --color-primary-100: #dbfaf4;
+  --color-primary-200: #b4f3e6;
+  --color-primary-300: #7ee7d2;
+  --color-primary-400: #2ee0bc;
+  --color-primary-500: #13c3a0;
+  --color-primary-600: #109e81;
+  --color-primary-700: #137663;
+  --color-primary-800: #165a4c;
+  --color-primary-900: #164b40;
+  --color-primary-950: #072c25;
+
+  /* --------------------------------------------------------
+     Colors: Neutral (Zinc系)
+     -------------------------------------------------------- */
+  --color-neutral-50: #fafafa;
+  --color-neutral-100: #f4f4f5;
+  --color-neutral-200: #e4e4e7;
+  --color-neutral-300: #d4d4d8;
+  --color-neutral-400: #a1a1aa;
+  --color-neutral-500: #71717a;
+  --color-neutral-600: #52525b;
+  --color-neutral-700: #3f3f46;
+  --color-neutral-800: #27272a;
+  --color-neutral-850: #1f1f23;
+  --color-neutral-900: #18181b;
+  --color-neutral-950: #09090b;
+
+  /* --------------------------------------------------------
+     Colors: Semantic
+     -------------------------------------------------------- */
+  --color-success-50: #f0fdf4;
+  --color-success-500: #22c55e;
+  --color-success-600: #16a34a;
+
+  --color-warning-50: #fffbeb;
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+
+  --color-error-50: #fef2f2;
+  --color-error-500: #ef4444;
+  --color-error-600: #dc2626;
+
+  --color-info-50: #eff6ff;
+  --color-info-500: #3b82f6;
+  --color-info-600: #2563eb;
+
+  /* --------------------------------------------------------
+     Typography: Font Families
+     Inter(欧文) + Noto Sans JP(和文)
+     -------------------------------------------------------- */
+  --font-sans: 'Inter', 'Noto Sans JP', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', monospace;
+
+  /* --------------------------------------------------------
+     Typography: Font Sizes
+     マーケティング向け - base=16px, display系は72pxまで
+     業務UI (base=14px, max=24px) とは独立したスケール
+     -------------------------------------------------------- */
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1rem;
+  --text-body-sm: 0.875rem;
+  --text-body-sm--line-height: 1.5rem;
+  --text-body-md: 1rem;
+  --text-body-md--line-height: 1.75rem;
+  --text-body-lg: 1.125rem;
+  --text-body-lg--line-height: 1.875rem;
+  --text-heading-sm: 1.125rem;
+  --text-heading-sm--line-height: 1.5rem;
+  --text-heading-md: 1.25rem;
+  --text-heading-md--line-height: 1.75rem;
+  --text-heading-lg: 1.5rem;
+  --text-heading-lg--line-height: 2rem;
+  --text-display-sm: 1.875rem;
+  --text-display-sm--line-height: 2.25rem;
+  --text-display-md: 2.25rem;
+  --text-display-md--line-height: 2.75rem;
+  --text-display-lg: 3rem;
+  --text-display-lg--line-height: 3.5rem;
+  --text-display-xl: 3.75rem;
+  --text-display-xl--line-height: 4.25rem;
+  --text-display-2xl: 4.5rem;
+  --text-display-2xl--line-height: 5rem;
+
+  /* --------------------------------------------------------
+     Spacing: 4px Grid + マーケティング拡張
+     セクション間余白・コンテナ幅
+     -------------------------------------------------------- */
+  --spacing-section-sm: 5rem;
+  --spacing-section-md: 6rem;
+  --spacing-section-lg: 8rem;
+  --spacing-section-xl: 10rem;
+
+  /* --------------------------------------------------------
+     Container Widths
+     -------------------------------------------------------- */
+  --container-sm: 40rem;
+  --container-md: 48rem;
+  --container-lg: 64rem;
+  --container-xl: 80rem;
+
+  /* --------------------------------------------------------
+     Elevation: Shadows
+     -------------------------------------------------------- */
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  --shadow-glow-primary: 0 0 24px rgb(19 195 160 / 0.25);
+  --shadow-glow-primary-lg: 0 0 48px rgb(19 195 160 / 0.3);
+
+  /* --------------------------------------------------------
+     Elevation: Border Radius
+     -------------------------------------------------------- */
+  --radius-none: 0px;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+  --radius-full: 9999px;
+
+  /* --------------------------------------------------------
+     Animation: Duration
+     -------------------------------------------------------- */
+  --duration-fast: 100ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+  --duration-slower: 500ms;
+
+  /* --------------------------------------------------------
+     Animation: Easing
+     -------------------------------------------------------- */
+  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* --------------------------------------------------------
+     Z-Index Scale
+     マーケティングサイト向け（シンプル）
+     -------------------------------------------------------- */
+  --z-header: 100;
+  --z-mobile-menu: 200;
+  --z-modal: 300;
+
+  /* --------------------------------------------------------
+     Animation: Keyframes
+     -------------------------------------------------------- */
+  --animate-fade-in: fade-in var(--duration-normal) var(--ease-out);
+  --animate-fade-in-up: fade-in-up var(--duration-slow) var(--ease-out);
+  --animate-fade-in-down: fade-in-down var(--duration-slow) var(--ease-out);
+  --animate-scale-in: scale-in var(--duration-slow) var(--ease-out);
+  --animate-blur-in: blur-in var(--duration-slower) var(--ease-out);
+}
+
+/* ============================================================
+   Semantic Color Tokens
+   ライト/ダークモードで自動切替されるセマンティック変数
+   ============================================================ */
+
+:root {
+  --color-surface: #ffffff;
+  --color-surface-raised: #ffffff;
+  --color-surface-sunken: var(--color-neutral-50);
+  --color-surface-muted: var(--color-neutral-100);
+  --color-on-surface: var(--color-neutral-900);
+  --color-on-surface-secondary: var(--color-neutral-600);
+  --color-on-surface-muted: var(--color-neutral-500);
+  --color-border: var(--color-neutral-200);
+  --color-ring: var(--color-primary-500);
+}
+
+.dark {
+  --color-surface: #0A0A0C;
+  --color-surface-raised: #141416;
+  --color-surface-sunken: #050506;
+  --color-surface-muted: #1C1C1F;
+  --color-on-surface: var(--color-neutral-50);
+  --color-on-surface-secondary: var(--color-neutral-400);
+  --color-on-surface-muted: var(--color-neutral-500);
+  --color-border: #1F1F23;
+  --color-ring: var(--color-primary-400);
+  color-scheme: dark;
+}
+
+/* ============================================================
+   Keyframes
+   ============================================================ */
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes blur-in {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-33.333%);
+  }
+}
+
+/* ============================================================
+   Base Styles
+   ============================================================ */
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    border-color: var(--color-border);
+  }
+
+  a,
+  button,
+  [role="button"],
+  summary,
+  [tabindex]:not([tabindex="-1"]) {
+    cursor: pointer;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-size: var(--text-body-md);
+    line-height: var(--text-body-md--line-height);
+    color: var(--color-on-surface);
+    background-color: var(--color-surface);
+    font-feature-settings: 'cv01', 'cv03', 'cv04', 'tnum';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* 日本語テキストの行間・文字間最適化 */
+  .lang-ja {
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+    word-break: auto-phrase;
+  }
+
+  .lang-en {
+    line-height: 1.6;
+  }
+
+  :lang(ja) h1,
+  :lang(ja) h2,
+  :lang(ja) h3 {
+    font-feature-settings: 'palt';
+  }
+}
+
+/* ============================================================
+   Utility: Gradient Border
+   ============================================================ */
+
+@layer utilities {
+  .gradient-border {
+    position: relative;
+    background: var(--color-surface);
+    border: none;
+  }
+  .gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    border-radius: inherit;
+    background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-300));
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+}
+
+/* ============================================================
+   Accessibility: Reduced Motion
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "name": "Polastack GTM Design System",
+  "build": { "dockerfile": "Dockerfile" },
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+      "moby": false
+    }
+  },
+  "mounts": [
+    "source=${localWorkspaceFolder}/../DesignSystem,target=/workspaces/DesignSystem,type=bind,readonly",
+    "source=${localWorkspaceFolder}/../Polastack_GTM,target=/workspaces/Polastack_GTM,type=bind,readonly"
+  ],
+  // "postCreateCommand": "pnpm install",
+  "runArgs": [
+    "--sysctl",
+    "net.ipv6.conf.all.disable_ipv6=1",
+    "--sysctl",
+    "net.ipv6.conf.default.disable_ipv6=1"
+  ],
+  "remoteUser": "node",
+  "forwardPorts": [6006],
+  "portsAttributes": {
+    "6006": {
+      "label": "Storybook",
+      "protocol": "http",
+      "onAutoForward": "notify"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["bradlc.vscode-tailwindcss", "esbenp.prettier-vscode"],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+      }
+    }
+  }
+}
