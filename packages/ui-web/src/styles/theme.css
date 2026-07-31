@@ -8,6 +8,11 @@
  *   import '@polastack/gtm-design-system/theme.css';
  *
  * ※ スタンドアロンで使う場合は globals.css を使用してください。
+ *
+ * **カラー・シャドウ・ラディウス・モーションの値の正本は
+ * `@polastack/tokens`（packages/tokens）。** Tailwind v4 の @theme は
+ * CSS 変数の実体宣言を要求するため値をここに展開しているが、
+ * 手で書き換えてはならない。ズレは src/tokens/tokens.test.ts が CI で検出する。
  */
 
 /* ============================================================
@@ -25,21 +30,42 @@
 
 @theme {
   /* --------------------------------------------------------
-     Colors: Brand (Primary)
-     Teal系 - #13c3a0をベースにしたPolastackブランドカラー
-     @polastack/design-system と同一値
+     Colors: Primary（操作用 / WCAG AA 準拠）
+     #008575 アンカー。ボタン背景・リンク・フォーカスリングなど、
+     テキストや意味を担うUIに使う。白文字との対比 4.55:1 で AA 適合。
+     @polastack/design-system（業務システムUI）と完全同値。
      -------------------------------------------------------- */
-  --color-primary-50: #f2fdfb;
-  --color-primary-100: #dbfaf4;
-  --color-primary-200: #b4f3e6;
-  --color-primary-300: #7ee7d2;
-  --color-primary-400: #2ee0bc;
-  --color-primary-500: #13c3a0;
-  --color-primary-600: #109e81;
-  --color-primary-700: #137663;
-  --color-primary-800: #165a4c;
-  --color-primary-900: #164b40;
-  --color-primary-950: #072c25;
+  --color-primary-50: #e0f2f1;
+  --color-primary-100: #b2dfdb;
+  --color-primary-200: #80cbc4;
+  --color-primary-300: #4db6ac;
+  --color-primary-400: #26a69a;
+  --color-primary-500: #008575;
+  --color-primary-600: #007567;
+  --color-primary-700: #006055;
+  --color-primary-800: #004c43;
+  --color-primary-900: #003831;
+  --color-primary-950: #00231f;
+
+  /* --------------------------------------------------------
+     Colors: Brand（装飾用）
+     #13c3a0 アンカー。グラデーション・グロー・ダーク背景上のアクセント専用。
+     白背景に置いた場合の対比は 2.25:1 しかないため、
+     **明背景でのテキスト・ボタン背景に使ってはならない。**
+     primary と同一色相（H≈173）の明度違いであり、
+     ブランドとしては一つの色として成立する。
+     -------------------------------------------------------- */
+  --color-brand-50: #f2fdfb;
+  --color-brand-100: #dbfaf4;
+  --color-brand-200: #b4f3e6;
+  --color-brand-300: #7ee7d2;
+  --color-brand-400: #2ee0bc;
+  --color-brand-500: #13c3a0;
+  --color-brand-600: #109e81;
+  --color-brand-700: #137663;
+  --color-brand-800: #165a4c;
+  --color-brand-900: #164b40;
+  --color-brand-950: #072c25;
 
   /* --------------------------------------------------------
      Colors: Neutral (Zinc系)
@@ -59,22 +85,56 @@
 
   /* --------------------------------------------------------
      Colors: Semantic
+     success は primary のティールと 44° の色相差をつけた True Green。
+     業務システムUI と完全同値。
      -------------------------------------------------------- */
-  --color-success-50: #f0fdf4;
-  --color-success-500: #22c55e;
-  --color-success-600: #16a34a;
+  --color-success-50: #f3fcf5;
+  --color-success-100: #d9f7df;
+  --color-success-200: #b6edbf;
+  --color-success-300: #80db8f;
+  --color-success-400: #3ecc55;
+  --color-success-500: #22b43b;
+  --color-success-600: #1c922f;
+  --color-success-700: #1d6d2a;
+  --color-success-800: #1d5326;
+  --color-success-900: #1c4523;
+  --color-success-950: #0a290f;
 
   --color-warning-50: #fffbeb;
+  --color-warning-100: #fef3c7;
+  --color-warning-200: #fde68a;
+  --color-warning-300: #fcd34d;
+  --color-warning-400: #fbbf24;
   --color-warning-500: #f59e0b;
   --color-warning-600: #d97706;
+  --color-warning-700: #b45309;
+  --color-warning-800: #92400e;
+  --color-warning-900: #78350f;
+  --color-warning-950: #451a03;
 
   --color-error-50: #fef2f2;
+  --color-error-100: #fee2e2;
+  --color-error-200: #fecaca;
+  --color-error-300: #fca5a5;
+  --color-error-400: #f87171;
   --color-error-500: #ef4444;
   --color-error-600: #dc2626;
+  --color-error-700: #b91c1c;
+  --color-error-800: #991b1b;
+  --color-error-900: #7f1d1d;
+  --color-error-950: #450a0a;
 
   --color-info-50: #eff6ff;
+  --color-info-100: #dbeafe;
+  --color-info-200: #bfdbfe;
+  --color-info-300: #93c5fd;
+  --color-info-400: #60a5fa;
   --color-info-500: #3b82f6;
   --color-info-600: #2563eb;
+  --color-info-700: #1d4ed8;
+  --color-info-800: #1e40af;
+  --color-info-900: #1e3a8a;
+  --color-info-950: #172554;
 
   /* --------------------------------------------------------
      Typography: Font Families
@@ -139,6 +199,8 @@
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
   --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  /* グロー（ハロー）は装飾のため brand スケール由来 = rgb(19 195 160)。
+     変数名の `primary` は既存consumerとの互換で据え置いている。 */
   --shadow-glow-primary: 0 0 24px rgb(19 195 160 / 0.25);
   --shadow-glow-primary-lg: 0 0 48px rgb(19 195 160 / 0.3);
 
@@ -344,7 +406,8 @@
     inset: 0;
     padding: 1px;
     border-radius: inherit;
-    background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-300));
+    /* 装飾のため brand スケールを使う（操作UIではない） */
+    background: linear-gradient(135deg, var(--color-brand-500), var(--color-brand-300));
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask-composite: exclude;
     pointer-events: none;

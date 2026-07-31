@@ -1,12 +1,12 @@
 /**
  * タイポグラフィトークン定数
- * CSS変数（globals.css @theme）と同期。
+ *
+ * フォントファミリ・ウェイトの正本は `@polastack/tokens`。
+ * フォントサイズだけは業務システムUI固有（base=14px / 最大24px、
+ * BtoB業務アプリの高密度表示向け）のためここで定義する。
  */
 
-export const fontFamily = {
-  sans: "'Inter', 'Noto Sans JP', ui-sans-serif, system-ui, sans-serif",
-  mono: "'JetBrains Mono', ui-monospace, 'Cascadia Code', monospace",
-} as const;
+export { fontFamily, fontWeight, type FontWeight } from '@polastack/tokens';
 
 export const fontSize = {
   xs: { size: '0.75rem', lineHeight: '1rem' },
@@ -18,12 +18,4 @@ export const fontSize = {
   '3xl': { size: '1.5rem', lineHeight: '2rem' },
 } as const;
 
-export const fontWeight = {
-  normal: '400',
-  medium: '500',
-  semibold: '600',
-  bold: '700',
-} as const;
-
 export type FontSize = keyof typeof fontSize;
-export type FontWeight = keyof typeof fontWeight;

@@ -13,8 +13,10 @@ export const marketingButtonVariants = cva(
           'border border-[var(--color-border)] bg-[var(--color-surface)] text-neutral-700 dark:text-neutral-300 hover:bg-[var(--color-surface-sunken)] hover:border-primary-300 hover:-translate-y-0.5 active:translate-y-0',
         ghost:
           'text-[var(--color-on-surface)] hover:bg-neutral-100 hover:text-primary-600 dark:hover:bg-neutral-800 dark:hover:text-primary-400',
+        // グラデーション両端とも白文字 4.5:1 を満たす必要があるため
+        // primary-400 (#26a69a = 3.0:1) は使わず 600→500 の範囲に収める。
         gradient:
-          'bg-gradient-to-r from-primary-500 to-primary-400 !text-white hover:from-primary-600 hover:to-primary-500 hover:shadow-glow-primary bg-[length:200%_100%] hover:bg-[position:right] hover:-translate-y-0.5 active:translate-y-0',
+          'bg-gradient-to-r from-primary-600 to-primary-500 !text-white hover:from-primary-700 hover:to-primary-600 hover:shadow-glow-primary bg-[length:200%_100%] hover:bg-[position:right] hover:-translate-y-0.5 active:translate-y-0',
       },
       size: {
         sm: 'h-9 px-4 text-body-sm',

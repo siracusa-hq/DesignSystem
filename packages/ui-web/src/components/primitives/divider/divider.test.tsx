@@ -11,7 +11,7 @@ describe('Divider', () => {
 
   it('variantを適用する', () => {
     const { container } = render(<Divider variant="brand" />);
-    expect(container.firstChild).toHaveClass('via-primary-500');
+    expect(container.firstChild).toHaveClass('via-brand-500');
   });
 
   it('spacingを適用する', () => {

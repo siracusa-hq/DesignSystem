@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { brand } from '@polastack/tokens';
 import { cn } from '@/lib/cn';
 
 export interface LogoProps extends React.SVGAttributes<SVGSVGElement> {
@@ -17,7 +18,9 @@ export interface LogoProps extends React.SVGAttributes<SVGSVGElement> {
  */
 export const Logo = React.forwardRef<SVGSVGElement, LogoProps>(
   ({ className, variant = 'full', colorScheme = 'primary', height = 32, ...props }, ref) => {
-    const brandColor = '#13c3a0';
+    // ロゴマークは装飾要素のため、彩度の高い brand スケールを使う。
+    // 値の正本は @polastack/tokens（リテラルを複製しない）。
+    const brandColor = brand[500];
 
     const textColor =
       colorScheme === 'reverse'

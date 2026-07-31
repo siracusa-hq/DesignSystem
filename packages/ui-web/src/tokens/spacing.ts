@@ -1,27 +1,11 @@
 /**
  * スペーシングトークン定数
- * 4pxグリッドベース + マーケティング向けセクション間余白・コンテナ幅
+ *
+ * 4pxグリッドの基盤スケールは `@polastack/tokens` が正本。
+ * セクション間余白・コンテナ幅は Web/LP 固有のためここで定義する。
  */
 
-export const spacing = {
-  0: '0px',
-  px: '1px',
-  0.5: '0.125rem',
-  1: '0.25rem',
-  1.5: '0.375rem',
-  2: '0.5rem',
-  2.5: '0.625rem',
-  3: '0.75rem',
-  4: '1rem',
-  5: '1.25rem',
-  6: '1.5rem',
-  8: '2rem',
-  10: '2.5rem',
-  12: '3rem',
-  16: '4rem',
-  20: '5rem',
-  24: '6rem',
-} as const;
+export { spacing, type Spacing } from '@polastack/tokens';
 
 /** セクション間の垂直余白 */
 export const sectionSpacing = {
@@ -38,3 +22,6 @@ export const containerWidth = {
   lg: '64rem',
   xl: '80rem',
 } as const;
+
+export type SectionSpacing = keyof typeof sectionSpacing;
+export type ContainerWidth = keyof typeof containerWidth;

@@ -1,89 +1,30 @@
 /**
  * カラートークン定数
- * CSS変数（globals.css @theme）と同期。プログラム的アクセス用。
- * @polastack/design-system と同一のブランドカラーパレット。
+ *
+ * 値の正本は `@polastack/tokens`。@polastack/design-system（業務システムUI）と
+ * 同じファイルを参照するため、両デザインシステムでブランドカラーが分岐しない。
+ * CSS変数（styles/theme.css の @theme）との一致は tokens.test.ts が CI で検証する。
+ *
+ * ## primary と brand の使い分け（重要）
+ *
+ * - `primary`（#008575 アンカー）… **操作用**。ボタン背景・リンク・フォーカスリング。
+ *   白文字との対比 4.55:1 で WCAG AA を満たす。
+ * - `brand`（#13c3a0 アンカー）… **装飾用**。グラデーション・グロー・
+ *   ダーク背景上のアクセント専用。白背景での対比は 2.25:1 しかないため、
+ *   明背景のテキスト・ボタン背景に使ってはならない。
  */
 
+import { primary, brand, neutral, success, warning, error, info } from '@polastack/tokens';
+
 export const colors = {
-  primary: {
-    50: '#f2fdfb',
-    100: '#dbfaf4',
-    200: '#b4f3e6',
-    300: '#7ee7d2',
-    400: '#2ee0bc',
-    500: '#13c3a0',
-    600: '#109e81',
-    700: '#137663',
-    800: '#165a4c',
-    900: '#164b40',
-    950: '#072c25',
-  },
-  neutral: {
-    50: '#fafafa',
-    100: '#f4f4f5',
-    200: '#e4e4e7',
-    300: '#d4d4d8',
-    400: '#a1a1aa',
-    500: '#71717a',
-    600: '#52525b',
-    700: '#3f3f46',
-    800: '#27272a',
-    850: '#1f1f23',
-    900: '#18181b',
-    950: '#09090b',
-  },
-  success: {
-    50: '#f3fcf5',
-    100: '#d9f7df',
-    200: '#b6edbf',
-    300: '#80db8f',
-    400: '#3ecc55',
-    500: '#22b43b',
-    600: '#1c922f',
-    700: '#1d6d2a',
-    800: '#1d5326',
-    900: '#1c4523',
-    950: '#0a290f',
-  },
-  warning: {
-    50: '#fffbeb',
-    100: '#fef3c7',
-    200: '#fde68a',
-    300: '#fcd34d',
-    400: '#fbbf24',
-    500: '#f59e0b',
-    600: '#d97706',
-    700: '#b45309',
-    800: '#92400e',
-    900: '#78350f',
-    950: '#451a03',
-  },
-  error: {
-    50: '#fef2f2',
-    100: '#fee2e2',
-    200: '#fecaca',
-    300: '#fca5a5',
-    400: '#f87171',
-    500: '#ef4444',
-    600: '#dc2626',
-    700: '#b91c1c',
-    800: '#991b1b',
-    900: '#7f1d1d',
-    950: '#450a0a',
-  },
-  info: {
-    50: '#eff6ff',
-    100: '#dbeafe',
-    200: '#bfdbfe',
-    300: '#93c5fd',
-    400: '#60a5fa',
-    500: '#3b82f6',
-    600: '#2563eb',
-    700: '#1d4ed8',
-    800: '#1e40af',
-    900: '#1e3a8a',
-    950: '#172554',
-  },
+  primary,
+  brand,
+  neutral,
+  success,
+  warning,
+  error,
+  info,
 } as const;
 
 export type ColorScale = keyof typeof colors;
+export type ColorShade = keyof (typeof colors)['primary'];

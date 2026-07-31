@@ -8,8 +8,9 @@ export const dividerVariants = cva('w-full', {
       solid: 'h-px bg-[var(--color-border)]',
       gradient:
         'h-px bg-gradient-to-r from-transparent via-[var(--color-border)] to-transparent',
+      // 装飾のみのヘアラインのため、彩度の高い brand スケールを使う
       brand:
-        'h-px bg-gradient-to-r from-transparent via-primary-500 to-transparent',
+        'h-px bg-gradient-to-r from-transparent via-brand-500 to-transparent',
       dashed: 'border-t border-dashed border-[var(--color-border)]',
     },
     spacing: {

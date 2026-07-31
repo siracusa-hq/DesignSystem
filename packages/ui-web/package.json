@@ -6,11 +6,13 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tkaneko-siracusa/GTM_DesignSystem.git"
+    "url": "https://github.com/siracusa-hq/DesignSystem.git",
+    "directory": "packages/ui-web"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public"
+    "access": "public",
+    "provenance": true
   },
   "sideEffects": [
     "**/*.css"
@@ -38,7 +40,7 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "storybook": "storybook dev -p 6006 --host 127.0.0.1",
+    "storybook": "storybook dev -p 6007 --host 0.0.0.0",
     "build-storybook": "storybook build",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
@@ -57,6 +59,7 @@
     }
   },
   "dependencies": {
+    "@polastack/tokens": "workspace:^",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.577.0",
@@ -89,6 +92,5 @@
   },
   "engines": {
     "node": ">=20.0.0"
-  },
-  "packageManager": "pnpm@9.15.4"
+  }
 }

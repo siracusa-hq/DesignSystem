@@ -72,7 +72,7 @@ export const BentoGrid = React.forwardRef<HTMLElement, BentoGridProps>(
                 className={cn(
                   'flex flex-col overflow-hidden rounded-2xl border p-6 transition-all duration-200 hover:-translate-y-1 hover:border-primary-500/30 hover:shadow-xl',
                   item.variant === 'featured'
-                    ? 'border-primary-500/20 bg-gradient-to-br from-primary-50 to-white shadow-glow-primary dark:from-primary-950/20 dark:to-neutral-900'
+                    ? 'border-brand-500/20 bg-gradient-to-br from-brand-50 to-white shadow-glow-primary dark:from-brand-950/20 dark:to-neutral-900'
                     : item.variant === 'dark'
                       ? 'border-neutral-800 bg-neutral-950 text-white'
                       : 'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900',

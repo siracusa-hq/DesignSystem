@@ -1,31 +1,38 @@
 /**
  * アニメーショントークン
- * CSS変数（globals.css @theme）と同期。
+ *
+ * duration / easing の正本は `@polastack/tokens`。
+ * z-index は業務システムUI固有の3層体系のためここで定義する。
  */
 
-export const duration = {
-  fast: '100ms',
-  normal: '200ms',
-  slow: '300ms',
-} as const;
+export { duration, easing, type Duration, type Easing } from '@polastack/tokens';
 
-export const easing = {
-  default: 'cubic-bezier(0.4, 0, 0.2, 1)',
-  in: 'cubic-bezier(0.4, 0, 1, 1)',
-  out: 'cubic-bezier(0, 0, 0.2, 1)',
-  inOut: 'cubic-bezier(0.4, 0, 0.2, 1)',
-} as const;
-
+/**
+ * z-index スケール（3層体系）
+ *
+ * styles/tokens.css の `--z-index-*` と同じ値。
+ * in-flow（ページ内容）/ backdrop floating（背景遮断）/
+ * floating overlays（Modal の上に積む portal）の3層に分かれる。
+ *
+ * 詳細: docs/z-index-system.md
+ */
 export const zIndex = {
-  dropdown: 50,
-  sticky: 100,
-  drawer: 200,
-  modal: 300,
-  popover: 400,
-  toast: 500,
-  tooltip: 600,
+  /* In-flow layers */
+  base: 0,
+  content: 1,
+  sticky: 10,
+  header: 20,
+  overlayInline: 30,
+
+  /* Backdrop floating */
+  drawer: 1100,
+  modal: 1200,
+
+  /* Floating overlays */
+  popover: 1300,
+  dropdown: 1300,
+  tooltip: 1400,
+  toast: 1500,
 } as const;
 
-export type Duration = keyof typeof duration;
-export type Easing = keyof typeof easing;
 export type ZIndex = keyof typeof zIndex;

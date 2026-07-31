@@ -70,7 +70,7 @@ export const SplitImage: Story = {
           { label: isJa ? '無料で始める' : 'Get Started Free', href: '/signup' },
         ]}
         image={
-          <div className="flex h-64 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-100 to-primary-50 text-primary-500 dark:from-primary-950 dark:to-neutral-900">
+          <div className="flex h-64 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-100 to-brand-50 text-primary-500 dark:from-brand-950 dark:to-neutral-900">
             <span className="text-lg font-medium">Product Screenshot</span>
           </div>
         }

@@ -11,7 +11,7 @@ export default meta;
 type Story = StoryObj<typeof AirPocketFeature>;
 
 const Placeholder: React.FC<{ label: string }> = ({ label }) => (
-  <div className="flex h-48 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-100 to-primary-50 text-sm text-primary-500 dark:from-primary-950 dark:to-neutral-900">
+  <div className="flex h-48 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-100 to-brand-50 text-sm text-primary-500 dark:from-brand-950 dark:to-neutral-900">
     {label}
   </div>
 );
