@@ -6,13 +6,13 @@
 
 ## 日本語
 
-[Polastack](https://github.com/tkaneko-siracusa) のマーケティングコミュニケーション向けデザインシステムです。Webサイト、ランディングページ、営業資料、講演資料のための統一されたコンポーネントとデザイントークンを提供します。
+[Polastack](https://github.com/siracusa-hq) のマーケティングコミュニケーション向けデザインシステムです。Webサイト、ランディングページ、営業資料、講演資料のための統一されたコンポーネントとデザイントークンを提供します。
 
-> **注意:** 本パッケージは**マーケティング用 GTM デザインシステム**です。プロダクトUI用のデザインシステムは [@polastack/design-system](https://github.com/tkaneko-siracusa/DesignSystem) を参照してください。
+> **注意:** 本パッケージは**マーケティング用 GTM デザインシステム**です。プロダクトUI用のデザインシステムは [@polastack/design-system](https://github.com/siracusa-hq/DesignSystem/tree/main/packages/ui-app) を参照してください。
 
 ### Storybook
 
-https://tkaneko-siracusa.github.io/GTM_DesignSystem/
+https://siracusa-hq.github.io/DesignSystem/web/
 
 ### インストール
 
@@ -48,7 +48,7 @@ import '@polastack/gtm-design-system/globals.css';
 
 | トークン | 説明 |
 |---|---|
-| **Colors** | ブランドティール `#13c3a0` + ニュートラル（neutral-850含む） + セマンティック |
+| **Colors** | 操作用 `primary`（`#008575` / 白文字 4.55:1 で WCAG AA 適合）+ 装飾用 `brand`（`#13c3a0` / グラデーション・グロー専用）+ ニュートラル（neutral-850含む）+ セマンティック |
 | **Typography** | Display 72px 〜 Caption 12px（基準 16px）、サイズ別letter-spacing最適化 |
 | **Spacing** | セクション間余白 80–160px、コンテナ幅 640–1280px |
 | **Gradients** | ブランドグラデーション、グロー効果、テキストグラデーション |
@@ -161,13 +161,13 @@ src/
 
 ## English
 
-Marketing design system for [Polastack](https://github.com/tkaneko-siracusa) — components and design tokens for websites, landing pages, and sales materials.
+Marketing design system for [Polastack](https://github.com/siracusa-hq) — components and design tokens for websites, landing pages, and sales materials.
 
-> **Note:** This is the **GTM (Go-To-Market) Design System** for marketing use. For the product UI design system, see [@polastack/design-system](https://github.com/tkaneko-siracusa/DesignSystem).
+> **Note:** This is the **GTM (Go-To-Market) Design System** for marketing use. For the product UI design system, see [@polastack/design-system](https://github.com/siracusa-hq/DesignSystem/tree/main/packages/ui-app).
 
 ### Storybook
 
-https://tkaneko-siracusa.github.io/GTM_DesignSystem/
+https://siracusa-hq.github.io/DesignSystem/web/
 
 ### Install
 
@@ -203,7 +203,7 @@ Shared brand identity with `@polastack/design-system`, extended for marketing:
 
 | Token | Description |
 |---|---|
-| **Colors** | Brand teal `#13c3a0` + neutral (incl. neutral-850) + semantic |
+| **Colors** | Interactive `primary` (`#008575`, 4.55:1 against white — WCAG AA) + decorative `brand` (`#13c3a0`, gradients/glows only) + neutral (incl. neutral-850) + semantic |
 | **Typography** | Display 72px to Caption 12px (base 16px), size-specific letter-spacing |
 | **Spacing** | Section spacing 80–160px, container widths 640–1280px |
 | **Gradients** | Brand gradients, glow effects, text gradients |

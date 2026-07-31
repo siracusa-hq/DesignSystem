@@ -26,15 +26,19 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Build Storybook
+      # 2つの Storybook を storybook-static/{app,web}/ にビルドし、
+      # ルートに行き先を選ぶ index.html を置く。
+      #   https://siracusa-hq.github.io/DesignSystem/app/  … 業務システムUI
+      #   https://siracusa-hq.github.io/DesignSystem/web/  … Web/LP
+      - name: Build Storybook (app + web)
         run: pnpm build-storybook
         env:
-          STORYBOOK_BASE: /DesignSystem/
+          PAGES_BASE: /DesignSystem/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

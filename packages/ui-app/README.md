@@ -13,7 +13,7 @@ BtoB業務アプリケーション向けReactデザインシステム。
 
 ## Storybook
 
-コンポーネントカタログ: https://siracusa-hq.github.io/DesignSystem/
+コンポーネントカタログ: https://siracusa-hq.github.io/DesignSystem/app/
 
 ## インストール
 
@@ -134,21 +134,30 @@ pnpm size
 
 ## ブランドカラー
 
-メインカラー: **#13C3A0**（ティール）
+メインカラー: **#008575**（ティール）。値の正本は
+[`@polastack/tokens`](https://www.npmjs.com/package/@polastack/tokens)。
 
-| カテゴリ | カラー |
-|---------|--------|
-| Primary | Teal (#13C3A0) |
-| Success | Green |
-| Warning | Amber |
-| Error | Red |
-| Info | Blue |
+| カテゴリ | カラー | 備考 |
+|---------|--------|------|
+| Primary | Teal (#008575) | 500 単独で白文字 4.55:1、WCAG AA 適合 |
+| Success | True Green (#22b43b) | primary と44°の色相差で区別 |
+| Warning | Amber (#f59e0b) | |
+| Error | Red (#ef4444) | |
+| Info | Blue (#3b82f6) | |
+
+装飾用の `brand` スケール（#13c3a0 系）は Web/LP 専用のため、
+本パッケージには意図的に含めていない。
 
 ## リリース
 
-1. `CHANGELOG.md` を更新
-2. GitHub で新しい Release を作成（タグ: `v0.x.x`）
-3. GitHub Actions が自動的にテスト・ビルド・publish を実行
+モノレポ化に伴い changesets 運用に移行した。
+**手で `package.json` の version を編集したり `git tag` を打ったりしないこと。**
+
+1. 変更を入れた PR に changeset を添える（リポジトリルートで `pnpm changeset`）
+2. main にマージすると Release ワークフローが「chore: release packages」PR を自動作成
+3. その PR をマージすると npm publish とタグ作成まで自動実行される
+
+詳細はリポジトリルートの [CLAUDE.md](../../CLAUDE.md) を参照。
 
 ## ライセンス
 

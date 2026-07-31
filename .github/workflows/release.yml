@@ -1,17 +1,35 @@
 name: Release
 
+# モノレポ化に伴い、リリースの起点を「GitHub Release の手動作成」から
+# 「changesets が作る Version PR のマージ」に変更した。
+# 3パッケージが独立したバージョンを持つため、タグ1本から版を決められないため。
+#
+# 流れ:
+#   1. changeset 付きの PR が main にマージされる
+#   2. このワークフローが「chore: release packages」PR を作成／更新する
+#   3. その PR をマージすると、このワークフローが npm publish + タグ作成まで行う
+#
+# ※ npm Trusted Publishing はリポジトリとワークフロー**ファイル名**に紐づくため、
+#   `release.yml` というファイル名は変更しないこと（既存の信頼設定が外れる）。
 on:
-  release:
-    types: [published]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  publish:
+  release:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write # Version PR のブランチ push とタグ作成
+      pull-requests: write # Version PR の作成／更新
       id-token: write # OIDC token request for npm Trusted Publishing
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: pnpm/action-setup@v4
 
@@ -19,13 +37,12 @@ jobs:
       # 外すと npm CLI は OIDC を試みず ENEEDAUTH になる (v0.3.5 で確認)。
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
           registry-url: https://registry.npmjs.org
 
-      # Trusted Publishing requires npm >= 11.5.1.
-      # npm@latest(12+) は node 22+ を要求し node 20 と非互換(EBADENGINE)になるため、
-      # node 20 対応かつ Trusted Publishing 要件を満たす npm@11 系に固定する。
+      # Trusted Publishing requires npm >= 11.5.1。
+      # changeset publish は内部で `npm publish` を呼ぶため、PATH 上の npm を差し替える。
       - name: Update npm to 11 (for trusted publishing support)
         run: npm install -g npm@11
 
@@ -48,15 +65,20 @@ jobs:
         run: pnpm typecheck
 
       - name: Test
-        run: pnpm test -- --reporter=verbose
+        run: pnpm test
 
       - name: Build
         run: pnpm build
 
-      - name: Set version from release tag
-        run: npm version "${GITHUB_REF_NAME#v}" --no-git-tag-version --allow-same-version
-
-      # Trusted Publishing: OIDC token は npm が自動で取得・検証する。
-      # NPM_TOKEN は不要。--provenance で SLSA 由来証明を npm 上に公開。
-      - name: Publish to npm
-        run: npm publish --provenance --access public
+      # publish は `pnpm release` (= pnpm build && changeset publish)。
+      # --provenance は各 package.json の publishConfig.provenance: true から
+      # changesets が付与する（SLSA 由来証明を npm 上に公開）。
+      - name: Create Version PR or publish
+        uses: changesets/action@v1
+        with:
+          version: pnpm version-packages
+          publish: pnpm release
+          commit: 'chore: release packages'
+          title: 'chore: release packages'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
