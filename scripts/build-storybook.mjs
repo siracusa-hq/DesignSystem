@@ -10,9 +10,15 @@
  * サブディレクトリ配信には base の指定が必須。各パッケージの
  * .storybook/main.ts が STORYBOOK_BASE 環境変数を読む。
  *
+ * 配信先は Netlify（サイトルート配信）なので base は既定の `/` でよい。
+ * サブディレクトリ配信するホスティングに移す場合のみ PAGES_BASE を指定する。
+ *
  * 使い方:
- *   pnpm build-storybook                      # ローカル（base = /app/, /web/）
- *   PAGES_BASE=/DesignSystem/ pnpm build-storybook   # GitHub Pages 配信時
+ *   pnpm build-storybook                          # 通常（base = /app/, /web/）
+ *   PAGES_BASE=/DesignSystem/ pnpm build-storybook # サブパス配信する場合
+ *
+ * ※ 事前に `pnpm build` が必要。ui-app / ui-web は @polastack/tokens を
+ *   dist/ 経由で解決するため、未ビルドだと vite が名前解決に失敗する。
  */
 
 import { execFileSync } from 'node:child_process';
@@ -23,7 +29,7 @@ import { fileURLToPath } from 'node:url';
 const rootDir = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const outDir = join(rootDir, 'storybook-static');
 
-/** GitHub Pages はリポジトリ名のサブパス配信になるため、その分を前置きする */
+/** サブディレクトリ配信するホスティング向けの前置きパス。Netlify では不要 */
 const pagesBase = process.env.PAGES_BASE ?? '/';
 
 const targets = [

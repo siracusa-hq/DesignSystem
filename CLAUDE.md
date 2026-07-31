@@ -74,6 +74,24 @@ CI も Build → Typecheck → Test → Size の順で回している。
 - `pnpm storybook:web` - Web/LPのStorybook（ポート6007）
 - `pnpm build-storybook` - 2つのStorybookを `storybook-static/{app,web}/` に統合ビルド
 
+## Storybook の配信
+
+**Netlify に一本化している。** 1サイトで2つの Storybook をディレクトリで出し分ける。
+
+| URL | 中身 |
+|---|---|
+| <https://polastack-design-system.netlify.app/> | 行き先を選ぶランディング |
+| <https://polastack-design-system.netlify.app/app/> | 業務システムUI |
+| <https://polastack-design-system.netlify.app/web/> | Web / LP |
+
+設定は `netlify.toml`（build command / publish dir / Node バージョン）。
+main への push で本番が更新され、PR にはデプロイプレビューが付く。
+**色やレイアウトを変える PR は、マージ前にプレビューで見ること。**
+
+GitHub Pages への配信は廃止した（`storybook.yml` を削除済み）。
+旧 URL `https://siracusa-hq.github.io/DesignSystem/` は過去のビルドが残っているだけで
+更新されないため、参照しないこと。
+
 単一パッケージだけ動かす場合:
 
 ```bash

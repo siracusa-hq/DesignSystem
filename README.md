@@ -11,9 +11,9 @@ Polastack（Enterprise Agent Stack）のデザインシステム。
 | [`packages/ui-app`](packages/ui-app) | [`@polastack/design-system`](https://www.npmjs.com/package/@polastack/design-system) | 業務システムUI |
 | [`packages/ui-web`](packages/ui-web) | [`@polastack/gtm-design-system`](https://www.npmjs.com/package/@polastack/gtm-design-system) | Web / LP / 営業資料 |
 
-Storybook: <https://siracusa-hq.github.io/DesignSystem/>
-（[業務システムUI](https://siracusa-hq.github.io/DesignSystem/app/) /
-[Web・LP](https://siracusa-hq.github.io/DesignSystem/web/)）
+Storybook: <https://polastack-design-system.netlify.app/>
+（[業務システムUI](https://polastack-design-system.netlify.app/app/) /
+[Web・LP](https://polastack-design-system.netlify.app/web/)）
 
 ## なぜトークンを切り出しているか
 
