@@ -1,2 +1,9 @@
 packages:
   - 'packages/*'
+
+# pnpm 10 以降、依存パッケージの postinstall スクリプトは既定でブロックされる
+# （サプライチェーン対策）。ここに挙げたものだけ実行を許可する。
+# esbuild はプラットフォーム別バイナリの配置に postinstall を使うため、
+# 許可しないと tsup / vitest / storybook のビルドが動かない。
+onlyBuiltDependencies:
+  - esbuild
