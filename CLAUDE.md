@@ -61,6 +61,11 @@ TS定数とCSS変数を双方向で突き合わせる）。この仕組みは、
 
 ルートで実行するとワークスペース全体（`pnpm -r`）に対して走る。
 
+**クローン直後や `pnpm install` 直後は、まず `pnpm build` を実行すること。**
+`ui-app` / `ui-web` は `@polastack/tokens` を `dist/index.d.ts` 経由で型解決するため、
+tokens が未ビルドだと `pnpm typecheck` も `pnpm test` も TS2307 で落ちる。
+CI も Build → Typecheck → Test → Size の順で回している。
+
 - `pnpm build` - 全パッケージをtsupビルド（tokens が先に依存順で実行される）
 - `pnpm test` - 全パッケージのVitest
 - `pnpm typecheck` - 全パッケージの型チェック

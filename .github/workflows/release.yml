@@ -61,14 +61,15 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      # Build を最初に置くこと（理由は ci.yml のコメント参照）。
+      - name: Build
+        run: pnpm build
+
       - name: Typecheck
         run: pnpm typecheck
 
       - name: Test
         run: pnpm test
-
-      - name: Build
-        run: pnpm build
 
       # publish は `pnpm release` (= pnpm build && changeset publish)。
       # --provenance は各 package.json の publishConfig.provenance: true から

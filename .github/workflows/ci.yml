@@ -23,15 +23,19 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       # 以下はいずれも `pnpm -r` でワークスペース全体（tokens / ui-app / ui-web）を回す。
-      # tokens が先にビルドされるよう pnpm が依存グラフ順に実行する。
+      # tokens が先に処理されるよう pnpm が依存グラフ順に実行する。
+      #
+      # **Build を最初に置くこと。** ui-app / ui-web は `@polastack/tokens` を
+      # `dist/index.d.ts` 経由で型解決するため、tokens が未ビルドだと
+      # typecheck も test も TS2307 で落ちる。
+      - name: Build
+        run: pnpm build
+
       - name: Typecheck
         run: pnpm typecheck
 
       - name: Test
         run: pnpm test
-
-      - name: Build
-        run: pnpm build
 
       - name: Size check
         run: pnpm size
