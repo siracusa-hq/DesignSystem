@@ -1,0 +1,37 @@
+{
+  "name": "@polastack/design-system-monorepo",
+  "private": true,
+  "type": "module",
+  "description": "Polastack Design System monorepo - shared brand tokens, product UI, and GTM/web UI",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/siracusa-hq/DesignSystem.git"
+  },
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev": "pnpm -r --parallel dev",
+    "test": "pnpm -r test",
+    "typecheck": "pnpm -r typecheck",
+    "size": "pnpm -r size",
+    "clean": "pnpm -r clean && rm -rf storybook-static",
+    "storybook": "pnpm --filter @polastack/design-system storybook",
+    "storybook:app": "pnpm --filter @polastack/design-system storybook",
+    "storybook:web": "pnpm --filter @polastack/gtm-design-system storybook",
+    "build-storybook": "node scripts/build-storybook.mjs",
+    "format": "prettier --write \"**/*.{ts,tsx,css,md,json,yml,yaml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,css,md,json,yml,yaml}\"",
+    "changeset": "changeset",
+    "version-packages": "changeset version && pnpm install --lockfile-only",
+    "release": "pnpm build && changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.12",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "packageManager": "pnpm@11.9.0"
+}
