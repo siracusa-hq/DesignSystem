@@ -12,12 +12,14 @@
  */
 
 import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
+import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { colors, shadows, radii, duration, easing } from './index';
 
-const cssPath = fileURLToPath(new URL('../styles/tokens.css', import.meta.url));
-const css = readFileSync(cssPath, 'utf8');
+// パスはパッケージルート（= vitest の cwd）基準で解決する。
+// このテストは environment: 'jsdom' で走るため `import.meta.url` が
+// file: スキームにならず、fileURLToPath が ERR_INVALID_URL_SCHEME で落ちる。
+const css = readFileSync(resolve(process.cwd(), 'src/styles/tokens.css'), 'utf8');
 
 /** 空白を正規化して比較する（CSS 整形差でテストが落ちないように） */
 const normalize = (value: string) => value.trim().replace(/\s+/g, ' ');

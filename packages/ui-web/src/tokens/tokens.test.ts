@@ -13,13 +13,14 @@
  */
 
 import { readFileSync, readdirSync } from 'node:fs';
-import { join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { colors, shadows, radii, duration, easing } from './index';
 
-const cssPath = fileURLToPath(new URL('../styles/theme.css', import.meta.url));
-const css = readFileSync(cssPath, 'utf8');
+// パスはパッケージルート（= vitest の cwd）基準で解決する。
+// このテストは environment: 'jsdom' で走るため `import.meta.url` が
+// file: スキームにならず、fileURLToPath が ERR_INVALID_URL_SCHEME で落ちる。
+const css = readFileSync(resolve(process.cwd(), 'src/styles/theme.css'), 'utf8');
 
 /** 空白を正規化して比較する（CSS 整形差でテストが落ちないように） */
 const normalize = (value: string) => value.trim().replace(/\s+/g, ' ');
@@ -96,7 +97,7 @@ describe('エレベーション・モーショントークンと CSS 変数の�
 });
 
 describe('装飾用 brand スケールの誤用防止', () => {
-  const componentsDir = fileURLToPath(new URL('../components', import.meta.url));
+  const componentsDir = resolve(process.cwd(), 'src/components');
 
   function collectSources(dir: string): Record<string, string> {
     const out: Record<string, string> = {};
