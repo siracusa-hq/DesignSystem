@@ -1,0 +1,119 @@
+/**
+ * Polastack ブランド基盤トークン — CSS変数版
+ *
+ * React を使わないサイト（Astro・静的HTML・その他フレームワーク）向け。
+ * `@polastack/tokens/brand.css` として読み込む。
+ *
+ *   <link rel="stylesheet" href="node_modules/@polastack/tokens/css/brand.css">
+ *   あるいは CSS 側で: @import '@polastack/tokens/brand.css';
+ *
+ * ## primary と brand の使い分け（重要）
+ *
+ * --color-primary-*  : 操作用。ボタン背景・リンク・フォーカスリング。
+ *                      500 は白文字との対比 4.55:1 で WCAG AA 適合。
+ * --color-brand-*    : 装飾用。グラデーション・グロー・ダーク背景のアクセント。
+ *                      500 は白背景との対比が 2.25:1 しかないため、
+ *                      明背景のテキスト・ボタン背景には使用しないこと。
+ */
+
+:root {
+  /* ── 操作用プライマリ（WCAG AA 準拠） ───────────────── */
+  --color-primary-50: #e0f2f1;
+  --color-primary-100: #b2dfdb;
+  --color-primary-200: #80cbc4;
+  --color-primary-300: #4db6ac;
+  --color-primary-400: #26a69a;
+  --color-primary-500: #008575;
+  --color-primary-600: #007567;
+  --color-primary-700: #006055;
+  --color-primary-800: #004c43;
+  --color-primary-900: #003831;
+  --color-primary-950: #00231f;
+
+  /* ── 装飾用ブランドアクセント（テキスト・ボタン背景には使わない） ── */
+  --color-brand-50: #f2fdfb;
+  --color-brand-100: #dbfaf4;
+  --color-brand-200: #b4f3e6;
+  --color-brand-300: #7ee7d2;
+  --color-brand-400: #2ee0bc;
+  --color-brand-500: #13c3a0;
+  --color-brand-600: #109e81;
+  --color-brand-700: #137663;
+  --color-brand-800: #165a4c;
+  --color-brand-900: #164b40;
+  --color-brand-950: #072c25;
+
+  /* ── ニュートラル ───────────────────────────────── */
+  --color-neutral-50: #fafafa;
+  --color-neutral-100: #f4f4f5;
+  --color-neutral-200: #e4e4e7;
+  --color-neutral-300: #d4d4d8;
+  --color-neutral-400: #a1a1aa;
+  --color-neutral-500: #71717a;
+  --color-neutral-600: #52525b;
+  --color-neutral-700: #3f3f46;
+  --color-neutral-800: #27272a;
+  --color-neutral-850: #1f1f23;
+  --color-neutral-900: #18181b;
+  --color-neutral-950: #09090b;
+
+  /* ── セマンティック ─────────────────────────────── */
+  --color-success-50: #f3fcf5;
+  --color-success-500: #22b43b;
+  --color-success-600: #1c922f;
+  --color-success-700: #1d6d2a;
+
+  --color-warning-50: #fffbeb;
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+  --color-warning-700: #b45309;
+
+  --color-error-50: #fef2f2;
+  --color-error-500: #ef4444;
+  --color-error-600: #dc2626;
+  --color-error-700: #b91c1c;
+
+  --color-info-50: #eff6ff;
+  --color-info-500: #3b82f6;
+  --color-info-600: #2563eb;
+  --color-info-700: #1d4ed8;
+
+  /* ── タイポグラフィ ─────────────────────────────── */
+  --font-sans: 'Inter', 'Noto Sans JP', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', monospace;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  /* ── ボーダーラディウス ─────────────────────────── */
+  --radius-none: 0px;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+  --radius-full: 9999px;
+
+  /* ── シャドウ ───────────────────────────────────── */
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+
+  /* ── モーション ─────────────────────────────────── */
+  --duration-fast: 100ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+  --duration-slower: 500ms;
+
+  --easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --easing-in: cubic-bezier(0.4, 0, 1, 1);
+  --easing-out: cubic-bezier(0, 0, 0.2, 1);
+  --easing-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
