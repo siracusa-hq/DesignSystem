@@ -9,7 +9,28 @@
   "mounts": [
     "source=${localWorkspaceFolder}/../project-renacer,target=/workspaces/project-renacer,type=bind,readonly"
   ],
-  "postCreateCommand": "pnpm install",
+
+  // pnpm のグローバル bin を全シェル・全プロセスから見えるようにする。
+  // .bashrc 経由だと非対話シェルや起動済みターミナルで解決できないため、
+  // コンテナ環境変数として設定する。
+  "containerEnv": {
+    "PNPM_HOME": "/home/node/.local/share/pnpm",
+    "PATH": "/home/node/.local/share/pnpm/bin:${containerEnv:PATH}"
+  },
+
+  // netlify CLI（Storybook のホスティング先）はグローバルに入れる。
+  // 依存が約1000パッケージあり、メモリが少ない環境では OOM で失敗しうるため、
+  // 失敗してもコンテナ作成自体は止めない（`|| echo`）。
+  // 失敗した場合は手動で `pnpm add -g netlify-cli` を実行すること。
+  "postCreateCommand": "pnpm install && { pnpm add -g netlify-cli || echo '⚠ netlify-cli のインストールに失敗しました（メモリ不足の可能性）。手動で `pnpm add -g netlify-cli` を実行してください'; }",
+
+  // モノレポ全体の pnpm install + Storybook ビルドを通すには 4GB 程度の空きが必要。
+  // Docker Desktop の割り当てが不足していると install が OOM kill される。
+  // （この宣言を尊重するのは Codespaces 等。ローカルでは要件の明示という意味を持つ）
+  "hostRequirements": {
+    "memory": "8gb"
+  },
+
   "runArgs": [
     "--sysctl",
     "net.ipv6.conf.all.disable_ipv6=1",
@@ -17,10 +38,15 @@
     "net.ipv6.conf.default.disable_ipv6=1"
   ],
   "remoteUser": "node",
-  "forwardPorts": [6006],
+  "forwardPorts": [6006, 6007],
   "portsAttributes": {
     "6006": {
-      "label": "Storybook",
+      "label": "Storybook (業務システムUI)",
+      "protocol": "http",
+      "onAutoForward": "notify"
+    },
+    "6007": {
+      "label": "Storybook (Web / LP)",
       "protocol": "http",
       "onAutoForward": "notify"
     }
