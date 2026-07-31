@@ -3,7 +3,12 @@ packages:
 
 # pnpm 10 以降、依存パッケージの postinstall スクリプトは既定でブロックされる
 # （サプライチェーン対策）。ここに挙げたものだけ実行を許可する。
+#
 # esbuild はプラットフォーム別バイナリの配置に postinstall を使うため、
 # 許可しないと tsup / vitest / storybook のビルドが動かない。
-onlyBuiltDependencies:
-  - esbuild
+#
+# ※ キー名は pnpm 11 で `onlyBuiltDependencies`（配列）から
+#   `allowBuilds`（マップ）に変わった。旧キーは設定として認識はされるが
+#   ビルド許可の判定には使われず、ERR_PNPM_IGNORED_BUILDS で install が落ちる。
+allowBuilds:
+  esbuild: true
