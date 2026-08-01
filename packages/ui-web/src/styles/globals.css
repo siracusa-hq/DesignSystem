@@ -1,0 +1,18 @@
+/**
+ * Polastack GTM Design System - Full Entry Point
+ *
+ * Tailwind 初期化 + 全トークン + ベーススタイルをまとめたエントリポイント。
+ * スタンドアロンで使う場合はこちらを読み込む。
+ *
+ *   import '@polastack/gtm-design-system/globals.css';
+ *
+ * 消費側が自前の Tailwind 設定を持つ場合は theme.css を直接 @import すること。
+ *
+ * ※ 以前はこのファイルが theme.css の内容を丸ごと複製していたため、
+ *   片方だけ更新されるドリフトが起きていた。実体は theme.css に一本化している。
+ */
+
+@import 'tailwindcss';
+
+/* Design Tokens (@theme) / Custom Variants / Base Styles / Keyframes */
+@import './theme.css';

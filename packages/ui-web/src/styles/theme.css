@@ -1,0 +1,430 @@
+/**
+ * Polastack GTM Design System - Theme CSS
+ *
+ * 消費側（Next.js等）で使用するテーマファイル。
+ * Tailwind の @import は含まない（消費側が自前で管理する前提）。
+ *
+ * 使い方:
+ *   import '@polastack/gtm-design-system/theme.css';
+ *
+ * ※ スタンドアロンで使う場合は globals.css を使用してください。
+ *
+ * **カラー・シャドウ・ラディウス・モーションの値の正本は
+ * `@polastack/tokens`（packages/tokens）。** Tailwind v4 の @theme は
+ * CSS 変数の実体宣言を要求するため値をここに展開しているが、
+ * 手で書き換えてはならない。ズレは src/tokens/tokens.test.ts が CI で検出する。
+ */
+
+/* ============================================================
+   Dark Mode Variant
+   .dark クラスベースのダークモード切替
+   ============================================================ */
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ============================================================
+   Polastack GTM Design System - Design Tokens
+   Tailwind CSS v4 @theme directive
+   マーケティングコミュニケーション向け
+   ============================================================ */
+
+@theme {
+  /* --------------------------------------------------------
+     Colors: Primary（操作用 / WCAG AA 準拠）
+     #008575 アンカー。ボタン背景・リンク・フォーカスリングなど、
+     テキストや意味を担うUIに使う。白文字との対比 4.55:1 で AA 適合。
+     @polastack/design-system（業務システムUI）と完全同値。
+     -------------------------------------------------------- */
+  --color-primary-50: #e0f2f1;
+  --color-primary-100: #b2dfdb;
+  --color-primary-200: #80cbc4;
+  --color-primary-300: #4db6ac;
+  --color-primary-400: #26a69a;
+  --color-primary-500: #008575;
+  --color-primary-600: #007567;
+  --color-primary-700: #006055;
+  --color-primary-800: #004c43;
+  --color-primary-900: #003831;
+  --color-primary-950: #00231f;
+
+  /* --------------------------------------------------------
+     Colors: Brand（装飾用）
+     #13c3a0 アンカー。グラデーション・グロー・ダーク背景上のアクセント専用。
+     白背景に置いた場合の対比は 2.25:1 しかないため、
+     **明背景でのテキスト・ボタン背景に使ってはならない。**
+     primary と同一色相（H≈173）の明度違いであり、
+     ブランドとしては一つの色として成立する。
+     -------------------------------------------------------- */
+  --color-brand-50: #f2fdfb;
+  --color-brand-100: #dbfaf4;
+  --color-brand-200: #b4f3e6;
+  --color-brand-300: #7ee7d2;
+  --color-brand-400: #2ee0bc;
+  --color-brand-500: #13c3a0;
+  --color-brand-600: #109e81;
+  --color-brand-700: #137663;
+  --color-brand-800: #165a4c;
+  --color-brand-900: #164b40;
+  --color-brand-950: #072c25;
+
+  /* --------------------------------------------------------
+     Colors: Neutral (Zinc系)
+     -------------------------------------------------------- */
+  --color-neutral-50: #fafafa;
+  --color-neutral-100: #f4f4f5;
+  --color-neutral-200: #e4e4e7;
+  --color-neutral-300: #d4d4d8;
+  --color-neutral-400: #a1a1aa;
+  --color-neutral-500: #71717a;
+  --color-neutral-600: #52525b;
+  --color-neutral-700: #3f3f46;
+  --color-neutral-800: #27272a;
+  --color-neutral-850: #1f1f23;
+  --color-neutral-900: #18181b;
+  --color-neutral-950: #09090b;
+
+  /* --------------------------------------------------------
+     Colors: Semantic
+     success は primary のティールと 44° の色相差をつけた True Green。
+     業務システムUI と完全同値。
+     -------------------------------------------------------- */
+  --color-success-50: #f3fcf5;
+  --color-success-100: #d9f7df;
+  --color-success-200: #b6edbf;
+  --color-success-300: #80db8f;
+  --color-success-400: #3ecc55;
+  --color-success-500: #22b43b;
+  --color-success-600: #1c922f;
+  --color-success-700: #1d6d2a;
+  --color-success-800: #1d5326;
+  --color-success-900: #1c4523;
+  --color-success-950: #0a290f;
+
+  --color-warning-50: #fffbeb;
+  --color-warning-100: #fef3c7;
+  --color-warning-200: #fde68a;
+  --color-warning-300: #fcd34d;
+  --color-warning-400: #fbbf24;
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+  --color-warning-700: #b45309;
+  --color-warning-800: #92400e;
+  --color-warning-900: #78350f;
+  --color-warning-950: #451a03;
+
+  --color-error-50: #fef2f2;
+  --color-error-100: #fee2e2;
+  --color-error-200: #fecaca;
+  --color-error-300: #fca5a5;
+  --color-error-400: #f87171;
+  --color-error-500: #ef4444;
+  --color-error-600: #dc2626;
+  --color-error-700: #b91c1c;
+  --color-error-800: #991b1b;
+  --color-error-900: #7f1d1d;
+  --color-error-950: #450a0a;
+
+  --color-info-50: #eff6ff;
+  --color-info-100: #dbeafe;
+  --color-info-200: #bfdbfe;
+  --color-info-300: #93c5fd;
+  --color-info-400: #60a5fa;
+  --color-info-500: #3b82f6;
+  --color-info-600: #2563eb;
+  --color-info-700: #1d4ed8;
+  --color-info-800: #1e40af;
+  --color-info-900: #1e3a8a;
+  --color-info-950: #172554;
+
+  /* --------------------------------------------------------
+     Typography: Font Families
+     Inter(欧文) + Noto Sans JP(和文)
+     -------------------------------------------------------- */
+  --font-sans: 'Inter', 'Noto Sans JP', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', monospace;
+
+  /* --------------------------------------------------------
+     Typography: Font Sizes
+     マーケティング向け - base=16px, display系は72pxまで
+     業務UI (base=14px, max=24px) とは独立したスケール
+     -------------------------------------------------------- */
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1rem;
+  --text-body-sm: 0.875rem;
+  --text-body-sm--line-height: 1.5rem;
+  --text-body-md: 1rem;
+  --text-body-md--line-height: 1.75rem;
+  --text-body-lg: 1.125rem;
+  --text-body-lg--line-height: 1.875rem;
+  --text-heading-sm: 1.125rem;
+  --text-heading-sm--line-height: 1.5rem;
+  --text-heading-md: 1.25rem;
+  --text-heading-md--line-height: 1.75rem;
+  --text-heading-lg: 1.5rem;
+  --text-heading-lg--line-height: 2rem;
+  --text-display-sm: 1.875rem;
+  --text-display-sm--line-height: 2.25rem;
+  --text-display-md: 2.25rem;
+  --text-display-md--line-height: 2.75rem;
+  --text-display-lg: 3rem;
+  --text-display-lg--line-height: 3.5rem;
+  --text-display-xl: 3.75rem;
+  --text-display-xl--line-height: 4.25rem;
+  --text-display-2xl: 4.5rem;
+  --text-display-2xl--line-height: 5rem;
+
+  /* --------------------------------------------------------
+     Spacing: 4px Grid + マーケティング拡張
+     セクション間余白・コンテナ幅
+     -------------------------------------------------------- */
+  --spacing-section-sm: 5rem;
+  --spacing-section-md: 6rem;
+  --spacing-section-lg: 8rem;
+  --spacing-section-xl: 10rem;
+
+  /* --------------------------------------------------------
+     Container Widths
+     -------------------------------------------------------- */
+  --container-sm: 40rem;
+  --container-md: 48rem;
+  --container-lg: 64rem;
+  --container-xl: 80rem;
+
+  /* --------------------------------------------------------
+     Elevation: Shadows
+     -------------------------------------------------------- */
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  /* グロー（ハロー）は装飾のため brand スケール由来 = rgb(19 195 160)。
+     変数名の `primary` は既存consumerとの互換で据え置いている。 */
+  --shadow-glow-primary: 0 0 24px rgb(19 195 160 / 0.25);
+  --shadow-glow-primary-lg: 0 0 48px rgb(19 195 160 / 0.3);
+
+  /* --------------------------------------------------------
+     Elevation: Border Radius
+     -------------------------------------------------------- */
+  --radius-none: 0px;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+  --radius-full: 9999px;
+
+  /* --------------------------------------------------------
+     Animation: Duration
+     -------------------------------------------------------- */
+  --duration-fast: 100ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+  --duration-slower: 500ms;
+
+  /* --------------------------------------------------------
+     Animation: Easing
+     -------------------------------------------------------- */
+  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* --------------------------------------------------------
+     Z-Index Scale
+     マーケティングサイト向け（シンプル）
+     -------------------------------------------------------- */
+  --z-header: 100;
+  --z-mobile-menu: 200;
+  --z-modal: 300;
+
+  /* --------------------------------------------------------
+     Animation: Keyframes
+     -------------------------------------------------------- */
+  --animate-fade-in: fade-in var(--duration-normal) var(--ease-out);
+  --animate-fade-in-up: fade-in-up var(--duration-slow) var(--ease-out);
+  --animate-fade-in-down: fade-in-down var(--duration-slow) var(--ease-out);
+  --animate-scale-in: scale-in var(--duration-slow) var(--ease-out);
+  --animate-blur-in: blur-in var(--duration-slower) var(--ease-out);
+}
+
+/* ============================================================
+   Semantic Color Tokens
+   ライト/ダークモードで自動切替されるセマンティック変数
+   ============================================================ */
+
+:root {
+  --color-surface: #ffffff;
+  --color-surface-raised: #ffffff;
+  --color-surface-sunken: var(--color-neutral-50);
+  --color-surface-muted: var(--color-neutral-100);
+  --color-on-surface: var(--color-neutral-900);
+  --color-on-surface-secondary: var(--color-neutral-600);
+  --color-on-surface-muted: var(--color-neutral-500);
+  --color-border: var(--color-neutral-200);
+  --color-ring: var(--color-primary-500);
+}
+
+.dark {
+  --color-surface: #0A0A0C;
+  --color-surface-raised: #141416;
+  --color-surface-sunken: #050506;
+  --color-surface-muted: #1C1C1F;
+  --color-on-surface: var(--color-neutral-50);
+  --color-on-surface-secondary: var(--color-neutral-400);
+  --color-on-surface-muted: var(--color-neutral-500);
+  --color-border: #1F1F23;
+  --color-ring: var(--color-primary-400);
+  color-scheme: dark;
+}
+
+/* ============================================================
+   Keyframes
+   ============================================================ */
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes blur-in {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-33.333%);
+  }
+}
+
+/* ============================================================
+   Base Styles
+   ============================================================ */
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    border-color: var(--color-border);
+  }
+
+  a,
+  button,
+  [role="button"],
+  summary,
+  [tabindex]:not([tabindex="-1"]) {
+    cursor: pointer;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-size: var(--text-body-md);
+    line-height: var(--text-body-md--line-height);
+    color: var(--color-on-surface);
+    background-color: var(--color-surface);
+    font-feature-settings: 'cv01', 'cv03', 'cv04', 'tnum';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* 日本語テキストの行間・文字間最適化 */
+  .lang-ja {
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+    word-break: auto-phrase;
+  }
+
+  .lang-en {
+    line-height: 1.6;
+  }
+
+  :lang(ja) h1,
+  :lang(ja) h2,
+  :lang(ja) h3 {
+    font-feature-settings: 'palt';
+  }
+}
+
+/* ============================================================
+   Utility: Gradient Border
+   ============================================================ */
+
+@layer utilities {
+  .gradient-border {
+    position: relative;
+    background: var(--color-surface);
+    border: none;
+  }
+  .gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    border-radius: inherit;
+    /* 装飾のため brand スケールを使う（操作UIではない） */
+    background: linear-gradient(135deg, var(--color-brand-500), var(--color-brand-300));
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+}
+
+/* ============================================================
+   Accessibility: Reduced Motion
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

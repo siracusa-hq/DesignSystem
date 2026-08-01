@@ -1,0 +1,12 @@
+src/**/*.test.tsx
+src/**/*.stories.tsx
+src/test/
+.storybook/
+.github/
+.devcontainer/
+docs/
+storybook-static/
+vitest.config.ts
+CLAUDE.md
+*.tsbuildinfo
+.DS_Store

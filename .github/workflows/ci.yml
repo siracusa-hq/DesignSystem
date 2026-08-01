@@ -12,23 +12,57 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # pnpm のバージョンはルート package.json の packageManager から解決される。
       - uses: pnpm/action-setup@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
+
+      # 以下はいずれも `pnpm -r` でワークスペース全体（tokens / ui-app / ui-web）を回す。
+      # tokens が先に処理されるよう pnpm が依存グラフ順に実行する。
+      #
+      # **Build を最初に置くこと。** ui-app / ui-web は `@polastack/tokens` を
+      # `dist/index.d.ts` 経由で型解決するため、tokens が未ビルドだと
+      # typecheck も test も TS2307 で落ちる。
+      - name: Build
+        run: pnpm build
 
       - name: Typecheck
         run: pnpm typecheck
 
       - name: Test
-        run: pnpm test -- --reporter=verbose
-
-      - name: Build
-        run: pnpm build
+        run: pnpm test
 
       - name: Size check
         run: pnpm size
+
+  changeset:
+    name: Changeset present
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # packages/ 配下を触った PR に changeset が無いと、リリースが漏れる。
+      # 「意図的に不要」な場合は空の changeset (`pnpm changeset --empty`) を置く。
+      - name: Verify changeset for package changes
+        run: |
+          BASE="origin/${{ github.base_ref }}"
+          CHANGED=$(git diff --name-only "$BASE"...HEAD -- packages/ | grep -v '/CHANGELOG.md$' || true)
+          if [ -z "$CHANGED" ]; then
+            echo "packages/ に変更なし。changeset 不要。"
+            exit 0
+          fi
+          if git diff --name-only "$BASE"...HEAD -- .changeset \
+            | grep -E '\.changeset/.+\.md$' | grep -qv '\.changeset/README\.md$'; then
+            echo "changeset あり。"
+            exit 0
+          fi
+          echo "::error::packages/ を変更していますが changeset がありません。'pnpm changeset' を実行して結果をコミットしてください。"
+          exit 1

@@ -1,0 +1,38 @@
+# Netlify — 統合 Storybook のホスティング
+#
+# 1サイトで2つの Storybook を配信する。scripts/build-storybook.mjs が
+# storybook-static/ を下の構成で生成する。
+#
+#   /       … 行き先を選ぶランディング
+#   /app/   … 業務システムUI（@polastack/design-system）
+#   /web/   … Web / LP（@polastack/gtm-design-system）
+#
+# GitHub Pages はリポジトリ名のサブパス配信だったため PAGES_BASE=/DesignSystem/ が
+# 必要だったが、Netlify はサイトルート配信なので既定値（/）のままでよい。
+
+[build]
+  # `pnpm build` が先に必要。ui-app / ui-web は @polastack/tokens を dist/ 経由で
+  # 解決するため、未ビルドだと Storybook の vite が名前解決に失敗する。
+  command = "pnpm build && pnpm build-storybook"
+  publish = "storybook-static"
+
+[build.environment]
+  # ルート package.json の packageManager (pnpm@11.9.0) を corepack が解決する。
+  NODE_VERSION = "22"
+
+# Storybook のビルド成果物はハッシュ付きファイル名なので長期キャッシュしてよい。
+# index.html だけは毎回取り直させる。
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"

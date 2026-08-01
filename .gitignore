@@ -5,3 +5,6 @@ storybook-static/
 *.tsbuildinfo
 .pnpm-store/
 .vercel
+
+# Claude Code のローカル設定（各自の権限許可リスト）
+.claude/settings.local.json

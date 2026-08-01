@@ -1,155 +1,114 @@
-# @polastack/design-system
+# Polastack Design System
 
-BtoB業務アプリケーション向けReactデザインシステム。
-高密度な業務UIを品質高く、素早く、ブランド統一して構築するためのコンポーネントライブラリ。
+Polastack（Enterprise Agent Stack）のデザインシステム。
+ブランド共通トークンを正本に、用途別の2つのUIパッケージを提供する。
 
-## 技術スタック
+## パッケージ
 
-- **React 18/19** — コンポーネント基盤
-- **Tailwind CSS v4** — ゼロランタイムスタイリング（`@theme` でトークン統合）
-- **Radix UI** — アクセシビリティ基盤（ARIA/キーボード/フォーカス管理）
-- **CVA** — 型安全なバリアント管理
-- **TypeScript** — 完全な型定義
+| パッケージ | npm | 用途 |
+|---|---|---|
+| [`packages/tokens`](packages/tokens) | [`@polastack/tokens`](https://www.npmjs.com/package/@polastack/tokens) | ブランド共通トークンの正本。React非依存 |
+| [`packages/ui-app`](packages/ui-app) | [`@polastack/design-system`](https://www.npmjs.com/package/@polastack/design-system) | 業務システムUI |
+| [`packages/ui-web`](packages/ui-web) | [`@polastack/gtm-design-system`](https://www.npmjs.com/package/@polastack/gtm-design-system) | Web / LP / 営業資料 |
 
-## Storybook
+Storybook: <https://polastack-design-system.netlify.app/>
+（[業務システムUI](https://polastack-design-system.netlify.app/app/) /
+[Web・LP](https://polastack-design-system.netlify.app/web/)）
 
-コンポーネントカタログ: https://siracusa-hq.github.io/DesignSystem/
+## なぜトークンを切り出しているか
 
-## インストール
+以前は業務システムUIとWeb/LPが別リポジトリで、トークンは**値をコピーして手で同期**していた。
+その結果、2026-05-24 に業務システムUI側がプライマリカラーを `#008575` に変更した後も
+Web/LP側は `#13c3a0` のまま追随せず、**約2ヶ月間ブランドカラーが分岐**した。
+
+`#13c3a0` は白文字との対比が 2.25:1 しかなく、WebのCTAボタンは WCAG AA（4.5:1）を
+満たしていなかった。jsdom 上の axe テストは色計算ができないため検出されず素通りしていた。
+
+いまはトークンが唯一の正本であり、TS定数とCSS変数のズレを CI が機械的に検出する。
+
+## カラー体系
+
+用途で2階層に分かれる。同一色相（H≈173）の明度違いなので、ブランドとしては一つの色。
+
+### `primary` — 操作用（`#008575` アンカー）
+
+ボタン背景・リンク・フォーカスリングなど、テキストや意味を担うUI。
+500 単独で白文字 **4.55:1**、WCAG AA 適合。業務システムUI・Web/LPで同値。
+
+### `brand` — 装飾用（`#13c3a0` アンカー）
+
+グラデーション・グロー・ダーク背景上のアクセント専用。
+白背景での対比は 2.25:1 のため、**明背景のテキスト・ボタン背景には使えない**。
+Web/LPパッケージにのみ存在する。
+
+## 使い方
+
+### React（業務システムUI）
 
 ```bash
 pnpm add @polastack/design-system
 ```
 
-### CSS の読み込み
+```tsx
+import { Button } from '@polastack/design-system';
+import '@polastack/design-system/globals.css';
+```
+
+### React（Web / LP）
+
+```bash
+pnpm add @polastack/gtm-design-system
+```
+
+```tsx
+import { MarketingButton } from '@polastack/gtm-design-system';
+import '@polastack/gtm-design-system/globals.css';
+```
+
+### React を使わないサイト（Astro・静的HTML等）
+
+CSS変数だけを読み込めば、同じブランドカラーを適用できる。
+
+```bash
+pnpm add @polastack/tokens
+```
 
 ```css
-/* index.css */
-@import '@polastack/design-system/globals.css';
-@source "../node_modules/@polastack/design-system/dist";
-```
+@import '@polastack/tokens/brand.css';
 
-### フォント
-
-Inter（欧文）と Noto Sans JP（和文）を読み込んでください。
-
-```html
-<link
-  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap"
-  rel="stylesheet"
-/>
-```
-
-## 基本的な使い方
-
-```tsx
-import { ThemeProvider, Button, Card, CardHeader, CardTitle, CardContent } from '@polastack/design-system';
-
-function App() {
-  return (
-    <ThemeProvider defaultTheme="system">
-      <Card>
-        <CardHeader>
-          <CardTitle>Hello Polastack</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Button>Click me</Button>
-        </CardContent>
-      </Card>
-    </ThemeProvider>
-  );
+.cta {
+  background: var(--color-primary-500); /* 白文字 4.55:1 で AA 適合 */
+  color: #fff;
+}
+.hero-glow {
+  background: var(--color-brand-500); /* 装飾のみ。文字を載せないこと */
 }
 ```
 
-## コンポーネント一覧
-
-### コアアトム
-Button, Badge, Avatar, AvatarGroup, Separator, Skeleton, Spinner, Card, Tooltip, Toast
-
-### フォーム
-Label, Input, Textarea, Checkbox, RadioGroup, Switch, Select, Combobox, DatePicker, NumberInput, FormField, DynamicFormField, FormLayout
-
-### データ表示
-Tabs, EmptyState, Table, DataTable, FilterBar
-
-### ナビゲーション + レイアウト
-Popover, DropdownMenu, Dialog, CommandPalette, Drawer, AppShell
-
-### PWA
-BottomNavigation, OfflineIndicator, InstallPrompt, PullToRefresh
-
-### チャート / ダッシュボード
-StatCard, ChartContainer, chartColors (tokens)
-
-### テーマ
-ThemeProvider, useTheme
-
-## ダークモード
-
-`ThemeProvider` でライト/ダーク/システム連動の切り替えが可能です。
-
-```tsx
-import { ThemeProvider, useTheme } from '@polastack/design-system';
-
-// アプリルートで
-<ThemeProvider defaultTheme="system">
-  <App />
-</ThemeProvider>
-
-// コンポーネント内で
-function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
-  return <Button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>Toggle</Button>;
-}
-```
-
-CSS変数ベースのセマンティックトークンにより、全コンポーネントが自動的にダークモードに対応します。
-
-## デザイントークン
-
-TypeScript定数としても利用可能です。
+### トークンをプログラムから使う
 
 ```ts
-import { colors, typography, spacing } from '@polastack/design-system/tokens';
+import { primary, brand, spacing, radii } from '@polastack/tokens';
 ```
 
 ## 開発
 
 ```bash
-# Storybook 起動（コンポーネントカタログ）
-pnpm storybook
-
-# テスト実行
-pnpm test
-
-# 型チェック
+pnpm install
+pnpm build          # 全パッケージ（tokens → ui-app / ui-web の依存順）
+pnpm test           # 全パッケージの Vitest
 pnpm typecheck
-
-# ビルド
-pnpm build
-
-# バンドルサイズ確認
-pnpm size
+pnpm storybook:app  # 業務システムUI（:6006）
+pnpm storybook:web  # Web / LP（:6007）
 ```
 
-## ブランドカラー
+変更を入れたら changeset を添える。詳しくは [CLAUDE.md](CLAUDE.md) と
+[.changeset/README.md](.changeset/README.md) を参照。
 
-メインカラー: **#13C3A0**（ティール）
-
-| カテゴリ | カラー |
-|---------|--------|
-| Primary | Teal (#13C3A0) |
-| Success | Green |
-| Warning | Amber |
-| Error | Red |
-| Info | Blue |
-
-## リリース
-
-1. `CHANGELOG.md` を更新
-2. GitHub で新しい Release を作成（タグ: `v0.x.x`）
-3. GitHub Actions が自動的にテスト・ビルド・publish を実行
+```bash
+pnpm changeset
+```
 
 ## ライセンス
 
-MIT License
+[MIT](LICENSE)
