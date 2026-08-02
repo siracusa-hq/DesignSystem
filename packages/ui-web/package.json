@@ -1,6 +1,6 @@
 {
   "name": "@polastack/gtm-design-system",
-  "version": "0.1.33",
+  "version": "0.2.0",
   "description": "Polastack GTM Design System - Marketing components and design tokens for websites, landing pages, and sales materials",
   "type": "module",
   "license": "MIT",
