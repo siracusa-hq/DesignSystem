@@ -120,21 +120,66 @@ pnpm --filter @polastack/gtm-design-system build
    生成された `.changeset/*.md` をコミットして PR に含める。
    `packages/` を触ったのに changeset が無い PR は CI が落とす。
 
-2. PR を main にマージすると、Release ワークフローが
-   **「chore: release packages」PR** を自動作成／更新する（version更新 + CHANGELOG生成）
+2. PR を main にマージすると、Release ワークフローが version 更新と CHANGELOG 生成を行い、
+   その結果を **`changeset-release/main` ブランチに push する**（ここまでは自動）
 
-3. その PR をマージすると、同じワークフローが npm publish とタグ作成まで実行する
+3. **そのブランチから Version PR を手動で作る**（下記「Version PR を手で作る理由」参照）
+
+   ```bash
+   gh pr create --base main --head changeset-release/main \
+     --title "chore: release packages" --fill
+   ```
+
+4. その PR をマージすると、同じワークフローが npm publish とタグ作成まで実行する
 
 npm への公開は Trusted Publishing（OIDC）。`NPM_TOKEN` は不要。
 **`.github/workflows/release.yml` のファイル名は変更しないこと**
 （npm側の信頼設定がリポジトリ+ワークフローファイル名に紐づいているため）。
 
+### Version PR を手で作る理由
+
+changesets は本来この PR を自動で作るが、**org のポリシーで
+GitHub Actions による PR 作成が禁止されている**ため 403 で失敗する
+（`The organization does not allow GitHub Actions to create or approve pull requests`）。
+リポジトリ単位では上書きできない（API が 409 を返す）。
+
+**これは異常ではなく想定どおりの運用。** Release ワークフローのログに
+「creating pull request」で失敗した記録が残るが、その手前までは成功しており、
+`changeset-release/main` ブランチには正しい内容が入っている。
+
+自動化したくなった場合の選択肢は2つ。
+
+- org 設定 `Allow GitHub Actions to create and approve pull requests` を開放する
+  （org 配下の全リポジトリに影響する）
+- Fine-grained PAT を `RELEASE_TOKEN` として登録し、`changesets/action` の
+  `GITHUB_TOKEN` env に渡す（このリポジトリだけに権限を限定できる）
+
+なお、Version PR を人が開く運用には副次的な利点がある。
+破壊的変更（例: Web/LP のプライマリカラー変更）を公開前に必ず一度目視する機会になる。
+
 ### 未公開パッケージの初回公開について
 
-`@polastack/tokens` は npm 未公開のため、Trusted Publishing の設定を
-**事前に登録できない**（npm は既存パッケージにしか信頼発行元を設定できない）。
-初回だけは npm トークンで手動公開し、その後 npmjs.com で
-`siracusa-hq/DesignSystem` の `release.yml` を信頼発行元に登録すること。
+npm は**既存パッケージにしか信頼発行元を設定できない**ため、新規パッケージは
+Trusted Publishing を事前登録できない。初回だけ手動で公開する。
+
+```bash
+pnpm build
+cd packages/<new-package>
+npm login
+npm publish --access public --no-provenance
+```
+
+`--no-provenance` は必須。`publishConfig.provenance: true` により
+npm が SLSA 由来証明を作ろうとして GitHub Actions 外では失敗する。
+
+公開後、npmjs.com のパッケージ設定で Trusted Publisher を登録すること。
+
+| 項目 | 値 |
+|---|---|
+| Organization or user | `siracusa-hq` |
+| Repository | `DesignSystem` |
+| Workflow filename | `release.yml` |
+| Allowed actions | Allow npm publish のみ |
 
 ## 品質ゲート（全コンポーネント）
 

@@ -154,8 +154,16 @@ pnpm size
 **手で `package.json` の version を編集したり `git tag` を打ったりしないこと。**
 
 1. 変更を入れた PR に changeset を添える（リポジトリルートで `pnpm changeset`）
-2. main にマージすると Release ワークフローが「chore: release packages」PR を自動作成
-3. その PR をマージすると npm publish とタグ作成まで自動実行される
+2. main にマージすると Release ワークフローが version 更新と CHANGELOG 生成を行い、
+   `changeset-release/main` ブランチに push する
+3. そのブランチから Version PR を手動で作る（org ポリシーにより自動作成は不可）
+
+   ```bash
+   gh pr create --base main --head changeset-release/main \
+     --title "chore: release packages" --fill
+   ```
+
+4. その PR をマージすると npm publish とタグ作成まで自動実行される
 
 詳細はリポジトリルートの [CLAUDE.md](../../CLAUDE.md) を参照。
 

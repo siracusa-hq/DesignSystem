@@ -16,9 +16,22 @@ pnpm changeset
 ## リリースまでの流れ
 
 1. changeset 付きの PR を main にマージする
-2. Release ワークフローが **「chore: release packages」PR** を自動で作成／更新する
-   （`package.json` の version 更新 + CHANGELOG 生成 + changeset ファイル削除）
-3. その PR をマージすると、同じワークフローが npm publish とタグ作成まで実行する
+2. Release ワークフローが `package.json` の version 更新 + CHANGELOG 生成 +
+   changeset ファイル削除を行い、**`changeset-release/main` ブランチに push する**
+3. **そのブランチから Version PR を手動で作る**
+
+   ```bash
+   gh pr create --base main --head changeset-release/main \
+     --title "chore: release packages" --fill
+   ```
+
+4. その PR をマージすると、同じワークフローが npm publish とタグ作成まで実行する
+
+> **なぜ手動なのか**
+> org のポリシーで GitHub Actions による PR 作成が禁止されているため、
+> changesets の自動 PR 作成は 403 で失敗する。ワークフローのログに
+> 「creating pull request」の失敗が残るが、**ブランチには正しい内容が入っている**。
+> 詳細はリポジトリルートの [CLAUDE.md](../CLAUDE.md) を参照。
 
 **手で `package.json` の version を編集したり `git tag` を打ったりしないこと。**
 モノレポでは3パッケージが独立したバージョンを持つため、手動運用は破綻する。
