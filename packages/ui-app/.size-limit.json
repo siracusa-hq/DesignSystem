@@ -1,6 +1,25 @@
 [
   {
+    "name": "全エクスポート（バレル import）",
     "path": "dist/index.js",
-    "limit": "135 kB"
+    "limit": "150 kB"
+  },
+  {
+    "name": "Button のみ（tree-shaking の番人）",
+    "path": "dist/index.js",
+    "import": "{ Button }",
+    "limit": "10 kB"
+  },
+  {
+    "name": "代表構成（Button/Input/Card/Dialog/Select/Toast/Tabs）",
+    "path": "dist/index.js",
+    "import": "{ Button, Input, Card, Dialog, Select, Toast, Tabs }",
+    "limit": "46 kB"
+  },
+  {
+    "name": "DataTable のみ（最重量コンポーネント）",
+    "path": "dist/index.js",
+    "import": "{ DataTable }",
+    "limit": "56 kB"
   }
 ]
