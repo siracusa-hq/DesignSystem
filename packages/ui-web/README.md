@@ -26,6 +26,65 @@ pnpm add spectacle
 pnpm add shiki
 ```
 
+### セットアップ
+
+#### 1. スタイルの読み込み（`@source` の指定が必須）
+
+本パッケージは Tailwind CSS v4 を前提としており、**利用側の Tailwind が本パッケージの
+`dist` を走査してユーティリティを生成する**構成になっています。Tailwind v4 は既定で
+`node_modules` を走査しないため、`@source` の指定が必要です。
+
+> **これを省略するとコンポーネントは無スタイルでレンダリングされます。**
+> エラーにはならないため気づきにくい点に注意してください。
+
+利用側が自前の Tailwind 設定を持つ場合:
+
+```css
+/* app.css */
+@import 'tailwindcss';
+@import '@polastack/gtm-design-system/theme.css';
+@source '../node_modules/@polastack/gtm-design-system/dist';
+```
+
+利用側が Tailwind を持たない場合（スタンドアロン）:
+
+```css
+/* app.css */
+@import '@polastack/gtm-design-system/globals.css';
+@source '../node_modules/@polastack/gtm-design-system/dist';
+```
+
+`@source` のパスは**この CSS ファイルからの相対パス**で記述します。
+pnpm の symlink を越えても解決されます。
+
+指定の有無による実測値:
+
+| 設定           | 出力CSS | 生成されるユーティリティ                 |
+| -------------- | ------- | ---------------------------------------- |
+| `@source` なし | 9.15 kB | **0件**（トークン変数と preflight のみ） |
+| `@source` あり | 67.8 kB | 全件                                     |
+
+#### 2. Web フォントの読み込み
+
+トークンは `Inter`（欧文）+ `Noto Sans JP`（和文）+ `JetBrains Mono`（等幅）を指定しますが、
+**フォント本体は本パッケージに含まれていません。** 読み込まない場合 `system-ui` に
+フォールバックします。
+
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap"
+  rel="stylesheet"
+/>
+```
+
+Next.js の `next/font` や Astro の Fonts API でセルフホストする場合は、
+CSS変数 `--font-sans` / `--font-mono` を上書きしてください。
+
+> **この手順は暫定です。** 将来のバージョンではコンパイル済みCSSとフォント定義を
+> 同梱し、Tailwind と `@source` の設定を不要にする予定です。
+
 ### 使い方
 
 ```tsx
@@ -37,51 +96,54 @@ import { colors, gradients, fontSize } from '@polastack/gtm-design-system/tokens
 
 // スライドコンポーネントのインポート
 import { SlideDeck, TitleSlide, StatSlide } from '@polastack/gtm-design-system/slides';
-
-// グローバルスタイルの読み込み（アプリのエントリポイントで）
-import '@polastack/gtm-design-system/globals.css';
 ```
 
 ### デザイントークン
 
 `@polastack/design-system` と共通のブランドアイデンティティを継承しつつ、マーケティング向けに拡張しています。
 
-| トークン | 説明 |
-|---|---|
-| **Colors** | 操作用 `primary`（`#008575` / 白文字 4.55:1 で WCAG AA 適合）+ 装飾用 `brand`（`#13c3a0` / グラデーション・グロー専用）+ ニュートラル（neutral-850含む）+ セマンティック |
-| **Typography** | Display 72px 〜 Caption 12px（基準 16px）、サイズ別letter-spacing最適化 |
-| **Spacing** | セクション間余白 80–160px、コンテナ幅 640–1280px |
-| **Gradients** | ブランドグラデーション、グロー効果、テキストグラデーション |
-| **Elevation** | シャドウ + プライマリグロー |
-| **Animation** | フェードイン、スライド、スケール、ブラーイン + スクロール連動 |
-| **Breakpoints** | モバイル / タブレット / デスクトップ / ワイド |
+| トークン        | 説明                                                                                                                                                                     |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Colors**      | 操作用 `primary`（`#008575` / 白文字 4.55:1 で WCAG AA 適合）+ 装飾用 `brand`（`#13c3a0` / グラデーション・グロー専用）+ ニュートラル（neutral-850含む）+ セマンティック |
+| **Typography**  | Display 72px 〜 Caption 12px（基準 16px）、サイズ別letter-spacing最適化                                                                                                  |
+| **Spacing**     | セクション間余白 80–160px、コンテナ幅 640–1280px                                                                                                                         |
+| **Gradients**   | ブランドグラデーション、グロー効果、テキストグラデーション                                                                                                               |
+| **Elevation**   | シャドウ + プライマリグロー                                                                                                                                              |
+| **Animation**   | フェードイン、スライド、スケール、ブラーイン + スクロール連動                                                                                                            |
+| **Breakpoints** | モバイル / タブレット / デスクトップ / ワイド                                                                                                                            |
 
 #### プロダクトUI用DSとのタイポグラフィ比較
 
-| | プロダクトUI (`@polastack/design-system`) | GTM（本パッケージ） |
-|---|---|---|
-| 基準サイズ | 14px | 16px |
-| 最大サイズ | 24px | 72px (display-2xl) |
-| Display系 | なし | 30 / 36 / 48 / 60 / 72px |
+|            | プロダクトUI (`@polastack/design-system`) | GTM（本パッケージ）      |
+| ---------- | ----------------------------------------- | ------------------------ |
+| 基準サイズ | 14px                                      | 16px                     |
+| 最大サイズ | 24px                                      | 72px (display-2xl)       |
+| Display系  | なし                                      | 30 / 36 / 48 / 60 / 72px |
 
 ### コンポーネント一覧
 
 #### プリミティブ（13）
+
 Container, Section, Grid, Heading, Text, MarketingButton, Logo, GradientText, Divider, Link, Badge, AnimatedCounter, AnimateOnScroll
 
 #### セクション — Tier 1（6）
+
 HeroSection, FeatureGrid, PricingTable, PricingCard, CTASection, FAQSection
 
 #### セクション — Tier 2（7）
+
 FeatureShowcase, ComparisonTable, TestimonialSection, LogoCloud, StatsSection, BentoGrid, CodeBlock
 
 #### プロダクト固有 + 日本市場向け（5）
+
 ModuleOverview, MigrationComparison, AirPocketFeature, SecurityBadges, CaseStudySection
 
 #### レイアウト（3）
+
 MarketingHeader, MarketingFooter, PageLayout
 
 #### フック（1）
+
 useInView
 
 ### スライドコンポーネント（27レイアウト）
@@ -96,20 +158,22 @@ const MyDeck = () => (
     <TitleSlide title="Polastack" badge="Enterprise Agent Stack" />
     <ComparisonSlide
       title="従来との違い"
-      leftHeader="従来" rightHeader="Polastack"
-      leftItems={['認証実装3週間']} rightItems={['認証コード0行']}
+      leftHeader="従来"
+      rightHeader="Polastack"
+      leftItems={['認証実装3週間']}
+      rightItems={['認証コード0行']}
     />
   </SlideDeck>
 );
 ```
 
-| カテゴリ | レイアウト |
-|---|---|
-| **Structure（5）** | TitleSlide, AgendaSlide, SectionDividerSlide, EndSlide, TeamSlide |
-| **Content（7）** | ContentSlide, SplitSlide, BulletSlide, ComparisonSlide, ThreeColumnSlide, PricingSlide, TableSlide |
-| **Visual（5）** | ImageSlide, ImageTextSlide, FlowSlide, DiagramSlide, IconGridSlide |
-| **Data（5）** | StatSlide, TimelineSlide, ChartSlide, MetricHighlightSlide, BeforeAfterMetricSlide |
-| **Social Proof（4）** | QuoteSlide, LogoGridSlide, CaseStudySlide, AwardSlide |
+| カテゴリ              | レイアウト                                                                                            |
+| --------------------- | ----------------------------------------------------------------------------------------------------- |
+| **Structure（5）**    | TitleSlide, AgendaSlide, SectionDividerSlide, EndSlide, TeamSlide                                     |
+| **Content（7）**      | ContentSlide, SplitSlide, BulletSlide, ComparisonSlide, ThreeColumnSlide, PricingSlide, TableSlide    |
+| **Visual（5）**       | ImageSlide, ImageTextSlide, FlowSlide, DiagramSlide, IconGridSlide                                    |
+| **Data（5）**         | StatSlide, TimelineSlide, ChartSlide, MetricHighlightSlide, BeforeAfterMetricSlide                    |
+| **Social Proof（4）** | QuoteSlide, LogoGridSlide, CaseStudySlide, AwardSlide                                                 |
 | **日本市場向け（5）** | SecurityComplianceSlide, SupportStructureSlide, ImplementationPlanSlide, ROICalculationSlide, QASlide |
 
 ### 技術スタック
@@ -181,6 +245,65 @@ pnpm add spectacle
 pnpm add shiki
 ```
 
+### Setup
+
+#### 1. Loading styles (`@source` is required)
+
+This package targets Tailwind CSS v4 and relies on **your Tailwind build scanning the
+package's `dist` directory** to generate the utilities its components use. Tailwind v4
+does not scan `node_modules` by default, so an explicit `@source` is required.
+
+> **Without it, components render completely unstyled.**
+> No error is raised, which makes this easy to miss.
+
+If your app has its own Tailwind setup:
+
+```css
+/* app.css */
+@import 'tailwindcss';
+@import '@polastack/gtm-design-system/theme.css';
+@source '../node_modules/@polastack/gtm-design-system/dist';
+```
+
+If your app does not use Tailwind (standalone):
+
+```css
+/* app.css */
+@import '@polastack/gtm-design-system/globals.css';
+@source '../node_modules/@polastack/gtm-design-system/dist';
+```
+
+The `@source` path is **relative to the CSS file itself**, and resolves correctly
+through pnpm's symlinks.
+
+Measured impact:
+
+| Setup             | Output CSS | Utilities generated                        |
+| ----------------- | ---------- | ------------------------------------------ |
+| Without `@source` | 9.15 kB    | **0** (token variables and preflight only) |
+| With `@source`    | 67.8 kB    | All                                        |
+
+#### 2. Loading web fonts
+
+The tokens reference `Inter` (Latin), `Noto Sans JP` (Japanese) and `JetBrains Mono`
+(monospace), but **the font files are not bundled with this package.** Without loading
+them, text falls back to `system-ui`.
+
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap"
+  rel="stylesheet"
+/>
+```
+
+To self-host via `next/font` or Astro's Fonts API, override the `--font-sans` and
+`--font-mono` CSS variables.
+
+> **This setup is temporary.** A future release will ship precompiled CSS with the font
+> definitions included, removing the need for Tailwind and `@source` entirely.
+
 ### Usage
 
 ```tsx
@@ -192,51 +315,54 @@ import { colors, gradients, fontSize } from '@polastack/gtm-design-system/tokens
 
 // Import slide components
 import { SlideDeck, TitleSlide, StatSlide } from '@polastack/gtm-design-system/slides';
-
-// Import global styles (in your app entry point)
-import '@polastack/gtm-design-system/globals.css';
 ```
 
 ### Design Tokens
 
 Shared brand identity with `@polastack/design-system`, extended for marketing:
 
-| Token | Description |
-|---|---|
-| **Colors** | Interactive `primary` (`#008575`, 4.55:1 against white — WCAG AA) + decorative `brand` (`#13c3a0`, gradients/glows only) + neutral (incl. neutral-850) + semantic |
-| **Typography** | Display 72px to Caption 12px (base 16px), size-specific letter-spacing |
-| **Spacing** | Section spacing 80–160px, container widths 640–1280px |
-| **Gradients** | Brand gradients, glow effects, text gradients |
-| **Elevation** | Shadows + primary glow effects |
-| **Animation** | Fade-in, slide, scale, blur-in + scroll-triggered |
-| **Breakpoints** | Mobile / Tablet / Desktop / Wide |
+| Token           | Description                                                                                                                                                       |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Colors**      | Interactive `primary` (`#008575`, 4.55:1 against white — WCAG AA) + decorative `brand` (`#13c3a0`, gradients/glows only) + neutral (incl. neutral-850) + semantic |
+| **Typography**  | Display 72px to Caption 12px (base 16px), size-specific letter-spacing                                                                                            |
+| **Spacing**     | Section spacing 80–160px, container widths 640–1280px                                                                                                             |
+| **Gradients**   | Brand gradients, glow effects, text gradients                                                                                                                     |
+| **Elevation**   | Shadows + primary glow effects                                                                                                                                    |
+| **Animation**   | Fade-in, slide, scale, blur-in + scroll-triggered                                                                                                                 |
+| **Breakpoints** | Mobile / Tablet / Desktop / Wide                                                                                                                                  |
 
 #### Typography comparison with Product UI
 
-| | Product UI (`@polastack/design-system`) | GTM (this package) |
-|---|---|---|
-| Base size | 14px | 16px |
-| Max size | 24px | 72px (display-2xl) |
-| Display sizes | — | 30 / 36 / 48 / 60 / 72px |
+|               | Product UI (`@polastack/design-system`) | GTM (this package)       |
+| ------------- | --------------------------------------- | ------------------------ |
+| Base size     | 14px                                    | 16px                     |
+| Max size      | 24px                                    | 72px (display-2xl)       |
+| Display sizes | —                                       | 30 / 36 / 48 / 60 / 72px |
 
 ### Components
 
 #### Primitives (13)
+
 Container, Section, Grid, Heading, Text, MarketingButton, Logo, GradientText, Divider, Link, Badge, AnimatedCounter, AnimateOnScroll
 
 #### Sections — Tier 1 (6)
+
 HeroSection, FeatureGrid, PricingTable, PricingCard, CTASection, FAQSection
 
 #### Sections — Tier 2 (7)
+
 FeatureShowcase, ComparisonTable, TestimonialSection, LogoCloud, StatsSection, BentoGrid, CodeBlock
 
 #### Product-specific + Japan market (5)
+
 ModuleOverview, MigrationComparison, AirPocketFeature, SecurityBadges, CaseStudySection
 
 #### Layout (3)
+
 MarketingHeader, MarketingFooter, PageLayout
 
 #### Hooks (1)
+
 useInView
 
 ### Slide Components (27 layouts)
@@ -251,20 +377,22 @@ const MyDeck = () => (
     <TitleSlide title="Polastack" badge="Enterprise Agent Stack" />
     <ComparisonSlide
       title="How we differ"
-      leftHeader="Before" rightHeader="Polastack"
-      leftItems={['Auth: 3 weeks']} rightItems={['Auth: 0 lines']}
+      leftHeader="Before"
+      rightHeader="Polastack"
+      leftItems={['Auth: 3 weeks']}
+      rightItems={['Auth: 0 lines']}
     />
   </SlideDeck>
 );
 ```
 
-| Category | Layouts |
-|---|---|
-| **Structure (5)** | TitleSlide, AgendaSlide, SectionDividerSlide, EndSlide, TeamSlide |
-| **Content (7)** | ContentSlide, SplitSlide, BulletSlide, ComparisonSlide, ThreeColumnSlide, PricingSlide, TableSlide |
-| **Visual (5)** | ImageSlide, ImageTextSlide, FlowSlide, DiagramSlide, IconGridSlide |
-| **Data (5)** | StatSlide, TimelineSlide, ChartSlide, MetricHighlightSlide, BeforeAfterMetricSlide |
-| **Social Proof (4)** | QuoteSlide, LogoGridSlide, CaseStudySlide, AwardSlide |
+| Category             | Layouts                                                                                               |
+| -------------------- | ----------------------------------------------------------------------------------------------------- |
+| **Structure (5)**    | TitleSlide, AgendaSlide, SectionDividerSlide, EndSlide, TeamSlide                                     |
+| **Content (7)**      | ContentSlide, SplitSlide, BulletSlide, ComparisonSlide, ThreeColumnSlide, PricingSlide, TableSlide    |
+| **Visual (5)**       | ImageSlide, ImageTextSlide, FlowSlide, DiagramSlide, IconGridSlide                                    |
+| **Data (5)**         | StatSlide, TimelineSlide, ChartSlide, MetricHighlightSlide, BeforeAfterMetricSlide                    |
+| **Social Proof (4)** | QuoteSlide, LogoGridSlide, CaseStudySlide, AwardSlide                                                 |
 | **Japan market (5)** | SecurityComplianceSlide, SupportStructureSlide, ImplementationPlanSlide, ROICalculationSlide, QASlide |
 
 ### Tech Stack

@@ -1,6 +1,19 @@
 [
   {
+    "name": "全エクスポート（バレル import）",
     "path": "dist/index.js",
-    "limit": "30 kB"
+    "limit": "26 kB"
+  },
+  {
+    "name": "MarketingButton のみ（tree-shaking の番人）",
+    "path": "dist/index.js",
+    "import": "{ MarketingButton }",
+    "limit": "10 kB"
+  },
+  {
+    "name": "LP 代表構成（Hero/FeatureGrid/CTA/Header/Footer）",
+    "path": "dist/index.js",
+    "import": "{ HeroSection, FeatureGrid, CTASection, MarketingHeader, MarketingFooter }",
+    "limit": "15 kB"
   }
 ]
