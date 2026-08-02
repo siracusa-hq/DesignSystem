@@ -6,8 +6,18 @@ name: Release
 #
 # 流れ:
 #   1. changeset 付きの PR が main にマージされる
-#   2. このワークフローが「chore: release packages」PR を作成／更新する
-#   3. その PR をマージすると、このワークフローが npm publish + タグ作成まで行う
+#   2. このワークフローが version 更新 + CHANGELOG 生成を行い
+#      `changeset-release/main` ブランチに push する
+#   3. **そのブランチから Version PR を手で作る**（下記の注意を参照）
+#   4. その PR をマージすると、このワークフローが npm publish + タグ作成まで行う
+#
+# ※ 手順3が手動なのは、org のポリシーで GitHub Actions による PR 作成が
+#   禁止されているため。changesets/action は最後の「creating pull request」で
+#   403 を返して**このワークフローは failure になるが、ブランチの push までは
+#   成功している**。異常ではなく想定どおりの挙動。
+#     gh pr create --base main --head changeset-release/main \
+#       --title "chore: release packages" --fill
+#   詳細と自動化する場合の選択肢は CLAUDE.md「リリース運用」を参照。
 #
 # ※ npm Trusted Publishing はリポジトリとワークフロー**ファイル名**に紐づくため、
 #   `release.yml` というファイル名は変更しないこと（既存の信頼設定が外れる）。
