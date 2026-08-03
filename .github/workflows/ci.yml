@@ -31,6 +31,14 @@ jobs:
       - name: Build
         run: pnpm build
 
+      # テーマ契約の生成物（css/brand.css / generated-brand.css）はコミットする運用。
+      # 再生成して差分が出る = レジストリと生成物がズレている（コミット漏れ or 手編集）。
+      - name: Codegen
+        run: pnpm codegen
+
+      - name: Verify codegen committed
+        run: git diff --exit-code
+
       - name: Typecheck
         run: pnpm typecheck
 

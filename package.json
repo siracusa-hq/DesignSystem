@@ -23,7 +23,8 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,css,md,json,yml,yaml}\"",
     "changeset": "changeset",
     "version-packages": "changeset version && pnpm install --lockfile-only",
-    "release": "pnpm build && changeset publish"
+    "release": "pnpm build && changeset publish",
+    "codegen": "pnpm --filter @siracusahq/tokens codegen"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.12",

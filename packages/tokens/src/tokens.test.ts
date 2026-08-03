@@ -69,9 +69,8 @@ describe('brand は装飾専用（AA を満たさないことを明示的に固�
       const min = Math.min(r, g, b);
       if (max === min) return 0;
       const d = max - min;
-      const h =
-        max === r ? ((g - b) / d) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
-      return ((h * 60) % 360 + 360) % 360;
+      const h = max === r ? ((g - b) / d) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
+      return (((h * 60) % 360) + 360) % 360;
     };
     expect(Math.abs(hue(primary[500]) - hue(brand[500]))).toBeLessThan(10);
   });
@@ -83,10 +82,20 @@ describe('brand.css（React非依存サイト向け CSS変数版）が TS 定数
 
   const normalize = (value: string) => value.trim().replace(/\s+/g, ' ');
 
+  /**
+   * テーマ契約層（層2・層3）の変数は brand-contract.test.ts が検証するため、
+   * ここでは骨格トークン（層1）のみを対象にする。
+   * 除外: 抽象スロット（--color-bg-brand-* 等）とグロー（--shadow-glow-brand*）。
+   * 注意: --color-brand-500 のような装飾スケール（層1）は除外しない。
+   */
+  const isContractVar = (full: string) =>
+    /^(bg|text|border|ring|decor|on)-brand/.test(full) || /^glow-brand/.test(full);
+
   function cssVars(prefix: string): Map<string, string> {
     const re = new RegExp(`--${prefix}-([a-z0-9-]+)\\s*:\\s*([^;]+);`, 'gi');
     const found = new Map<string, string>();
     for (const match of css.matchAll(re)) {
+      if (isContractVar(match[1])) continue;
       found.set(match[1], normalize(match[2]));
     }
     return found;
