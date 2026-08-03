@@ -4,8 +4,10 @@
  * 入力: dist/index.js（要 `pnpm build` 済み。CI は Build → Codegen の順）
  * 出力:
  *   packages/tokens/css/brand.css                     骨格 + ランプ + スロット（全置換）
- *   packages/ui-app/src/styles/generated-brand.css    ランプ + スロット
  *   packages/ui-web/src/styles/generated-brand.css    ランプ + スロット
+ *
+ * ui-app（業務システムUI）には出力しない（spec §12 Q10: 当面コーポレート固定・スコープ外。
+ * また装飾色を業務UIに公開しない原則（ルート CLAUDE.md）に反するため）。
  *
  * 実行: pnpm --filter @siracusahq/tokens codegen（ルートからは pnpm codegen）
  */
@@ -161,10 +163,8 @@ const uiCss = [BANNER('テーマ契約（ブランドランプ + 抽象スロッ
 );
 
 writeFileSync(resolve(tokensRoot, 'css/brand.css'), brandCss);
-writeFileSync(resolve(repoRoot, 'packages/ui-app/src/styles/generated-brand.css'), uiCss);
 writeFileSync(resolve(repoRoot, 'packages/ui-web/src/styles/generated-brand.css'), uiCss);
 
 console.log(`codegen: ${brands.length} ブランドを出力（${brands.map((b) => b.key).join(', ')}）`);
 console.log('  - packages/tokens/css/brand.css');
-console.log('  - packages/ui-app/src/styles/generated-brand.css');
 console.log('  - packages/ui-web/src/styles/generated-brand.css');

@@ -130,9 +130,10 @@ describe('(d) 公開済みの現行色とのドリフト検出', () => {
 });
 
 describe('(e) 生成 CSS とレジストリの同期', () => {
+  // ui-app には出力しない（spec §12 Q10: スコープ外・コーポレート固定。
+  // 装飾色を業務UIに公開しない原則にも反するため）
   const cssFiles = [
     resolve(__dirname, '../css/brand.css'),
-    resolve(__dirname, '../../ui-app/src/styles/generated-brand.css'),
     resolve(__dirname, '../../ui-web/src/styles/generated-brand.css'),
   ];
 

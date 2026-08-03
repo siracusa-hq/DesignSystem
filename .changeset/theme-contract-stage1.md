@@ -1,6 +1,5 @@
 ---
 '@siracusahq/tokens': minor
-'@siracusahq/design-system': minor
 '@siracusahq/gtm-design-system': minor
 ---
 
@@ -15,7 +14,8 @@ codegen が `css/brand.css` にランプ実体（`--ramp-*`）と抽象スロッ
 `data-brand` 属性でブランドを切り替えられる。
 新エクスポート: `generateRamp` / `registry` / `resolveAllBrands` / `SLOTS` / 色計算ユーティリティ。
 
-**design-system / gtm-design-system**: 生成物 `src/styles/generated-brand.css` を
-同梱し、`tokens.css` / `theme.css` から読み込むようにした。
+**gtm-design-system**: 生成物 `src/styles/generated-brand.css` を同梱し、
+`theme.css` から読み込むようにした。業務システムUI（design-system）には
+意図的に出力しない（装飾色を業務UIに公開しない原則。ui-app は当面コーポレート固定）。
 **既存の `primary-*` / `brand-*` 変数・エクスポートは一切変更していない**（スロットは併存）。
 コンポーネントのスロット移行は次段階で行う。
