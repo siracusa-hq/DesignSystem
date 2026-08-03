@@ -31,7 +31,7 @@ type Story = StoryObj;
    SDK コード例
    ============================================================ */
 
-const sdkCode = `import { Polastack } from '@polastack/sdk';
+const sdkCode = `import { Polastack } from '@siracusahq/sdk';
 
 const ps = new Polastack({
   apiKey: process.env.POLASTACK_API_KEY,

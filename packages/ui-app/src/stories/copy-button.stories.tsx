@@ -31,9 +31,9 @@ export const InCode: Story = {
   render: () => (
     <div className="flex items-center justify-between gap-4 rounded-md bg-[var(--color-surface-variant)] px-4 py-3">
       <code className="font-mono text-sm text-[var(--color-on-surface)]">
-        pnpm add @polastack/design-system
+        pnpm add @siracusahq/design-system
       </code>
-      <CopyButton value="pnpm add @polastack/design-system" />
+      <CopyButton value="pnpm add @siracusahq/design-system" />
     </div>
   ),
 };

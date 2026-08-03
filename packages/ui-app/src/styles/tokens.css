@@ -6,7 +6,7 @@
    消費側が自前の Tailwind 設定を持つ場合はこのファイルだけを @import する。
 
    **カラー・シャドウ・ラディウス・モーションの値の正本は
-   `@polastack/tokens`（packages/tokens）。** Tailwind v4 の @theme は
+   `@siracusahq/tokens`（packages/tokens）。** Tailwind v4 の @theme は
    CSS 変数の実体宣言を要求するため値をここに展開しているが、
    手で書き換えてはならない。ズレは src/tokens/tokens.test.ts が CI で検出する。
    ============================================================ */

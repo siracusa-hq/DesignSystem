@@ -1,4 +1,4 @@
-# @polastack/design-system
+# @siracusahq/design-system
 
 BtoB業務アプリケーション向けReactデザインシステム。
 高密度な業務UIを品質高く、素早く、ブランド統一して構築するためのコンポーネントライブラリ。
@@ -18,15 +18,15 @@ BtoB業務アプリケーション向けReactデザインシステム。
 ## インストール
 
 ```bash
-pnpm add @polastack/design-system
+pnpm add @siracusahq/design-system
 ```
 
 ### CSS の読み込み
 
 ```css
 /* index.css */
-@import '@polastack/design-system/globals.css';
-@source "../node_modules/@polastack/design-system/dist";
+@import '@siracusahq/design-system/globals.css';
+@source "../node_modules/@siracusahq/design-system/dist";
 ```
 
 ### フォント
@@ -43,7 +43,14 @@ Inter（欧文）と Noto Sans JP（和文）を読み込んでください。
 ## 基本的な使い方
 
 ```tsx
-import { ThemeProvider, Button, Card, CardHeader, CardTitle, CardContent } from '@polastack/design-system';
+import {
+  ThemeProvider,
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from '@siracusahq/design-system';
 
 function App() {
   return (
@@ -64,24 +71,31 @@ function App() {
 ## コンポーネント一覧
 
 ### コアアトム
+
 Button, Badge, Avatar, AvatarGroup, Separator, Skeleton, Spinner, Card, Tooltip, Toast
 
 ### フォーム
+
 Label, Input, Textarea, Checkbox, RadioGroup, Switch, Select, Combobox, DatePicker, NumberInput, FormField, DynamicFormField, FormLayout
 
 ### データ表示
+
 Tabs, EmptyState, Table, DataTable, FilterBar
 
 ### ナビゲーション + レイアウト
+
 Popover, DropdownMenu, Dialog, CommandPalette, Drawer, AppShell
 
 ### PWA
+
 BottomNavigation, OfflineIndicator, InstallPrompt, PullToRefresh
 
 ### チャート / ダッシュボード
+
 StatCard, ChartContainer, chartColors (tokens)
 
 ### テーマ
+
 ThemeProvider, useTheme
 
 ## ダークモード
@@ -89,12 +103,12 @@ ThemeProvider, useTheme
 `ThemeProvider` でライト/ダーク/システム連動の切り替えが可能です。
 
 ```tsx
-import { ThemeProvider, useTheme } from '@polastack/design-system';
+import { ThemeProvider, useTheme } from '@siracusahq/design-system';
 
 // アプリルートで
 <ThemeProvider defaultTheme="system">
   <App />
-</ThemeProvider>
+</ThemeProvider>;
 
 // コンポーネント内で
 function ThemeToggle() {
@@ -110,7 +124,7 @@ CSS変数ベースのセマンティックトークンにより、全コンポ�
 TypeScript定数としても利用可能です。
 
 ```ts
-import { colors, typography, spacing } from '@polastack/design-system/tokens';
+import { colors, typography, spacing } from '@siracusahq/design-system/tokens';
 ```
 
 ## 開発
@@ -135,15 +149,15 @@ pnpm size
 ## ブランドカラー
 
 メインカラー: **#008575**（ティール）。値の正本は
-[`@polastack/tokens`](https://www.npmjs.com/package/@polastack/tokens)。
+[`@siracusahq/tokens`](https://www.npmjs.com/package/@siracusahq/tokens)。
 
-| カテゴリ | カラー | 備考 |
-|---------|--------|------|
-| Primary | Teal (#008575) | 500 単独で白文字 4.55:1、WCAG AA 適合 |
-| Success | True Green (#22b43b) | primary と44°の色相差で区別 |
-| Warning | Amber (#f59e0b) | |
-| Error | Red (#ef4444) | |
-| Info | Blue (#3b82f6) | |
+| カテゴリ | カラー               | 備考                                  |
+| -------- | -------------------- | ------------------------------------- |
+| Primary  | Teal (#008575)       | 500 単独で白文字 4.55:1、WCAG AA 適合 |
+| Success  | True Green (#22b43b) | primary と44°の色相差で区別           |
+| Warning  | Amber (#f59e0b)      |                                       |
+| Error    | Red (#ef4444)        |                                       |
+| Info     | Blue (#3b82f6)       |                                       |
 
 装飾用の `brand` スケール（#13c3a0 系）は Web/LP 専用のため、
 本パッケージには意図的に含めていない。

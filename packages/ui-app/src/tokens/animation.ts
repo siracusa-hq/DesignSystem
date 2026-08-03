@@ -1,11 +1,11 @@
 /**
  * アニメーショントークン
  *
- * duration / easing の正本は `@polastack/tokens`。
+ * duration / easing の正本は `@siracusahq/tokens`。
  * z-index は業務システムUI固有の3層体系のためここで定義する。
  */
 
-export { duration, easing, type Duration, type Easing } from '@polastack/tokens';
+export { duration, easing, type Duration, type Easing } from '@siracusahq/tokens';
 
 /**
  * z-index スケール（3層体系）

@@ -1,12 +1,12 @@
 /**
- * @polastack/tokens
+ * @siracusahq/tokens
  *
  * Polastack ブランドの基盤デザイントークン。
- * 業務システムUI（@polastack/design-system）と
- * Web/LP（@polastack/gtm-design-system）の唯一の正本。
+ * 業務システムUI（@siracusahq/design-system）と
+ * Web/LP（@siracusahq/gtm-design-system）の唯一の正本。
  *
  * React を使わないサイト（Astro・静的HTML等）は
- * `@polastack/tokens/brand.css` を読み込むことで同じ変数を利用できる。
+ * `@siracusahq/tokens/brand.css` を読み込むことで同じ変数を利用できる。
  */
 
 export {

@@ -1,5 +1,5 @@
 {
-  "name": "@polastack/tokens",
+  "name": "@siracusahq/tokens",
   "version": "0.1.0",
   "description": "Polastack brand design tokens - the single source of truth shared by the product UI and GTM design systems",
   "type": "module",

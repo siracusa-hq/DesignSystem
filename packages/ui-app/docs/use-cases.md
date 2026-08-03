@@ -22,11 +22,25 @@ Toast              — 操作結果通知
 
 ```tsx
 import {
-  DataTable, Dialog, DialogTrigger, DialogContent, DialogHeader,
-  DialogTitle, DialogFooter, DialogClose,
-  FormLayout, FormSection, FormActions, FormField, FormLabel,
-  FormControl, FormMessage, Input, Button, useToast,
-} from '@polastack/design-system';
+  DataTable,
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogClose,
+  FormLayout,
+  FormSection,
+  FormActions,
+  FormField,
+  FormLabel,
+  FormControl,
+  FormMessage,
+  Input,
+  Button,
+  useToast,
+} from '@siracusahq/design-system';
 import type { ColumnDef } from '@tanstack/react-table';
 
 // 1. カラム定義
@@ -57,7 +71,9 @@ function ItemListPage() {
             <FormLayout layout="vertical">
               <FormField required>
                 <FormLabel>Name</FormLabel>
-                <FormControl><Input /></FormControl>
+                <FormControl>
+                  <Input />
+                </FormControl>
                 <FormMessage />
               </FormField>
             </FormLayout>
@@ -65,22 +81,14 @@ function ItemListPage() {
               <DialogClose asChild>
                 <Button variant="outline">Cancel</Button>
               </DialogClose>
-              <Button onClick={() => toast({ title: 'Created!' })}>
-                Create
-              </Button>
+              <Button onClick={() => toast({ title: 'Created!' })}>Create</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
 
       {/* データテーブル */}
-      <DataTable
-        columns={columns}
-        data={items}
-        enableSorting
-        enablePagination
-        pageSize={20}
-      />
+      <DataTable columns={columns} data={items} enableSorting enablePagination pageSize={20} />
     </div>
   );
 }
@@ -113,12 +121,26 @@ FormActions        — 保存/キャンセルボタン
 
 ```tsx
 import {
-  Tabs, TabsList, TabsTrigger, TabsContent,
-  FormLayout, FormSection, FormActions,
-  FormField, FormLabel, FormControl, FormDescription,
-  Input, Switch, Select, SelectTrigger, SelectValue,
-  SelectContent, SelectItem, Button,
-} from '@polastack/design-system';
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+  FormLayout,
+  FormSection,
+  FormActions,
+  FormField,
+  FormLabel,
+  FormControl,
+  FormDescription,
+  Input,
+  Switch,
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+  Button,
+} from '@siracusahq/design-system';
 
 function SettingsPage() {
   return (
@@ -137,13 +159,17 @@ function SettingsPage() {
             <FormSection title="Profile" description="Your public information">
               <FormField>
                 <FormLabel>Display Name</FormLabel>
-                <FormControl><Input defaultValue="John Doe" /></FormControl>
+                <FormControl>
+                  <Input defaultValue="John Doe" />
+                </FormControl>
               </FormField>
               <FormField>
                 <FormLabel>Language</FormLabel>
                 <FormControl>
                   <Select defaultValue="ja">
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="ja">Japanese</SelectItem>
                       <SelectItem value="en">English</SelectItem>
@@ -169,7 +195,9 @@ function SettingsPage() {
                     <FormLabel>Marketing emails</FormLabel>
                     <FormDescription>Receive product updates</FormDescription>
                   </div>
-                  <FormControl><Switch /></FormControl>
+                  <FormControl>
+                    <Switch />
+                  </FormControl>
                 </div>
               </FormField>
             </FormSection>
@@ -205,19 +233,33 @@ Badge              — ステータス表示
 
 ```tsx
 import {
-  AppShell, AppShellSidebar, AppShellHeader, AppShellContent,
-  Card, CardHeader, CardTitle, CardContent,
-  DataTable, Badge, Button,
-} from '@polastack/design-system';
+  AppShell,
+  AppShellSidebar,
+  AppShellHeader,
+  AppShellContent,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  DataTable,
+  Badge,
+  Button,
+} from '@siracusahq/design-system';
 
 function DashboardApp() {
   return (
     <AppShell>
       <AppShellSidebar>
         <nav className="flex flex-col gap-1 p-4">
-          <a href="#" className="px-3 py-2 rounded-md bg-[var(--color-surface-muted)]">Dashboard</a>
-          <a href="#" className="px-3 py-2 rounded-md">Projects</a>
-          <a href="#" className="px-3 py-2 rounded-md">Settings</a>
+          <a href="#" className="px-3 py-2 rounded-md bg-[var(--color-surface-muted)]">
+            Dashboard
+          </a>
+          <a href="#" className="px-3 py-2 rounded-md">
+            Projects
+          </a>
+          <a href="#" className="px-3 py-2 rounded-md">
+            Settings
+          </a>
         </nav>
       </AppShellSidebar>
 
@@ -248,7 +290,12 @@ function DashboardApp() {
               <CardTitle>Recent Activity</CardTitle>
             </CardHeader>
             <CardContent>
-              <DataTable columns={activityColumns} data={activities} enablePagination pageSize={5} />
+              <DataTable
+                columns={activityColumns}
+                data={activities}
+                enablePagination
+                pageSize={5}
+              />
             </CardContent>
           </Card>
         </AppShellContent>

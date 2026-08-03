@@ -1,12 +1,12 @@
 /**
  * タイポグラフィトークン定数
  *
- * フォントファミリ・ウェイトの正本は `@polastack/tokens`。
+ * フォントファミリ・ウェイトの正本は `@siracusahq/tokens`。
  * フォントサイズだけは業務システムUI固有（base=14px / 最大24px、
  * BtoB業務アプリの高密度表示向け）のためここで定義する。
  */
 
-export { fontFamily, fontWeight, type FontWeight } from '@polastack/tokens';
+export { fontFamily, fontWeight, type FontWeight } from '@siracusahq/tokens';
 
 export const fontSize = {
   xs: { size: '0.75rem', lineHeight: '1rem' },

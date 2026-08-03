@@ -2,7 +2,7 @@
  * スペーシング基盤トークン（4pxグリッド／ブランド共通）
  *
  * セクション間余白（80–160px）やコンテナ最大幅など、
- * Web/LP 固有の大きな余白は @polastack/gtm-design-system 側で定義する。
+ * Web/LP 固有の大きな余白は @siracusahq/gtm-design-system 側で定義する。
  */
 
 export const spacing = {

@@ -1,4 +1,4 @@
-# @polastack/gtm-design-system
+# @siracusahq/gtm-design-system
 
 > [日本語](#日本語) | [English](#english)
 
@@ -8,7 +8,7 @@
 
 [Polastack](https://github.com/siracusa-hq) のマーケティングコミュニケーション向けデザインシステムです。Webサイト、ランディングページ、営業資料、講演資料のための統一されたコンポーネントとデザイントークンを提供します。
 
-> **注意:** 本パッケージは**マーケティング用 GTM デザインシステム**です。プロダクトUI用のデザインシステムは [@polastack/design-system](https://github.com/siracusa-hq/DesignSystem/tree/main/packages/ui-app) を参照してください。
+> **注意:** 本パッケージは**マーケティング用 GTM デザインシステム**です。プロダクトUI用のデザインシステムは [@siracusahq/design-system](https://github.com/siracusa-hq/DesignSystem/tree/main/packages/ui-app) を参照してください。
 
 ### Storybook
 
@@ -17,7 +17,7 @@ https://polastack-design-system.netlify.app/web/
 ### インストール
 
 ```bash
-pnpm add @polastack/gtm-design-system
+pnpm add @siracusahq/gtm-design-system
 
 # スライドコンポーネントを使用する場合
 pnpm add spectacle
@@ -42,16 +42,16 @@ pnpm add shiki
 ```css
 /* app.css */
 @import 'tailwindcss';
-@import '@polastack/gtm-design-system/theme.css';
-@source '../node_modules/@polastack/gtm-design-system/dist';
+@import '@siracusahq/gtm-design-system/theme.css';
+@source '../node_modules/@siracusahq/gtm-design-system/dist';
 ```
 
 利用側が Tailwind を持たない場合（スタンドアロン）:
 
 ```css
 /* app.css */
-@import '@polastack/gtm-design-system/globals.css';
-@source '../node_modules/@polastack/gtm-design-system/dist';
+@import '@siracusahq/gtm-design-system/globals.css';
+@source '../node_modules/@siracusahq/gtm-design-system/dist';
 ```
 
 `@source` のパスは**この CSS ファイルからの相対パス**で記述します。
@@ -89,18 +89,18 @@ CSS変数 `--font-sans` / `--font-mono` を上書きしてください。
 
 ```tsx
 // コンポーネントのインポート
-import { HeroSection, FeatureGrid, MarketingButton } from '@polastack/gtm-design-system';
+import { HeroSection, FeatureGrid, MarketingButton } from '@siracusahq/gtm-design-system';
 
 // トークンのインポート
-import { colors, gradients, fontSize } from '@polastack/gtm-design-system/tokens';
+import { colors, gradients, fontSize } from '@siracusahq/gtm-design-system/tokens';
 
 // スライドコンポーネントのインポート
-import { SlideDeck, TitleSlide, StatSlide } from '@polastack/gtm-design-system/slides';
+import { SlideDeck, TitleSlide, StatSlide } from '@siracusahq/gtm-design-system/slides';
 ```
 
 ### デザイントークン
 
-`@polastack/design-system` と共通のブランドアイデンティティを継承しつつ、マーケティング向けに拡張しています。
+`@siracusahq/design-system` と共通のブランドアイデンティティを継承しつつ、マーケティング向けに拡張しています。
 
 | トークン        | 説明                                                                                                                                                                     |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -114,11 +114,11 @@ import { SlideDeck, TitleSlide, StatSlide } from '@polastack/gtm-design-system/s
 
 #### プロダクトUI用DSとのタイポグラフィ比較
 
-|            | プロダクトUI (`@polastack/design-system`) | GTM（本パッケージ）      |
-| ---------- | ----------------------------------------- | ------------------------ |
-| 基準サイズ | 14px                                      | 16px                     |
-| 最大サイズ | 24px                                      | 72px (display-2xl)       |
-| Display系  | なし                                      | 30 / 36 / 48 / 60 / 72px |
+|            | プロダクトUI (`@siracusahq/design-system`) | GTM（本パッケージ）      |
+| ---------- | ------------------------------------------ | ------------------------ |
+| 基準サイズ | 14px                                       | 16px                     |
+| 最大サイズ | 24px                                       | 72px (display-2xl)       |
+| Display系  | なし                                       | 30 / 36 / 48 / 60 / 72px |
 
 ### コンポーネント一覧
 
@@ -148,10 +148,10 @@ useInView
 
 ### スライドコンポーネント（27レイアウト）
 
-`@polastack/gtm-design-system/slides` サブパスで提供。Spectacleベースの営業資料・講演資料用スライドレイアウト。
+`@siracusahq/gtm-design-system/slides` サブパスで提供。Spectacleベースの営業資料・講演資料用スライドレイアウト。
 
 ```tsx
-import { SlideDeck, TitleSlide, ComparisonSlide } from '@polastack/gtm-design-system/slides';
+import { SlideDeck, TitleSlide, ComparisonSlide } from '@siracusahq/gtm-design-system/slides';
 
 const MyDeck = () => (
   <SlideDeck dark>
@@ -227,7 +227,7 @@ src/
 
 Marketing design system for [Polastack](https://github.com/siracusa-hq) — components and design tokens for websites, landing pages, and sales materials.
 
-> **Note:** This is the **GTM (Go-To-Market) Design System** for marketing use. For the product UI design system, see [@polastack/design-system](https://github.com/siracusa-hq/DesignSystem/tree/main/packages/ui-app).
+> **Note:** This is the **GTM (Go-To-Market) Design System** for marketing use. For the product UI design system, see [@siracusahq/design-system](https://github.com/siracusa-hq/DesignSystem/tree/main/packages/ui-app).
 
 ### Storybook
 
@@ -236,7 +236,7 @@ https://polastack-design-system.netlify.app/web/
 ### Install
 
 ```bash
-pnpm add @polastack/gtm-design-system
+pnpm add @siracusahq/gtm-design-system
 
 # For slide components
 pnpm add spectacle
@@ -261,16 +261,16 @@ If your app has its own Tailwind setup:
 ```css
 /* app.css */
 @import 'tailwindcss';
-@import '@polastack/gtm-design-system/theme.css';
-@source '../node_modules/@polastack/gtm-design-system/dist';
+@import '@siracusahq/gtm-design-system/theme.css';
+@source '../node_modules/@siracusahq/gtm-design-system/dist';
 ```
 
 If your app does not use Tailwind (standalone):
 
 ```css
 /* app.css */
-@import '@polastack/gtm-design-system/globals.css';
-@source '../node_modules/@polastack/gtm-design-system/dist';
+@import '@siracusahq/gtm-design-system/globals.css';
+@source '../node_modules/@siracusahq/gtm-design-system/dist';
 ```
 
 The `@source` path is **relative to the CSS file itself**, and resolves correctly
@@ -308,18 +308,18 @@ To self-host via `next/font` or Astro's Fonts API, override the `--font-sans` an
 
 ```tsx
 // Import components
-import { HeroSection, FeatureGrid, MarketingButton } from '@polastack/gtm-design-system';
+import { HeroSection, FeatureGrid, MarketingButton } from '@siracusahq/gtm-design-system';
 
 // Import tokens
-import { colors, gradients, fontSize } from '@polastack/gtm-design-system/tokens';
+import { colors, gradients, fontSize } from '@siracusahq/gtm-design-system/tokens';
 
 // Import slide components
-import { SlideDeck, TitleSlide, StatSlide } from '@polastack/gtm-design-system/slides';
+import { SlideDeck, TitleSlide, StatSlide } from '@siracusahq/gtm-design-system/slides';
 ```
 
 ### Design Tokens
 
-Shared brand identity with `@polastack/design-system`, extended for marketing:
+Shared brand identity with `@siracusahq/design-system`, extended for marketing:
 
 | Token           | Description                                                                                                                                                       |
 | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -333,11 +333,11 @@ Shared brand identity with `@polastack/design-system`, extended for marketing:
 
 #### Typography comparison with Product UI
 
-|               | Product UI (`@polastack/design-system`) | GTM (this package)       |
-| ------------- | --------------------------------------- | ------------------------ |
-| Base size     | 14px                                    | 16px                     |
-| Max size      | 24px                                    | 72px (display-2xl)       |
-| Display sizes | —                                       | 30 / 36 / 48 / 60 / 72px |
+|               | Product UI (`@siracusahq/design-system`) | GTM (this package)       |
+| ------------- | ---------------------------------------- | ------------------------ |
+| Base size     | 14px                                     | 16px                     |
+| Max size      | 24px                                     | 72px (display-2xl)       |
+| Display sizes | —                                        | 30 / 36 / 48 / 60 / 72px |
 
 ### Components
 
@@ -367,10 +367,10 @@ useInView
 
 ### Slide Components (27 layouts)
 
-Available via `@polastack/gtm-design-system/slides`. Spectacle-based layouts for sales decks and presentations.
+Available via `@siracusahq/gtm-design-system/slides`. Spectacle-based layouts for sales decks and presentations.
 
 ```tsx
-import { SlideDeck, TitleSlide, ComparisonSlide } from '@polastack/gtm-design-system/slides';
+import { SlideDeck, TitleSlide, ComparisonSlide } from '@siracusahq/gtm-design-system/slides';
 
 const MyDeck = () => (
   <SlideDeck dark>

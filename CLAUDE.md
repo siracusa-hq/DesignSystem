@@ -5,15 +5,15 @@ UIパッケージは用途別に2つ、という構成になっている。
 
 ## パッケージ構成
 
-| ディレクトリ | npm名 | 役割 |
-|---|---|---|
-| `packages/tokens` | `@polastack/tokens` | **ブランド共通トークンの正本**。カラー・タイポ・スペーシング・エレベーション・モーション。React非依存（CSS変数版 `brand.css` も同梱） |
-| `packages/ui-app` | `@polastack/design-system` | 業務システムUI。高密度表示・キーボード操作前提 |
-| `packages/ui-web` | `@polastack/gtm-design-system` | Web/LP・営業資料。マーケティング表現 |
+| ディレクトリ      | npm名                           | 役割                                                                                                                                  |
+| ----------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `packages/tokens` | `@siracusahq/tokens`            | **ブランド共通トークンの正本**。カラー・タイポ・スペーシング・エレベーション・モーション。React非依存（CSS変数版 `brand.css` も同梱） |
+| `packages/ui-app` | `@siracusahq/design-system`     | 業務システムUI。高密度表示・キーボード操作前提                                                                                        |
+| `packages/ui-web` | `@siracusahq/gtm-design-system` | Web/LP・営業資料。マーケティング表現                                                                                                  |
 
 各パッケージの中身:
 
-- `src/tokens/` - デザイントークン（`@polastack/tokens` を再エクスポート + パッケージ固有の拡張）
+- `src/tokens/` - デザイントークン（`@siracusahq/tokens` を再エクスポート + パッケージ固有の拡張）
 - `src/styles/` - Tailwind CSS v4 `@theme` によるCSS変数定義
 - `src/lib/` - ユーティリティ（`cn`, `createContext`）
 - `src/hooks/` - カスタムフック
@@ -49,7 +49,7 @@ TS定数とCSS変数を双方向で突き合わせる）。この仕組みは、
 - **`brand`（`#13c3a0` アンカー）… 装飾用**
   - グラデーション・グロー・ダーク背景上のアクセント専用
   - 白背景での対比は 2.25:1 しかない。**明背景のテキスト・ボタン背景に使ってはならない**
-  - Web/LP（`@polastack/gtm-design-system`）にのみ存在。業務システムUIには意図的に公開していない
+  - Web/LP（`@siracusahq/gtm-design-system`）にのみ存在。業務システムUIには意図的に公開していない
 
 その他:
 
@@ -62,7 +62,7 @@ TS定数とCSS変数を双方向で突き合わせる）。この仕組みは、
 ルートで実行するとワークスペース全体（`pnpm -r`）に対して走る。
 
 **クローン直後や `pnpm install` 直後は、まず `pnpm build` を実行すること。**
-`ui-app` / `ui-web` は `@polastack/tokens` を `dist/index.d.ts` 経由で型解決するため、
+`ui-app` / `ui-web` は `@siracusahq/tokens` を `dist/index.d.ts` 経由で型解決するため、
 tokens が未ビルドだと `pnpm typecheck` も `pnpm test` も TS2307 で落ちる。
 CI も Build → Typecheck → Test → Size の順で回している。
 
@@ -78,11 +78,11 @@ CI も Build → Typecheck → Test → Size の順で回している。
 
 **Netlify に一本化している。** 1サイトで2つの Storybook をディレクトリで出し分ける。
 
-| URL | 中身 |
-|---|---|
-| <https://polastack-design-system.netlify.app/> | 行き先を選ぶランディング |
-| <https://polastack-design-system.netlify.app/app/> | 業務システムUI |
-| <https://polastack-design-system.netlify.app/web/> | Web / LP |
+| URL                                                | 中身                     |
+| -------------------------------------------------- | ------------------------ |
+| <https://polastack-design-system.netlify.app/>     | 行き先を選ぶランディング |
+| <https://polastack-design-system.netlify.app/app/> | 業務システムUI           |
+| <https://polastack-design-system.netlify.app/web/> | Web / LP                 |
 
 設定は `netlify.toml`（build command / publish dir / Node バージョン）。
 main への push で本番が更新され、PR にはデプロイプレビューが付く。
@@ -95,8 +95,8 @@ GitHub Pages への配信は廃止した（`storybook.yml` を削除済み）。
 単一パッケージだけ動かす場合:
 
 ```bash
-pnpm --filter @polastack/design-system test
-pnpm --filter @polastack/gtm-design-system build
+pnpm --filter @siracusahq/design-system test
+pnpm --filter @siracusahq/gtm-design-system build
 ```
 
 ## ブランチ運用
@@ -174,12 +174,12 @@ npm が SLSA 由来証明を作ろうとして GitHub Actions 外では失敗す
 
 公開後、npmjs.com のパッケージ設定で Trusted Publisher を登録すること。
 
-| 項目 | 値 |
-|---|---|
-| Organization or user | `siracusa-hq` |
-| Repository | `DesignSystem` |
-| Workflow filename | `release.yml` |
-| Allowed actions | Allow npm publish のみ |
+| 項目                 | 値                     |
+| -------------------- | ---------------------- |
+| Organization or user | `siracusa-hq`          |
+| Repository           | `DesignSystem`         |
+| Workflow filename    | `release.yml`          |
+| Allowed actions      | Allow npm publish のみ |
 
 ## 品質ゲート（全コンポーネント）
 

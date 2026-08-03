@@ -2,10 +2,10 @@
  * Polastack ブランド基盤トークン — CSS変数版
  *
  * React を使わないサイト（Astro・静的HTML・その他フレームワーク）向け。
- * `@polastack/tokens/brand.css` として読み込む。
+ * `@siracusahq/tokens/brand.css` として読み込む。
  *
- *   <link rel="stylesheet" href="node_modules/@polastack/tokens/css/brand.css">
- *   あるいは CSS 側で: @import '@polastack/tokens/brand.css';
+ *   <link rel="stylesheet" href="node_modules/@siracusahq/tokens/css/brand.css">
+ *   あるいは CSS 側で: @import '@siracusahq/tokens/brand.css';
  *
  * ## primary と brand の使い分け（重要）
  *

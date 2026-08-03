@@ -5,11 +5,11 @@ Polastack（Enterprise Agent Stack）のデザインシステム。
 
 ## パッケージ
 
-| パッケージ | npm | 用途 |
-|---|---|---|
-| [`packages/tokens`](packages/tokens) | [`@polastack/tokens`](https://www.npmjs.com/package/@polastack/tokens) | ブランド共通トークンの正本。React非依存 |
-| [`packages/ui-app`](packages/ui-app) | [`@polastack/design-system`](https://www.npmjs.com/package/@polastack/design-system) | 業務システムUI |
-| [`packages/ui-web`](packages/ui-web) | [`@polastack/gtm-design-system`](https://www.npmjs.com/package/@polastack/gtm-design-system) | Web / LP / 営業資料 |
+| パッケージ                           | npm                                                                                            | 用途                                    |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------- | --------------------------------------- |
+| [`packages/tokens`](packages/tokens) | [`@siracusahq/tokens`](https://www.npmjs.com/package/@siracusahq/tokens)                       | ブランド共通トークンの正本。React非依存 |
+| [`packages/ui-app`](packages/ui-app) | [`@siracusahq/design-system`](https://www.npmjs.com/package/@siracusahq/design-system)         | 業務システムUI                          |
+| [`packages/ui-web`](packages/ui-web) | [`@siracusahq/gtm-design-system`](https://www.npmjs.com/package/@siracusahq/gtm-design-system) | Web / LP / 営業資料                     |
 
 Storybook: <https://polastack-design-system.netlify.app/>
 （[業務システムUI](https://polastack-design-system.netlify.app/app/) /
@@ -46,23 +46,23 @@ Web/LPパッケージにのみ存在する。
 ### React（業務システムUI）
 
 ```bash
-pnpm add @polastack/design-system
+pnpm add @siracusahq/design-system
 ```
 
 ```tsx
-import { Button } from '@polastack/design-system';
-import '@polastack/design-system/globals.css';
+import { Button } from '@siracusahq/design-system';
+import '@siracusahq/design-system/globals.css';
 ```
 
 ### React（Web / LP）
 
 ```bash
-pnpm add @polastack/gtm-design-system
+pnpm add @siracusahq/gtm-design-system
 ```
 
 ```tsx
-import { MarketingButton } from '@polastack/gtm-design-system';
-import '@polastack/gtm-design-system/globals.css';
+import { MarketingButton } from '@siracusahq/gtm-design-system';
+import '@siracusahq/gtm-design-system/globals.css';
 ```
 
 ### React を使わないサイト（Astro・静的HTML等）
@@ -70,11 +70,11 @@ import '@polastack/gtm-design-system/globals.css';
 CSS変数だけを読み込めば、同じブランドカラーを適用できる。
 
 ```bash
-pnpm add @polastack/tokens
+pnpm add @siracusahq/tokens
 ```
 
 ```css
-@import '@polastack/tokens/brand.css';
+@import '@siracusahq/tokens/brand.css';
 
 .cta {
   background: var(--color-primary-500); /* 白文字 4.55:1 で AA 適合 */
@@ -88,7 +88,7 @@ pnpm add @polastack/tokens
 ### トークンをプログラムから使う
 
 ```ts
-import { primary, brand, spacing, radii } from '@polastack/tokens';
+import { primary, brand, spacing, radii } from '@siracusahq/tokens';
 ```
 
 ## 開発

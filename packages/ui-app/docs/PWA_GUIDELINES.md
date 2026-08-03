@@ -8,13 +8,13 @@
 
 デザインシステムは**UIコンポーネントとフック**を提供します。以下はデザインシステムに含まれます:
 
-| カテゴリ | 提供物 |
-|---------|--------|
-| **トークン** | Safe Area変数、タッチターゲットサイズ、ビューポート高さ変数 |
-| **カスタムバリアント** | `touch:` — タッチデバイス向けスタイル (`@media (pointer: coarse)`) |
-| **フック** | `useDisplayMode`, `useOnlineStatus`, `useViewportHeight`, `useInstallPrompt` |
-| **コンポーネント** | `BottomNavigation`, `OfflineIndicator`, `InstallPrompt`, `PullToRefresh` |
-| **タッチ最適化** | Button(44px最小タッチターゲット), Toast(モバイル中央下配置), Tooltip(タッチ非表示) |
+| カテゴリ               | 提供物                                                                             |
+| ---------------------- | ---------------------------------------------------------------------------------- |
+| **トークン**           | Safe Area変数、タッチターゲットサイズ、ビューポート高さ変数                        |
+| **カスタムバリアント** | `touch:` — タッチデバイス向けスタイル (`@media (pointer: coarse)`)                 |
+| **フック**             | `useDisplayMode`, `useOnlineStatus`, `useViewportHeight`, `useInstallPrompt`       |
+| **コンポーネント**     | `BottomNavigation`, `OfflineIndicator`, `InstallPrompt`, `PullToRefresh`           |
+| **タッチ最適化**       | Button(44px最小タッチターゲット), Toast(モバイル中央下配置), Tooltip(タッチ非表示) |
 
 ## アプリ側の責務
 
@@ -38,6 +38,7 @@
 ```
 
 HTMLに追加:
+
 ```html
 <link rel="manifest" href="/manifest.json" />
 <meta name="theme-color" content="#008575" />
@@ -49,6 +50,7 @@ HTMLに追加:
 ### 2. Service Worker
 
 Service Workerはアプリ側で登録・管理します。推奨ライブラリ:
+
 - [Workbox](https://developer.chrome.com/docs/workbox/) — Google提供、キャッシュ戦略が豊富
 - Next.js: `next-pwa` パッケージ
 
@@ -66,9 +68,7 @@ PWAアイコン（192px, 512px）はアプリ側で用意してください。
 
 ```tsx
 // CSS変数として利用可能
-<div className="pb-[var(--safe-area-bottom)]">
-  {/* Safe Area下部を避けるコンテンツ */}
-</div>
+<div className="pb-[var(--safe-area-bottom)]">{/* Safe Area下部を避けるコンテンツ */}</div>
 ```
 
 デザインシステムの `BottomNavigation`, `Toast`, `InstallPrompt` は自動でSafe Areaを考慮します。
@@ -79,9 +79,7 @@ PWAアイコン（192px, 512px）はアプリ側で用意してください。
 
 ```tsx
 // touch: バリアントでタッチデバイスのみ適用
-<button className="h-8 touch:min-h-[var(--touch-target-min)]">
-  Tap me
-</button>
+<button className="h-8 touch:min-h-[var(--touch-target-min)]">Tap me</button>
 ```
 
 `Button` コンポーネントはこれを自動適用済みです。
@@ -92,9 +90,7 @@ PWAアイコン（192px, 512px）はアプリ側で用意してください。
 
 ```tsx
 // CSS変数
-<div className="h-[var(--viewport-height, 100dvh)]">
-  Full height content
-</div>
+<div className="h-[var(--viewport-height, 100dvh)]">Full height content</div>;
 
 // フック（JavaScript値が必要な場合）
 const vh = useViewportHeight();
@@ -107,7 +103,7 @@ const vh = useViewportHeight();
 ### useDisplayMode
 
 ```tsx
-import { useDisplayMode } from '@polastack/design-system';
+import { useDisplayMode } from '@siracusahq/design-system';
 
 function App() {
   const mode = useDisplayMode();
@@ -120,7 +116,7 @@ function App() {
 ### useOnlineStatus
 
 ```tsx
-import { useOnlineStatus } from '@polastack/design-system';
+import { useOnlineStatus } from '@siracusahq/design-system';
 
 function App() {
   const { isOnline, isOffline } = useOnlineStatus();
@@ -137,7 +133,7 @@ function App() {
 ### useInstallPrompt
 
 ```tsx
-import { useInstallPrompt } from '@polastack/design-system';
+import { useInstallPrompt } from '@siracusahq/design-system';
 
 function App() {
   const { canInstall, promptInstall, isDismissed, dismiss } = useInstallPrompt();
@@ -161,21 +157,12 @@ function App() {
 スタンドアロンモードでのモバイルナビゲーション:
 
 ```tsx
-import { BottomNavigation, BottomNavigationItem } from '@polastack/design-system';
+import { BottomNavigation, BottomNavigationItem } from '@siracusahq/design-system';
 
 <BottomNavigation>
-  <BottomNavigationItem
-    icon={<HomeIcon />}
-    label="ホーム"
-    active
-    onClick={() => navigate('/')}
-  />
-  <BottomNavigationItem
-    icon={<ListIcon />}
-    label="一覧"
-    onClick={() => navigate('/list')}
-  />
-</BottomNavigation>
+  <BottomNavigationItem icon={<HomeIcon />} label="ホーム" active onClick={() => navigate('/')} />
+  <BottomNavigationItem icon={<ListIcon />} label="一覧" onClick={() => navigate('/list')} />
+</BottomNavigation>;
 ```
 
 ### PullToRefresh
@@ -183,11 +170,11 @@ import { BottomNavigation, BottomNavigationItem } from '@polastack/design-system
 リストのプルダウン更新:
 
 ```tsx
-import { PullToRefresh } from '@polastack/design-system';
+import { PullToRefresh } from '@siracusahq/design-system';
 
 <PullToRefresh onRefresh={async () => await refetchData()}>
   <ItemList items={items} />
-</PullToRefresh>
+</PullToRefresh>;
 ```
 
 ---
@@ -196,13 +183,13 @@ import { PullToRefresh } from '@polastack/design-system';
 
 Polastackはデスクトップファーストの業務アプリです。モバイル対応はPWAとしてネイティブ品質を目指します。
 
-| ブレークポイント | 幅 | 用途 |
-|----------------|-----|------|
-| デフォルト | < 640px | モバイル（PWA standalone） |
-| `sm` | ≥ 640px | 小型タブレット |
-| `md` | ≥ 768px | タブレット |
-| `lg` | ≥ 1024px | デスクトップ |
-| `xl` | ≥ 1280px | ワイドデスクトップ |
+| ブレークポイント | 幅       | 用途                       |
+| ---------------- | -------- | -------------------------- |
+| デフォルト       | < 640px  | モバイル（PWA standalone） |
+| `sm`             | ≥ 640px  | 小型タブレット             |
+| `md`             | ≥ 768px  | タブレット                 |
+| `lg`             | ≥ 1024px | デスクトップ               |
+| `xl`             | ≥ 1280px | ワイドデスクトップ         |
 
 ### 推奨パターン
 

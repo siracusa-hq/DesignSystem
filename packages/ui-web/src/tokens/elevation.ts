@@ -1,7 +1,7 @@
 /**
  * エレベーショントークン定数
  *
- * 基盤スケールの正本は `@polastack/tokens`。
+ * 基盤スケールの正本は `@siracusahq/tokens`。
  * グロー効果は Web/LP 固有のためここで追加する。
  *
  * グローは装飾（ハロー）であり文字や図形の輪郭を担わないため、
@@ -9,7 +9,7 @@
  * キー名の `glow-primary` は既存consumerとの互換のため据え置いている。
  */
 
-import { shadows as baseShadows, radii } from '@polastack/tokens';
+import { shadows as baseShadows, radii } from '@siracusahq/tokens';
 
 export const shadows = {
   ...baseShadows,
@@ -22,4 +22,4 @@ export const shadows = {
 export { radii };
 
 export type Shadow = keyof typeof shadows;
-export type { Radius } from '@polastack/tokens';
+export type { Radius } from '@siracusahq/tokens';

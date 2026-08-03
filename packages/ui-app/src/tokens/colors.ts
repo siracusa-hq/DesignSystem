@@ -1,7 +1,7 @@
 /**
  * カラートークン定数
  *
- * 値の正本は `@polastack/tokens`。ここでは値を複製せず、
+ * 値の正本は `@siracusahq/tokens`。ここでは値を複製せず、
  * 業務システムUIが使うスケールだけを選んで再構成する。
  * CSS変数（styles/tokens.css の @theme）との一致は
  * tokens.test.ts が CI で検証する。
@@ -12,7 +12,7 @@
  * 業務システムUIでは意図的に公開していない。
  */
 
-import { primary, neutral, success, warning, error, info } from '@polastack/tokens';
+import { primary, neutral, success, warning, error, info } from '@siracusahq/tokens';
 
 export const colors = {
   primary,

@@ -1,5 +1,5 @@
 {
-  "name": "@polastack/gtm-design-system",
+  "name": "@siracusahq/gtm-design-system",
   "version": "0.3.0",
   "description": "Polastack GTM Design System - Marketing components and design tokens for websites, landing pages, and sales materials",
   "type": "module",
@@ -63,7 +63,7 @@
     }
   },
   "dependencies": {
-    "@polastack/tokens": "workspace:^",
+    "@siracusahq/tokens": "workspace:^",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.577.0",

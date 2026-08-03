@@ -2,7 +2,7 @@
 
 ## Phase 0: プロジェクト初期化
 
-- [x] package.json 作成（@polastack/gtm-design-system）
+- [x] package.json 作成（@siracusahq/gtm-design-system）
 - [x] tsconfig.json / tsup.config.ts / vitest.config.ts 作成
 - [x] .storybook/ 設定（main.ts / preview.ts / preview-head.html）
 - [x] .github/workflows/ CI・Release 設定
@@ -114,7 +114,7 @@
 - [x] SplitSlide — 左右2カラム
 - [x] StatSlide — インパクト数値表示
 - [x] QuoteSlide — テスティモニアル引用
-- [x] 別エントリポイント `@polastack/gtm-design-system/slides` として公開
+- [x] 別エントリポイント `@siracusahq/gtm-design-system/slides` として公開
 - [x] Storybook ストーリー（Polastack Sales Pitch Deck サンプル + レイアウト一覧）
 
 ## Phase 10: 暫定対応（公開中バージョンの応急処置）

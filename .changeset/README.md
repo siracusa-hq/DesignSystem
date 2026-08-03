@@ -38,6 +38,6 @@ pnpm changeset
 
 ## 内部依存の扱い
 
-`@polastack/design-system` と `@polastack/gtm-design-system` は
-`@polastack/tokens` に依存している。tokens が上がると両パッケージにも
+`@siracusahq/design-system` と `@siracusahq/gtm-design-system` は
+`@siracusahq/tokens` に依存している。tokens が上がると両パッケージにも
 自動で patch バージョンが割り当てられる（`updateInternalDependencies: "patch"`）。

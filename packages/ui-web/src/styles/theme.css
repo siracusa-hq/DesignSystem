@@ -5,12 +5,12 @@
  * Tailwind の @import は含まない（消費側が自前で管理する前提）。
  *
  * 使い方:
- *   import '@polastack/gtm-design-system/theme.css';
+ *   import '@siracusahq/gtm-design-system/theme.css';
  *
  * ※ スタンドアロンで使う場合は globals.css を使用してください。
  *
  * **カラー・シャドウ・ラディウス・モーションの値の正本は
- * `@polastack/tokens`（packages/tokens）。** Tailwind v4 の @theme は
+ * `@siracusahq/tokens`（packages/tokens）。** Tailwind v4 の @theme は
  * CSS 変数の実体宣言を要求するため値をここに展開しているが、
  * 手で書き換えてはならない。ズレは src/tokens/tokens.test.ts が CI で検出する。
  */
@@ -33,7 +33,7 @@
      Colors: Primary（操作用 / WCAG AA 準拠）
      #008575 アンカー。ボタン背景・リンク・フォーカスリングなど、
      テキストや意味を担うUIに使う。白文字との対比 4.55:1 で AA 適合。
-     @polastack/design-system（業務システムUI）と完全同値。
+     @siracusahq/design-system（業務システムUI）と完全同値。
      -------------------------------------------------------- */
   --color-primary-50: #e0f2f1;
   --color-primary-100: #b2dfdb;
