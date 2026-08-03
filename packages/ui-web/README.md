@@ -12,7 +12,7 @@
 
 ### Storybook
 
-https://polastack-design-system.netlify.app/web/
+https://siracusa-design-system.netlify.app/web/
 
 ### インストール
 
@@ -231,7 +231,7 @@ Marketing design system for [Polastack](https://github.com/siracusa-hq) — comp
 
 ### Storybook
 
-https://polastack-design-system.netlify.app/web/
+https://siracusa-design-system.netlify.app/web/
 
 ### Install
 

@@ -13,7 +13,7 @@ BtoB業務アプリケーション向けReactデザインシステム。
 
 ## Storybook
 
-コンポーネントカタログ: https://polastack-design-system.netlify.app/app/
+コンポーネントカタログ: https://siracusa-design-system.netlify.app/app/
 
 ## インストール
 
