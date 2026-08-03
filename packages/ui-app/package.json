@@ -1,7 +1,7 @@
 {
   "name": "@siracusahq/design-system",
   "version": "0.5.0",
-  "description": "Polastack Design System - UI components and design tokens for business applications",
+  "description": "Siracusa Design System - UI components and design tokens for business applications",
   "type": "module",
   "license": "MIT",
   "repository": {

@@ -1,7 +1,7 @@
 {
   "name": "@siracusahq/tokens",
   "version": "0.1.0",
-  "description": "Polastack brand design tokens - the single source of truth shared by the product UI and GTM design systems",
+  "description": "Siracusa brand design tokens - the single source of truth shared by the product UI and GTM design systems",
   "type": "module",
   "license": "MIT",
   "repository": {

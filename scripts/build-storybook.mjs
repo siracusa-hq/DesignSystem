@@ -85,7 +85,7 @@ writeFileSync(
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Polastack Design System</title>
+    <title>Siracusa Design System</title>
     <style>
       :root {
         color-scheme: light dark;
@@ -138,7 +138,7 @@ writeFileSync(
   </head>
   <body>
     <main>
-      <h1>Polastack Design System</h1>
+      <h1>Siracusa Design System</h1>
       <p class="lede">
         ブランド共通トークン <code>@siracusahq/tokens</code> を正本に、用途別の2つのUIパッケージを提供しています。
       </p>

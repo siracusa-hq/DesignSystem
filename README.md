@@ -1,6 +1,7 @@
-# Polastack Design System
+# Siracusa Design System
 
-Polastack（Enterprise Agent Stack）のデザインシステム。
+Siracusa のデザインシステム。コーポレートと各サービスライン（Polastack /
+ピアデスクシリーズ）を1つの基盤で支える。
 ブランド共通トークンを正本に、用途別の2つのUIパッケージを提供する。
 
 ## パッケージ

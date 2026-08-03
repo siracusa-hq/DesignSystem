@@ -1,4 +1,4 @@
-# Polastack Design System - 開発ガイド（モノレポ）
+# Siracusa Design System - 開発ガイド（モノレポ）
 
 このリポジトリは pnpm workspace のモノレポ。**トークンの正本は1箇所**、
 UIパッケージは用途別に2つ、という構成になっている。

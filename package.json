@@ -2,7 +2,7 @@
   "name": "@siracusahq/design-system-monorepo",
   "private": true,
   "type": "module",
-  "description": "Polastack Design System monorepo - shared brand tokens, product UI, and GTM/web UI",
+  "description": "Siracusa Design System monorepo - shared brand tokens, product UI, and GTM/web UI",
   "license": "MIT",
   "repository": {
     "type": "git",
