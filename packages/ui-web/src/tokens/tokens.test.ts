@@ -20,7 +20,12 @@ import { colors, shadows, radii, duration, easing } from './index';
 // パスはパッケージルート（= vitest の cwd）基準で解決する。
 // このテストは environment: 'jsdom' で走るため `import.meta.url` が
 // file: スキームにならず、fileURLToPath が ERR_INVALID_URL_SCHEME で落ちる。
-const css = readFileSync(resolve(process.cwd(), 'src/styles/theme.css'), 'utf8');
+const themeCssFull = readFileSync(resolve(process.cwd(), 'src/styles/theme.css'), 'utf8');
+// 検証対象は @theme ブロックのみ。ファイル後方の @media (prefers-reduced-motion) が
+// --duration-* を 1ms に再定義しており、全文走査だと Map が上書きされるため。
+const themeStart = themeCssFull.indexOf('@theme {');
+const themeEnd = themeCssFull.indexOf('\n}', themeStart);
+const css = themeCssFull.slice(themeStart, themeEnd + 2);
 
 /** 空白を正規化して比較する（CSS 整形差でテストが落ちないように） */
 const normalize = (value: string) => value.trim().replace(/\s+/g, ' ');

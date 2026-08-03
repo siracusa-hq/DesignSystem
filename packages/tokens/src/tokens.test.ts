@@ -89,7 +89,7 @@ describe('brand.css（React非依存サイト向け CSS変数版）が TS 定数
    * 注意: --color-brand-500 のような装飾スケール（層1）は除外しない。
    */
   const isContractVar = (full: string) =>
-    /^(bg|text|border|ring|decor|on)-brand/.test(full) || /^glow-brand/.test(full);
+    /^(bg|text|border|ring|decor|on)-(brand|cta)/.test(full) || /^glow-brand/.test(full);
 
   function cssVars(prefix: string): Map<string, string> {
     const re = new RegExp(`--${prefix}-([a-z0-9-]+)\\s*:\\s*([^;]+);`, 'gi');

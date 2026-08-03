@@ -162,34 +162,34 @@ Stage 4 以降は minor で刻む。
 
 - [x] 操作色 / 装飾色を「同一ランプの2つの段」に一般化
       （操作 = L≈0.553・白文字AA保証 / 装飾 = L≈0.73・明背景テキスト禁止）
-- [ ] 第3のオプション役割 `--color-cta-*`（未指定なら操作色にフォールバック）
+- [x] 第3のオプション役割 `--color-cta-*`（未指定なら操作色にフォールバック）
 - [x] `tokens.test.ts` に「操作段の白文字コントラストが 4.5:1 以上」の検証を追加
 - [x] `tokens.test.ts` に「ランプ位置の統一」「ランプ名とブランド名の一致」の検証を追加
 
 ### 和文タイポグラフィ
 
 - [ ] 見出しの行間 1.3〜1.4 / 本文の行間 1.6〜1.75 でスケールを定義
-- [ ] 負の字送りを全廃（`tracking-[-0.04em]` / line-height 1.11 を撤去）
+- [x] 負の字送りを全廃（`tracking-[-0.04em]` / line-height 1.11 を撤去）
 - [ ] 見出しの字送りを 0〜+.05em の範囲に
 - [ ] ウェイト補正型の字送り（Regular +.04em / Bold +.03em）
-- [ ] `palt` を見出しとラベルのみに適用（本文には付けない）
-- [ ] `line-break: strict` / `text-spacing-trim: space-all` を導入
+- [x] `palt` を見出しとラベルのみに適用（本文には付けない）
+- [x] `line-break: strict` / `text-spacing-trim: space-all` を導入
 - [ ] 本文 14px 未満を出せないようスケールから除外
-- [ ] 見出しに `text-wrap: balance`（国内先行例ゼロ。Stage 5 のVRTで検証する）
+- [x] 見出しに `text-wrap: balance`（国内先行例ゼロ。Stage 5 のVRTで検証する）
 
 ### 既存バグの修正
 
-- [ ] `:lang(ja) h1,h2,h3` の `font-feature-settings` が body の
+- [x] `:lang(ja) h1,h2,h3` の `font-feature-settings` が body の
       `'cv01','cv03','cv04','tnum'` を丸ごと上書きしている問題を修正
       （和文見出しで等幅数字が失われる。数値訴求は必須要素）
-- [ ] デッドコード `.lang-ja` / `.lang-en` を削除（使用0件）
+- [x] デッドコード `.lang-ja` / `.lang-en` を削除（使用0件）
 
 ### 意匠
 
-- [ ] `radii` を役割名化（`--radius-card` / `-pill` / `-media` / `-section`）
-- [ ] `shadow` を2層に（UI操作用の小さい影 / LPの浮いたカード用の柔らかい影）
-- [ ] `motion` を二系統に（UI応答 100–300ms / 演出 400–900ms）
-- [ ] `AnimateOnScroll` のハードコード（600ms / ease-out）を演出系トークンへ戻す
+- [x] `radii` を役割名化（`--radius-card` / `-pill` / `-media` / `-section`）
+- [x] `shadow` を2層に（UI操作用の小さい影 / LPの浮いたカード用の柔らかい影）
+- [x] `motion` を二系統に（UI応答 100–300ms / 演出 400–900ms）
+- [x] `AnimateOnScroll` のハードコード（600ms / ease-out）を演出系トークンへ戻す
 - [ ] `packages/tokens` から降ろすトークンの整理（正本の移動）
 
 ## Stage 2: 全コンポーネント1周
