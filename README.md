@@ -12,9 +12,9 @@ Siracusa のデザインシステム。コーポレートと各サービスラ�
 | [`packages/ui-app`](packages/ui-app) | [`@siracusahq/design-system`](https://www.npmjs.com/package/@siracusahq/design-system)         | 業務システムUI                          |
 | [`packages/ui-web`](packages/ui-web) | [`@siracusahq/gtm-design-system`](https://www.npmjs.com/package/@siracusahq/gtm-design-system) | Web / LP / 営業資料                     |
 
-Storybook: <https://polastack-design-system.netlify.app/>
-（[業務システムUI](https://polastack-design-system.netlify.app/app/) /
-[Web・LP](https://polastack-design-system.netlify.app/web/)）
+Storybook: <https://siracusa-design-system.netlify.app/>
+（[業務システムUI](https://siracusa-design-system.netlify.app/app/) /
+[Web・LP](https://siracusa-design-system.netlify.app/web/)）
 
 ## なぜトークンを切り出しているか
 
