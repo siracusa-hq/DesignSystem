@@ -135,7 +135,7 @@ Stage 2 を「props削除」「CSS Modules 移行」「ビジュアル資産」�
 | シリーズブランド   | ピアデスクシリーズ（配下に製品が将来増える） | **非技術者**                 | **未定**                           |
 
 ピアデスクの英字表記は **`peerdesk`** で確定（2026-08-03 ブランド側決定）。
-npm スコープは `@polastack/*` から **`@siracusa/*`** へ変更することが同日決定した
+npm スコープは `@polastack/*` から **`@siracusahq/*`** へ変更することが同日決定した（npm 上で `siracusa` スコープは取得不可だったため `siracusahq` を確保）
 （別PRで実施。移行手順は [theme-contract-spec.md](../../../docs/theme-contract-spec.md) §10 と併せて計画する）。
 
 **採る構造: バクラクの3層テーマ契約**（`[MB]`。国内で唯一、この設計思想を実装している実例）。
