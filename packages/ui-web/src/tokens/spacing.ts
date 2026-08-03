@@ -1,11 +1,11 @@
 /**
  * スペーシングトークン定数
  *
- * 4pxグリッドの基盤スケールは `@polastack/tokens` が正本。
+ * 4pxグリッドの基盤スケールは `@siracusahq/tokens` が正本。
  * セクション間余白・コンテナ幅は Web/LP 固有のためここで定義する。
  */
 
-export { spacing, type Spacing } from '@polastack/tokens';
+export { spacing, type Spacing } from '@siracusahq/tokens';
 
 /** セクション間の垂直余白 */
 export const sectionSpacing = {

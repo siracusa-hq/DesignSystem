@@ -32,9 +32,6 @@ importers:
 
   packages/ui-app:
     dependencies:
-      '@polastack/tokens':
-        specifier: workspace:^
-        version: link:../tokens
       '@radix-ui/react-accordion':
         specifier: ^1.2.12
         version: 1.2.12(@types/react-dom@18.3.7(@types/react@18.3.28))(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -95,6 +92,9 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.2.8
         version: 1.2.8(@types/react-dom@18.3.7(@types/react@18.3.28))(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@siracusahq/tokens':
+        specifier: workspace:^
+        version: link:../tokens
       '@tanstack/react-table':
         specifier: ^8.21.3
         version: 8.21.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -207,7 +207,7 @@ importers:
 
   packages/ui-web:
     dependencies:
-      '@polastack/tokens':
+      '@siracusahq/tokens':
         specifier: workspace:^
         version: link:../tokens
       class-variance-authority:

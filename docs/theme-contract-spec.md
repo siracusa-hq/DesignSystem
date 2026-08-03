@@ -265,7 +265,7 @@ Polastack は今後、以下の3階層のブランドを1つのデザインシ�
 ```css
 /* 自動生成ファイル — 手で編集しないこと。
  * 生成元: packages/tokens/src/brand-registry.ts
- * 再生成: pnpm --filter @polastack/tokens codegen
+ * 再生成: pnpm --filter @siracusahq/tokens codegen
  */
 
 /* ---- 1. ブランドごとのランプ実体 ---- */
@@ -497,7 +497,7 @@ corporate: {
    },
    ```
 
-3. `pnpm --filter @polastack/tokens codegen` を実行。生成物をコミットする。
+3. `pnpm --filter @siracusahq/tokens codegen` を実行。生成物をコミットする。
 4. `pnpm test` を実行。§8 のテストが全部通ることを確認する。
    落ちた場合は**閾値を緩めず、色相を変える。**
 5. `pnpm changeset` で minor を選ぶ（利用者から見える追加のため）。
@@ -642,7 +642,7 @@ export const registry: Record<string, BrandEntry> = { /* … */ };
 ### 9.3 実行
 
 ```bash
-pnpm --filter @polastack/tokens codegen   # 生成
+pnpm --filter @siracusahq/tokens codegen   # 生成
 pnpm codegen                              # ルートから全パッケージ分
 ```
 

@@ -1,8 +1,8 @@
 {
-  "name": "@polastack/design-system-monorepo",
+  "name": "@siracusahq/design-system-monorepo",
   "private": true,
   "type": "module",
-  "description": "Polastack Design System monorepo - shared brand tokens, product UI, and GTM/web UI",
+  "description": "Siracusa Design System monorepo - shared brand tokens, product UI, and GTM/web UI",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -15,9 +15,9 @@
     "typecheck": "pnpm -r typecheck",
     "size": "pnpm -r size",
     "clean": "pnpm -r clean && rm -rf storybook-static",
-    "storybook": "pnpm --filter @polastack/design-system storybook",
-    "storybook:app": "pnpm --filter @polastack/design-system storybook",
-    "storybook:web": "pnpm --filter @polastack/gtm-design-system storybook",
+    "storybook": "pnpm --filter @siracusahq/design-system storybook",
+    "storybook:app": "pnpm --filter @siracusahq/design-system storybook",
+    "storybook:web": "pnpm --filter @siracusahq/gtm-design-system storybook",
     "build-storybook": "node scripts/build-storybook.mjs",
     "format": "prettier --write \"**/*.{ts,tsx,css,md,json,yml,yaml}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,css,md,json,yml,yaml}\"",

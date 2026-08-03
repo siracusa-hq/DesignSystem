@@ -40,7 +40,7 @@ export const AllLayouts: Story = {
           title={isJa ? '4. EndSlide' : '4. EndSlide'}
           subtitle={isJa ? 'CTA・連絡先エンディング' : 'CTA & contact ending'}
           ctaLabel={isJa ? '無料トライアル' : 'Free Trial'}
-          contactItems={[{ label: 'Email', value: 'contact@polastack.io' }, { label: 'Web', value: 'polastack.io' }]}
+          contactItems={[{ label: 'Email', value: 'contact@polastack.com' }, { label: 'Web', value: 'polastack.com' }]}
         />
 
         <PTeamSlide

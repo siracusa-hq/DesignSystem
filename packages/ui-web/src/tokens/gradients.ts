@@ -7,7 +7,7 @@
  * 操作UI（ボタン背景・リンク）には `primary` を使うこと。
  */
 
-import { brand, neutral, info } from '@polastack/tokens';
+import { brand, neutral, info } from '@siracusahq/tokens';
 
 export const gradients = {
   /** ブランドグラデーション（ティール系） */

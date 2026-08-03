@@ -4,7 +4,7 @@
  * Tailwind 初期化 + 全トークン + ベーススタイルをまとめたエントリポイント。
  * スタンドアロンで使う場合はこちらを読み込む。
  *
- *   import '@polastack/gtm-design-system/globals.css';
+ *   import '@siracusahq/gtm-design-system/globals.css';
  *
  * 消費側が自前の Tailwind 設定を持つ場合は theme.css を直接 @import すること。
  *

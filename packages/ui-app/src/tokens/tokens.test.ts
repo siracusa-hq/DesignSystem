@@ -2,7 +2,7 @@
  * トークン ⇄ CSS変数 のドリフト検出テスト
  *
  * Tailwind v4 の `@theme` は CSS 変数の実体宣言を要求するため、
- * `@polastack/tokens` の値は styles/tokens.css にも展開されている。
+ * `@siracusahq/tokens` の値は styles/tokens.css にも展開されている。
  * この二重定義が静かにズレると「ブランドカラーが分岐したまま2ヶ月放置」
  * （PR #99 の発端）が再発するため、CI で機械的に突き合わせる。
  *

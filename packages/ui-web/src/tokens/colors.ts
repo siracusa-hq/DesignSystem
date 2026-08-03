@@ -1,7 +1,7 @@
 /**
  * カラートークン定数
  *
- * 値の正本は `@polastack/tokens`。@polastack/design-system（業務システムUI）と
+ * 値の正本は `@siracusahq/tokens`。@siracusahq/design-system（業務システムUI）と
  * 同じファイルを参照するため、両デザインシステムでブランドカラーが分岐しない。
  * CSS変数（styles/theme.css の @theme）との一致は tokens.test.ts が CI で検証する。
  *
@@ -14,7 +14,7 @@
  *   明背景のテキスト・ボタン背景に使ってはならない。
  */
 
-import { primary, brand, neutral, success, warning, error, info } from '@polastack/tokens';
+import { primary, brand, neutral, success, warning, error, info } from '@siracusahq/tokens';
 
 export const colors = {
   primary,

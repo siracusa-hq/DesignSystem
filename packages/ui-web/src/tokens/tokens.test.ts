@@ -2,7 +2,7 @@
  * トークン ⇄ CSS変数 のドリフト検出テスト
  *
  * Tailwind v4 の `@theme` は CSS 変数の実体宣言を要求するため、
- * `@polastack/tokens` の値は styles/theme.css にも展開されている。
+ * `@siracusahq/tokens` の値は styles/theme.css にも展開されている。
  * この二重定義が静かにズレると「GTM側だけブランドカラーが古いまま」
  * （PR #99 の発端。約2ヶ月間 WCAG AA 不適合が放置された）が再発するため、
  * CI で機械的に突き合わせる。
@@ -59,8 +59,8 @@ describe('カラートークンと CSS 変数の一致', () => {
     expect(orphans).toEqual([]);
   });
 
-  it('primary は業務システムUI（@polastack/design-system）と同一アンカー', () => {
-    // 両デザインシステムが同じ @polastack/tokens を参照している証跡。
+  it('primary は業務システムUI（@siracusahq/design-system）と同一アンカー', () => {
+    // 両デザインシステムが同じ @siracusahq/tokens を参照している証跡。
     // ここが #13c3a0 に戻ったら分岐の再発。
     expect(colors.primary[500]).toBe('#008575');
     expect(colors.brand[500]).toBe('#13c3a0');

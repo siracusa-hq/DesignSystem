@@ -4,14 +4,14 @@
 # storybook-static/ を下の構成で生成する。
 #
 #   /       … 行き先を選ぶランディング
-#   /app/   … 業務システムUI（@polastack/design-system）
-#   /web/   … Web / LP（@polastack/gtm-design-system）
+#   /app/   … 業務システムUI（@siracusahq/design-system）
+#   /web/   … Web / LP（@siracusahq/gtm-design-system）
 #
 # GitHub Pages はリポジトリ名のサブパス配信だったため PAGES_BASE=/DesignSystem/ が
 # 必要だったが、Netlify はサイトルート配信なので既定値（/）のままでよい。
 
 [build]
-  # `pnpm build` が先に必要。ui-app / ui-web は @polastack/tokens を dist/ 経由で
+  # `pnpm build` が先に必要。ui-app / ui-web は @siracusahq/tokens を dist/ 経由で
   # 解決するため、未ビルドだと Storybook の vite が名前解決に失敗する。
   command = "pnpm build && pnpm build-storybook"
   publish = "storybook-static"

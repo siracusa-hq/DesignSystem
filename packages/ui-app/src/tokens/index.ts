@@ -1,7 +1,7 @@
 /**
  * Polastack Design System - Design Tokens
  *
- * カラー・タイポグラフィ・スペーシング等の基盤値は `@polastack/tokens` が正本。
+ * カラー・タイポグラフィ・スペーシング等の基盤値は `@siracusahq/tokens` が正本。
  * ここでは業務システムUI固有の拡張（fontSize / shadows.drawer / zIndex）を
  * 重ねたうえで再エクスポートする。
  */

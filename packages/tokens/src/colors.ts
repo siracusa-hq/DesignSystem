@@ -2,8 +2,8 @@
  * カラートークン定数（ブランド共通基盤）
  *
  * Polastack のブランドカラーはここが唯一の正本。
- * @polastack/design-system（業務システムUI）と
- * @polastack/gtm-design-system（Web/LP）は本ファイルを参照し、値を複製しない。
+ * @siracusahq/design-system（業務システムUI）と
+ * @siracusahq/gtm-design-system（Web/LP）は本ファイルを参照し、値を複製しない。
  *
  * ## primary と brand の使い分け（重要）
  *

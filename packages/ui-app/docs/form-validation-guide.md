@@ -55,7 +55,7 @@ import {
   FormLayout,
   FormActions,
   Button,
-} from '@polastack/design-system';
+} from '@siracusahq/design-system';
 
 function UserForm() {
   const {
@@ -118,12 +118,7 @@ function UserForm() {
             <FormField error={fieldState.error?.message}>
               <FormLabel>年齢</FormLabel>
               <FormControl>
-                <NumberInput
-                  value={field.value}
-                  onChange={field.onChange}
-                  min={0}
-                  max={120}
-                />
+                <NumberInput value={field.value} onChange={field.onChange} min={0} max={120} />
               </FormControl>
               <FormMessage />
             </FormField>
@@ -162,10 +157,7 @@ function UserForm() {
             <FormField error={fieldState.error?.message}>
               <div className="flex items-center gap-2">
                 <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
+                  <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                 </FormControl>
                 <FormLabel>利用規約に同意する</FormLabel>
               </div>
@@ -187,7 +179,7 @@ function UserForm() {
 
 ```tsx
 import { useForm, Controller } from 'react-hook-form';
-import { DynamicFormField } from '@polastack/design-system';
+import { DynamicFormField } from '@siracusahq/design-system';
 
 // フィールド定義（APIやConfigから動的に生成可能）
 const fieldDefs = [

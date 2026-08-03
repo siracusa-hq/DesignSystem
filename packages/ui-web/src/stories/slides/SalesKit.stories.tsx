@@ -128,8 +128,8 @@ export const PolastackPitchDeck: Story = {
           subtitle={isJa ? 'クレジットカード不要。全11モジュールを今すぐ試せます。' : 'No credit card required. Try all 11 modules instantly.'}
           ctaLabel={isJa ? '無料トライアル開始' : 'Start Free Trial'}
           contactItems={[
-            { label: 'Email', value: 'sales@polastack.io' },
-            { label: 'Web', value: 'polastack.io' },
+            { label: 'Email', value: 'sales@polastack.com' },
+            { label: 'Web', value: 'polastack.com' },
           ]}
         />
       </SlidePreview>

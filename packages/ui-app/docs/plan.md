@@ -7,12 +7,12 @@
 
 ## 目的
 
-| 目的 | 実現方法 | 主担当フェーズ |
-|------|---------|--------------|
-| **品質を高く保つ** | テスト・a11yを初日から組込み、全コンポーネントに品質ゲート適用 | Phase 0, 2, 8 |
-| **早く開発する** | ドメイン別コンポーネント群で即座に画面構築可能 + 採用支援 | Phase 4, 5, 7 |
-| **ブランディング** | 戦略的なデザイン原則・トークン定義 + アプリ骨格の統一 | Phase 1, 6 |
-| **PWA対応** | タッチ最適化・Safe Area・オフライン対応でネイティブ品質のPWA | Phase 3 |
+| 目的               | 実現方法                                                       | 主担当フェーズ |
+| ------------------ | -------------------------------------------------------------- | -------------- |
+| **品質を高く保つ** | テスト・a11yを初日から組込み、全コンポーネントに品質ゲート適用 | Phase 0, 2, 8  |
+| **早く開発する**   | ドメイン別コンポーネント群で即座に画面構築可能 + 採用支援      | Phase 4, 5, 7  |
+| **ブランディング** | 戦略的なデザイン原則・トークン定義 + アプリ骨格の統一          | Phase 1, 6     |
+| **PWA対応**        | タッチ最適化・Safe Area・オフライン対応でネイティブ品質のPWA   | Phase 3        |
 
 ---
 
@@ -20,15 +20,15 @@
 
 ### 主要事例
 
-| デザインシステム | 提供元 | 特徴 |
-|----------------|--------|------|
-| **Atlassian Design System** | Atlassian | デザイントークン中心、Atomic Design、4pxグリッド、WCAG AA |
-| **Carbon Design System** | IBM | エンタープライズ向け、React/Web Components両対応 |
-| **Ant Design** | Ant Group | アジア圏最普及、ProComponentsで業務向け高機能コンポーネント群 |
-| **Lightning Design System** | Salesforce | CRM/業務アプリ特化、マルチテナント対応 |
-| **Polaris** | Shopify | 2025年Web Components化、フレームワーク非依存 |
-| **Pajamas** | GitLab | AI対応パターン拡充、ブランド個性の視覚的表現強化 |
-| **shadcn/ui** | コミュニティ | Radix UI + Tailwind CSS、コード所有型、カスタマイズ性最高 |
+| デザインシステム            | 提供元       | 特徴                                                          |
+| --------------------------- | ------------ | ------------------------------------------------------------- |
+| **Atlassian Design System** | Atlassian    | デザイントークン中心、Atomic Design、4pxグリッド、WCAG AA     |
+| **Carbon Design System**    | IBM          | エンタープライズ向け、React/Web Components両対応              |
+| **Ant Design**              | Ant Group    | アジア圏最普及、ProComponentsで業務向け高機能コンポーネント群 |
+| **Lightning Design System** | Salesforce   | CRM/業務アプリ特化、マルチテナント対応                        |
+| **Polaris**                 | Shopify      | 2025年Web Components化、フレームワーク非依存                  |
+| **Pajamas**                 | GitLab       | AI対応パターン拡充、ブランド個性の視覚的表現強化              |
+| **shadcn/ui**               | コミュニティ | Radix UI + Tailwind CSS、コード所有型、カスタマイズ性最高     |
 
 ### 2024-2025年のトレンド
 
@@ -42,16 +42,16 @@
 
 shadcn/ui型アプローチを採用：
 
-| レイヤー | 技術 | 理由 |
-|---------|------|------|
-| コンポーネント基盤 | **React 18/19** | エコシステム、RSC対応 |
-| スタイリング | **Tailwind CSS v4** | ゼロランタイム、@themeでトークン統合 |
-| アクセシビリティ基盤 | **Radix UI** | ARIA/キーボード/フォーカス自動管理 |
-| バリアント管理 | **CVA** | 型安全なバリアント定義 |
-| ビルド | **tsup** | ESMライブラリ出力、dts生成 |
-| ドキュメント | **Storybook 8** | コンポーネントカタログ、a11yアドオン |
-| テスト | **Vitest + Testing Library + axe-core** | Phase 0から全フェーズで使用 |
-| 型システム | **TypeScript** | 型安全性 |
+| レイヤー             | 技術                                    | 理由                                 |
+| -------------------- | --------------------------------------- | ------------------------------------ |
+| コンポーネント基盤   | **React 18/19**                         | エコシステム、RSC対応                |
+| スタイリング         | **Tailwind CSS v4**                     | ゼロランタイム、@themeでトークン統合 |
+| アクセシビリティ基盤 | **Radix UI**                            | ARIA/キーボード/フォーカス自動管理   |
+| バリアント管理       | **CVA**                                 | 型安全なバリアント定義               |
+| ビルド               | **tsup**                                | ESMライブラリ出力、dts生成           |
+| ドキュメント         | **Storybook 8**                         | コンポーネントカタログ、a11yアドオン |
+| テスト               | **Vitest + Testing Library + axe-core** | Phase 0から全フェーズで使用          |
+| 型システム           | **TypeScript**                          | 型安全性                             |
 
 ---
 
@@ -111,6 +111,7 @@ shadcn/ui型アプローチを採用：
 - [x] Toast（Radix UI, variant: default/success/error, useToast + toast()）
 
 **品質ゲート（Phase 2以降の全コンポーネントに適用）:**
+
 - Vitest + Testing Library ユニットテスト
 - axe-core a11yテスト（自動）
 - キーボードナビゲーション検証
@@ -127,6 +128,7 @@ shadcn/ui型アプローチを採用：
 既存コンポーネントのタッチ最適化と、PWA固有のトークン・フック・UIパターンを提供する。
 
 #### 3-A: トークン + ユーティリティ拡張
+
 - [x] Safe Area Insetsトークン（`env(safe-area-inset-*)` をCSS変数化）
 - [x] Viewport単位トークン（`dvh`, `svh` ユーティリティ）
 - [x] タッチターゲットトークン（最小44px保証の変数）
@@ -134,23 +136,27 @@ shadcn/ui型アプローチを採用：
 - [x] `touch:` カスタムバリアント（`@media (pointer: coarse)`）
 
 #### 3-B: フック
+
 - [x] `useDisplayMode()` — standalone / browser / minimal-ui / fullscreen 検出
 - [x] `useOnlineStatus()` — オンライン/オフライン状態監視
 - [x] `useViewportHeight()` — visualViewport APIでアドレスバー考慮した実高さ
 - [x] `useInstallPrompt()` — PWAインストールプロンプト制御（`beforeinstallprompt` イベント）
 
 #### 3-C: 既存コンポーネントのタッチ最適化
+
 - [x] Button: `touch:min-h-[--touch-target-min]` で44px保証
 - [x] Toast: モバイルでは下部中央full-width、デスクトップ(sm+)では右寄せ
 - [x] Tooltip: `touch:hidden` でタッチデバイスでは非表示
 
 #### 3-D: PWA固有コンポーネント
+
 - [x] BottomNavigation（モバイルアプリ型ナビゲーション、Safe Area対応）
 - [x] OfflineIndicator（オフライン状態バナー、role="alert"）
 - [x] InstallPrompt（PWAインストール誘導UI、role="dialog"）
 - [x] PullToRefresh（タッチイベントベース、Spinner連携）
 
 #### 3-E: ドキュメント + ガイド
+
 - [x] PWA対応ガイドライン（`docs/PWA_GUIDELINES.md`）
 - [x] レスポンシブ + PWAのStorybookストーリー（PWA/Overview）
 
@@ -170,6 +176,7 @@ shadcn/ui型アプローチを採用：
 - [x] バリデーション統合ガイド（`docs/form-validation-guide.md` — react-hook-form + zod連携）
 
 **設計判断:**
+
 - `aria-invalid`属性でエラースタイル自動適用（カスタムprop不要）
 - react-hook-form非依存 — FormFieldは純粋なプレゼンテーションパターン
 - native date input採用（将来カスタムカレンダーに拡張可能）
@@ -190,6 +197,7 @@ shadcn/ui型アプローチを採用：
 - [x] FilterBar（FilterChip/ActiveFilters/FilterBarActions、コンポーザブルUI部品）
 
 **設計判断:**
+
 - Table = スタイルプリミティブ（Cardと同パターン）、DataTable = @tanstack/react-table構成
 - FilterBarはAND/OR条件ビルダーではなくコンポーザブルUI部品（ビジネスロジック非依存）
 - @tanstack/react-table採用（ヘッドレス、tree-shakeable、ソート/ページネーション/選択を再発明しない）
@@ -210,6 +218,7 @@ shadcn/ui型アプローチを採用：
 - [x] AppShell（createContextベース複合コンポーネント、レスポンシブサイドバー、モバイルDrawer連携、PWA BottomNav padding）
 
 **設計判断:**
+
 - Dialog モバイル → フルスクリーン（業務アプリのフォーム入力領域最大化）
 - Drawer → Radix Dialog primitives基盤（フォーカストラップ、Escape、aria-modal無料）
 - モバイルサイドバー → Drawer(side='left')再利用（DRY）
@@ -260,14 +269,14 @@ shadcn/ui型アプローチを採用：
 
 ## 現在のステータス
 
-| Phase | 内容 | 状態 | コンポーネント数 | テスト数 |
-|-------|------|------|----------------|---------|
-| Phase 0-1 | プロジェクト基盤 + デザイントークン | ✅ 完了 | — | — |
-| Phase 2 | コアアトム | ✅ 完了 | 9 | 96 |
-| Phase 3 | PWA対応 | ✅ 完了 | +4（フック4種 + タッチ最適化） | 96 |
-| Phase 4 | フォームドメイン | ✅ 完了 | +13 | 223 |
-| Phase 5 | データ表示ドメイン | ✅ 完了 | +5 | 278 |
-| Phase 6 | ナビゲーション + レイアウト | ✅ 完了 | +6 | 337 |
-| ダークモード | セマンティックトークン + ThemeProvider | ✅ 完了 | +2 | 350 |
-| Phase 7 | 統合 + 採用支援 | ✅ 完了 | — (CI/CD, ドキュメント, ストーリー) | 350 |
-| Phase 8 | ガバナンス + 進化 | 未着手 | — | — |
+| Phase        | 内容                                   | 状態    | コンポーネント数                    | テスト数 |
+| ------------ | -------------------------------------- | ------- | ----------------------------------- | -------- |
+| Phase 0-1    | プロジェクト基盤 + デザイントークン    | ✅ 完了 | —                                   | —        |
+| Phase 2      | コアアトム                             | ✅ 完了 | 9                                   | 96       |
+| Phase 3      | PWA対応                                | ✅ 完了 | +4（フック4種 + タッチ最適化）      | 96       |
+| Phase 4      | フォームドメイン                       | ✅ 完了 | +13                                 | 223      |
+| Phase 5      | データ表示ドメイン                     | ✅ 完了 | +5                                  | 278      |
+| Phase 6      | ナビゲーション + レイアウト            | ✅ 完了 | +6                                  | 337      |
+| ダークモード | セマンティックトークン + ThemeProvider | ✅ 完了 | +2                                  | 350      |
+| Phase 7      | 統合 + 採用支援                        | ✅ 完了 | — (CI/CD, ドキュメント, ストーリー) | 350      |
+| Phase 8      | ガバナンス + 進化                      | 未着手  | —                                   | —        |

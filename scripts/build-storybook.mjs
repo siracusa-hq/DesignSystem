@@ -3,8 +3,8 @@
  *
  *   storybook-static/
  *     index.html   … どちらへ行くかを選ぶランディング
- *     app/         … @polastack/design-system（業務システムUI）
- *     web/         … @polastack/gtm-design-system（Web/LP）
+ *     app/         … @siracusahq/design-system（業務システムUI）
+ *     web/         … @siracusahq/gtm-design-system（Web/LP）
  *
  * Storybook は生成する asset パスに base を焼き込むため、
  * サブディレクトリ配信には base の指定が必須。各パッケージの
@@ -17,7 +17,7 @@
  *   pnpm build-storybook                          # 通常（base = /app/, /web/）
  *   PAGES_BASE=/DesignSystem/ pnpm build-storybook # サブパス配信する場合
  *
- * ※ 事前に `pnpm build` が必要。ui-app / ui-web は @polastack/tokens を
+ * ※ 事前に `pnpm build` が必要。ui-app / ui-web は @siracusahq/tokens を
  *   dist/ 経由で解決するため、未ビルドだと vite が名前解決に失敗する。
  */
 
@@ -35,14 +35,14 @@ const pagesBase = process.env.PAGES_BASE ?? '/';
 const targets = [
   {
     slug: 'app',
-    pkg: '@polastack/design-system',
+    pkg: '@siracusahq/design-system',
     title: '業務システムUI',
     subtitle: 'Product UI',
     description: '業務アプリケーション向けコンポーネント。高密度表示・キーボード操作前提。',
   },
   {
     slug: 'web',
-    pkg: '@polastack/gtm-design-system',
+    pkg: '@siracusahq/gtm-design-system',
     title: 'Web / LP',
     subtitle: 'GTM UI',
     description: 'Webサイト・ランディングページ・営業資料向けコンポーネント。',
@@ -85,7 +85,7 @@ writeFileSync(
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Polastack Design System</title>
+    <title>Siracusa Design System</title>
     <style>
       :root {
         color-scheme: light dark;
@@ -138,9 +138,9 @@ writeFileSync(
   </head>
   <body>
     <main>
-      <h1>Polastack Design System</h1>
+      <h1>Siracusa Design System</h1>
       <p class="lede">
-        ブランド共通トークン <code>@polastack/tokens</code> を正本に、用途別の2つのUIパッケージを提供しています。
+        ブランド共通トークン <code>@siracusahq/tokens</code> を正本に、用途別の2つのUIパッケージを提供しています。
       </p>
       <div class="grid">
 ${cards}

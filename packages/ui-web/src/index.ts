@@ -1,5 +1,5 @@
 /**
- * @polastack/gtm-design-system
+ * @siracusahq/gtm-design-system
  * Marketing components and design tokens for Polastack GTM
  */
 

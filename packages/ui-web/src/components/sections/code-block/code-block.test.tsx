@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { axe } from 'vitest-axe';
 import { CodeBlock } from './code-block';
 
-const sampleCode = `import { PolaAuth } from '@polastack/auth';
+const sampleCode = `import { PolaAuth } from '@siracusahq/auth';
 
 const auth = new PolaAuth({ tenant: 'my-app' });`;
 

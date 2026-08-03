@@ -1,4 +1,4 @@
-# CLAUDE.md — `@polastack/gtm-design-system`（Web / LP）
+# CLAUDE.md — `@siracusahq/gtm-design-system`（Web / LP）
 
 **このファイルは Web/LP パッケージ固有の補足。** ブランチ運用・リリース運用・
 トークンの扱い・カラー体系など、モノレポ全体で共通のルールは
@@ -8,8 +8,8 @@
 
 Polastack（Enterprise Agent Stack）の **GTM 戦略の核**を担うデザインシステム。
 webサイト、LandingPage、営業資料、講演資料を世に出す際の基準となる。
-業務システムUI（`@polastack/design-system`）とは別パッケージだが、
-ブランドカラー・タイポ・スペーシングの正本は共通の `@polastack/tokens`。
+業務システムUI（`@siracusahq/design-system`）とは別パッケージだが、
+ブランドカラー・タイポ・スペーシングの正本は共通の `@siracusahq/tokens`。
 
 ## ロール
 
@@ -53,8 +53,8 @@ Web/LP は**装飾表現が多い**ため、`primary` と `brand` の使い分�
 
 ```bash
 pnpm storybook:web                                  # Storybook（ポート6007）
-pnpm --filter @polastack/gtm-design-system build    # tsupビルド
-pnpm --filter @polastack/gtm-design-system test     # Vitest
+pnpm --filter @siracusahq/gtm-design-system build    # tsupビルド
+pnpm --filter @siracusahq/gtm-design-system test     # Vitest
 ```
 
 このディレクトリで直接実行する場合は `pnpm build` / `pnpm test` / `pnpm typecheck`。

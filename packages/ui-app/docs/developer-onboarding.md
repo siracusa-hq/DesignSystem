@@ -49,13 +49,13 @@ src/
 
 ### 主要な設定ファイル
 
-| ファイル | 用途 |
-|---------|------|
-| `tsup.config.ts` | ビルド設定（ESM出力、2エントリポイント） |
-| `tsconfig.json` | TypeScript設定（パスエイリアス `@/*` → `src/*`） |
-| `vitest.config.ts` | テスト設定（jsdom、セットアップファイル） |
-| `.storybook/` | Storybook設定（ダークモードトグル含む） |
-| `.size-limit.json` | バンドルサイズ制限 |
+| ファイル           | 用途                                             |
+| ------------------ | ------------------------------------------------ |
+| `tsup.config.ts`   | ビルド設定（ESM出力、2エントリポイント）         |
+| `tsconfig.json`    | TypeScript設定（パスエイリアス `@/*` → `src/*`） |
+| `vitest.config.ts` | テスト設定（jsdom、セットアップファイル）        |
+| `.storybook/`      | Storybook設定（ダークモードトグル含む）          |
+| `.size-limit.json` | バンドルサイズ制限                               |
 
 ## コンポーネント作成ガイドライン
 
@@ -78,35 +78,27 @@ import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/cn';
 
-const myComponentVariants = cva(
-  'base-classes-here',
-  {
-    variants: {
-      variant: {
-        default: 'variant-classes',
-      },
-      size: {
-        md: 'size-classes',
-      },
+const myComponentVariants = cva('base-classes-here', {
+  variants: {
+    variant: {
+      default: 'variant-classes',
     },
-    defaultVariants: {
-      variant: 'default',
-      size: 'md',
+    size: {
+      md: 'size-classes',
     },
   },
-);
+  defaultVariants: {
+    variant: 'default',
+    size: 'md',
+  },
+});
 
 export interface MyComponentProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof myComponentVariants> {}
+  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof myComponentVariants> {}
 
 const MyComponent = React.forwardRef<HTMLDivElement, MyComponentProps>(
   ({ className, variant, size, ...props }, ref) => (
-    <div
-      ref={ref}
-      className={cn(myComponentVariants({ variant, size }), className)}
-      {...props}
-    />
+    <div ref={ref} className={cn(myComponentVariants({ variant, size }), className)} {...props} />
   ),
 );
 MyComponent.displayName = 'MyComponent';
@@ -141,20 +133,20 @@ export { MyComponent, myComponentVariants, type MyComponentProps } from './compo
 
 セマンティックトークンを優先して使用:
 
-| 用途 | クラス |
-|------|--------|
-| メイン背景 | `bg-[var(--color-surface)]` |
-| カード/ダイアログ背景 | `bg-[var(--color-surface-raised)]` |
-| 凹み背景 | `bg-[var(--color-surface-sunken)]` |
-| ホバー背景 | `bg-[var(--color-surface-muted)]` |
-| 選択/アクティブ背景 | `bg-[var(--color-surface-accent)]` |
-| メインテキスト | `text-[var(--color-on-surface)]` |
-| 補足テキスト | `text-[var(--color-on-surface-secondary)]` |
-| プレースホルダー | `text-[var(--color-on-surface-muted)]` |
-| 選択/アクティブテキスト | `text-[var(--color-on-surface-accent)]` |
-| ボーダー | `border-[var(--color-border)]` |
-| 入力ボーダー | `border-[var(--color-border-input)]` |
-| フォーカスリング | `ring-[var(--color-ring)]` |
+| 用途                    | クラス                                     |
+| ----------------------- | ------------------------------------------ |
+| メイン背景              | `bg-[var(--color-surface)]`                |
+| カード/ダイアログ背景   | `bg-[var(--color-surface-raised)]`         |
+| 凹み背景                | `bg-[var(--color-surface-sunken)]`         |
+| ホバー背景              | `bg-[var(--color-surface-muted)]`          |
+| 選択/アクティブ背景     | `bg-[var(--color-surface-accent)]`         |
+| メインテキスト          | `text-[var(--color-on-surface)]`           |
+| 補足テキスト            | `text-[var(--color-on-surface-secondary)]` |
+| プレースホルダー        | `text-[var(--color-on-surface-muted)]`     |
+| 選択/アクティブテキスト | `text-[var(--color-on-surface-accent)]`    |
+| ボーダー                | `border-[var(--color-border)]`             |
+| 入力ボーダー            | `border-[var(--color-border-input)]`       |
+| フォーカスリング        | `ring-[var(--color-ring)]`                 |
 
 これらのトークンはダークモードで自動的に切り替わります。
 

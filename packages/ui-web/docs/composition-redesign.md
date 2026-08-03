@@ -1,6 +1,6 @@
 # Web/LP デザインシステム 再設計方針
 
-`@polastack/gtm-design-system` を「コンポーネントの詰め合わせ」から
+`@siracusahq/gtm-design-system` を「コンポーネントの詰め合わせ」から
 **「AIエージェントが高品質なLPを高速に生成できる装置」** に作り替えるための設計文書。
 
 ## 実測の出典表記
@@ -20,7 +20,7 @@
 
 ## なぜやるか
 
-現状のパッケージは、業務システムUI（`@polastack/design-system`）のスタックを
+現状のパッケージは、業務システムUI（`@siracusahq/design-system`）のスタックを
 ほぼそのまま複製している。目的が違うのに構造が同じであることが、
 以下の問題を同時に生んでいる。
 
@@ -36,7 +36,8 @@ Tailwind CSS v4 は**利用者のソースを走査**してCSSを生成する。
 | `@import '@polastack/gtm-design-system/theme.css'` のみ | 9.15 kB | **0件**            |
 | 上記 + `@source '.../dist'`                             | 67.8 kB | 全件               |
 
-つまり**公開中の 0.2.0 は、素直に導入すると無スタイルでレンダリングされる。**
+つまり**当時公開されていた 0.2.0（旧 `@polastack` スコープ）は、素直に導入すると無スタイルでレンダリングされる状態だった**
+（README への手順明記は Phase 10 で対応済み。恒久対応が Stage 2 の CSS Modules 化）。
 
 同じ構造の問題がフォントにもある。`--font-sans: 'Inter', 'Noto Sans JP'` は宣言
 されているが、実際に読み込んでいるのは `.storybook/preview-head.html` だけで、
@@ -301,7 +302,7 @@ body {
 
 ### 1-7. radii / shadow / motion
 
-トークンの共通化の境界線を引き直す。現在 `@polastack/tokens` にあるもののうち、
+トークンの共通化の境界線を引き直す。現在 `@siracusahq/tokens` にあるもののうち、
 **ブランドとして本当に共通なのはニュートラル・フォントファミリ・余白リズムだけ**。
 
 ```
@@ -508,7 +509,7 @@ CSS Modules は既定では「静かに壊れる」。CSSの `.gradient` をリ�
 `s.gradient` が `undefined` になり `class="base undefined"` が出力される。
 以下を必ず併せて導入する。
 
-1. **トークン → CSS変数の生成**。`@polastack/tokens` から `theme.css` を codegen し、
+1. **トークン → CSS変数の生成**。`@siracusahq/tokens` から `theme.css` を codegen し、
    値の二重管理を構造的に消す。**ブランドランプの生成もここに乗せる**
    （色相を1つ与えるとランプ全段が出る。1-4 の「生成器」の実体）
 2. **`*.module.css.d.ts` の生成**。typecheck に含め、クラス名のリネーム・typo を
@@ -902,13 +903,13 @@ Storybook では絶対に見えない配布の事故を止める唯一の手段�
 ## Stage 6: AI向け規範ファイルの同梱
 
 配布物（`files`）に機械可読のルールファイルを含める。CLAUDE.md はこのリポジトリの
-中でしか効かず、`@polastack/gtm-design-system` を入れた先のAIエージェントには届かない。
+中でしか効かず、`@siracusahq/gtm-design-system` を入れた先のAIエージェントには届かない。
 
 Stage 1〜4 が完了していれば、書くことは劇的に減る。
 
 ```
 ブランドは3つ。トーンは3つ。ページの型は5つ。あとは埋めるだけ。
-import '@polastack/gtm-design-system/styles.css' を1行書く。
+import '@siracusahq/gtm-design-system/styles.css' を1行書く。
 ```
 
 **APIで表現できるルールを文章で書くのは負け筋。** 現状のまま規範ファイルを書くと、

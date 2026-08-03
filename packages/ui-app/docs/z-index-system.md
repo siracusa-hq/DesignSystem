@@ -10,6 +10,7 @@ Polastack Design System の z-index 階層と利用規約。
 - **モバイル sidebar Drawer から開いた Dialog の重なりが不安定**
 
 原因は以下:
+
 1. `tabs.tsx` の TabsTrigger が任意値 `z-[1]` を持ち、親 TabsList が `isolate` を持たないため stacking context が root に漏れ出す
 2. `drawer.tsx` が inline 数値 hardcoded で `z-index: 200 + stackOffset`、token (`--z-drawer=200`) と二重管理
 3. `--z-dropdown: 50` だと Dialog (300) 内で DropdownMenu/ContextMenu が下に潜る
@@ -44,19 +45,19 @@ Polastack Design System の z-index 階層と利用規約。
 
 ## token と利用 component の対応表
 
-| Token | 値 | Tier | 利用箇所 |
-|---|---|---|---|
-| `--z-index-base` | 0 | flow | default、汎用 |
-| `--z-index-content` | 1 | flow | `tabs` (TabsTrigger) |
-| `--z-index-sticky` | 10 | flow | `bottom-navigation`、DataTable/TimelineGrid 内部 sticky cell |
-| `--z-index-header` | 20 | flow | `app-shell` (AppShellHeader) |
-| `--z-index-overlay-inline` | 30 | flow | `install-prompt` (fixed bottom banner) |
-| `--z-index-drawer` | 1100 | backdrop | `drawer` (Overlay + Content、stackOffset 加算) |
-| `--z-index-modal` | 1200 | backdrop | `dialog`, `alert-dialog`, `command-palette` |
-| `--z-index-popover` | 1300 | floating | `popover`, `select`, `combobox`, `notification-center`, `filter-bar`, `tag-input`, `data-table-toolbar`, `data-table-column-pin-selector` |
-| `--z-index-dropdown` | 1300 | floating | `dropdown-menu`, `context-menu` (popover と同値 alias) |
-| `--z-index-tooltip` | 1400 | floating | `tooltip` |
-| `--z-index-toast` | 1500 | floating | `toast`, `offline-indicator` |
+| Token                      | 値   | Tier     | 利用箇所                                                                                                                                  |
+| -------------------------- | ---- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `--z-index-base`           | 0    | flow     | default、汎用                                                                                                                             |
+| `--z-index-content`        | 1    | flow     | `tabs` (TabsTrigger)                                                                                                                      |
+| `--z-index-sticky`         | 10   | flow     | `bottom-navigation`、DataTable/TimelineGrid 内部 sticky cell                                                                              |
+| `--z-index-header`         | 20   | flow     | `app-shell` (AppShellHeader)                                                                                                              |
+| `--z-index-overlay-inline` | 30   | flow     | `install-prompt` (fixed bottom banner)                                                                                                    |
+| `--z-index-drawer`         | 1100 | backdrop | `drawer` (Overlay + Content、stackOffset 加算)                                                                                            |
+| `--z-index-modal`          | 1200 | backdrop | `dialog`, `alert-dialog`, `command-palette`                                                                                               |
+| `--z-index-popover`        | 1300 | floating | `popover`, `select`, `combobox`, `notification-center`, `filter-bar`, `tag-input`, `data-table-toolbar`, `data-table-column-pin-selector` |
+| `--z-index-dropdown`       | 1300 | floating | `dropdown-menu`, `context-menu` (popover と同値 alias)                                                                                    |
+| `--z-index-tooltip`        | 1400 | floating | `tooltip`                                                                                                                                 |
+| `--z-index-toast`          | 1500 | floating | `toast`, `offline-indicator`                                                                                                              |
 
 ## 利用規約
 
@@ -106,15 +107,15 @@ Dialog / AlertDialog 表示中であっても Toast (`z-toast=1500`) は最前�
 
 ## 組合せ別期待挙動
 
-| シナリオ | 期待 |
-|---|---|
+| シナリオ                                   | 期待                                                          |
+| ------------------------------------------ | ------------------------------------------------------------- |
 | Dialog 内 Select / DropdownMenu / Combobox | popover (1300) > modal (1200)、候補が Dialog の上に表示される |
-| Dialog 内 Tooltip | tooltip (1400) > modal (1200)、tooltip が最前面 |
-| Drawer から Dialog を開く | modal (1200) > drawer (1100)、Dialog が Drawer の上 |
-| Drawer 内 Drawer (nested、stackOffset) | 後から開いた Drawer が上 (drawer + offset で順序保証) |
-| Dialog 表示中の Toast | toast (1500) > modal (1200)、Toast が最前面 |
-| AppShell の header と Dialog | header (20) < modal (1200)、Dialog が header を覆う |
-| InstallPrompt と Drawer | drawer (1100) > overlay-inline (30)、Drawer が banner を覆う |
+| Dialog 内 Tooltip                          | tooltip (1400) > modal (1200)、tooltip が最前面               |
+| Drawer から Dialog を開く                  | modal (1200) > drawer (1100)、Dialog が Drawer の上           |
+| Drawer 内 Drawer (nested、stackOffset)     | 後から開いた Drawer が上 (drawer + offset で順序保証)         |
+| Dialog 表示中の Toast                      | toast (1500) > modal (1200)、Toast が最前面                   |
+| AppShell の header と Dialog               | header (20) < modal (1200)、Dialog が header を覆う           |
+| InstallPrompt と Drawer                    | drawer (1100) > overlay-inline (30)、Drawer が banner を覆う  |
 
 ## 新 component 追加時の decision tree
 
@@ -145,25 +146,25 @@ Dialog / AlertDialog 表示中であっても Toast (`z-toast=1500`) は最前�
 
 ## アンチパターン集
 
-| ❌ アンチパターン | ✅ 推奨 |
-|---|---|
-| `className="z-[1]"` | `className="z-content"` |
-| `className="z-[1000]"` | `className="z-modal"` または用途に応じた token |
-| `style={{ zIndex: 50 }}` | token utility 経由 (例: `className="z-dropdown"`)、allowlist 例外は test に登録 |
-| 内部で `z-10` を使う component の root に `isolate` 無し | root を `relative isolate` にして閉じ込める |
-| `--z-index-modal` の値だけ別 utility で上書き | tokens.css で値を変える (全体に伝播) |
+| ❌ アンチパターン                                        | ✅ 推奨                                                                         |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `className="z-[1]"`                                      | `className="z-content"`                                                         |
+| `className="z-[1000]"`                                   | `className="z-modal"` または用途に応じた token                                  |
+| `style={{ zIndex: 50 }}`                                 | token utility 経由 (例: `className="z-dropdown"`)、allowlist 例外は test に登録 |
+| 内部で `z-10` を使う component の root に `isolate` 無し | root を `relative isolate` にして閉じ込める                                     |
+| `--z-index-modal` の値だけ別 utility で上書き            | tokens.css で値を変える (全体に伝播)                                            |
 
 ## 後方互換性メモ (0.2.0 リリース)
 
-| token | 旧値 (0.1.x) | 新値 (0.2.0) |
-|---|---|---|
-| `--z-index-dropdown` | 50 | **1300** (Modal 内で使う前提に変更) |
-| `--z-index-sticky` | 100 | **10** (in-flow 階層に再分類) |
-| `--z-index-drawer` | 200 | **1100** |
-| `--z-index-modal` | 300 | **1200** |
-| `--z-index-popover` | 400 | **1300** |
-| `--z-index-toast` | 500 | **1500** |
-| `--z-index-tooltip` | 600 | **1400** |
+| token                | 旧値 (0.1.x) | 新値 (0.2.0)                        |
+| -------------------- | ------------ | ----------------------------------- |
+| `--z-index-dropdown` | 50           | **1300** (Modal 内で使う前提に変更) |
+| `--z-index-sticky`   | 100          | **10** (in-flow 階層に再分類)       |
+| `--z-index-drawer`   | 200          | **1100**                            |
+| `--z-index-modal`    | 300          | **1200**                            |
+| `--z-index-popover`  | 400          | **1300**                            |
+| `--z-index-toast`    | 500          | **1500**                            |
+| `--z-index-tooltip`  | 600          | **1400**                            |
 
 - 既存 utility 名 (`z-modal` 等) は不変、token 名利用なら自動追従
 - hardcoded 数値 (例: polastack 側で `style={{zIndex: 250}}`) は手動 audit が必要

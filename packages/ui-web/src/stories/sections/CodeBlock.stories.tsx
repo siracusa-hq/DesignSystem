@@ -10,7 +10,7 @@ export default meta;
 
 type Story = StoryObj<typeof CodeBlock>;
 
-const sampleCode = `import { PolaGate } from '@polastack/gate';
+const sampleCode = `import { PolaGate } from '@siracusahq/gate';
 
 // スキーマからSDKを自動生成
 const client = PolaGate.createClient({

@@ -2,7 +2,7 @@
  * Polastack GTM Design System - Design Tokens
  * マーケティングコミュニケーション向けデザイントークン
  *
- * カラー・タイポグラフィ・スペーシング等の基盤値は `@polastack/tokens` が正本。
+ * カラー・タイポグラフィ・スペーシング等の基盤値は `@siracusahq/tokens` が正本。
  * ここでは Web/LP 固有の拡張（fontSize / sectionSpacing / gradients /
  * glow shadows / breakpoints / zIndex）を重ねたうえで再エクスポートする。
  */

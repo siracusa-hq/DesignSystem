@@ -39,9 +39,9 @@ function ColorPaletteStory() {
           Color Palette / カラーパレット
         </h2>
         <p className="mt-2 text-body-md text-[var(--color-on-surface-secondary)]">
-          Brand colors shared with @polastack/design-system.
+          Brand colors shared with @siracusahq/design-system.
           <br />
-          @polastack/design-system と共通のブランドカラーパレット。
+          @siracusahq/design-system と共通のブランドカラーパレット。
         </p>
       </div>
       {Object.entries(colors).map(([name, scale]) => (

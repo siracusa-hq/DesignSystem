@@ -6,13 +6,13 @@ Polastack Design Systemを使ったアプリケーション構築の出発点。
 
 ### 推奨スタック
 
-| レイヤー | 技術 |
-|---------|------|
-| フレームワーク | Next.js (App Router) or Vite + React Router |
-| スタイリング | Tailwind CSS v4 |
-| UIコンポーネント | @polastack/design-system |
-| フォーム | react-hook-form + zod |
-| データフェッチ | TanStack Query |
+| レイヤー         | 技術                                        |
+| ---------------- | ------------------------------------------- |
+| フレームワーク   | Next.js (App Router) or Vite + React Router |
+| スタイリング     | Tailwind CSS v4                             |
+| UIコンポーネント | @siracusahq/design-system                   |
+| フォーム         | react-hook-form + zod                       |
+| データフェッチ   | TanStack Query                              |
 
 ### セットアップ手順
 
@@ -31,14 +31,14 @@ cd my-app
 #### 2. デザインシステムのインストール
 
 ```bash
-pnpm add @polastack/design-system
+pnpm add @siracusahq/design-system
 ```
 
 #### 3. CSS読み込み
 
 ```ts
 // src/main.tsx (Vite) or app/layout.tsx (Next.js)
-import '@polastack/design-system/globals.css';
+import '@siracusahq/design-system/globals.css';
 ```
 
 #### 4. フォント設定
@@ -61,22 +61,16 @@ import {
   AppShellHeader,
   AppShellContent,
   Toaster,
-} from '@polastack/design-system';
+} from '@siracusahq/design-system';
 
 function App() {
   return (
     <ThemeProvider defaultTheme="system">
       <AppShell>
-        <AppShellSidebar>
-          {/* ナビゲーション */}
-        </AppShellSidebar>
+        <AppShellSidebar>{/* ナビゲーション */}</AppShellSidebar>
         <div className="flex flex-col flex-1">
-          <AppShellHeader>
-            {/* ヘッダー */}
-          </AppShellHeader>
-          <AppShellContent>
-            {/* ルーターアウトレット */}
-          </AppShellContent>
+          <AppShellHeader>{/* ヘッダー */}</AppShellHeader>
+          <AppShellContent>{/* ルーターアウトレット */}</AppShellContent>
         </div>
       </AppShell>
       <Toaster />
@@ -106,7 +100,7 @@ import {
   OfflineIndicator,
   InstallPrompt,
   PullToRefresh,
-} from '@polastack/design-system';
+} from '@siracusahq/design-system';
 ```
 
 ### セットアップ手順
@@ -151,7 +145,7 @@ import {
   OfflineIndicator,
   PullToRefresh,
   Toaster,
-} from '@polastack/design-system';
+} from '@siracusahq/design-system';
 
 function MobileApp() {
   return (
@@ -163,7 +157,11 @@ function MobileApp() {
           </AppShellHeader>
 
           <AppShellContent>
-            <PullToRefresh onRefresh={async () => { /* reload data */ }}>
+            <PullToRefresh
+              onRefresh={async () => {
+                /* reload data */
+              }}
+            >
               {/* ページコンテンツ */}
             </PullToRefresh>
           </AppShellContent>
@@ -185,14 +183,14 @@ function MobileApp() {
 
 ### PWA特有の考慮事項
 
-| 項目 | 対応方法 |
-|------|---------|
+| 項目             | 対応方法                                                        |
+| ---------------- | --------------------------------------------------------------- |
 | タッチターゲット | `touch:min-h-[--touch-target-min]` で44px保証（Button自動対応） |
-| Safe Area | `globals.css` で `env(safe-area-inset-*)` を変数化済み |
-| オフライン | `OfflineIndicator` + `useOnlineStatus()` フック |
-| インストール促進 | `InstallPrompt` + `useInstallPrompt()` フック |
-| Pull-to-Refresh | `PullToRefresh` コンポーネント |
-| ビューポート高さ | `useViewportHeight()` でアドレスバー考慮 |
+| Safe Area        | `globals.css` で `env(safe-area-inset-*)` を変数化済み          |
+| オフライン       | `OfflineIndicator` + `useOnlineStatus()` フック                 |
+| インストール促進 | `InstallPrompt` + `useInstallPrompt()` フック                   |
+| Pull-to-Refresh  | `PullToRefresh` コンポーネント                                  |
+| ビューポート高さ | `useViewportHeight()` でアドレスバー考慮                        |
 
 ## 3. 共通パターン
 
@@ -202,16 +200,12 @@ function MobileApp() {
 
 ```tsx
 // テーマ切替UI例
-import { useTheme, Button } from '@polastack/design-system';
+import { useTheme, Button } from '@siracusahq/design-system';
 
 function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   return (
-    <Button
-      variant="ghost"
-      size="sm"
-      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-    >
+    <Button variant="ghost" size="sm" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
       {theme === 'dark' ? '☀️' : '🌙'}
     </Button>
   );
@@ -223,7 +217,7 @@ function ThemeToggle() {
 アプリルートに `<Toaster />` を配置し、任意のコンポーネントから `toast()` で通知:
 
 ```tsx
-import { useToast } from '@polastack/design-system';
+import { useToast } from '@siracusahq/design-system';
 
 function MyComponent() {
   const { toast } = useToast();
@@ -239,11 +233,7 @@ function MyComponent() {
 Cmd+K / Ctrl+K でのクイックナビゲーション:
 
 ```tsx
-import {
-  CommandPalette,
-  CommandPaletteGroup,
-  CommandPaletteItem,
-} from '@polastack/design-system';
+import { CommandPalette, CommandPaletteGroup, CommandPaletteItem } from '@siracusahq/design-system';
 ```
 
 消費側で `open` 状態とキーボードショートカットを管理。
