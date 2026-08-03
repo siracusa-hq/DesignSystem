@@ -47,6 +47,13 @@ function SlotShowcase() {
         >
           + グロー（--shadow-glow-brand）
         </span>
+        <span
+          className="inline-flex h-11 items-center rounded-xl border-2 border-dashed border-[var(--color-border-brand)] px-6 font-semibold"
+          style={{ background: 'var(--color-bg-cta)', color: 'var(--color-on-cta)' }}
+          title="第3役割。既定は操作色へのフォールバックなので同色。専用CTA色を持つブランドだけ変わる"
+        >
+          CTA第3役割（--color-bg-cta）
+        </span>
       </div>
 
       {/* テキスト系: 明背景 / ダーク面 */}
