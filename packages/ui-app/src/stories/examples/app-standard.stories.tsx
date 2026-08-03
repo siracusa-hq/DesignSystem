@@ -174,12 +174,12 @@ function StandardApp() {
                     className="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left transition-colors hover:bg-[var(--color-surface-muted)]"
                   >
                     <Avatar size="sm">
-                      <AvatarFallback colorSeed="tanaka@polastack.io">TT</AvatarFallback>
+                      <AvatarFallback colorSeed="tanaka@polastack.com">TT</AvatarFallback>
                       <AvatarStatus status="online" />
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">Tanaka Taro</p>
-                      <p className="text-xs text-[var(--color-on-surface-muted)] truncate">tanaka@polastack.io</p>
+                      <p className="text-xs text-[var(--color-on-surface-muted)] truncate">tanaka@polastack.com</p>
                     </div>
                     <ChevronRight className="h-3.5 w-3.5" />
                   </button>
@@ -220,7 +220,7 @@ function StandardApp() {
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon">
                       <Avatar size="sm">
-                        <AvatarFallback colorSeed="tanaka@polastack.io">TT</AvatarFallback>
+                        <AvatarFallback colorSeed="tanaka@polastack.com">TT</AvatarFallback>
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
@@ -413,11 +413,11 @@ function ProjectsContent() {
 /* ----- Members Content ----- */
 
 const members = [
-  { name: 'Tanaka Taro', role: 'Admin', email: 'tanaka@polastack.io', status: 'online' as const },
-  { name: 'Suzuki Hanako', role: 'Developer', email: 'suzuki@polastack.io', status: 'online' as const },
-  { name: 'Sato Kenji', role: 'Developer', email: 'sato@polastack.io', status: 'away' as const },
-  { name: 'Yamada Yuki', role: 'Designer', email: 'yamada@polastack.io', status: 'busy' as const },
-  { name: 'Takahashi Mai', role: 'PM', email: 'takahashi@polastack.io', status: 'offline' as const },
+  { name: 'Tanaka Taro', role: 'Admin', email: 'tanaka@polastack.com', status: 'online' as const },
+  { name: 'Suzuki Hanako', role: 'Developer', email: 'suzuki@polastack.com', status: 'online' as const },
+  { name: 'Sato Kenji', role: 'Developer', email: 'sato@polastack.com', status: 'away' as const },
+  { name: 'Yamada Yuki', role: 'Designer', email: 'yamada@polastack.com', status: 'busy' as const },
+  { name: 'Takahashi Mai', role: 'PM', email: 'takahashi@polastack.com', status: 'offline' as const },
 ];
 
 function MembersContent() {

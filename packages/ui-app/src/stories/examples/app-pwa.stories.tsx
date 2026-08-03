@@ -297,12 +297,12 @@ function ProfileContent({ activeItem, onItemSelect }: { activeItem: ProfileMenuI
       {/* Profile card */}
       <div className="flex flex-col items-center gap-3 py-2">
         <Avatar className="h-20 w-20">
-          <AvatarFallback colorSeed="tanaka@polastack.io" className="text-2xl">TT</AvatarFallback>
+          <AvatarFallback colorSeed="tanaka@polastack.com" className="text-2xl">TT</AvatarFallback>
           <AvatarStatus status="online" />
         </Avatar>
         <div className="text-center">
           <p className="text-lg font-semibold">Tanaka Taro</p>
-          <p className="text-sm text-[var(--color-on-surface-muted)]">tanaka@polastack.io</p>
+          <p className="text-sm text-[var(--color-on-surface-muted)]">tanaka@polastack.com</p>
         </div>
         <div className="flex gap-6 mt-1">
           {[
