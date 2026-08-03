@@ -57,7 +57,7 @@ export const AnimateOnScroll = forwardRef<HTMLDivElement, AnimateOnScrollProps>(
       delay = 0,
       threshold = 0.1,
       once = true,
-      duration = 640,
+      duration = 720,
       className,
       children,
       style,

@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 import { Heading } from '../../components/primitives/heading';
+import { AnimateOnScroll } from '../../components/primitives/animate-on-scroll';
 
 /**
  * Stage 1 後半（意匠トークン・和文組版）の目視確認用カタログ。
@@ -150,12 +151,13 @@ function MotionSection() {
       >
         ▶ 再生
       </button>
-      <div key={runId} className="grid gap-4 lg:grid-cols-2">
+      <div key={runId} className="grid gap-4 lg:grid-cols-3">
         {(
           [
-            ['旧: duration-slow(300ms) + ease-out', 'var(--duration-slow)', 'var(--ease-out)'],
+            ['旧: 300ms + Material ease-out', 'var(--duration-slow)', 'var(--ease-out)'],
+            ['前回案: 640ms + expo（立ち上がりが急）', '640ms', 'cubic-bezier(0.16, 1, 0.3, 1)'],
             [
-              '新: duration-reveal(640ms) + ease-entrance',
+              '採用: reveal(720ms) + entrance quart',
               'var(--duration-reveal)',
               'var(--ease-entrance)',
             ],
@@ -190,6 +192,44 @@ function MotionSection() {
   );
 }
 
+function AnimateOnScrollDemo() {
+  const [runId, setRunId] = useState(0);
+  const cards = ['監査ログ', '権限管理', 'ゼロ保持'];
+  return (
+    <section className="space-y-4">
+      <h3 className="text-heading-md font-semibold text-[var(--color-on-surface)]">
+        AnimateOnScroll 実機デモ — スクロール不要・ボタンで再生
+      </h3>
+      <p className="max-w-2xl text-body-sm text-[var(--color-on-surface-muted)]">
+        実際の AnimateOnScroll コンポーネント（fade-up + stagger）。 トークン化により entrance
+        カーブと reveal 時間が適用されている。
+      </p>
+      <button
+        className="rounded-[var(--radius-control)] bg-[var(--color-bg-brand-primary)] px-5 py-2 text-body-sm font-semibold text-[var(--color-on-brand)]"
+        onClick={() => setRunId((n) => n + 1)}
+      >
+        ▶ 再生
+      </button>
+      <div key={runId} className="grid gap-4 sm:grid-cols-3">
+        {cards.map((title, i) => (
+          <AnimateOnScroll key={title} animation="fade-up" staggerIndex={i}>
+            <div
+              className="border border-[var(--color-border)] bg-[var(--color-surface)] p-5"
+              style={{ borderRadius: 'var(--radius-card)', boxShadow: 'var(--shadow-card)' }}
+            >
+              <div className="mb-1 h-8 w-8 rounded-[var(--radius-control)] bg-[var(--color-bg-brand-muted)]" />
+              <div className="font-semibold text-[var(--color-on-surface)]">{title}</div>
+              <p className="text-body-sm text-[var(--color-on-surface-muted)]">
+                stagger {i * 100}ms で順番に表出する。
+              </p>
+            </div>
+          </AnimateOnScroll>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function CraftStory() {
   return (
     <div className="space-y-12 p-8">
@@ -202,6 +242,7 @@ function CraftStory() {
       <ShadowSection />
       <RadiiSection />
       <MotionSection />
+      <AnimateOnScrollDemo />
     </div>
   );
 }

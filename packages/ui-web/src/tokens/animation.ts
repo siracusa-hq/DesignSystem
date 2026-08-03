@@ -15,15 +15,16 @@ import { duration as baseDuration, easing as baseEasing } from '@siracusahq/toke
 export const duration = {
   ...baseDuration,
   /** スクロール表出（AnimateOnScroll の既定） */
-  reveal: '640ms',
+  reveal: '720ms',
   /** 装飾のループ（グロー明滅等） */
   ambient: '1200ms',
 } as const;
 
 export const easing = {
   ...baseEasing,
-  /** 表出用（ease-out-expo）。reveal と組で使う */
-  entrance: 'cubic-bezier(0.16, 1, 0.3, 1)',
+  /** 表出用（ease-out-quart）。reveal と組で使う。
+      expo(0.16,1,0.3,1) は立ち上がりが急すぎるというブランド側フィードバックで quart に変更 */
+  entrance: 'cubic-bezier(0.25, 1, 0.5, 1)',
   /** 退出用 */
   exit: 'cubic-bezier(0.7, 0, 0.84, 0)',
   /** オーバーシュート。CTA の強調のみに使う */
