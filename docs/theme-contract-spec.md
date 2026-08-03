@@ -365,9 +365,11 @@ Tailwind の `@theme` は静的な CSS 変数宣言を要求するため、`@the
    `contrast(hex, #ffffff) < 4.5` なら、C を保ったまま L を二分探索で下げ、
    4.5:1 を満たす最大の L を採る。**AA は彩度にも明度の見た目にも優先する。**
    （実測では全360色相でこのガードは発火しなかった。§8.3）
-3. **彩度を決める。** `C = min(cCeil, maxChroma(L, H) × 0.95)`
+3. **彩度を決める。** `C = min(cCeil × chromaScale, maxChroma(L, H) × 0.98)`
    `maxChroma(L, H)` は「その L と H で sRGB に収まる最大彩度」を二分探索（40反復）で求めた値。
-   `× 0.95` は、色域境界ちょうどだと丸め誤差で外れるための安全マージン。
+   `× 0.98` は、色域境界ちょうどだと丸め誤差で外れるための安全マージン
+   （プロトタイプは 0.95 だったが、ブランド側が目視承認したスウォッチの実値が 0.98 で
+   計算されているため Stage 1 実装で 0.98 を正とした。変換側にも gamut mapping があるため安全性は同等）。
 4. **OKLCH → sRGB に変換する。** 色域外なら **L と H を保ったまま C だけを落として収める**
    （CSS Color 4 の gamut mapping と同方針）。**明度と色相は絶対に変えない。**
    単純な RGB クリップは明度も色相も動かすため使わない。
@@ -630,12 +632,12 @@ export const registry: Record<string, BrandEntry> = { /* … */ };
 
 ### 9.2 出力
 
-| 出力先                                           | 内容                                                   | 消費者                                         |
-| ------------------------------------------------ | ------------------------------------------------------ | ---------------------------------------------- |
-| `packages/tokens/src/generated/ramps.ts`         | 全ブランドのランプを TS の `as const` オブジェクトで   | React 側から型付きで参照。テストの突き合わせ元 |
-| `packages/tokens/css/brand.css`                  | 骨格 + ランプ + スロット（**既存ファイルを置き換え**） | React 非依存サイト（Astro・静的HTML）          |
-| `packages/ui-app/src/styles/generated-brand.css` | ランプ + スロット                                      | `tokens.css` から `@import`                    |
-| `packages/ui-web/src/styles/generated-brand.css` | ランプ + スロット                                      | `theme.css` から `@import`                     |
+| 出力先                                           | 内容                                                                                                                                                                                                   | 消費者                                 |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------- |
+| ~~`packages/tokens/src/generated/ramps.ts`~~     | **廃止（Stage 1 実装時の変更）**: 生成TSファイルは build→codegen→再build の循環を生むため、`resolveAllBrands()` による**実行時解決**に変更した。決定的な純関数のみで Date 等を含まないため再現性は同等 | React 側は `resolveAllBrands()` を参照 |
+| `packages/tokens/css/brand.css`                  | 骨格 + ランプ + スロット（**既存ファイルを置き換え**）                                                                                                                                                 | React 非依存サイト（Astro・静的HTML）  |
+| `packages/ui-app/src/styles/generated-brand.css` | ランプ + スロット                                                                                                                                                                                      | `tokens.css` から `@import`            |
+| `packages/ui-web/src/styles/generated-brand.css` | ランプ + スロット                                                                                                                                                                                      | `theme.css` から `@import`             |
 
 **全出力ファイルの先頭に「自動生成・手で編集しないこと・再生成コマンド」を書く。**
 
