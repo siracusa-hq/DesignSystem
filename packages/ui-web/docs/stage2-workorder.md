@@ -148,6 +148,14 @@ MarketingFooter
    改行を文章の切れ目に限定）を追加し、subtitle 系スロット
    （SectionHeader / Hero / CTA）に標準適用。長い段落には使わない
    （行末が間延びするため）。Slice 4 の各セクションのリード文にも適用する。
+7. **【ブランド側レビューが誘発した発見・修正済み】stories/tests が型検査から
+   除外されていた** — tsconfig の exclude により、削除済み props を使う古い
+   ストーリーが型検査をすり抜け、Storybook 上に「存在しない機能のカタログ」が
+   残っていた（HeroSection の backgroundPattern 系ストーリー等）。
+   対処: tsconfig.stories.json を新設して typecheck に組み込み、
+   露見した stale 使用 20箇所超を一掃。vitest-axe のマッチャ型登録と、
+   Eyebrow が HTMLAttributes 経由で className を型受容していた穴も同時に修正。
+   以後、props を消すとストーリー・テストの追従漏れが CI で落ちる。
 
 ---
 

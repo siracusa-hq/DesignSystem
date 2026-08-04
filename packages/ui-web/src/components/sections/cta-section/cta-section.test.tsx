@@ -28,7 +28,7 @@ describe('CTASection', () => {
         title="タイトル"
         actions={[
           { label: '無料で始める', href: '/signup' },
-          { label: 'デモを予約', href: '/demo', variant: 'secondary' },
+          { label: 'デモを予約', href: '/demo' },
         ]}
       />,
     );

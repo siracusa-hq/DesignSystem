@@ -26,9 +26,17 @@ export const Default: Story = {
                 { value: '3-5週間', label: '本番デプロイ', description: '従来13-26週間から短縮' },
               ]
             : [
-                { value: '70%', label: 'Dev time saved', description: 'Reduction in non-functional implementation' },
+                {
+                  value: '70%',
+                  label: 'Dev time saved',
+                  description: 'Reduction in non-functional implementation',
+                },
                 { value: '11', label: 'Integrated modules', description: 'From auth to hosting' },
-                { value: '99.9%', label: 'SLA guaranteed', description: 'Corporate Plan and above' },
+                {
+                  value: '99.9%',
+                  label: 'SLA guaranteed',
+                  description: 'Corporate Plan and above',
+                },
                 { value: '3-5 wks', label: 'To production', description: 'Down from 13-26 weeks' },
               ]
         }
@@ -44,20 +52,65 @@ export const Animated: Story = {
       <StatsSection
         eyebrow={isJa ? '実績' : 'BY THE NUMBERS'}
         title={isJa ? 'Polastackの効果' : 'Polastack impact'}
-        animated
         stats={
           isJa
             ? [
-                { value: '70%', numericValue: 70, suffix: '%', label: '開発時間短縮', description: '非機能要件の実装時間を削減' },
-                { value: '11', numericValue: 11, label: '統合モジュール', description: '認証からホスティングまで' },
-                { value: '99.9%', numericValue: 99.9, suffix: '%', label: 'SLA保証', description: 'Corporate Plan以上' },
-                { value: '3,000+', numericValue: 3000, suffix: '+', label: '導入企業数', description: 'スタートアップからエンタープライズまで' },
+                {
+                  value: '70%',
+                  numericValue: 70,
+                  suffix: '%',
+                  label: '開発時間短縮',
+                  description: '非機能要件の実装時間を削減',
+                },
+                {
+                  value: '11',
+                  numericValue: 11,
+                  label: '統合モジュール',
+                  description: '認証からホスティングまで',
+                },
+                {
+                  value: '99.9%',
+                  numericValue: 99.9,
+                  suffix: '%',
+                  label: 'SLA保証',
+                  description: 'Corporate Plan以上',
+                },
+                {
+                  value: '3,000+',
+                  numericValue: 3000,
+                  suffix: '+',
+                  label: '導入企業数',
+                  description: 'スタートアップからエンタープライズまで',
+                },
               ]
             : [
-                { value: '70%', numericValue: 70, suffix: '%', label: 'Dev time saved', description: 'Reduction in non-functional implementation' },
-                { value: '11', numericValue: 11, label: 'Integrated modules', description: 'From auth to hosting' },
-                { value: '99.9%', numericValue: 99.9, suffix: '%', label: 'SLA guaranteed', description: 'Corporate Plan and above' },
-                { value: '3,000+', numericValue: 3000, suffix: '+', label: 'Companies', description: 'From startups to enterprises' },
+                {
+                  value: '70%',
+                  numericValue: 70,
+                  suffix: '%',
+                  label: 'Dev time saved',
+                  description: 'Reduction in non-functional implementation',
+                },
+                {
+                  value: '11',
+                  numericValue: 11,
+                  label: 'Integrated modules',
+                  description: 'From auth to hosting',
+                },
+                {
+                  value: '99.9%',
+                  numericValue: 99.9,
+                  suffix: '%',
+                  label: 'SLA guaranteed',
+                  description: 'Corporate Plan and above',
+                },
+                {
+                  value: '3,000+',
+                  numericValue: 3000,
+                  suffix: '+',
+                  label: 'Companies',
+                  description: 'From startups to enterprises',
+                },
               ]
         }
       />
@@ -84,7 +137,6 @@ export const DarkBackground: Story = {
                 { value: '0 lines', label: 'Auth code needed' },
               ]
         }
-        background="dark"
       />
     );
   },

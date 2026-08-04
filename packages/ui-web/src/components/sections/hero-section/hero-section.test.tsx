@@ -26,7 +26,7 @@ describe('HeroSection', () => {
         title="タイトル"
         actions={[
           { label: '無料で始める', href: '/signup' },
-          { label: 'ドキュメント', href: '/docs', variant: 'secondary' },
+          { label: 'ドキュメント', href: '/docs' },
         ]}
       />,
     );
@@ -38,7 +38,7 @@ describe('HeroSection', () => {
     render(
       <HeroSection
         title="タイトル"
-        layout="split-image"
+        imagePlacement="side"
         image={<img alt="hero" src="/test.png" />}
       />,
     );
