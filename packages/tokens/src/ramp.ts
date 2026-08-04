@@ -149,6 +149,7 @@ export const SLOTS: ReadonlyArray<
   { name: '--color-bg-brand-active', step: 700 },
   { name: '--color-bg-brand-strong', step: 800 },
   { name: '--color-text-brand', step: 500 },
+  { name: '--color-text-brand-strong', step: 700 },
   { name: '--color-text-brand-on-dark', step: 300 },
   { name: '--color-border-brand', step: 200 },
   { name: '--color-border-brand-strong', step: 500 },

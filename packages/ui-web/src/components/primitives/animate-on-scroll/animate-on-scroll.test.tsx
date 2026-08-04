@@ -22,7 +22,11 @@ describe('AnimateOnScroll', () => {
   });
 
   it('staggerIndex でトランジション遅延が設定される', () => {
-    render(<AnimateOnScroll staggerIndex={3} data-testid="aos">コンテンツ</AnimateOnScroll>);
+    render(
+      <AnimateOnScroll staggerIndex={3} data-testid="aos">
+        コンテンツ
+      </AnimateOnScroll>,
+    );
     const el = screen.getByTestId('aos');
     expect(el.style.transitionDelay).toBe('300ms');
   });

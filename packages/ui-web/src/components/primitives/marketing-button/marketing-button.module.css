@@ -1,0 +1,102 @@
+/* MarketingButton — 操作系はスロット参照のみ。CTA バリアントは第3役割を使う */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  white-space: nowrap;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--radius-control);
+  font-weight: 600;
+  transition: all var(--duration-normal) var(--ease-default);
+}
+.button:focus-visible {
+  outline: 2px solid var(--color-ring-brand);
+  outline-offset: 2px;
+}
+.button:disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.primary {
+  background: var(--color-bg-brand-primary);
+  color: var(--color-on-brand);
+}
+.primary:hover {
+  background: var(--color-bg-brand-hover);
+  box-shadow: var(--shadow-glow-brand);
+  transform: translateY(-2px);
+}
+.primary:active {
+  background: var(--color-bg-brand-active);
+  transform: translateY(0);
+}
+
+.secondary {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-on-surface-secondary);
+}
+.secondary:hover {
+  background: var(--color-surface-sunken);
+  border-color: var(--color-border-brand);
+  transform: translateY(-2px);
+}
+.secondary:active {
+  transform: translateY(0);
+}
+
+.ghost {
+  background: transparent;
+  color: var(--color-on-surface);
+}
+.ghost:hover {
+  background: var(--color-surface-sunken);
+  color: var(--color-text-brand);
+}
+
+/* CTA 第3役割（既定は操作色に自動追従。専用CTA色を持つブランドだけ変わる） */
+.cta {
+  background: var(--color-bg-cta);
+  color: var(--color-on-cta);
+}
+.cta:hover {
+  background: var(--color-bg-cta-hover);
+  box-shadow: var(--shadow-glow-brand);
+  transform: translateY(-2px);
+}
+.cta:active {
+  background: var(--color-bg-cta-active);
+  transform: translateY(0);
+}
+
+.sizeSm {
+  height: 2.25rem;
+  padding-inline: var(--spacing-4);
+  font-size: var(--text-body-sm);
+}
+.sizeMd {
+  height: 2.75rem;
+  padding-inline: var(--spacing-6);
+  font-size: var(--text-body-md);
+}
+.sizeLg {
+  height: 3.25rem;
+  padding-inline: var(--spacing-8);
+  font-size: var(--text-body-lg);
+}
+.sizeXl {
+  height: 3.75rem;
+  padding-inline: var(--spacing-10);
+  font-size: var(--text-body-lg);
+}
+
+.icon {
+  transition: transform var(--duration-fast) var(--ease-default);
+}
+.button:hover .icon {
+  transform: translateX(4px);
+}

@@ -18,7 +18,7 @@ describe('Heading', () => {
 
   it('sizeバリアントを適用する', () => {
     const { container } = render(<Heading size="display-2xl">大見出し</Heading>);
-    expect(container.firstChild).toHaveClass('lg:text-display-2xl');
+    expect(container.firstChild).toHaveClass('display2xl');
   });
 
   it('a11y違反がない', async () => {

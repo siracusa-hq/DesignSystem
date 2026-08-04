@@ -1,28 +1,23 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/cn';
+import styles from './link.module.css';
 
-export const linkVariants = cva(
-  'inline-flex items-center gap-1 transition-colors duration-fast focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] focus-visible:rounded-sm',
-  {
-    variants: {
-      variant: {
-        default: 'text-primary-500 hover:text-primary-600 underline underline-offset-4',
-        subtle:
-          'text-[var(--color-on-surface-secondary)] hover:text-[var(--color-on-surface)]',
-        arrow:
-          'text-primary-500 hover:text-primary-600 font-medium',
-      },
-    },
-    defaultVariants: {
-      variant: 'default',
+export const linkVariants = cva(styles.link, {
+  variants: {
+    variant: {
+      default: styles.variantDefault,
+      subtle: styles.variantSubtle,
+      arrow: styles.variantArrow,
     },
   },
-);
+  defaultVariants: {
+    variant: 'default',
+  },
+});
 
 export interface LinkProps
-  extends React.AnchorHTMLAttributes<HTMLAnchorElement>,
-    VariantProps<typeof linkVariants> {}
+  extends React.AnchorHTMLAttributes<HTMLAnchorElement>, VariantProps<typeof linkVariants> {}
 
 export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
   ({ className, variant, children, ...props }, ref) => (
@@ -30,7 +25,7 @@ export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
       {children}
       {variant === 'arrow' && (
         <svg
-          className="h-4 w-4 transition-transform duration-fast group-hover:translate-x-0.5"
+          className={styles.arrowIcon}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"

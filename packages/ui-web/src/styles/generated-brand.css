@@ -78,6 +78,7 @@
   --color-bg-brand-active: var(--ramp-corporate-700);
   --color-bg-brand-strong: var(--ramp-corporate-800);
   --color-text-brand: var(--ramp-corporate-500);
+  --color-text-brand-strong: var(--ramp-corporate-700);
   --color-text-brand-on-dark: var(--ramp-corporate-300);
   --color-border-brand: var(--ramp-corporate-200);
   --color-border-brand-strong: var(--ramp-corporate-500);
@@ -107,6 +108,7 @@
   --color-bg-brand-active: var(--ramp-corporate-700);
   --color-bg-brand-strong: var(--ramp-corporate-800);
   --color-text-brand: var(--ramp-corporate-500);
+  --color-text-brand-strong: var(--ramp-corporate-700);
   --color-text-brand-on-dark: var(--ramp-corporate-300);
   --color-border-brand: var(--ramp-corporate-200);
   --color-border-brand-strong: var(--ramp-corporate-500);
@@ -126,6 +128,7 @@
   --color-bg-brand-active: var(--ramp-polastack-800);
   --color-bg-brand-strong: var(--ramp-polastack-800);
   --color-text-brand: var(--ramp-polastack-500);
+  --color-text-brand-strong: var(--ramp-polastack-700);
   --color-text-brand-on-dark: var(--ramp-polastack-300);
   --color-border-brand: var(--ramp-polastack-200);
   --color-border-brand-strong: var(--ramp-polastack-500);
@@ -145,6 +148,7 @@
   --color-bg-brand-active: var(--ramp-peerdesk-900);
   --color-bg-brand-strong: var(--ramp-peerdesk-800);
   --color-text-brand: var(--ramp-peerdesk-500);
+  --color-text-brand-strong: var(--ramp-peerdesk-700);
   --color-text-brand-on-dark: var(--ramp-peerdesk-300);
   --color-border-brand: var(--ramp-peerdesk-200);
   --color-border-brand-strong: var(--ramp-peerdesk-500);
@@ -164,6 +168,7 @@
   --color-bg-brand-active: var(--ramp-peerdesk-taxpeer-800);
   --color-bg-brand-strong: var(--ramp-peerdesk-taxpeer-800);
   --color-text-brand: var(--ramp-peerdesk-taxpeer-500);
+  --color-text-brand-strong: var(--ramp-peerdesk-taxpeer-700);
   --color-text-brand-on-dark: var(--ramp-peerdesk-taxpeer-300);
   --color-border-brand: var(--ramp-peerdesk-taxpeer-200);
   --color-border-brand-strong: var(--ramp-peerdesk-taxpeer-500);

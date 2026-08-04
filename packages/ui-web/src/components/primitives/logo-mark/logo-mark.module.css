@@ -1,0 +1,40 @@
+/* LogoMark — 導入企業ロゴ等の表示正規化。
+   ロゴは縦横比がバラバラなので、高さ固定 + 最大幅 + object-fit で揃える。
+   （厳密な光学補正は素材が集まってから調整する） */
+
+.logoMark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sizeSm {
+  height: 1.5rem;
+}
+.sizeMd {
+  height: 2rem;
+}
+.sizeLg {
+  height: 2.5rem;
+}
+
+.media {
+  height: 100%;
+  width: auto;
+  max-width: 9rem;
+  object-fit: contain;
+}
+
+.grayscale .media,
+.grayscale > :global(svg) {
+  filter: grayscale(1);
+  opacity: 0.7;
+  transition:
+    filter var(--duration-normal) var(--ease-default),
+    opacity var(--duration-normal) var(--ease-default);
+}
+.grayscale:hover .media,
+.grayscale:hover > :global(svg) {
+  filter: grayscale(0);
+  opacity: 1;
+}

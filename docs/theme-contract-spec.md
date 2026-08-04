@@ -193,24 +193,25 @@ Polastack は今後、以下の3階層のブランドを1つのデザインシ�
 
 全スロットの一覧。この表が「契約」の本体である。
 
-| スロット                      | 参照する段        | 用途                                                             |
-| ----------------------------- | ----------------- | ---------------------------------------------------------------- |
-| `--color-bg-brand-subtle`     | 50                | 最淡の面（セクション背景など）                                   |
-| `--color-bg-brand-muted`      | 100               | 淡い面・淡いホバー面                                             |
-| `--color-bg-brand-primary`    | **500（操作段）** | ボタン背景・塗りつぶしチップ                                     |
-| `--color-bg-brand-hover`      | 600               | 上記のホバー                                                     |
-| `--color-bg-brand-active`     | 700               | 上記の押下                                                       |
-| `--color-bg-brand-strong`     | 800               | 濃い面（ダークヒーロー等）                                       |
-| `--color-text-brand`          | **500（操作段）** | 明背景上のリンク・強調テキスト。白地 4.5:1 保証                  |
-| `--color-text-brand-on-dark`  | **300（装飾段）** | **ダーク面上のリンク・強調テキスト。** neutral-950 上 7.7:1 以上 |
-| `--color-border-brand`        | 200               | 淡いボーダー                                                     |
-| `--color-border-brand-strong` | 500               | 明確なボーダー                                                   |
-| `--color-ring-brand`          | 500               | フォーカスリング                                                 |
-| `--color-decor-brand`         | **300（装飾段）** | グラデーション停止点・グローの色                                 |
-| `--color-decor-brand-soft`    | 200               | グラデーションの淡い側                                           |
-| `--color-on-brand`            | 固定 `#ffffff`    | `--color-bg-brand-primary` の面に載せる文字                      |
-| `--shadow-glow-brand`         | 300 由来          | 現行 `--shadow-glow-primary` の置き換え                          |
-| `--shadow-glow-brand-lg`      | 300 由来          | 同上                                                             |
+| スロット                      | 参照する段        | 用途                                                                 |
+| ----------------------------- | ----------------- | -------------------------------------------------------------------- |
+| `--color-bg-brand-subtle`     | 50                | 最淡の面（セクション背景など）                                       |
+| `--color-bg-brand-muted`      | 100               | 淡い面・淡いホバー面                                                 |
+| `--color-bg-brand-primary`    | **500（操作段）** | ボタン背景・塗りつぶしチップ                                         |
+| `--color-bg-brand-hover`      | 600               | 上記のホバー                                                         |
+| `--color-bg-brand-active`     | 700               | 上記の押下                                                           |
+| `--color-bg-brand-strong`     | 800               | 濃い面（ダークヒーロー等）                                           |
+| `--color-text-brand`          | **500（操作段）** | 明背景上のリンク・強調テキスト。白地 4.5:1 保証                      |
+| `--color-text-brand-strong`   | 700               | 淡い面（muted 面）上の濃い文字・ホバー文字（Stage 2 Slice 1 で追加） |
+| `--color-text-brand-on-dark`  | **300（装飾段）** | **ダーク面上のリンク・強調テキスト。** neutral-950 上 7.7:1 以上     |
+| `--color-border-brand`        | 200               | 淡いボーダー                                                         |
+| `--color-border-brand-strong` | 500               | 明確なボーダー                                                       |
+| `--color-ring-brand`          | 500               | フォーカスリング                                                     |
+| `--color-decor-brand`         | **300（装飾段）** | グラデーション停止点・グローの色                                     |
+| `--color-decor-brand-soft`    | 200               | グラデーションの淡い側                                               |
+| `--color-on-brand`            | 固定 `#ffffff`    | `--color-bg-brand-primary` の面に載せる文字                          |
+| `--shadow-glow-brand`         | 300 由来          | 現行 `--shadow-glow-primary` の置き換え                              |
+| `--shadow-glow-brand-lg`      | 300 由来          | 同上                                                                 |
 
 命名の原則:
 

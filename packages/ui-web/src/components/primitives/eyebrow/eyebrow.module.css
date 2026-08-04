@@ -1,0 +1,23 @@
+/* Eyebrow — セクション見出しの上に置く小ラベル。
+   旧 Text overline 7種を1形（pill）に統合（workorder §2）。
+   トーン連動（trust/product/campaign での形の出し分け）は Stage 3。 */
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  border-radius: var(--radius-pill);
+  padding: var(--spacing-1) var(--spacing-3);
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  font-weight: 500;
+  /* ラベル類のウェイト補正字送り（workorder §5） */
+  letter-spacing: 0.04em;
+  color: var(--color-text-brand);
+  background: color-mix(in srgb, var(--color-text-brand) 10%, transparent);
+}
+
+:global(.dark) .eyebrow {
+  color: var(--color-text-brand-on-dark);
+  background: color-mix(in srgb, var(--color-text-brand-on-dark) 10%, transparent);
+}

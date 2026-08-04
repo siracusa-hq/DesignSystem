@@ -1,21 +1,22 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/cn';
+import styles from './section.module.css';
 
-export const sectionVariants = cva('w-full', {
+export const sectionVariants = cva(styles.section, {
   variants: {
     spacing: {
-      sm: 'py-[var(--spacing-section-sm)]',
-      md: 'py-[var(--spacing-section-md)]',
-      lg: 'py-[var(--spacing-section-lg)]',
-      xl: 'py-[var(--spacing-section-xl)]',
-      none: 'py-0',
+      sm: styles.spacingSm,
+      md: styles.spacingMd,
+      lg: styles.spacingLg,
+      xl: styles.spacingXl,
+      none: styles.spacingNone,
     },
     background: {
-      default: 'bg-[var(--color-surface)]',
-      muted: 'bg-[var(--color-surface-sunken)]',
-      dark: 'bg-neutral-950 text-neutral-50',
-      brand: 'bg-primary-950 text-neutral-50',
+      default: styles.bgDefault,
+      muted: styles.bgMuted,
+      dark: styles.bgDark,
+      brand: styles.bgBrand,
     },
   },
   defaultVariants: {
@@ -25,8 +26,13 @@ export const sectionVariants = cva('w-full', {
 });
 
 export interface SectionProps
-  extends React.HTMLAttributes<HTMLElement>,
-    VariantProps<typeof sectionVariants> {}
+  extends React.HTMLAttributes<HTMLElement>, VariantProps<typeof sectionVariants> {
+  /**
+   * @deprecated 移行期間限定（未移行コンポーネントからのレイアウト調整用）。
+   * Slice 6 で削除する（stage2-workorder.md §0）。新規利用は禁止。
+   */
+  className?: string;
+}
 
 export const Section = React.forwardRef<HTMLElement, SectionProps>(
   ({ className, spacing, background, ...props }, ref) => (

@@ -1,0 +1,169 @@
+/* Heading — 見出しのサイズ体系と和文組版（stage2-workorder.md §5）
+   欧文: 現行の負トラッキングを維持
+   和文: :lang(ja) で per-size に line-height を補正し、字送りは 0
+   （@layer 外の全体ガードは安全網として併存する） */
+
+.heading {
+  font-weight: 700;
+  color: var(--color-on-surface);
+}
+
+/* ---- display-2xl: base=display-lg → md=display-xl → lg=display-2xl ---- */
+.display2xl {
+  font-size: var(--text-display-lg);
+  line-height: var(--text-display-lg--line-height);
+  letter-spacing: -0.04em;
+}
+@media (min-width: 48rem) {
+  .display2xl {
+    font-size: var(--text-display-xl);
+    line-height: var(--text-display-xl--line-height);
+  }
+}
+@media (min-width: 64rem) {
+  .display2xl {
+    font-size: var(--text-display-2xl);
+    line-height: var(--text-display-2xl--line-height);
+  }
+}
+.display2xl:lang(ja) {
+  letter-spacing: 0;
+  line-height: 1.3;
+}
+
+/* ---- display-xl ---- */
+.displayXl {
+  font-size: var(--text-display-md);
+  line-height: var(--text-display-md--line-height);
+  letter-spacing: -0.035em;
+}
+@media (min-width: 48rem) {
+  .displayXl {
+    font-size: var(--text-display-lg);
+    line-height: var(--text-display-lg--line-height);
+  }
+}
+@media (min-width: 64rem) {
+  .displayXl {
+    font-size: var(--text-display-xl);
+    line-height: var(--text-display-xl--line-height);
+  }
+}
+.displayXl:lang(ja) {
+  letter-spacing: 0;
+  line-height: 1.32;
+}
+
+/* ---- display-lg ---- */
+.displayLg {
+  font-size: var(--text-display-sm);
+  line-height: var(--text-display-sm--line-height);
+  letter-spacing: -0.03em;
+}
+@media (min-width: 48rem) {
+  .displayLg {
+    font-size: var(--text-display-md);
+    line-height: var(--text-display-md--line-height);
+  }
+}
+@media (min-width: 64rem) {
+  .displayLg {
+    font-size: var(--text-display-lg);
+    line-height: var(--text-display-lg--line-height);
+  }
+}
+.displayLg:lang(ja) {
+  letter-spacing: 0;
+  line-height: 1.35;
+}
+
+/* ---- display-md ---- */
+.displayMd {
+  font-size: var(--text-heading-lg);
+  line-height: var(--text-heading-lg--line-height);
+  letter-spacing: -0.025em;
+}
+@media (min-width: 48rem) {
+  .displayMd {
+    font-size: var(--text-display-sm);
+    line-height: var(--text-display-sm--line-height);
+  }
+}
+@media (min-width: 64rem) {
+  .displayMd {
+    font-size: var(--text-display-md);
+    line-height: var(--text-display-md--line-height);
+  }
+}
+.displayMd:lang(ja) {
+  letter-spacing: 0;
+  line-height: 1.4;
+}
+
+/* ---- display-sm ---- */
+.displaySm {
+  font-size: var(--text-heading-md);
+  line-height: var(--text-heading-md--line-height);
+  letter-spacing: -0.025em;
+}
+@media (min-width: 48rem) {
+  .displaySm {
+    font-size: var(--text-heading-lg);
+    line-height: var(--text-heading-lg--line-height);
+  }
+}
+@media (min-width: 64rem) {
+  .displaySm {
+    font-size: var(--text-display-sm);
+    line-height: var(--text-display-sm--line-height);
+  }
+}
+.displaySm:lang(ja) {
+  letter-spacing: 0;
+  line-height: 1.45;
+}
+
+/* ---- heading-lg ---- */
+.headingLg {
+  font-size: var(--text-heading-md);
+  line-height: var(--text-heading-md--line-height);
+  letter-spacing: -0.025em;
+}
+@media (min-width: 48rem) {
+  .headingLg {
+    font-size: var(--text-heading-lg);
+    line-height: var(--text-heading-lg--line-height);
+  }
+}
+.headingLg:lang(ja) {
+  letter-spacing: 0;
+  line-height: 1.45;
+}
+
+/* ---- heading-md ---- */
+.headingMd {
+  font-size: var(--text-heading-sm);
+  line-height: var(--text-heading-sm--line-height);
+  letter-spacing: -0.025em;
+}
+@media (min-width: 48rem) {
+  .headingMd {
+    font-size: var(--text-heading-md);
+    line-height: var(--text-heading-md--line-height);
+  }
+}
+.headingMd:lang(ja) {
+  letter-spacing: 0;
+  line-height: 1.45;
+}
+
+/* ---- heading-sm ---- */
+.headingSm {
+  font-size: var(--text-heading-sm);
+  line-height: var(--text-heading-sm--line-height);
+  letter-spacing: -0.025em;
+}
+.headingSm:lang(ja) {
+  letter-spacing: 0;
+  line-height: 1.45;
+}

@@ -18,12 +18,12 @@ describe('Text', () => {
 
   it('sizeバリアントを適用する', () => {
     const { container } = render(<Text size="body-lg">大きいテキスト</Text>);
-    expect(container.firstChild).toHaveClass('text-body-lg');
+    expect(container.firstChild).toHaveClass('bodyLg');
   });
 
   it('toneバリアントを適用する', () => {
     const { container } = render(<Text tone="muted">薄いテキスト</Text>);
-    expect(container.firstChild).toHaveClass('text-neutral-500');
+    expect(container.firstChild).toHaveClass('toneMuted');
   });
 
   it('a11y違反がない', async () => {

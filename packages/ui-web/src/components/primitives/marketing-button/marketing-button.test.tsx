@@ -18,12 +18,12 @@ describe('MarketingButton', () => {
 
   it('variantを適用する', () => {
     const { container } = render(<MarketingButton variant="secondary">ボタン</MarketingButton>);
-    expect(container.firstChild).toHaveClass('border');
+    expect(container.firstChild).toHaveClass('secondary');
   });
 
   it('sizeを適用する', () => {
     const { container } = render(<MarketingButton size="lg">大きいボタン</MarketingButton>);
-    expect(container.firstChild).toHaveClass('h-13');
+    expect(container.firstChild).toHaveClass('sizeLg');
   });
 
   it('a11y違反がない', async () => {

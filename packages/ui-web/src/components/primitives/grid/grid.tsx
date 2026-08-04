@@ -24,8 +24,7 @@ export const gridVariants = cva('grid gap-6', {
 });
 
 export interface GridProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof gridVariants> {}
+  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof gridVariants> {}
 
 export const Grid = React.forwardRef<HTMLDivElement, GridProps>(
   ({ className, columns, gap, ...props }, ref) => (
