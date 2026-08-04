@@ -52,20 +52,50 @@ const DemoShot = () => (
   <div
     aria-hidden="true"
     style={{
-      aspectRatio: '16 / 9',
       borderRadius: 'var(--radius-media)',
       border: '1px solid var(--color-border)',
-      background:
-        'linear-gradient(135deg, var(--color-bg-brand-subtle), var(--color-bg-brand-muted))',
-      boxShadow: 'var(--shadow-card)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      color: 'var(--color-text-brand)',
-      fontWeight: 600,
+      boxShadow: 'var(--shadow-card-hover)',
+      overflow: 'hidden',
+      background: 'var(--color-surface)',
     }}
   >
-    プロダクト画面（Slice 4 で ProductShot に置換）
+    <div
+      style={{
+        display: 'flex',
+        gap: '6px',
+        padding: '10px 14px',
+        borderBottom: '1px solid var(--color-border)',
+        background: 'var(--color-surface-sunken)',
+      }}
+    >
+      {[0, 1, 2].map((i) => (
+        <span
+          key={i}
+          style={{
+            width: 10,
+            height: 10,
+            borderRadius: '50%',
+            background: 'var(--color-border)',
+          }}
+        />
+      ))}
+    </div>
+    <div style={{ aspectRatio: '16 / 9', display: 'grid', gridTemplateColumns: '160px 1fr' }}>
+      <div style={{ background: 'var(--color-surface-sunken)' }} />
+      <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        {[64, 88, 76, 52].map((w, i) => (
+          <div
+            key={i}
+            style={{
+              height: 12,
+              width: `${w}%`,
+              borderRadius: 6,
+              background: i === 0 ? 'var(--color-bg-brand-muted)' : 'var(--color-surface-sunken)',
+            }}
+          />
+        ))}
+      </div>
+    </div>
   </div>
 );
 

@@ -62,7 +62,8 @@ export const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
           </div>
         )}
         <div className={styles.titleBlock}>
-          <Heading as="h1" size="display-2xl">
+          {/* 横並び時はカラム幅が半分になるため一段小さく（propではなく構造から導出） */}
+          <Heading as="h1" size={isSide ? 'display-xl' : 'display-2xl'}>
             {title}
           </Heading>
           {subtitle && (

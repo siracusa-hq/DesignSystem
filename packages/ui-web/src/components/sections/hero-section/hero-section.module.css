@@ -59,12 +59,17 @@
 }
 @media (min-width: 64rem) {
   .split {
-    grid-template-columns: 1fr 1fr;
+    /* 1:1 だと display 級の見出しが窮屈になる。コピー側をやや広く */
+    grid-template-columns: 7fr 6fr;
+    gap: var(--spacing-16);
   }
 }
 .mediaBelow {
   margin-top: var(--spacing-12);
   position: relative;
+  /* コンテナ全幅の 16:9 は間延びする。読み幅に絞って中央へ */
+  max-width: 56rem;
+  margin-inline: auto;
 }
 .mediaSide {
   position: relative;
