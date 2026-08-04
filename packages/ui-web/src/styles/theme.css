@@ -206,6 +206,12 @@
      変数名の `primary` は既存consumerとの互換で据え置いている。 */
   --shadow-glow-primary: 0 0 24px rgb(19 195 160 / 0.25);
   --shadow-glow-primary-lg: 0 0 48px rgb(19 195 160 / 0.3);
+  /* LP用の2層シャドウ（近接の濃い影 + 遠くの薄い影）。影色は neutral-900 由来で
+     純黒より濁らない。暗い面では影を使わず border + 内側ハイライトで段差を作ること */
+  --shadow-raised: 0 1px 2px rgb(24 24 27 / 0.04), 0 2px 6px rgb(24 24 27 / 0.04);
+  --shadow-card: 0 2px 4px rgb(24 24 27 / 0.04), 0 8px 24px rgb(24 24 27 / 0.06);
+  --shadow-card-hover: 0 4px 8px rgb(24 24 27 / 0.05), 0 16px 40px rgb(24 24 27 / 0.1);
+  --shadow-overlay: 0 8px 16px rgb(24 24 27 / 0.08), 0 24px 56px rgb(24 24 27 / 0.14);
 
   /* --------------------------------------------------------
      Elevation: Border Radius
@@ -218,6 +224,12 @@
   --radius-2xl: 1rem;
   --radius-3xl: 1.5rem;
   --radius-full: 9999px;
+  /* 役割名ラディウス（Web/LP の形状語彙）。入れ子の規則: 内側 > 外側 は禁止 */
+  --radius-control: 0.75rem;
+  --radius-media: 1rem;
+  --radius-card: 1.25rem;
+  --radius-panel: 1.5rem;
+  --radius-pill: 9999px;
 
   /* --------------------------------------------------------
      Animation: Duration
@@ -226,6 +238,9 @@
   --duration-normal: 200ms;
   --duration-slow: 300ms;
   --duration-slower: 500ms;
+  /* 演出系（スクロール表出・装飾ループ）。操作フィードバックには使わない */
+  --duration-reveal: 720ms;
+  --duration-ambient: 1200ms;
 
   /* --------------------------------------------------------
      Animation: Easing
@@ -234,6 +249,10 @@
   --ease-in: cubic-bezier(0.4, 0, 1, 1);
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  /* 演出系。既存4種は200-300ms用のMaterial系で、600ms超で使うと序盤の減速が足りない */
+  --ease-entrance: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-exit: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-emphasis: cubic-bezier(0.34, 1.56, 0.64, 1);
 
   /* --------------------------------------------------------
      Z-Index Scale
@@ -271,14 +290,14 @@
 }
 
 .dark {
-  --color-surface: #0A0A0C;
+  --color-surface: #0a0a0c;
   --color-surface-raised: #141416;
   --color-surface-sunken: #050506;
-  --color-surface-muted: #1C1C1F;
+  --color-surface-muted: #1c1c1f;
   --color-on-surface: var(--color-neutral-50);
   --color-on-surface-secondary: var(--color-neutral-400);
   --color-on-surface-muted: var(--color-neutral-500);
-  --color-border: #1F1F23;
+  --color-border: #1f1f23;
   --color-ring: var(--color-primary-400);
   color-scheme: dark;
 }
@@ -288,8 +307,12 @@
    ============================================================ */
 
 @keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes fade-in-up {
@@ -358,9 +381,9 @@
 
   a,
   button,
-  [role="button"],
+  [role='button'],
   summary,
-  [tabindex]:not([tabindex="-1"]) {
+  [tabindex]:not([tabindex='-1']) {
     cursor: pointer;
   }
 
@@ -375,21 +398,71 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* 日本語テキストの行間・文字間最適化 */
-  .lang-ja {
-    line-height: 1.8;
-    overflow-wrap: anywhere;
-    word-break: auto-phrase;
+  /* 和文組版（:lang(ja) に一本化。<html lang="ja"> が前提 — README 参照）
+     数値の根拠: docs/research/research-visual-language.md（国内8社実測 + デジタル庁DADS） */
+  :lang(ja) {
+    line-break: strict; /* 行頭に「、。」を置かない厳格禁則（SmartHR 先行例） */
+    text-spacing-trim: space-all; /* palt に依存しない約物のアキ調整（SmartHR 先行例） */
+    overflow-wrap: break-word; /* anywhere は min-content 幅が1文字になり grid/flex を壊す */
+    word-break: auto-phrase; /* 文節での改行（対応ブラウザのみ） */
   }
 
-  .lang-en {
-    line-height: 1.6;
-  }
-
+  /* 見出しの palt は body の font-feature-settings を「置き換える」プロパティのため、
+     cv01/cv03/cv04/tnum を必ず再指定する（tnum を失うと数値訴求の桁が揃わない） */
   :lang(ja) h1,
   :lang(ja) h2,
   :lang(ja) h3 {
-    font-feature-settings: 'palt';
+    font-feature-settings: 'palt', 'cv01', 'cv03', 'cv04', 'tnum';
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    text-wrap: balance; /* 最終行に1文字だけ残る事故の防止。国内先行例ゼロだが
+                           手動<br>改行制御の自動化としてAI量産前提の本システムでは採用 */
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+/* ============================================================
+   和文ガード — 意図的に @layer の外（ユーティリティより強い）
+   負の字送り・過密な行間は和文で機能しない（国内BtoB 8社実測: 負の字送り 0社、
+   見出し行間は 1.3〜1.4 に収束）。コンポーネント側の負トラッキングが
+   和文に効くのを構造的に無効化する。サイズ別の精密な組版は Stage 2 で
+   コンポーネント側に実装し、このガードは安全網として残す。
+   ============================================================ */
+
+:lang(ja) :is(h1, h2, h3, h4, h5, h6) {
+  letter-spacing: 0;
+}
+
+:lang(ja) :is(h1, h2, h3) {
+  line-height: 1.35;
+}
+
+:lang(ja) :is(h4, h5, h6) {
+  line-height: 1.45;
+}
+
+/* ============================================================
+   Reduced Motion — トークン層で一括処理
+   コンポーネント側の個別対応を不要にする（StatsSection.animated 削除の受け皿）
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 1ms;
+    --duration-normal: 1ms;
+    --duration-slow: 1ms;
+    --duration-slower: 1ms;
+    --duration-reveal: 1ms;
+    --duration-ambient: 1ms;
   }
 }
 
@@ -411,7 +484,9 @@
     border-radius: inherit;
     /* 装飾のため brand スケールを使う（操作UIではない） */
     background: linear-gradient(135deg, var(--color-brand-500), var(--color-brand-300));
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
     mask-composite: exclude;
     pointer-events: none;
   }

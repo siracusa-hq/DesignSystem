@@ -30,6 +30,7 @@ const {
   easing,
   STEP_VALUES,
   SLOTS,
+  CTA_SLOTS,
   DEFAULT_BRAND,
   resolveAllBrands,
   hexToRgbTriplet,
@@ -82,6 +83,16 @@ function slotsBlock() {
   const parts = [];
   parts.push(`/* 既定ブランド（data-brand なし = ${DEFAULT_BRAND}） */`);
   parts.push(':root {\n' + slotLines(def).join('\n') + '\n}');
+  parts.push(
+    [
+      '/* CTA 専用アクセント（第3のオプション役割）。既定は操作色へのフォールバック。',
+      '   var() は使用時に解決されるため data-brand 切替に自動追従する。',
+      "   専用 CTA 色を持つブランドのみ [data-brand='...'] で上書きする。 */",
+      ':root {',
+      ...CTA_SLOTS.map((s) => `  ${s.name}: var(${s.fallback});`),
+      '}',
+    ].join('\n'),
+  );
   for (const b of brands) {
     parts.push(`[data-brand='${b.dataBrand}'] {\n` + slotLines(b).join('\n') + '\n}');
   }

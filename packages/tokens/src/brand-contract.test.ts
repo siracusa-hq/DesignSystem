@@ -17,6 +17,7 @@ import { primary, brand } from './colors';
 import { contrastRatio, hexToOklch } from './color';
 import {
   ACTION_CHROMA_BAND,
+  CTA_SLOTS,
   ACTION_L_BAND,
   ACTION_MIN_CONTRAST,
   EXPLICIT_L_TOLERANCE,
@@ -164,6 +165,15 @@ describe('(e) 生成 CSS とレジストリの同期', () => {
     expect(css).toContain('--color-bg-brand-active: var(--ramp-peerdesk-900);');
     // taxpeer: hover=700 / active=800
     expect(css).toContain('--color-bg-brand-hover: var(--ramp-peerdesk-taxpeer-700);');
+  });
+
+  it('CTA スロット（第3役割）が既定フォールバックとして出力されている', () => {
+    for (const file of cssFiles) {
+      const css = readFileSync(file, 'utf8');
+      for (const slot of CTA_SLOTS) {
+        expect(css, slot.name).toContain(`${slot.name}: var(${slot.fallback});`);
+      }
+    }
   });
 
   it('SLOTS の参照段はすべて契約の段に存在する', () => {

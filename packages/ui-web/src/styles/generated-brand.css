@@ -89,6 +89,16 @@
   --shadow-glow-brand-lg: 0 0 48px rgb(19 195 160 / 0.3);
 }
 
+/* CTA 専用アクセント（第3のオプション役割）。既定は操作色へのフォールバック。
+   var() は使用時に解決されるため data-brand 切替に自動追従する。
+   専用 CTA 色を持つブランドのみ [data-brand='...'] で上書きする。 */
+:root {
+  --color-bg-cta: var(--color-bg-brand-primary);
+  --color-bg-cta-hover: var(--color-bg-brand-hover);
+  --color-bg-cta-active: var(--color-bg-brand-active);
+  --color-on-cta: var(--color-on-brand);
+}
+
 [data-brand='corporate'] {
   --color-bg-brand-subtle: var(--ramp-corporate-50);
   --color-bg-brand-muted: var(--ramp-corporate-100);

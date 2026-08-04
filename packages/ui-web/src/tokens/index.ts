@@ -8,13 +8,7 @@
  */
 
 export { colors, type ColorScale, type ColorShade } from './colors';
-export {
-  fontFamily,
-  fontSize,
-  fontWeight,
-  type FontSize,
-  type FontWeight,
-} from './typography';
+export { fontFamily, fontSize, fontWeight, type FontSize, type FontWeight } from './typography';
 export {
   spacing,
   sectionSpacing,

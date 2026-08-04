@@ -152,3 +152,17 @@ export const SLOTS: ReadonlyArray<
   { name: '--color-decor-brand-soft', step: 200 },
   { name: '--color-on-brand', fixed: '#ffffff' },
 ];
+
+/**
+ * 第3のオプション役割: CTA 専用アクセント（LP調査で確認された実務パターン。
+ * 例: ブランド青に対し CTA だけ黄色）。
+ * 既定では操作色スロットへの var() フォールバックとして :root に1回だけ出力される
+ * （var() は使用時に解決されるため data-brand の切替に自動追従する）。
+ * ブランドが専用 CTA 色を持つ場合のみ、将来 [data-brand] 側で上書きする。
+ */
+export const CTA_SLOTS: ReadonlyArray<{ name: string; fallback: string }> = [
+  { name: '--color-bg-cta', fallback: '--color-bg-brand-primary' },
+  { name: '--color-bg-cta-hover', fallback: '--color-bg-brand-hover' },
+  { name: '--color-bg-cta-active', fallback: '--color-bg-brand-active' },
+  { name: '--color-on-cta', fallback: '--color-on-brand' },
+];

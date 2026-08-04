@@ -17,7 +17,7 @@ export interface AnimateOnScrollProps extends React.HTMLAttributes<HTMLDivElemen
   threshold?: number;
   /** 一度だけ発火するか */
   once?: boolean;
-  /** アニメーション時間（ms） */
+  /** アニメーション時間（ms）。既定は演出系トークン --duration-reveal と同値 */
   duration?: number;
   children: React.ReactNode;
 }
@@ -57,7 +57,7 @@ export const AnimateOnScroll = forwardRef<HTMLDivElement, AnimateOnScrollProps>(
       delay = 0,
       threshold = 0.1,
       once = true,
-      duration = 600,
+      duration = 720,
       className,
       children,
       style,
@@ -83,12 +83,10 @@ export const AnimateOnScroll = forwardRef<HTMLDivElement, AnimateOnScrollProps>(
     return (
       <div
         ref={combinedRef}
-        className={cn(
-          'transition-all ease-out',
-          inView ? classes.animate : classes.initial,
-          className,
-        )}
+        className={cn('transition-all', inView ? classes.animate : classes.initial, className)}
         style={{
+          // 演出はトークンの entrance カーブを使う（Material系 ease-out は 600ms 超で序盤の減速が不足）
+          transitionTimingFunction: 'var(--ease-entrance)',
           transitionDuration: `${duration}ms`,
           transitionDelay: `${totalDelay}ms`,
           ...style,

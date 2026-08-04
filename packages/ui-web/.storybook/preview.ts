@@ -21,8 +21,6 @@ const withLocale: Decorator = (Story, context) => {
   const locale = context.globals.locale || 'ja';
   const root = document.documentElement;
   root.setAttribute('lang', locale);
-  root.classList.remove('lang-ja', 'lang-en');
-  root.classList.add(`lang-${locale}`);
 
   return Story();
 };
