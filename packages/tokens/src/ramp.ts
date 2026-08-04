@@ -56,8 +56,13 @@ const WHITE = '#ffffff';
 
 /** ブランド操作色の彩度帯（契約改定 2026-08-03）。chromaScale×0.100 がこの範囲に入ること */
 export const ACTION_CHROMA_BAND = { min: 0.06, max: 0.15 } as const;
-/** 生成ブランドの操作段 L 帯（deep 型を許容。バクラクの成功家族幅の範囲内） */
-export const ACTION_L_BAND = { min: 0.5, max: 0.553 } as const;
+/**
+ * 生成ブランドの操作段 L 帯。
+ * 下限 0.42 は Polastack 濃紺決定（2026-08-04）で拡大した。
+ * 家族の実測レンジは explicit 込みで 0.40（ピアデスク）〜0.553（コーポレート）であり、
+ * 深い操作色は白文字コントラストが増える方向のため AA は常に満たす。
+ */
+export const ACTION_L_BAND = { min: 0.42, max: 0.553 } as const;
 
 export interface GenerateRampOptions {
   /** 彩度倍率。段の cCeil に一律に掛かる。既定 1（コーポレート相当） */
