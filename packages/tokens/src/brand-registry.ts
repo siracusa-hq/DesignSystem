@@ -84,16 +84,17 @@ export const registry: Record<string, BrandEntry> = {
   },
 
   /**
-   * Polastack（深青・deep 型）— 2026-08-03 ブランド決定。
-   * H=265 / C×1.35 / 操作段 L=0.500（#3d5eaf、白文字 6.14:1）。
+   * Polastack（濃紺・deep 型）— 2026-08-04 ブランド決定（スウォッチ v6〜v8 の3巡で確定）。
+   * H=265 / C×1.10 / 操作段 L=0.420（#2f4989、白文字 8.62:1）。
+   * 「存在感がありつつ落ち着いた濃紺」= 彩度を保ち明度を沈める。
    * deep 型のため 500 が 600 より暗い。ホバーは 700、押下は 800 を充てる。
    */
   polastack: {
     label: 'Polastack（Enterprise Agent Stack）',
     mode: 'generated',
     hue: 265,
-    chromaScale: 1.35,
-    actionL: 0.5,
+    chromaScale: 1.1,
+    actionL: 0.42,
     slotOverrides: {
       '--color-bg-brand-hover': 700,
       '--color-bg-brand-active': 800,

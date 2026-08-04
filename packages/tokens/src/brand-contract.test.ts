@@ -113,11 +113,11 @@ describe('(d) 公開済みの現行色とのドリフト検出', () => {
 
   it('ブランド決定のアンカー hex（スウォッチ承認値）が再現される', () => {
     const get = (key: string) => brands.find((b) => b.key === key)!.ramp;
-    // Polastack deep（2026-08-03 決定）
-    expect(get('polastack')[500]).toBe('#3d5eaf');
+    // Polastack 濃紺（2026-08-04 決定・スウォッチ v8 案J）
+    expect(get('polastack')[500]).toBe('#2f4989');
     expect(get('polastack')[300]).toBe('#7da5fd');
-    expect(get('polastack')[900]).toBe('#1c2d55');
-    expect(get('polastack')[950]).toBe('#101b37');
+    expect(get('polastack')[900]).toBe('#202e4e');
+    expect(get('polastack')[950]).toBe('#121c33');
     // ピアデスク 濃鼠（2026-08-03 決定）
     expect(get('peerdesk')[500]).toBe('#4a464e');
     expect(get('peerdesk')[600]).toBe('#3a363e');
