@@ -12,7 +12,7 @@ describe('AnimateOnScroll', () => {
   it('初期状態で非表示クラスが適用される', () => {
     render(<AnimateOnScroll data-testid="aos">コンテンツ</AnimateOnScroll>);
     const el = screen.getByTestId('aos');
-    expect(el.className).toContain('opacity-0');
+    expect(el.className).toContain('fadeUp');
   });
 
   it('カスタムクラスが適用される', () => {

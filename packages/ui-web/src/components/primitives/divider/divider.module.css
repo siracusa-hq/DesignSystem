@@ -1,0 +1,40 @@
+/* Divider — 区切り線。brand バリアントは装飾ヘアラインのため decor スロットを使う
+   （操作色ではないので --color-text-brand ではない）。 */
+
+.divider {
+  width: 100%;
+  border: 0;
+}
+
+.solid {
+  height: 1px;
+  background: var(--color-border);
+}
+
+.gradient {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-border), transparent);
+}
+
+.brand {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-decor-brand), transparent);
+}
+
+.dashed {
+  height: 0;
+  border-top: 1px dashed var(--color-border);
+}
+
+.spacingSm {
+  margin-block: var(--spacing-4);
+}
+.spacingMd {
+  margin-block: var(--spacing-8);
+}
+.spacingLg {
+  margin-block: var(--spacing-12);
+}
+.spacingNone {
+  margin-block: 0;
+}

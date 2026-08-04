@@ -1,0 +1,39 @@
+/* AnimateOnScroll — スクロール連動の入場演出。
+   遷移時間・遅延は props 由来のため inline style（値がインスタンスごとに変わる）、
+   カーブとプロパティ指定はここで持つ。 */
+
+.base {
+  transition-property: opacity, transform, filter;
+  transition-timing-function: var(--ease-entrance);
+}
+
+/* 初期状態（画面外） */
+.fadeUp {
+  opacity: 0;
+  transform: translateY(var(--spacing-8));
+}
+.fadeIn {
+  opacity: 0;
+}
+.fadeDown {
+  opacity: 0;
+  transform: translateY(calc(var(--spacing-4) * -1));
+}
+.scale {
+  opacity: 0;
+  transform: scale(0.95);
+}
+.blurIn {
+  opacity: 0;
+  filter: blur(4px);
+}
+
+/* 到達状態（共通のリセット。初期状態クラスより後に定義して打ち消す） */
+.visible {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+/* prefers-reduced-motion はトークン層（theme.css）が一括で処理するため、
+   ここでの個別対応は不要（workorder §3 StatsSection.animated 削除の受け皿と同じ仕組み）。 */

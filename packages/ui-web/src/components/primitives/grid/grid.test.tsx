@@ -17,12 +17,12 @@ describe('Grid', () => {
 
   it('columnsバリアントを適用する', () => {
     const { container } = render(<Grid columns={4}>内容</Grid>);
-    expect(container.firstChild).toHaveClass('lg:grid-cols-4');
+    expect(container.firstChild).toHaveClass('cols4');
   });
 
   it('gapバリアントを適用する', () => {
     const { container } = render(<Grid gap="lg">内容</Grid>);
-    expect(container.firstChild).toHaveClass('gap-8');
+    expect(container.firstChild).toHaveClass('gapLg');
   });
 
   it('a11y違反がない', async () => {

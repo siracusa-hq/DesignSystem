@@ -1,8 +1,9 @@
 'use client';
 
 import React, { forwardRef } from 'react';
-import { cn } from '../../../lib/cn';
-import { useInView } from '../../../hooks/useInView';
+import { cn } from '@/lib/cn';
+import { useInView } from '@/hooks/useInView';
+import styles from './animate-on-scroll.module.css';
 
 export type ScrollAnimation = 'fade-up' | 'fade-in' | 'fade-down' | 'scale' | 'blur-in';
 
@@ -20,29 +21,20 @@ export interface AnimateOnScrollProps extends React.HTMLAttributes<HTMLDivElemen
   /** アニメーション時間（ms）。既定は演出系トークン --duration-reveal と同値 */
   duration?: number;
   children: React.ReactNode;
+  /**
+   * @deprecated 移行期間限定（未移行コンポーネントからのレイアウト調整用）。
+   * Slice 6 で削除する（stage2-workorder.md §0）。新規利用は禁止。
+   */
+  className?: string;
 }
 
-const animationClasses: Record<ScrollAnimation, { initial: string; animate: string }> = {
-  'fade-up': {
-    initial: 'opacity-0 translate-y-8',
-    animate: 'opacity-100 translate-y-0',
-  },
-  'fade-in': {
-    initial: 'opacity-0',
-    animate: 'opacity-100',
-  },
-  'fade-down': {
-    initial: 'opacity-0 -translate-y-4',
-    animate: 'opacity-100 translate-y-0',
-  },
-  scale: {
-    initial: 'opacity-0 scale-95',
-    animate: 'opacity-100 scale-100',
-  },
-  'blur-in': {
-    initial: 'opacity-0 blur-sm',
-    animate: 'opacity-100 blur-0',
-  },
+/** 画面外にいるときの初期状態。到達状態は共通の styles.visible が打ち消す */
+const initialClasses: Record<ScrollAnimation, string> = {
+  'fade-up': styles.fadeUp,
+  'fade-in': styles.fadeIn,
+  'fade-down': styles.fadeDown,
+  scale: styles.scale,
+  'blur-in': styles.blurIn,
 };
 
 /**
@@ -77,16 +69,21 @@ export const AnimateOnScroll = forwardRef<HTMLDivElement, AnimateOnScrollProps>(
       }
     };
 
-    const classes = animationClasses[animation];
     const totalDelay = delay + staggerIndex * 100;
 
     return (
       <div
         ref={combinedRef}
-        className={cn('transition-all', inView ? classes.animate : classes.initial, className)}
+        className={cn(
+          styles.base,
+          initialClasses[animation],
+          inView && styles.visible,
+          className,
+        )}
         style={{
-          // 演出はトークンの entrance カーブを使う（Material系 ease-out は 600ms 超で序盤の減速が不足）
-          transitionTimingFunction: 'var(--ease-entrance)',
+          // 時間と遅延はインスタンスごとに変わるため inline のまま
+          // （カーブ = --ease-entrance は module 側。Material系 ease-out は
+          //   600ms 超で序盤の減速が不足するため entrance カーブを使う）
           transitionDuration: `${duration}ms`,
           transitionDelay: `${totalDelay}ms`,
           ...style,

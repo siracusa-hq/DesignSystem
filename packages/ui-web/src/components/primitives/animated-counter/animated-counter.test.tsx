@@ -16,9 +16,9 @@ describe('AnimatedCounter', () => {
     expect(text).toContain('+');
   });
 
-  it('tabular-numsクラスが適用される', () => {
+  it('等幅数字のクラスが適用される', () => {
     const { container } = render(<AnimatedCounter value={42} />);
-    expect(container.firstChild).toHaveClass('tabular-nums');
+    expect(container.firstChild).toHaveClass('counter');
   });
 
   it('a11y違反がない', async () => {

@@ -1,0 +1,5 @@
+/* AnimatedCounter — 数値のカウントアップ。桁が揺れないよう等幅数字にする */
+
+.counter {
+  font-variant-numeric: tabular-nums;
+}

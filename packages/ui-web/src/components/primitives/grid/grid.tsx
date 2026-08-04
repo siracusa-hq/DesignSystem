@@ -1,20 +1,21 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/cn';
+import styles from './grid.module.css';
 
-export const gridVariants = cva('grid gap-6', {
+export const gridVariants = cva(styles.grid, {
   variants: {
     columns: {
-      1: 'grid-cols-1',
-      2: 'grid-cols-1 md:grid-cols-2',
-      3: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
-      4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
+      1: styles.cols1,
+      2: styles.cols2,
+      3: styles.cols3,
+      4: styles.cols4,
     },
     gap: {
-      sm: 'gap-4',
-      md: 'gap-6',
-      lg: 'gap-8',
-      xl: 'gap-12',
+      sm: styles.gapSm,
+      md: styles.gapMd,
+      lg: styles.gapLg,
+      xl: styles.gapXl,
     },
   },
   defaultVariants: {
@@ -24,7 +25,13 @@ export const gridVariants = cva('grid gap-6', {
 });
 
 export interface GridProps
-  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof gridVariants> {}
+  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof gridVariants> {
+  /**
+   * @deprecated 移行期間限定（未移行コンポーネントからのレイアウト調整用）。
+   * Slice 6 で削除する（stage2-workorder.md §0）。新規利用は禁止。
+   */
+  className?: string;
+}
 
 export const Grid = React.forwardRef<HTMLDivElement, GridProps>(
   ({ className, columns, gap, ...props }, ref) => (

@@ -1,21 +1,22 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/cn';
+import styles from './divider.module.css';
 
-export const dividerVariants = cva('w-full', {
+export const dividerVariants = cva(styles.divider, {
   variants: {
     variant: {
-      solid: 'h-px bg-[var(--color-border)]',
-      gradient: 'h-px bg-gradient-to-r from-transparent via-[var(--color-border)] to-transparent',
-      // 装飾のみのヘアラインのため、彩度の高い brand スケールを使う
-      brand: 'h-px bg-gradient-to-r from-transparent via-brand-500 to-transparent',
-      dashed: 'border-t border-dashed border-[var(--color-border)]',
+      solid: styles.solid,
+      gradient: styles.gradient,
+      /** 装飾のみのヘアラインのため、彩度の高い装飾スロット（--color-decor-brand）を使う */
+      brand: styles.brand,
+      dashed: styles.dashed,
     },
     spacing: {
-      sm: 'my-4',
-      md: 'my-8',
-      lg: 'my-12',
-      none: 'my-0',
+      sm: styles.spacingSm,
+      md: styles.spacingMd,
+      lg: styles.spacingLg,
+      none: styles.spacingNone,
     },
   },
   defaultVariants: {
@@ -25,7 +26,13 @@ export const dividerVariants = cva('w-full', {
 });
 
 export interface DividerProps
-  extends React.HTMLAttributes<HTMLHRElement>, VariantProps<typeof dividerVariants> {}
+  extends React.HTMLAttributes<HTMLHRElement>, VariantProps<typeof dividerVariants> {
+  /**
+   * @deprecated 移行期間限定（未移行コンポーネントからのレイアウト調整用）。
+   * Slice 6 で削除する（stage2-workorder.md §0）。新規利用は禁止。
+   */
+  className?: string;
+}
 
 export const Divider = React.forwardRef<HTMLHRElement, DividerProps>(
   ({ className, variant, spacing, ...props }, ref) => (
