@@ -1,5 +1,5 @@
 ---
-'@siracusahq/gtm-design-system': major
+'@siracusahq/gtm-design-system': minor
 ---
 
 Stage 2 Slice 4b: 未移行の全コンポーネントを CSS Modules + テーマ契約スロットへ移行した。
