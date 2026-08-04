@@ -18,7 +18,10 @@ export const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
     return (
       <div className="space-y-1.5">
         {label && (
-          <label htmlFor={inputId} className="block text-sm font-medium text-[var(--color-on-surface)]">
+          <label
+            htmlFor={inputId}
+            className="block text-sm font-medium text-[var(--color-on-surface)]"
+          >
             {label}
           </label>
         )}
@@ -56,7 +59,10 @@ export const FormTextarea = React.forwardRef<HTMLTextAreaElement, FormTextareaPr
     return (
       <div className="space-y-1.5">
         {label && (
-          <label htmlFor={textareaId} className="block text-sm font-medium text-[var(--color-on-surface)]">
+          <label
+            htmlFor={textareaId}
+            className="block text-sm font-medium text-[var(--color-on-surface)]"
+          >
             {label}
           </label>
         )}
@@ -96,7 +102,10 @@ export const FormSelect = React.forwardRef<HTMLSelectElement, FormSelectProps>(
     return (
       <div className="space-y-1.5">
         {label && (
-          <label htmlFor={selectId} className="block text-sm font-medium text-[var(--color-on-surface)]">
+          <label
+            htmlFor={selectId}
+            className="block text-sm font-medium text-[var(--color-on-surface)]"
+          >
             {label}
           </label>
         )}
@@ -114,7 +123,9 @@ export const FormSelect = React.forwardRef<HTMLSelectElement, FormSelectProps>(
         >
           {placeholder && <option value="">{placeholder}</option>}
           {options.map((opt) => (
-            <option key={opt.value} value={opt.value}>{opt.label}</option>
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
           ))}
         </select>
         {error && <p className="text-xs text-error-500">{error}</p>}
@@ -149,8 +160,19 @@ export const FormButton = React.forwardRef<HTMLButtonElement, FormButtonProps>(
     >
       {loading && (
         <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          />
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+          />
         </svg>
       )}
       {children}

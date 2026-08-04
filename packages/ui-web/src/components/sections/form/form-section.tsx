@@ -91,32 +91,83 @@ export interface ContactFormProps extends BaseFormSectionProps {
 }
 
 export const ContactForm = React.forwardRef<HTMLElement, ContactFormProps>(
-  ({
-    className, eyebrow, eyebrowStyle, title, subtitle, background = 'default',
-    formspreeId, successMessage, errorMessage, spacing,
-    ichisanEnabled = true,
-    ...props
-  }, ref) => {
+  (
+    {
+      className,
+      eyebrow,
+      eyebrowStyle,
+      title,
+      subtitle,
+      background = 'default',
+      formspreeId,
+      successMessage,
+      errorMessage,
+      spacing,
+      ichisanEnabled = true,
+      ...props
+    },
+    ref,
+  ) => {
     const { status, handleSubmit } = useFormspree(formspreeId);
     useIchisanForm(ichisanEnabled);
 
     const isJa = typeof document !== 'undefined' && document.documentElement.lang === 'ja';
 
     return (
-      <Section ref={ref} background={background} spacing={spacing ?? 'lg'} className={className} {...props}>
+      <Section
+        ref={ref}
+        background={background}
+        spacing={spacing ?? 'lg'}
+        className={className}
+        {...props}
+      >
         <Container size="sm">
           {(eyebrow || title || subtitle) && (
             <div className="mb-10 text-center">
-              {eyebrow && <Text size={eyebrowStyle === 'border' ? 'overline-border' : eyebrowStyle === 'text' ? 'overline-text' : eyebrowStyle === 'dot' ? 'overline-dot' : eyebrowStyle === 'gradient' ? 'overline-gradient' : eyebrowStyle === 'icon-pill' ? 'overline-icon-pill' : 'overline-pill'} className="mb-4">{eyebrow}</Text>}
-              {title && <Heading as="h2" size="display-sm">{title}</Heading>}
-              {subtitle && <Text size="body-lg" tone="secondary" className="mx-auto mt-4 max-w-xl dark:text-neutral-300">{subtitle}</Text>}
+              {eyebrow && (
+                <Text
+                  size={
+                    eyebrowStyle === 'border'
+                      ? 'overline-border'
+                      : eyebrowStyle === 'text'
+                        ? 'overline-text'
+                        : eyebrowStyle === 'dot'
+                          ? 'overline-dot'
+                          : eyebrowStyle === 'gradient'
+                            ? 'overline-gradient'
+                            : eyebrowStyle === 'icon-pill'
+                              ? 'overline-icon-pill'
+                              : 'overline-pill'
+                  }
+                  className="mb-4"
+                >
+                  {eyebrow}
+                </Text>
+              )}
+              {title && (
+                <Heading as="h2" size="display-sm">
+                  {title}
+                </Heading>
+              )}
+              {subtitle && (
+                <Text
+                  size="body-lg"
+                  tone="secondary"
+                  className="mx-auto mt-4 max-w-xl dark:text-neutral-300"
+                >
+                  {subtitle}
+                </Text>
+              )}
             </div>
           )}
 
           {status === 'success' ? (
             <div className="rounded-2xl border border-success-500/30 bg-success-50 p-8 text-center dark:bg-success-500/10">
               <Text size="body-lg" className="font-semibold text-success-600">
-                {successMessage ?? (isJa ? 'お問い合わせありがとうございます。担当者より折り返しご連絡いたします。' : 'Thank you for your inquiry. We will get back to you shortly.')}
+                {successMessage ??
+                  (isJa
+                    ? 'お問い合わせありがとうございます。担当者より折り返しご連絡いたします。'
+                    : 'Thank you for your inquiry. We will get back to you shortly.')}
               </Text>
             </div>
           ) : (
@@ -162,7 +213,10 @@ export const ContactForm = React.forwardRef<HTMLElement, ContactFormProps>(
               </FormButton>
               {status === 'error' && (
                 <Text size="body-sm" className="text-center text-error-500">
-                  {errorMessage ?? (isJa ? '送信に失敗しました。時間をおいて再度お試しください。' : 'Failed to send. Please try again later.')}
+                  {errorMessage ??
+                    (isJa
+                      ? '送信に失敗しました。時間をおいて再度お試しください。'
+                      : 'Failed to send. Please try again later.')}
                 </Text>
               )}
             </form>
@@ -185,32 +239,84 @@ export interface ResourceRequestFormProps extends BaseFormSectionProps {
 }
 
 export const ResourceRequestForm = React.forwardRef<HTMLElement, ResourceRequestFormProps>(
-  ({
-    className, eyebrow, eyebrowStyle, title, subtitle, background = 'muted',
-    formspreeId, successMessage, errorMessage, spacing,
-    ichisanEnabled = true, resourceName,
-    ...props
-  }, ref) => {
+  (
+    {
+      className,
+      eyebrow,
+      eyebrowStyle,
+      title,
+      subtitle,
+      background = 'muted',
+      formspreeId,
+      successMessage,
+      errorMessage,
+      spacing,
+      ichisanEnabled = true,
+      resourceName,
+      ...props
+    },
+    ref,
+  ) => {
     const { status, handleSubmit } = useFormspree(formspreeId);
     useIchisanForm(ichisanEnabled);
 
     const isJa = typeof document !== 'undefined' && document.documentElement.lang === 'ja';
 
     return (
-      <Section ref={ref} background={background} spacing={spacing ?? 'lg'} className={className} {...props}>
+      <Section
+        ref={ref}
+        background={background}
+        spacing={spacing ?? 'lg'}
+        className={className}
+        {...props}
+      >
         <Container size="sm">
           {(eyebrow || title || subtitle) && (
             <div className="mb-10 text-center">
-              {eyebrow && <Text size={eyebrowStyle === 'border' ? 'overline-border' : eyebrowStyle === 'text' ? 'overline-text' : eyebrowStyle === 'dot' ? 'overline-dot' : eyebrowStyle === 'gradient' ? 'overline-gradient' : eyebrowStyle === 'icon-pill' ? 'overline-icon-pill' : 'overline-pill'} className="mb-4">{eyebrow}</Text>}
-              {title && <Heading as="h2" size="display-sm">{title}</Heading>}
-              {subtitle && <Text size="body-lg" tone="secondary" className="mx-auto mt-4 max-w-xl dark:text-neutral-300">{subtitle}</Text>}
+              {eyebrow && (
+                <Text
+                  size={
+                    eyebrowStyle === 'border'
+                      ? 'overline-border'
+                      : eyebrowStyle === 'text'
+                        ? 'overline-text'
+                        : eyebrowStyle === 'dot'
+                          ? 'overline-dot'
+                          : eyebrowStyle === 'gradient'
+                            ? 'overline-gradient'
+                            : eyebrowStyle === 'icon-pill'
+                              ? 'overline-icon-pill'
+                              : 'overline-pill'
+                  }
+                  className="mb-4"
+                >
+                  {eyebrow}
+                </Text>
+              )}
+              {title && (
+                <Heading as="h2" size="display-sm">
+                  {title}
+                </Heading>
+              )}
+              {subtitle && (
+                <Text
+                  size="body-lg"
+                  tone="secondary"
+                  className="mx-auto mt-4 max-w-xl dark:text-neutral-300"
+                >
+                  {subtitle}
+                </Text>
+              )}
             </div>
           )}
 
           {status === 'success' ? (
             <div className="rounded-2xl border border-success-500/30 bg-success-50 p-8 text-center dark:bg-success-500/10">
               <Text size="body-lg" className="font-semibold text-success-600">
-                {successMessage ?? (isJa ? '資料をメールでお送りしました。ご確認ください。' : 'The document has been sent to your email.')}
+                {successMessage ??
+                  (isJa
+                    ? '資料をメールでお送りしました。ご確認ください。'
+                    : 'The document has been sent to your email.')}
               </Text>
             </div>
           ) : (
@@ -247,7 +353,9 @@ export const ResourceRequestForm = React.forwardRef<HTMLElement, ResourceRequest
               <FormInput
                 name="role"
                 label={isJa ? '役職' : 'Job Title'}
-                placeholder={isJa ? 'CTO / エンジニアリングマネージャー 等' : 'CTO / Engineering Manager etc.'}
+                placeholder={
+                  isJa ? 'CTO / エンジニアリングマネージャー 等' : 'CTO / Engineering Manager etc.'
+                }
               />
               <FormButton loading={status === 'submitting'}>
                 {isJa ? '資料をダウンロード' : 'Download Resource'}
@@ -277,44 +385,98 @@ export interface DemoRequestFormProps extends BaseFormSectionProps {
 }
 
 export const DemoRequestForm = React.forwardRef<HTMLElement, DemoRequestFormProps>(
-  ({
-    className, eyebrow, eyebrowStyle, title, subtitle, background = 'default',
-    formspreeId, successMessage, errorMessage, spacing,
-    ichisanEnabled = true, timeSlots,
-    ...props
-  }, ref) => {
+  (
+    {
+      className,
+      eyebrow,
+      eyebrowStyle,
+      title,
+      subtitle,
+      background = 'default',
+      formspreeId,
+      successMessage,
+      errorMessage,
+      spacing,
+      ichisanEnabled = true,
+      timeSlots,
+      ...props
+    },
+    ref,
+  ) => {
     const { status, handleSubmit } = useFormspree(formspreeId);
     useIchisanForm(ichisanEnabled);
 
     const isJa = typeof document !== 'undefined' && document.documentElement.lang === 'ja';
 
-    const defaultTimeSlots = timeSlots ?? (isJa
-      ? [
-          { value: 'weekday-am', label: '平日 午前（10:00-12:00）' },
-          { value: 'weekday-pm', label: '平日 午後（13:00-17:00）' },
-          { value: 'weekday-evening', label: '平日 夕方（17:00-19:00）' },
-        ]
-      : [
-          { value: 'weekday-am', label: 'Weekday morning (10:00-12:00)' },
-          { value: 'weekday-pm', label: 'Weekday afternoon (13:00-17:00)' },
-          { value: 'weekday-evening', label: 'Weekday evening (17:00-19:00)' },
-        ]);
+    const defaultTimeSlots =
+      timeSlots ??
+      (isJa
+        ? [
+            { value: 'weekday-am', label: '平日 午前（10:00-12:00）' },
+            { value: 'weekday-pm', label: '平日 午後（13:00-17:00）' },
+            { value: 'weekday-evening', label: '平日 夕方（17:00-19:00）' },
+          ]
+        : [
+            { value: 'weekday-am', label: 'Weekday morning (10:00-12:00)' },
+            { value: 'weekday-pm', label: 'Weekday afternoon (13:00-17:00)' },
+            { value: 'weekday-evening', label: 'Weekday evening (17:00-19:00)' },
+          ]);
 
     return (
-      <Section ref={ref} background={background} spacing={spacing ?? 'lg'} className={className} {...props}>
+      <Section
+        ref={ref}
+        background={background}
+        spacing={spacing ?? 'lg'}
+        className={className}
+        {...props}
+      >
         <Container size="sm">
           {(eyebrow || title || subtitle) && (
             <div className="mb-10 text-center">
-              {eyebrow && <Text size={eyebrowStyle === 'border' ? 'overline-border' : eyebrowStyle === 'text' ? 'overline-text' : eyebrowStyle === 'dot' ? 'overline-dot' : eyebrowStyle === 'gradient' ? 'overline-gradient' : eyebrowStyle === 'icon-pill' ? 'overline-icon-pill' : 'overline-pill'} className="mb-4">{eyebrow}</Text>}
-              {title && <Heading as="h2" size="display-sm">{title}</Heading>}
-              {subtitle && <Text size="body-lg" tone="secondary" className="mx-auto mt-4 max-w-xl dark:text-neutral-300">{subtitle}</Text>}
+              {eyebrow && (
+                <Text
+                  size={
+                    eyebrowStyle === 'border'
+                      ? 'overline-border'
+                      : eyebrowStyle === 'text'
+                        ? 'overline-text'
+                        : eyebrowStyle === 'dot'
+                          ? 'overline-dot'
+                          : eyebrowStyle === 'gradient'
+                            ? 'overline-gradient'
+                            : eyebrowStyle === 'icon-pill'
+                              ? 'overline-icon-pill'
+                              : 'overline-pill'
+                  }
+                  className="mb-4"
+                >
+                  {eyebrow}
+                </Text>
+              )}
+              {title && (
+                <Heading as="h2" size="display-sm">
+                  {title}
+                </Heading>
+              )}
+              {subtitle && (
+                <Text
+                  size="body-lg"
+                  tone="secondary"
+                  className="mx-auto mt-4 max-w-xl dark:text-neutral-300"
+                >
+                  {subtitle}
+                </Text>
+              )}
             </div>
           )}
 
           {status === 'success' ? (
             <div className="rounded-2xl border border-success-500/30 bg-success-50 p-8 text-center dark:bg-success-500/10">
               <Text size="body-lg" className="font-semibold text-success-600">
-                {successMessage ?? (isJa ? 'デモのご予約ありがとうございます。日程調整のご連絡をお送りします。' : 'Thank you for booking a demo. We will send you a scheduling confirmation.')}
+                {successMessage ??
+                  (isJa
+                    ? 'デモのご予約ありがとうございます。日程調整のご連絡をお送りします。'
+                    : 'Thank you for booking a demo. We will send you a scheduling confirmation.')}
               </Text>
             </div>
           ) : (
@@ -361,7 +523,11 @@ export const DemoRequestForm = React.forwardRef<HTMLElement, DemoRequestFormProp
               <FormTextarea
                 name="notes"
                 label={isJa ? 'ご質問・ご要望（任意）' : 'Questions or notes (optional)'}
-                placeholder={isJa ? '事前にお伝えしたいことがあればご記入ください' : 'Anything you would like us to know beforehand'}
+                placeholder={
+                  isJa
+                    ? '事前にお伝えしたいことがあればご記入ください'
+                    : 'Anything you would like us to know beforehand'
+                }
                 rows={3}
               />
               <FormButton loading={status === 'submitting'}>

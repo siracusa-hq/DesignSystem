@@ -1,85 +1,67 @@
 import * as React from 'react';
-import { cn } from '@/lib/cn';
 import { Section } from '@/components/primitives/section';
 import { Container } from '@/components/primitives/container';
-import { Heading } from '@/components/primitives/heading';
 import { Text } from '@/components/primitives/text';
+import { SectionHeader } from '@/components/sections/section-header';
 import { ShieldCheck } from 'lucide-react';
+import styles from './security-badges.module.css';
 
 export interface SecurityBadge {
   name: string;
   icon?: React.ReactNode;
   description?: string;
+  /**
+   * 3系統の区分（LP調査: 認証 / 第三者レビュー受賞 / 業法の法定表示）。
+   * 未取得の認証を掲載してはならない（法人購買は必ず裏取りする）。
+   */
+  category?: 'certification' | 'award' | 'legal';
 }
+
+const CATEGORY_LABEL: Record<NonNullable<SecurityBadge['category']>, string> = {
+  certification: '認証',
+  award: '受賞',
+  legal: '法定表示',
+};
 
 export interface SecurityBadgesProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {
   eyebrow?: string;
-  eyebrowStyle?: 'pill' | 'border' | 'text' | 'dot' | 'gradient' | 'icon-pill';
   title?: React.ReactNode;
   subtitle?: string;
   badges: SecurityBadge[];
-  background?: 'default' | 'muted' | 'dark' | 'brand';
-  spacing?: 'sm' | 'md' | 'lg' | 'xl' | 'none';
 }
 
 export const SecurityBadges = React.forwardRef<HTMLElement, SecurityBadgesProps>(
-  ({ className, eyebrow, eyebrowStyle, title, subtitle, badges, background = 'muted', spacing, ...props }, ref) => {
-
-    return (
-      <Section ref={ref} background={background} spacing={spacing ?? 'md'} className={className} {...props}>
-        <Container>
-          {(eyebrow || title || subtitle) && (
-            <div className="mb-10 text-center">
-              {eyebrow && (
-                <Text size={eyebrowStyle === 'border' ? 'overline-border' : eyebrowStyle === 'text' ? 'overline-text' : eyebrowStyle === 'dot' ? 'overline-dot' : eyebrowStyle === 'gradient' ? 'overline-gradient' : eyebrowStyle === 'icon-pill' ? 'overline-icon-pill' : 'overline-pill'} className="mb-4">
-                  {eyebrow}
+  ({ eyebrow, title, subtitle, badges, ...props }, ref) => (
+    <Section ref={ref} background="muted" spacing="md" {...props}>
+      <Container>
+        <SectionHeader
+          eyebrow={eyebrow}
+          title={title}
+          subtitle={subtitle}
+          headingSize="heading-lg"
+        />
+        <div className={styles.row}>
+          {badges.map((badge, i) => (
+            <div key={i} className={styles.item}>
+              <div className={styles.iconBox}>{badge.icon ?? <ShieldCheck size={28} />}</div>
+              <Text as="div" size="body-sm" className={styles.name}>
+                {badge.name}
+              </Text>
+              {badge.description && (
+                <Text as="div" size="caption" tone="muted" className={styles.description}>
+                  {badge.description}
                 </Text>
               )}
-              {title && (
-                <Heading as="h2" size="heading-lg">
-                  {title}
-                </Heading>
-              )}
-              {subtitle && (
-                <Text
-                  size="body-md"
-                  tone="secondary"
-                  className={cn('mx-auto mt-2 max-w-2xl', 'dark:text-neutral-300')}
-                >
-                  {subtitle}
+              {badge.category && (
+                <Text as="div" size="caption" tone="muted" className={styles.categoryTag}>
+                  {CATEGORY_LABEL[badge.category]}
                 </Text>
               )}
             </div>
-          )}
-
-          <div className="flex flex-wrap items-center justify-center gap-8">
-            {badges.map((badge, i) => (
-              <div
-                key={i}
-                className={cn(
-                  'flex flex-col items-center gap-2 text-center',
-                )}
-              >
-                <div className={cn(
-                  'flex h-14 w-14 items-center justify-center rounded-xl',
-                  'bg-white shadow-sm dark:bg-neutral-800 dark:shadow-none',
-                )}>
-                  {badge.icon ?? <ShieldCheck className="h-7 w-7 text-primary-500" />}
-                </div>
-                <Text as="div" size="body-sm" tone="default" className={cn('font-semibold', 'dark:text-white')}>
-                  {badge.name}
-                </Text>
-                {badge.description && (
-                  <Text as="div" size="caption" tone="muted" className="max-w-32">
-                    {badge.description}
-                  </Text>
-                )}
-              </div>
-            ))}
-          </div>
-        </Container>
-      </Section>
-    );
-  },
+          ))}
+        </div>
+      </Container>
+    </Section>
+  ),
 );
 SecurityBadges.displayName = 'SecurityBadges';

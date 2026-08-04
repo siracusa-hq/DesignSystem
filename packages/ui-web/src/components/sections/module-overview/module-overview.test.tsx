@@ -13,9 +13,7 @@ const layers = [
   },
   {
     name: 'L3: コア・データ層',
-    modules: [
-      { name: 'PolaStore', label: 'DB', description: 'メタデータ駆動DB' },
-    ],
+    modules: [{ name: 'PolaStore', label: 'DB', description: 'メタデータ駆動DB' }],
   },
 ];
 

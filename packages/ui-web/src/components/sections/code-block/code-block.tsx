@@ -30,7 +30,8 @@ export const CodeBlock = React.forwardRef<HTMLElement, CodeBlockProps>(
   (
     {
       className,
-      eyebrow, eyebrowStyle,
+      eyebrow,
+      eyebrowStyle,
       title,
       subtitle,
       code,
@@ -52,9 +53,7 @@ export const CodeBlock = React.forwardRef<HTMLElement, CodeBlockProps>(
 
     React.useEffect(() => {
       import('shiki')
-        .then(({ codeToHtml }) =>
-          codeToHtml(code, { lang: language, theme: 'github-dark' }),
-        )
+        .then(({ codeToHtml }) => codeToHtml(code, { lang: language, theme: 'github-dark' }))
         .then(setHighlightedHtml)
         .catch(() => {
           // shiki未インストール or 言語未対応時はフォールバック
@@ -78,9 +77,7 @@ export const CodeBlock = React.forwardRef<HTMLElement, CodeBlockProps>(
               <span className="h-3 w-3 rounded-full bg-neutral-700" />
               <span className="h-3 w-3 rounded-full bg-neutral-700" />
             </div>
-            {filename && (
-              <span className="text-xs text-neutral-500">{filename}</span>
-            )}
+            {filename && <span className="text-xs text-neutral-500">{filename}</span>}
           </div>
           <button
             type="button"
@@ -94,13 +91,16 @@ export const CodeBlock = React.forwardRef<HTMLElement, CodeBlockProps>(
           <div
             className={cn(
               'overflow-x-auto p-4 text-sm leading-relaxed [&_pre]:!m-0 [&_pre]:!bg-transparent [&_pre]:!p-0',
-              showLineNumbers && '[&_.line]:before:mr-6 [&_.line]:before:inline-block [&_.line]:before:w-4 [&_.line]:before:text-right [&_.line]:before:text-neutral-600 [&_.line]:before:content-[counter(line)] [&_.line]:[counter-increment:line] [&_pre]:[counter-reset:line]',
+              showLineNumbers &&
+                '[&_.line]:before:mr-6 [&_.line]:before:inline-block [&_.line]:before:w-4 [&_.line]:before:text-right [&_.line]:before:text-neutral-600 [&_.line]:before:content-[counter(line)] [&_.line]:[counter-increment:line] [&_pre]:[counter-reset:line]',
             )}
             dangerouslySetInnerHTML={{ __html: highlightedHtml }}
           />
         ) : (
           <pre className="overflow-x-auto p-4">
-            <code className={cn('text-sm leading-relaxed text-neutral-300', `language-${language}`)}>
+            <code
+              className={cn('text-sm leading-relaxed text-neutral-300', `language-${language}`)}
+            >
               {code}
             </code>
           </pre>
@@ -110,12 +110,38 @@ export const CodeBlock = React.forwardRef<HTMLElement, CodeBlockProps>(
 
     if (layout === 'split' && (title || description)) {
       return (
-        <Section ref={ref} background={background} spacing={spacing ?? 'lg'} className={className} {...props}>
+        <Section
+          ref={ref}
+          background={background}
+          spacing={spacing ?? 'lg'}
+          className={className}
+          {...props}
+        >
           <Container>
-            <div className={cn('grid gap-12 lg:grid-cols-2', alignment === 'center' ? 'items-center' : 'items-start')}>
+            <div
+              className={cn(
+                'grid gap-12 lg:grid-cols-2',
+                alignment === 'center' ? 'items-center' : 'items-start',
+              )}
+            >
               <div>
                 {eyebrow && (
-                  <Text size={eyebrowStyle === 'border' ? 'overline-border' : eyebrowStyle === 'text' ? 'overline-text' : eyebrowStyle === 'dot' ? 'overline-dot' : eyebrowStyle === 'gradient' ? 'overline-gradient' : eyebrowStyle === 'icon-pill' ? 'overline-icon-pill' : 'overline-pill'} className="mb-4">
+                  <Text
+                    size={
+                      eyebrowStyle === 'border'
+                        ? 'overline-border'
+                        : eyebrowStyle === 'text'
+                          ? 'overline-text'
+                          : eyebrowStyle === 'dot'
+                            ? 'overline-dot'
+                            : eyebrowStyle === 'gradient'
+                              ? 'overline-gradient'
+                              : eyebrowStyle === 'icon-pill'
+                                ? 'overline-icon-pill'
+                                : 'overline-pill'
+                    }
+                    className="mb-4"
+                  >
                     {eyebrow}
                   </Text>
                 )}
@@ -143,12 +169,33 @@ export const CodeBlock = React.forwardRef<HTMLElement, CodeBlockProps>(
     }
 
     return (
-      <Section ref={ref} background={background} spacing={spacing ?? 'lg'} className={className} {...props}>
+      <Section
+        ref={ref}
+        background={background}
+        spacing={spacing ?? 'lg'}
+        className={className}
+        {...props}
+      >
         <Container size="md">
           {(eyebrow || title || subtitle) && (
             <div className="mb-8 text-center">
               {eyebrow && (
-                <Text size={eyebrowStyle === 'border' ? 'overline-border' : eyebrowStyle === 'text' ? 'overline-text' : eyebrowStyle === 'dot' ? 'overline-dot' : eyebrowStyle === 'gradient' ? 'overline-gradient' : eyebrowStyle === 'icon-pill' ? 'overline-icon-pill' : 'overline-pill'} className="mb-4">
+                <Text
+                  size={
+                    eyebrowStyle === 'border'
+                      ? 'overline-border'
+                      : eyebrowStyle === 'text'
+                        ? 'overline-text'
+                        : eyebrowStyle === 'dot'
+                          ? 'overline-dot'
+                          : eyebrowStyle === 'gradient'
+                            ? 'overline-gradient'
+                            : eyebrowStyle === 'icon-pill'
+                              ? 'overline-icon-pill'
+                              : 'overline-pill'
+                  }
+                  className="mb-4"
+                >
                   {eyebrow}
                 </Text>
               )}

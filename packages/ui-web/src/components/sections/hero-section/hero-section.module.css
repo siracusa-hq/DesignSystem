@@ -1,0 +1,56 @@
+/* HeroSection — 背景パターン・タイトルグラデーションは廃止（トーン連動は Stage 3）。
+   レイアウトは image の有無 + imagePlacement から決まる */
+.hero {
+  position: relative;
+  overflow: hidden;
+}
+.inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8);
+}
+.centered {
+  text-align: center;
+}
+.badgeRow {
+  display: flex;
+}
+.centered .badgeRow {
+  justify-content: center;
+}
+.titleBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+}
+.subtitle {
+  max-width: 42rem;
+}
+.centered .subtitle {
+  margin-inline: auto;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-4);
+}
+.centered .actions {
+  justify-content: center;
+}
+.split {
+  display: grid;
+  gap: var(--spacing-12);
+  align-items: center;
+}
+@media (min-width: 64rem) {
+  .split {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.mediaBelow {
+  margin-top: var(--spacing-12);
+  position: relative;
+}
+.mediaSide {
+  position: relative;
+}

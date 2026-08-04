@@ -54,11 +54,16 @@ export { Divider, dividerVariants, type DividerProps } from './components/primit
 export { AnimatedCounter, type AnimatedCounterProps } from './components/primitives/animated-counter';
 
 // Sections
-export { HeroSection, heroSectionVariants, type HeroSectionProps, type HeroAction, type HeroBackgroundPattern } from './components/sections/hero-section';
+export { HeroSection, type HeroSectionProps, type HeroAction } from './components/sections/hero-section';
 export { FeatureGrid, type FeatureGridProps, type FeatureItem } from './components/sections/feature-grid';
 export { PricingTable, type PricingTableProps } from './components/sections/pricing';
 export { PricingCard, pricingCardVariants, type PricingCardProps, type PricingFeature } from './components/sections/pricing';
-export { CTASection, ctaSectionVariants, type CTASectionProps, type CTAAction } from './components/sections/cta-section';
+export { CTASection, type CTASectionProps, type CTAAction } from './components/sections/cta-section';
+export {
+  ServicePortfolio,
+  type ServicePortfolioProps,
+  type ServiceCard,
+} from './components/sections/service-portfolio';
 export { FAQSection, type FAQSectionProps, type FAQItem } from './components/sections/faq-section';
 
 export { FeatureShowcase, type FeatureShowcaseProps, type ShowcaseItem } from './components/sections/feature-showcase';

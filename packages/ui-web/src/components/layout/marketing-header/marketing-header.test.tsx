@@ -45,9 +45,7 @@ describe('MarketingHeader', () => {
   });
 
   it('a11y違反がない', async () => {
-    const { container } = render(
-      <MarketingHeader navItems={navItems} actions={actions} />,
-    );
+    const { container } = render(<MarketingHeader navItems={navItems} actions={actions} />);
     expect(await axe(container)).toHaveNoViolations();
   });
 

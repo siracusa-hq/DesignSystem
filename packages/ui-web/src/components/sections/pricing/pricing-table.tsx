@@ -17,15 +17,48 @@ export interface PricingTableProps extends Omit<React.HTMLAttributes<HTMLElement
 }
 
 export const PricingTable = React.forwardRef<HTMLElement, PricingTableProps>(
-  ({ className, eyebrow, eyebrowStyle, title, subtitle, plans, background = 'default', spacing, ...props }, ref) => {
-
+  (
+    {
+      className,
+      eyebrow,
+      eyebrowStyle,
+      title,
+      subtitle,
+      plans,
+      background = 'default',
+      spacing,
+      ...props
+    },
+    ref,
+  ) => {
     return (
-      <Section ref={ref} background={background} spacing={spacing ?? 'lg'} className={className} {...props}>
+      <Section
+        ref={ref}
+        background={background}
+        spacing={spacing ?? 'lg'}
+        className={className}
+        {...props}
+      >
         <Container size="xl">
           {(eyebrow || title || subtitle) && (
             <div className="mb-12 text-center lg:mb-16">
               {eyebrow && (
-                <Text size={eyebrowStyle === 'border' ? 'overline-border' : eyebrowStyle === 'text' ? 'overline-text' : eyebrowStyle === 'dot' ? 'overline-dot' : eyebrowStyle === 'gradient' ? 'overline-gradient' : eyebrowStyle === 'icon-pill' ? 'overline-icon-pill' : 'overline-pill'} className="mb-4">
+                <Text
+                  size={
+                    eyebrowStyle === 'border'
+                      ? 'overline-border'
+                      : eyebrowStyle === 'text'
+                        ? 'overline-text'
+                        : eyebrowStyle === 'dot'
+                          ? 'overline-dot'
+                          : eyebrowStyle === 'gradient'
+                            ? 'overline-gradient'
+                            : eyebrowStyle === 'icon-pill'
+                              ? 'overline-icon-pill'
+                              : 'overline-pill'
+                  }
+                  className="mb-4"
+                >
                   {eyebrow}
                 </Text>
               )}

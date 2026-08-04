@@ -28,8 +28,7 @@ export interface PricingFeature {
 }
 
 export interface PricingCardProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof pricingCardVariants> {
+  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof pricingCardVariants> {
   name: string;
   description?: string;
   price: React.ReactNode;
@@ -59,11 +58,7 @@ export const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
     },
     ref,
   ) => (
-    <div
-      ref={ref}
-      className={cn(pricingCardVariants({ highlighted }), className)}
-      {...props}
-    >
+    <div ref={ref} className={cn(pricingCardVariants({ highlighted }), className)} {...props}>
       {badgeText && (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
           <Badge variant="new">{badgeText}</Badge>
@@ -110,11 +105,7 @@ export const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
                 <Minus className="h-3 w-3" />
               </span>
             )}
-            <Text
-              as="span"
-              size="body-sm"
-              tone={feature.included ? 'default' : 'muted'}
-            >
+            <Text as="span" size="body-sm" tone={feature.included ? 'default' : 'muted'}>
               {feature.text}
             </Text>
           </li>

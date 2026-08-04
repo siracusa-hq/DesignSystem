@@ -29,15 +29,49 @@ export interface CaseStudySectionProps extends Omit<React.HTMLAttributes<HTMLEle
 }
 
 export const CaseStudySection = React.forwardRef<HTMLElement, CaseStudySectionProps>(
-  ({ className, eyebrow, eyebrowStyle, title, subtitle, cases, columns = 2, background = 'default', spacing, ...props }, ref) => {
-
+  (
+    {
+      className,
+      eyebrow,
+      eyebrowStyle,
+      title,
+      subtitle,
+      cases,
+      columns = 2,
+      background = 'default',
+      spacing,
+      ...props
+    },
+    ref,
+  ) => {
     return (
-      <Section ref={ref} background={background} spacing={spacing ?? 'lg'} className={className} {...props}>
+      <Section
+        ref={ref}
+        background={background}
+        spacing={spacing ?? 'lg'}
+        className={className}
+        {...props}
+      >
         <Container>
           {(eyebrow || title || subtitle) && (
             <div className="mb-12 text-center lg:mb-16">
               {eyebrow && (
-                <Text size={eyebrowStyle === 'border' ? 'overline-border' : eyebrowStyle === 'text' ? 'overline-text' : eyebrowStyle === 'dot' ? 'overline-dot' : eyebrowStyle === 'gradient' ? 'overline-gradient' : eyebrowStyle === 'icon-pill' ? 'overline-icon-pill' : 'overline-pill'} className="mb-4">
+                <Text
+                  size={
+                    eyebrowStyle === 'border'
+                      ? 'overline-border'
+                      : eyebrowStyle === 'text'
+                        ? 'overline-text'
+                        : eyebrowStyle === 'dot'
+                          ? 'overline-dot'
+                          : eyebrowStyle === 'gradient'
+                            ? 'overline-gradient'
+                            : eyebrowStyle === 'icon-pill'
+                              ? 'overline-icon-pill'
+                              : 'overline-pill'
+                  }
+                  className="mb-4"
+                >
                   {eyebrow}
                 </Text>
               )}
@@ -76,11 +110,7 @@ export const CaseStudySection = React.forwardRef<HTMLElement, CaseStudySectionPr
                   </Text>
                 )}
 
-                <Text
-                  size="body-md"
-                  tone="default"
-                  className="flex-1 dark:text-neutral-200"
-                >
+                <Text size="body-md" tone="default" className="flex-1 dark:text-neutral-200">
                   &ldquo;{c.quote}&rdquo;
                 </Text>
 
@@ -91,7 +121,9 @@ export const CaseStudySection = React.forwardRef<HTMLElement, CaseStudySectionPr
                         <div className="text-lg font-bold text-primary-500 dark:text-white">
                           {m.value}
                         </div>
-                        <Text as="div" size="caption" tone="muted">{m.label}</Text>
+                        <Text as="div" size="caption" tone="muted">
+                          {m.label}
+                        </Text>
                       </div>
                     ))}
                   </div>

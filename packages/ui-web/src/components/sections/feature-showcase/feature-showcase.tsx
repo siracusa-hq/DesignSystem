@@ -26,15 +26,48 @@ export interface FeatureShowcaseProps extends Omit<React.HTMLAttributes<HTMLElem
 }
 
 export const FeatureShowcase = React.forwardRef<HTMLElement, FeatureShowcaseProps>(
-  ({ className, eyebrow, eyebrowStyle, title, subtitle, items, background = 'default', spacing, ...props }, ref) => {
-
+  (
+    {
+      className,
+      eyebrow,
+      eyebrowStyle,
+      title,
+      subtitle,
+      items,
+      background = 'default',
+      spacing,
+      ...props
+    },
+    ref,
+  ) => {
     return (
-      <Section ref={ref} background={background} spacing={spacing ?? 'lg'} className={className} {...props}>
+      <Section
+        ref={ref}
+        background={background}
+        spacing={spacing ?? 'lg'}
+        className={className}
+        {...props}
+      >
         <Container>
           {(eyebrow || title || subtitle) && (
             <div className="mb-16 text-center">
               {eyebrow && (
-                <Text size={eyebrowStyle === 'border' ? 'overline-border' : eyebrowStyle === 'text' ? 'overline-text' : eyebrowStyle === 'dot' ? 'overline-dot' : eyebrowStyle === 'gradient' ? 'overline-gradient' : eyebrowStyle === 'icon-pill' ? 'overline-icon-pill' : 'overline-pill'} className="mb-4">
+                <Text
+                  size={
+                    eyebrowStyle === 'border'
+                      ? 'overline-border'
+                      : eyebrowStyle === 'text'
+                        ? 'overline-text'
+                        : eyebrowStyle === 'dot'
+                          ? 'overline-dot'
+                          : eyebrowStyle === 'gradient'
+                            ? 'overline-gradient'
+                            : eyebrowStyle === 'icon-pill'
+                              ? 'overline-icon-pill'
+                              : 'overline-pill'
+                  }
+                  className="mb-4"
+                >
                   {eyebrow}
                 </Text>
               )}
@@ -89,7 +122,12 @@ export const FeatureShowcase = React.forwardRef<HTMLElement, FeatureShowcaseProp
                             <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary-100 text-primary-600 dark:bg-primary-950 dark:text-primary-400">
                               <Check className="h-3 w-3" />
                             </span>
-                            <Text as="span" size="body-sm" tone="default" className={'dark:text-neutral-200'}>
+                            <Text
+                              as="span"
+                              size="body-sm"
+                              tone="default"
+                              className={'dark:text-neutral-200'}
+                            >
                               {feat}
                             </Text>
                           </li>
@@ -97,9 +135,7 @@ export const FeatureShowcase = React.forwardRef<HTMLElement, FeatureShowcaseProp
                       </ul>
                     )}
                   </div>
-                  {item.image && (
-                    <div className="relative">{item.image}</div>
-                  )}
+                  {item.image && <div className="relative">{item.image}</div>}
                 </div>
               );
             })}

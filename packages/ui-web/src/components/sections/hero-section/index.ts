@@ -1,2 +1,1 @@
-export { HeroSection, heroSectionVariants } from './hero-section';
-export type { HeroSectionProps, HeroAction, HeroBackgroundPattern } from './hero-section';
+export { HeroSection, type HeroSectionProps, type HeroAction } from './hero-section';

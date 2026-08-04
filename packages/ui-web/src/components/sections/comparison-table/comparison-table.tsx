@@ -43,15 +43,49 @@ const CellValue: React.FC<{ value: string | boolean | React.ReactNode }> = ({ va
 };
 
 export const ComparisonTable = React.forwardRef<HTMLElement, ComparisonTableProps>(
-  ({ className, eyebrow, eyebrowStyle, title, subtitle, columns, rows, background = 'default', spacing, ...props }, ref) => {
-
+  (
+    {
+      className,
+      eyebrow,
+      eyebrowStyle,
+      title,
+      subtitle,
+      columns,
+      rows,
+      background = 'default',
+      spacing,
+      ...props
+    },
+    ref,
+  ) => {
     return (
-      <Section ref={ref} background={background} spacing={spacing ?? 'lg'} className={className} {...props}>
+      <Section
+        ref={ref}
+        background={background}
+        spacing={spacing ?? 'lg'}
+        className={className}
+        {...props}
+      >
         <Container>
           {(eyebrow || title || subtitle) && (
             <div className="mb-12 text-center lg:mb-16">
               {eyebrow && (
-                <Text size={eyebrowStyle === 'border' ? 'overline-border' : eyebrowStyle === 'text' ? 'overline-text' : eyebrowStyle === 'dot' ? 'overline-dot' : eyebrowStyle === 'gradient' ? 'overline-gradient' : eyebrowStyle === 'icon-pill' ? 'overline-icon-pill' : 'overline-pill'} className="mb-4">
+                <Text
+                  size={
+                    eyebrowStyle === 'border'
+                      ? 'overline-border'
+                      : eyebrowStyle === 'text'
+                        ? 'overline-text'
+                        : eyebrowStyle === 'dot'
+                          ? 'overline-dot'
+                          : eyebrowStyle === 'gradient'
+                            ? 'overline-gradient'
+                            : eyebrowStyle === 'icon-pill'
+                              ? 'overline-icon-pill'
+                              : 'overline-pill'
+                  }
+                  className="mb-4"
+                >
                   {eyebrow}
                 </Text>
               )}
@@ -76,7 +110,9 @@ export const ComparisonTable = React.forwardRef<HTMLElement, ComparisonTableProp
             <table className="w-full border-collapse" role="table">
               <thead className="sticky top-0 z-10">
                 <tr className="bg-white dark:bg-neutral-950">
-                  <th className="p-4 text-left"><span className="sr-only">Feature</span></th>
+                  <th className="p-4 text-left">
+                    <span className="sr-only">Feature</span>
+                  </th>
                   {columns.map((col, i) => (
                     <th
                       key={i}
@@ -98,12 +134,14 @@ export const ComparisonTable = React.forwardRef<HTMLElement, ComparisonTableProp
               </thead>
               <tbody>
                 {rows.map((row, i) => (
-                  <tr
-                    key={i}
-                    className="border-t border-neutral-200 dark:border-neutral-800"
-                  >
+                  <tr key={i} className="border-t border-neutral-200 dark:border-neutral-800">
                     <td className="sticky left-0 z-5 p-4" style={{ backgroundColor: 'inherit' }}>
-                      <Text as="span" size="body-sm" tone="default" className="dark:text-neutral-200">
+                      <Text
+                        as="span"
+                        size="body-sm"
+                        tone="default"
+                        className="dark:text-neutral-200"
+                      >
                         {row.feature}
                       </Text>
                     </td>
