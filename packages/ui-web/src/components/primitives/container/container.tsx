@@ -1,14 +1,15 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/cn';
+import styles from './container.module.css';
 
-export const containerVariants = cva('mx-auto w-full px-4 sm:px-6 lg:px-8', {
+export const containerVariants = cva(styles.container, {
   variants: {
     size: {
-      sm: 'max-w-[var(--container-sm)]',
-      md: 'max-w-[var(--container-md)]',
-      lg: 'max-w-[var(--container-lg)]',
-      xl: 'max-w-[var(--container-xl)]',
+      sm: styles.sizeSm,
+      md: styles.sizeMd,
+      lg: styles.sizeLg,
+      xl: styles.sizeXl,
     },
   },
   defaultVariants: {
@@ -17,8 +18,13 @@ export const containerVariants = cva('mx-auto w-full px-4 sm:px-6 lg:px-8', {
 });
 
 export interface ContainerProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof containerVariants> {}
+  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof containerVariants> {
+  /**
+   * @deprecated 移行期間限定（未移行コンポーネントからのレイアウト調整用）。
+   * Slice 6 で削除する（stage2-workorder.md §0）。新規利用は禁止。
+   */
+  className?: string;
+}
 
 export const Container = React.forwardRef<HTMLDivElement, ContainerProps>(
   ({ className, size, ...props }, ref) => (

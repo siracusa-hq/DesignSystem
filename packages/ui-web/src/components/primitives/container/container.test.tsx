@@ -11,7 +11,7 @@ describe('Container', () => {
 
   it('サイズバリアントを適用する', () => {
     const { container } = render(<Container size="sm">内容</Container>);
-    expect(container.firstChild).toHaveClass('max-w-[var(--container-sm)]');
+    expect(container.firstChild).toHaveClass('sizeSm');
   });
 
   it('カスタムclassNameを追加できる', () => {
