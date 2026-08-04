@@ -1,18 +1,19 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/cn';
+import styles from './heading.module.css';
 
-export const headingVariants = cva('font-bold text-[var(--color-on-surface)]', {
+export const headingVariants = cva(styles.heading, {
   variants: {
     size: {
-      'display-2xl': 'text-display-lg md:text-display-xl lg:text-display-2xl tracking-[-0.04em]',
-      'display-xl': 'text-display-md md:text-display-lg lg:text-display-xl tracking-[-0.035em]',
-      'display-lg': 'text-display-sm md:text-display-md lg:text-display-lg tracking-[-0.03em]',
-      'display-md': 'text-heading-lg md:text-display-sm lg:text-display-md tracking-[-0.025em]',
-      'display-sm': 'text-heading-md md:text-heading-lg lg:text-display-sm tracking-tight',
-      'heading-lg': 'text-heading-md md:text-heading-lg tracking-tight',
-      'heading-md': 'text-heading-sm md:text-heading-md tracking-tight',
-      'heading-sm': 'text-heading-sm tracking-tight',
+      'display-2xl': styles.display2xl,
+      'display-xl': styles.displayXl,
+      'display-lg': styles.displayLg,
+      'display-md': styles.displayMd,
+      'display-sm': styles.displaySm,
+      'heading-lg': styles.headingLg,
+      'heading-md': styles.headingMd,
+      'heading-sm': styles.headingSm,
     },
   },
   defaultVariants: {
@@ -23,8 +24,7 @@ export const headingVariants = cva('font-bold text-[var(--color-on-surface)]', {
 type HeadingLevel = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 
 export interface HeadingProps
-  extends React.HTMLAttributes<HTMLHeadingElement>,
-    VariantProps<typeof headingVariants> {
+  extends React.HTMLAttributes<HTMLHeadingElement>, VariantProps<typeof headingVariants> {
   as?: HeadingLevel;
 }
 

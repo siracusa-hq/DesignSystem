@@ -3,25 +3,21 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/cn';
 import { gradients } from '@/tokens/gradients';
 
-export const gradientTextVariants = cva(
-  'bg-clip-text text-transparent',
-  {
-    variants: {
-      gradient: {
-        brand: '',
-        neutral: '',
-        custom: '',
-      },
-    },
-    defaultVariants: {
-      gradient: 'brand',
+export const gradientTextVariants = cva('bg-clip-text text-transparent', {
+  variants: {
+    gradient: {
+      brand: '',
+      neutral: '',
+      custom: '',
     },
   },
-);
+  defaultVariants: {
+    gradient: 'brand',
+  },
+});
 
 export interface GradientTextProps
-  extends React.HTMLAttributes<HTMLElement>,
-    VariantProps<typeof gradientTextVariants> {
+  extends React.HTMLAttributes<HTMLElement>, VariantProps<typeof gradientTextVariants> {
   as?: 'span' | 'p' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
   customGradient?: string;
 }

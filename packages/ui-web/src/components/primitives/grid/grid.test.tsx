@@ -26,7 +26,11 @@ describe('Grid', () => {
   });
 
   it('a11y違反がない', async () => {
-    const { container } = render(<Grid><div>アイテム</div></Grid>);
+    const { container } = render(
+      <Grid>
+        <div>アイテム</div>
+      </Grid>,
+    );
     expect(await axe(container)).toHaveNoViolations();
   });
 });

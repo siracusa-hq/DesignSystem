@@ -131,7 +131,7 @@ MarketingFooter
 ## 進捗
 
 - [x] Slice 0（基盤）— 2026-08-04 完了。備考: theme.css に spacing スケールの実体宣言を追加（Tailwind v4 は --spacing-N を変数として持たないため。小数キーは変数化しない）。className はレイアウトプリミティブのみ @deprecated で暫定存置（未移行コンポーネントが利用中のため。Slice 6 で削除）
-- [ ] Slice 1（プリミティブ 8 + 新規 2）
+- [x] Slice 1（プリミティブ 8 + 新規 2）— 2026-08-04 完了。備考: 契約に --color-text-brand-strong（700段）を追加（Badge等の淡面上の濃文字用）。Text の overline 7種は未移行セクションが使用中のため @deprecated で暫定存置（Slice 4 で削除）。MarketingButton の gradient は cta へのエイリアス化（Slice 2 で削除）
 - [ ] Slice 2（セクション 5 + 新規 1 + レイアウト 3）
 - [ ] Slice 3（コーポレートトップ = 検証関門）
 - [ ] Slice 4（残りセクション 13 + プリミティブ残り + 新規 3）

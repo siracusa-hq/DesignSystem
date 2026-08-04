@@ -1,0 +1,5 @@
+/* Logo — プレースホルダーロゴ。マークの塗りは装飾スロット（data-brand に追従） */
+
+.logo {
+  flex-shrink: 0;
+}

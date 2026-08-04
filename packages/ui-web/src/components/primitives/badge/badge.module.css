@@ -1,0 +1,58 @@
+/* Badge — ラベル。字送り +0.04em（ラベル類のウェイト補正字送り・workorder §5） */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--radius-pill);
+  padding: var(--spacing-1) var(--spacing-3);
+  font-size: var(--text-caption);
+  line-height: var(--text-caption--line-height);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.variantDefault {
+  background: var(--color-bg-brand-muted);
+  color: var(--color-text-brand-strong);
+}
+:global(.dark) .variantDefault {
+  background: var(--color-bg-brand-strong);
+  color: var(--color-text-brand-on-dark);
+}
+
+.variantSecondary {
+  background: var(--color-neutral-100);
+  color: var(--color-neutral-700);
+}
+:global(.dark) .variantSecondary {
+  background: var(--color-neutral-800);
+  color: var(--color-neutral-300);
+}
+
+.variantOutline {
+  border: 1px solid var(--color-border);
+  color: var(--color-on-surface-secondary);
+}
+
+.variantNew {
+  background: var(--color-bg-brand-primary);
+  color: var(--color-on-brand);
+}
+
+.variantBeta {
+  background: var(--color-info-100);
+  color: var(--color-info-700);
+}
+:global(.dark) .variantBeta {
+  background: var(--color-info-950);
+  color: var(--color-info-300);
+}
+
+.variantComingSoon {
+  background: var(--color-warning-100);
+  color: var(--color-warning-700);
+}
+:global(.dark) .variantComingSoon {
+  background: var(--color-warning-950);
+  color: var(--color-warning-300);
+}

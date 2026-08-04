@@ -1,0 +1,40 @@
+/* Section — ページがリズム（面・余白）を割り当てるための器。
+   コンテンツセクション（Hero等）は自分では面・余白を選ばない（workorder §2）。 */
+
+.section {
+  width: 100%;
+}
+
+/* 余白（セクション間リズム） */
+.spacingSm {
+  padding-block: var(--spacing-section-sm);
+}
+.spacingMd {
+  padding-block: var(--spacing-section-md);
+}
+.spacingLg {
+  padding-block: var(--spacing-section-lg);
+}
+.spacingXl {
+  padding-block: var(--spacing-section-xl);
+}
+.spacingNone {
+  padding-block: 0;
+}
+
+/* 面 */
+.bgDefault {
+  background: var(--color-surface);
+}
+.bgMuted {
+  background: var(--color-surface-sunken);
+}
+.bgDark {
+  background: var(--color-neutral-950);
+  color: var(--color-neutral-50);
+}
+/* ブランド強調面。旧 primary-950 直参照から strong スロットへ（multi-brand 対応） */
+.bgBrand {
+  background: var(--color-bg-brand-strong);
+  color: var(--color-neutral-50);
+}

@@ -10,9 +10,7 @@ describe('AnimatedCounter', () => {
   });
 
   it('prefixとsuffixを表示する', () => {
-    const { container } = render(
-      <AnimatedCounter value={99} prefix="¥" suffix="+" />,
-    );
+    const { container } = render(<AnimatedCounter value={99} prefix="¥" suffix="+" />);
     const text = container.textContent;
     expect(text).toContain('¥');
     expect(text).toContain('+');

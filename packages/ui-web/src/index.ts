@@ -48,6 +48,8 @@ export { useInView, type UseInViewOptions } from './hooks/useInView';
 // Primitives - Display
 export { Logo, type LogoProps } from './components/primitives/logo';
 export { Badge, badgeVariants, type BadgeProps } from './components/primitives/badge';
+export { Eyebrow, type EyebrowProps } from './components/primitives/eyebrow';
+export { LogoMark, type LogoMarkProps } from './components/primitives/logo-mark';
 export { Divider, dividerVariants, type DividerProps } from './components/primitives/divider';
 export { AnimatedCounter, type AnimatedCounterProps } from './components/primitives/animated-counter';
 

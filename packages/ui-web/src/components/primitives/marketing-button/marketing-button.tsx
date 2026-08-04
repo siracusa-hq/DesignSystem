@@ -1,39 +1,35 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/cn';
+import styles from './marketing-button.module.css';
 
-export const marketingButtonVariants = cva(
-  'group inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl font-semibold transition-all duration-normal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
-  {
-    variants: {
-      variant: {
-        primary:
-          'bg-primary-500 !text-white hover:bg-primary-600 active:bg-primary-700 hover:shadow-glow-primary hover:-translate-y-0.5 active:translate-y-0',
-        secondary:
-          'border border-[var(--color-border)] bg-[var(--color-surface)] text-neutral-700 dark:text-neutral-300 hover:bg-[var(--color-surface-sunken)] hover:border-primary-300 hover:-translate-y-0.5 active:translate-y-0',
-        ghost:
-          'text-[var(--color-on-surface)] hover:bg-neutral-100 hover:text-primary-600 dark:hover:bg-neutral-800 dark:hover:text-primary-400',
-        // グラデーション両端とも白文字 4.5:1 を満たす必要があるため
-        // primary-400 (#26a69a = 3.0:1) は使わず 600→500 の範囲に収める。
-        gradient:
-          'bg-gradient-to-r from-primary-600 to-primary-500 !text-white hover:from-primary-700 hover:to-primary-600 hover:shadow-glow-primary bg-[length:200%_100%] hover:bg-[position:right] hover:-translate-y-0.5 active:translate-y-0',
-      },
-      size: {
-        sm: 'h-9 px-4 text-body-sm',
-        md: 'h-11 px-6 text-body-md',
-        lg: 'h-13 px-8 text-body-lg',
-        xl: 'h-15 px-10 text-body-lg',
-      },
+export const marketingButtonVariants = cva(styles.button, {
+  variants: {
+    variant: {
+      primary: styles.primary,
+      secondary: styles.secondary,
+      ghost: styles.ghost,
+      /** CTA 第3役割（--color-cta-*）。コンバージョン導線用 */
+      cta: styles.cta,
+      /** @deprecated cta に置き換え（トーン連動の再導入は Stage 3。Slice 2 で削除） */
+      gradient: styles.cta,
     },
-    defaultVariants: {
-      variant: 'primary',
-      size: 'md',
+    size: {
+      sm: styles.sizeSm,
+      md: styles.sizeMd,
+      lg: styles.sizeLg,
+      xl: styles.sizeXl,
     },
   },
-);
+  defaultVariants: {
+    variant: 'primary',
+    size: 'md',
+  },
+});
 
 export interface MarketingButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof marketingButtonVariants> {
   href?: string;
   rightIcon?: React.ReactNode;
@@ -46,11 +42,7 @@ export const MarketingButton = React.forwardRef<
   const content = (
     <>
       {children}
-      {rightIcon && (
-        <span className="transition-transform duration-200 group-hover:translate-x-1">
-          {rightIcon}
-        </span>
-      )}
+      {rightIcon && <span className={styles.icon}>{rightIcon}</span>}
     </>
   );
 

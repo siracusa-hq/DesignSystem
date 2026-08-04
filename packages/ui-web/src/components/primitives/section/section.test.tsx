@@ -12,12 +12,12 @@ describe('Section', () => {
 
   it('spacingバリアントを適用する', () => {
     const { container } = render(<Section spacing="lg">内容</Section>);
-    expect(container.firstChild).toHaveClass('py-[var(--spacing-section-lg)]');
+    expect(container.firstChild).toHaveClass('spacingLg');
   });
 
   it('backgroundバリアントを適用する', () => {
     const { container } = render(<Section background="dark">内容</Section>);
-    expect(container.firstChild).toHaveClass('bg-neutral-950');
+    expect(container.firstChild).toHaveClass('bgDark');
   });
 
   it('a11y違反がない', async () => {

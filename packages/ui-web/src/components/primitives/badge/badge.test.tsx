@@ -11,7 +11,7 @@ describe('Badge', () => {
 
   it('variantを適用する', () => {
     const { container } = render(<Badge variant="beta">Beta</Badge>);
-    expect(container.firstChild).toHaveClass('bg-info-100');
+    expect(container.firstChild).toHaveClass('variantBeta');
   });
 
   it('カスタムclassNameを追加できる', () => {
