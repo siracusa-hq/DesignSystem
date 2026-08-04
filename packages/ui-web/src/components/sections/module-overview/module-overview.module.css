@@ -1,0 +1,86 @@
+/* ModuleOverview — アーキテクチャの層とモジュールの一覧。
+   既定面は暗面（Section background="dark"）。文字色の反転は Section 側が担う。 */
+
+.layers {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.layerName {
+  margin-bottom: var(--spacing-2);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.modules {
+  display: grid;
+  gap: var(--spacing-3);
+}
+@media (min-width: 40rem) {
+  .cols2,
+  .cols3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 64rem) {
+  .cols3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.module {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-raised);
+  padding: var(--spacing-4);
+  transition:
+    border-color var(--duration-normal) var(--ease-default),
+    box-shadow var(--duration-normal) var(--ease-default);
+}
+.module:hover {
+  border-color: var(--color-border-brand-strong);
+  box-shadow: var(--shadow-raised);
+}
+
+.iconBox {
+  display: flex;
+  height: 2.25rem;
+  width: 2.25rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-control);
+  background: color-mix(in srgb, var(--color-text-brand) 10%, transparent);
+  color: var(--color-text-brand);
+}
+
+.moduleBody {
+  min-width: 0;
+}
+.moduleHead {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+.moduleName {
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+.moduleDescription {
+  margin-top: var(--spacing-1);
+}
+
+/* データフロー図 */
+.flow {
+  margin-top: var(--spacing-12);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-2);
+  font-family: var(--font-mono);
+}

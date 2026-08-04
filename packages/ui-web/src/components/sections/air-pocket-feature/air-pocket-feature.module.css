@@ -1,0 +1,57 @@
+/* AirPocketFeature — 競合が埋めていない「空隙」を1件ずつ交互に見せる帯 */
+
+.items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-20);
+}
+
+.row {
+  display: grid;
+  align-items: center;
+  gap: var(--spacing-12);
+}
+@media (min-width: 64rem) {
+  .row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  /* 偶数番は文とビジュアルを入れ替える（DOM 順は文が先のまま = 読み上げ順を保つ） */
+  .reversed > :first-child {
+    order: 2;
+  }
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-4);
+}
+.proof {
+  font-weight: 500;
+}
+
+/* 競合ステータス表 */
+.competitors {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  /* .copy の gap-4 に足して一段広く空ける */
+  margin-top: var(--spacing-2);
+}
+.competitorRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+.competitorName {
+  width: 6rem;
+  flex-shrink: 0;
+}
+.ownRow {
+  font-weight: 600;
+}
+
+.media {
+  position: relative;
+}
