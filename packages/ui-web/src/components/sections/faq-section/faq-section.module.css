@@ -1,0 +1,52 @@
+/* FAQSection — アコーディオン。開閉ロジックは既存のまま、
+   モーションは --duration-normal + --ease-default に統一した。 */
+
+.item {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.trigger {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: var(--spacing-5);
+  text-align: left;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  color: var(--color-on-surface);
+  transition: color var(--duration-normal) var(--ease-default);
+}
+/* 見出しは自前で色を持つため、スコープ内のセマンティック変数を差し替えて連動させる
+   （section.module.css と同じ流儀） */
+.trigger:hover {
+  --color-on-surface: var(--color-text-brand);
+  color: var(--color-text-brand);
+}
+.trigger:focus-visible {
+  outline: 2px solid var(--color-ring-brand);
+  outline-offset: 2px;
+}
+
+.question {
+  padding-right: var(--spacing-8);
+}
+
+.icon {
+  flex-shrink: 0;
+  transition: transform var(--duration-normal) var(--ease-default);
+}
+.iconOpen {
+  transform: rotate(45deg);
+}
+
+.panel {
+  overflow: hidden;
+  transition:
+    max-height var(--duration-normal) var(--ease-default),
+    opacity var(--duration-normal) var(--ease-default);
+}
+.panelInner {
+  padding-bottom: var(--spacing-5);
+}

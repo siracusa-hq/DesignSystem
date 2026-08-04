@@ -31,6 +31,32 @@ describe('TestimonialSection', () => {
     expect(container.querySelector('section')).toBeInTheDocument();
   });
 
+  it('avatarSrc が無くても author 名から Avatar を生成する', () => {
+    const { container } = render(<TestimonialSection testimonials={testimonials} />);
+    expect(container.querySelectorAll('.avatar')).toHaveLength(2);
+    expect(container.querySelector('img')).not.toBeInTheDocument();
+  });
+
+  it('avatarSrc があれば img で表示する（alt は author 名）', () => {
+    render(
+      <TestimonialSection
+        testimonials={[{ quote: 'q', author: '山田花子', avatarSrc: '/a.png' }]}
+      />,
+    );
+    expect(screen.getByAltText('山田花子')).toHaveAttribute('src', '/a.png');
+  });
+
+  it('列数を件数から導出する（1→1 / 2→2 / 3件以上→3）', () => {
+    const make = (n: number) =>
+      Array.from({ length: n }, (_, i) => ({ quote: `q${i}`, author: `a${i}` }));
+    const grid = (n: number) =>
+      render(<TestimonialSection testimonials={make(n)} />).container.querySelector('.grid');
+
+    expect(grid(1)).toHaveClass('cols1');
+    expect(grid(2)).toHaveClass('cols2');
+    expect(grid(5)).toHaveClass('cols3');
+  });
+
   it('a11y違反がない', async () => {
     const { container } = render(<TestimonialSection testimonials={testimonials} />);
     expect(await axe(container)).toHaveNoViolations();

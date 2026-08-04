@@ -80,8 +80,6 @@ export const DarkBackground: Story = {
     return (
       <CaseStudySection
         title={isJa ? '導入企業の声' : 'What customers say'}
-        background="dark"
-        columns={3}
         cases={
           isJa
             ? [

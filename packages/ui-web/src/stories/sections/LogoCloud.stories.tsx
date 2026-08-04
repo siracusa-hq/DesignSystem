@@ -10,21 +10,39 @@ export default meta;
 
 type Story = StoryObj<typeof LogoCloud>;
 
+/** ロゴ素材の代わり。実運用では src に画像 URL を渡す */
 const PlaceholderLogo: React.FC<{ name: string }> = ({ name }) => (
-  <div className="flex h-10 w-32 items-center justify-center rounded bg-neutral-200 text-xs font-medium text-neutral-600">
-    {name}
-  </div>
+  <svg width="128" height="32" viewBox="0 0 128 32" role="img" aria-label={name}>
+    <rect width="128" height="32" rx="4" fill="var(--color-surface-sunken)" />
+    <text
+      x="64"
+      y="20"
+      textAnchor="middle"
+      fontSize="11"
+      fontWeight="500"
+      fill="var(--color-on-surface-muted)"
+    >
+      {name}
+    </text>
+  </svg>
 );
 
-const logos = [
-  { name: 'Company A', logo: <PlaceholderLogo name="Company A" /> },
-  { name: 'Company B', logo: <PlaceholderLogo name="Company B" /> },
-  { name: 'Company C', logo: <PlaceholderLogo name="Company C" /> },
-  { name: 'Company D', logo: <PlaceholderLogo name="Company D" /> },
-  { name: 'Company E', logo: <PlaceholderLogo name="Company E" /> },
-  { name: 'Company F', logo: <PlaceholderLogo name="Company F" /> },
+const names = [
+  'Company A',
+  'Company B',
+  'Company C',
+  'Company D',
+  'Company E',
+  'Company F',
+  'Company G',
+  'Company H',
+  'Company I',
 ];
 
+const toLogos = (count: number) =>
+  names.slice(0, count).map((name) => ({ name, node: <PlaceholderLogo name={name} /> }));
+
+/** 6件。静的な帯で並ぶ（6社未満なら StatsSection の数値バッジを使うこと） */
 export const Static: Story = {
   render: (_, { globals }) => {
     const isJa = globals.locale === 'ja';
@@ -32,21 +50,20 @@ export const Static: Story = {
       <LogoCloud
         eyebrow={isJa ? '導入企業' : 'TRUSTED BY'}
         title={isJa ? '先進企業に選ばれています' : 'Trusted by leading companies'}
-        logos={logos}
+        logos={toLogos(6)}
       />
     );
   },
 };
 
-export const Scrolling: Story = {
+/** 9件。8件以上なので自動でスクロール表示になる（scrolling prop は削除済み） */
+export const AutoScrolling: Story = {
   render: (_, { globals }) => {
     const isJa = globals.locale === 'ja';
     return (
       <LogoCloud
         title={isJa ? '導入企業' : 'Our customers'}
-        logos={logos}
-        scrolling
-        background="muted"
+        logos={toLogos(9)}
       />
     );
   },

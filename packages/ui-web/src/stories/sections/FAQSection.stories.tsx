@@ -101,7 +101,6 @@ export const DarkBackground: Story = {
       <FAQSection
         title={isJa ? 'よくある質問' : 'FAQ'}
         items={(isJa ? faqItemsJa : faqItemsEn).slice(0, 3)}
-        background="dark"
       />
     );
   },

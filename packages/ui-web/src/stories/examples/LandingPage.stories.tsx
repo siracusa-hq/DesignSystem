@@ -192,13 +192,21 @@ export const TopPage: Story = {
             title={
               isJa ? '先進企業が採用するプラットフォーム' : 'Trusted by forward-thinking teams'
             }
-            scrolling
             logos={Array.from({ length: 10 }).map((_, i) => ({
               name: `Company ${i + 1}`,
-              logo: (
-                <div className="flex h-8 w-24 items-center justify-center rounded bg-neutral-200 text-xs text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400">
-                  Logo {i + 1}
-                </div>
+              node: (
+                <svg width="96" height="32" viewBox="0 0 96 32" role="img" aria-label={`Company ${i + 1}`}>
+                  <rect width="96" height="32" rx="4" fill="var(--color-surface-sunken)" />
+                  <text
+                    x="48"
+                    y="20"
+                    textAnchor="middle"
+                    fontSize="11"
+                    fill="var(--color-on-surface-muted)"
+                  >
+                    Logo {i + 1}
+                  </text>
+                </svg>
               ),
             }))}
           />
