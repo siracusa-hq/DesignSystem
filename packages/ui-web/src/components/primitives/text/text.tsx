@@ -40,15 +40,38 @@ export const textVariants = cva('', {
 });
 
 /**
- * 和文リード文の改行を「読点・句点」に限定するための節分割。
+ * 和文リード文の改行を「文章の切れ目」に限定するための階層分割。
+ *
+ * 句点（。！？）と読点（、）を同格に扱うと
+ * 「〜シリーズ。色が違っても、」のように文の途中で行が継がれて気持ち悪い。
+ * そこで2段構えにする:
+ *   1. まず句点で「文」に分割し、各文を折り返し不能の塊（inline-block）にする
+ *      → 文の途中から次の文が同じ行に載ることがなくなる
+ *   2. 文が1行に収まらないときだけ、文の内部が読点で折れる
+ *      （文の中の各節も inline-block のため）
  * 欧文（区切り文字なし）はそのまま返る。
  */
 export function splitJaClauses(text: string): React.ReactNode {
-  const parts = text.split(/(?<=[、。！？])/);
-  if (parts.length <= 1) return text;
-  return parts.map((part, i) => (
+  const splitBy = (input: string, re: RegExp) => input.split(re).filter((p) => p !== '');
+
+  const wrapCommaParts = (sentence: string, keyBase: string): React.ReactNode => {
+    const parts = splitBy(sentence, /(?<=、)/);
+    if (parts.length <= 1) return sentence;
+    return parts.map((part, i) => (
+      <span key={`${keyBase}${i}`} className={styles.clause}>
+        {part}
+      </span>
+    ));
+  };
+
+  const sentences = splitBy(text, /(?<=[。！？])/);
+  if (sentences.length <= 1) {
+    // 文が1つ（または句点なし）: 読点のみで分割（従来挙動）
+    return wrapCommaParts(text, 'c');
+  }
+  return sentences.map((sentence, i) => (
     <span key={i} className={styles.clause}>
-      {part}
+      {wrapCommaParts(sentence, `${i}-`)}
     </span>
   ));
 }
