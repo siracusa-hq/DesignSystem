@@ -136,6 +136,12 @@ MarketingFooter
    これは構成依存。Stage 3 の `<Page>` リズムエンジンの必要性を再確認した。
 4. **HeroSection.image の型制約は未実装** — MediaFrame/ProductShot が
    Slice 4 のため ReactNode のまま。予定どおり Slice 4 で制約する。
+5. **【ブランド側レビューで発見・修正済み】暗面 Section で文字が読めない** —
+   Section の dark/brand 面が背景色しか変えず、セマンティック文字色
+   （--color-on-surface 系）が明モードの黒インクのままだった（移行前からの
+   潜在バグ）。対処: 暗面はスコープ内のセマンティック変数と
+   --color-text-brand 系を反転する方式に変更（section.module.css）。
+   個別コンポーネントの対応は不要になり、今後の全セクションに効く。
 
 ---
 
