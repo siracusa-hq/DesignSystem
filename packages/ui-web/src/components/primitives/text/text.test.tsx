@@ -45,4 +45,16 @@ describe('clauseWrap（和文リード文の節ラップ）', () => {
     const { container } = render(<Text clauseWrap>{'One calm tone across brands'}</Text>);
     expect(container.querySelectorAll('span.clause')).toHaveLength(0);
   });
+
+  it('句読点のない和文は分割せず、従来の折り返しに委ねる', () => {
+    const { container } = render(
+      <Text clauseWrap>{'句読点がまったくない見出しコピーはそのまま描画される'}</Text>,
+    );
+    expect(container.querySelectorAll('span.clause')).toHaveLength(0);
+  });
+
+  it('一文だけ（末尾が句点）の場合も節が1つなので包まない', () => {
+    const { container } = render(<Text clauseWrap>{'一文だけで終わる文章です。'}</Text>);
+    expect(container.querySelectorAll('span.clause')).toHaveLength(0);
+  });
 });
