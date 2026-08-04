@@ -1,0 +1,40 @@
+/* FeatureGrid — 機能カードの一覧。カードの意匠は役割トークン
+   （--radius-card / --shadow-card / hover は --shadow-card-hover）で統一する。 */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  /* 見出し→説明の間隔。アイコンの下だけ .iconBox が追加で空ける */
+  gap: var(--spacing-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  padding: var(--spacing-6);
+  box-shadow: var(--shadow-card);
+  transition:
+    box-shadow var(--duration-normal) var(--ease-default),
+    transform var(--duration-normal) var(--ease-default),
+    border-color var(--duration-normal) var(--ease-default);
+}
+.card:hover {
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--color-border-brand);
+  transform: translateY(-2px);
+}
+
+.iconBox {
+  display: flex;
+  height: 2.5rem;
+  width: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-control);
+  background: var(--color-bg-brand-subtle);
+  color: var(--color-text-brand);
+  margin-bottom: var(--spacing-2);
+}
+:global(.dark) .iconBox {
+  background: color-mix(in srgb, var(--color-text-brand-on-dark) 15%, transparent);
+  color: var(--color-text-brand-on-dark);
+}

@@ -83,56 +83,55 @@ export const Default: Story = {
   },
 };
 
-export const WithVariants: Story = {
+/** 強調は「1件目」という位置で決まる（旧 variant prop は削除済み。workorder §3） */
+export const FirstItemIsFeatured: Story = {
   render: (_, { globals }) => {
     const isJa = globals.locale === 'ja';
     return (
       <BentoGrid
         eyebrow={isJa ? 'ハイライト' : 'HIGHLIGHTS'}
-        title={isJa ? 'カードバリエーション' : 'Card Variations'}
+        title={isJa ? '主役は並び順で決まる' : 'Order decides the lead'}
         items={
           isJa
             ? [
                 {
-                  title: 'Featured カード',
-                  description: 'variant="featured" でプライマリカラーのグラデーション背景とグロー効果。',
-                  variant: 'featured',
+                  title: '1件目のカード',
+                  description:
+                    '先頭のカードだけが淡いブランド面とグローで強調される。指定は不要。',
                   span: 2,
                 },
                 {
-                  title: 'Dark カード',
-                  description: 'variant="dark" でダーク背景。視覚的なコントラスト。',
-                  variant: 'dark',
+                  title: '2件目のカード',
+                  description: '以降は通常のカード。面は surface、影は card。',
                 },
                 {
-                  title: 'Default カード 1',
-                  description: 'デフォルトの白背景カード。',
+                  title: '3件目のカード',
+                  description: 'ホバーの持ち上がりは全カード共通。',
                 },
                 {
-                  title: 'Default カード 2',
-                  description: 'すべてのカードにホバーインタラクション付き。',
+                  title: '4件目のカード',
+                  description: '横幅は span で 2 列ぶんに広げられる（強調とは別の軸）。',
                   span: 2,
                 },
               ]
             : [
                 {
-                  title: 'Featured Card',
-                  description: 'variant="featured" applies primary gradient background with glow effect.',
-                  variant: 'featured',
+                  title: 'First card',
+                  description:
+                    'Only the first card gets the tinted brand surface and glow. No prop needed.',
                   span: 2,
                 },
                 {
-                  title: 'Dark Card',
-                  description: 'variant="dark" for dark background with visual contrast.',
-                  variant: 'dark',
+                  title: 'Second card',
+                  description: 'The rest are plain cards on the default surface.',
                 },
                 {
-                  title: 'Default Card 1',
-                  description: 'Default white background card.',
+                  title: 'Third card',
+                  description: 'Hover lift is shared by every card.',
                 },
                 {
-                  title: 'Default Card 2',
-                  description: 'All cards have hover interactions.',
+                  title: 'Fourth card',
+                  description: 'Width is controlled by span — a separate axis from emphasis.',
                   span: 2,
                 },
               ]

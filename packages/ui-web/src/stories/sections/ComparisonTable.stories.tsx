@@ -57,7 +57,6 @@ export const VsCompetitors: Story = {
             values: [false, true, true],
           },
         ]}
-        background="muted"
       />
     );
   },

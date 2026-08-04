@@ -82,7 +82,6 @@ export const FullPage: Story = {
             { title: 'PolaStore', description: isJa ? 'メタデータ駆動DB' : 'Metadata-driven DB' },
             { title: 'PolaGate', description: isJa ? 'Runtime Gateway' : 'Runtime Gateway' },
           ]}
-          columns={3}
         />
 
         <CTASection

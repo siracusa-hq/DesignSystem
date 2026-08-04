@@ -51,7 +51,6 @@ export const ElevenModules: Story = {
             : 'In the age of AI-generated code, Polastack handles the enterprise backend.'
         }
         features={isJa ? modulesJa : modulesEn}
-        columns={4}
       />
     );
   },
@@ -65,8 +64,6 @@ export const ThreeColumns: Story = {
       <FeatureGrid
         title={isJa ? '主要機能' : 'Key Features'}
         features={features}
-        columns={3}
-        background="muted"
       />
     );
   },

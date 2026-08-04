@@ -24,8 +24,16 @@ describe('BentoGrid', () => {
 
   it('spanクラスを適用する', () => {
     const { container } = render(<BentoGrid items={items} />);
-    const firstCard = container.querySelector('.md\\:col-span-2');
-    expect(firstCard).toBeInTheDocument();
+    expect(container.querySelector('.span2')).toBeInTheDocument();
+  });
+
+  it('1件目だけが強調され、2件目以降は通常カードになる', () => {
+    const { container } = render(<BentoGrid items={items} />);
+    const cards = container.querySelectorAll('.card');
+    expect(cards).toHaveLength(3);
+    expect(cards[0]).toHaveClass('featured');
+    expect(cards[1]).not.toHaveClass('featured');
+    expect(cards[2]).not.toHaveClass('featured');
   });
 
   it('section要素としてレンダリングする', () => {

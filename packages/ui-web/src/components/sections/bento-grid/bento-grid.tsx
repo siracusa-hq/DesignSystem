@@ -4,6 +4,8 @@ import { Section } from '@/components/primitives/section';
 import { Container } from '@/components/primitives/container';
 import { Heading } from '@/components/primitives/heading';
 import { Text } from '@/components/primitives/text';
+import { SectionHeader } from '@/components/sections/section-header';
+import styles from './bento-grid.module.css';
 
 export interface BentoItem {
   title: string;
@@ -12,135 +14,47 @@ export interface BentoItem {
   content?: React.ReactNode;
   span?: 1 | 2;
   rowSpan?: 1 | 2;
-  variant?: 'default' | 'featured' | 'dark';
 }
 
 export interface BentoGridProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {
   eyebrow?: string;
-  eyebrowStyle?: 'pill' | 'border' | 'text' | 'dot' | 'gradient' | 'icon-pill';
   title?: React.ReactNode;
   subtitle?: string;
+  /** 強調されるのは常に1件目。順番が主役を決める（旧 variant は削除。workorder §3） */
   items: BentoItem[];
-  background?: 'default' | 'muted' | 'dark' | 'brand';
-  spacing?: 'sm' | 'md' | 'lg' | 'xl' | 'none';
 }
 
-const spanClasses = {
-  1: '',
-  2: 'md:col-span-2',
-} as const;
-
-const rowSpanClasses = {
-  1: '',
-  2: 'md:row-span-2',
-} as const;
-
 export const BentoGrid = React.forwardRef<HTMLElement, BentoGridProps>(
-  (
-    {
-      className,
-      eyebrow,
-      eyebrowStyle,
-      title,
-      subtitle,
-      items,
-      background = 'default',
-      spacing,
-      ...props
-    },
-    ref,
-  ) => {
-    return (
-      <Section
-        ref={ref}
-        background={background}
-        spacing={spacing ?? 'lg'}
-        className={className}
-        {...props}
-      >
-        <Container>
-          {(eyebrow || title || subtitle) && (
-            <div className="mb-12 text-center lg:mb-16">
-              {eyebrow && (
-                <Text
-                  size={
-                    eyebrowStyle === 'border'
-                      ? 'overline-border'
-                      : eyebrowStyle === 'text'
-                        ? 'overline-text'
-                        : eyebrowStyle === 'dot'
-                          ? 'overline-dot'
-                          : eyebrowStyle === 'gradient'
-                            ? 'overline-gradient'
-                            : eyebrowStyle === 'icon-pill'
-                              ? 'overline-icon-pill'
-                              : 'overline-pill'
-                  }
-                  className="mb-4"
-                >
-                  {eyebrow}
+  ({ eyebrow, title, subtitle, items, ...props }, ref) => (
+    <Section ref={ref} background="default" spacing="lg" {...props}>
+      <Container>
+        <SectionHeader eyebrow={eyebrow} title={title} subtitle={subtitle} />
+        <div className={styles.grid}>
+          {items.map((item, i) => (
+            <div
+              key={i}
+              className={cn(
+                styles.card,
+                i === 0 && styles.featured,
+                item.span === 2 && styles.span2,
+                item.rowSpan === 2 && styles.rowSpan2,
+              )}
+            >
+              {item.icon && <div className={styles.iconBox}>{item.icon}</div>}
+              <Heading as="h3" size="heading-md">
+                {item.title}
+              </Heading>
+              {item.description && (
+                <Text size="body-sm" tone="secondary">
+                  {item.description}
                 </Text>
               )}
-              {title && (
-                <Heading as="h2" size="display-md">
-                  {title}
-                </Heading>
-              )}
-              {subtitle && (
-                <Text
-                  size="body-lg"
-                  tone="secondary"
-                  className={cn('mx-auto mt-4 max-w-2xl', 'dark:text-neutral-300')}
-                >
-                  {subtitle}
-                </Text>
-              )}
+              {item.content && <div className={styles.content}>{item.content}</div>}
             </div>
-          )}
-
-          <div className="grid gap-4 md:grid-cols-3 md:gap-6">
-            {items.map((item, i) => (
-              <div
-                key={i}
-                className={cn(
-                  'flex flex-col overflow-hidden rounded-2xl border p-6 transition-all duration-200 hover:-translate-y-1 hover:border-primary-500/30 hover:shadow-xl',
-                  item.variant === 'featured'
-                    ? 'border-brand-500/20 bg-gradient-to-br from-brand-50 to-white shadow-glow-primary dark:from-brand-950/20 dark:to-neutral-900'
-                    : item.variant === 'dark'
-                      ? 'border-neutral-800 bg-neutral-950 text-white'
-                      : 'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900',
-                  spanClasses[item.span ?? 1],
-                  rowSpanClasses[item.rowSpan ?? 1],
-                )}
-              >
-                {item.icon && (
-                  <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-primary-50 text-primary-500 dark:bg-primary-950">
-                    {item.icon}
-                  </div>
-                )}
-                <Heading
-                  as="h3"
-                  size="heading-md"
-                  className={item.variant === 'dark' ? 'text-white!' : ''}
-                >
-                  {item.title}
-                </Heading>
-                {item.description && (
-                  <Text
-                    size="body-sm"
-                    tone={item.variant === 'dark' ? 'inherit' : 'secondary'}
-                    className={cn('mt-2', item.variant === 'dark' && 'text-neutral-400')}
-                  >
-                    {item.description}
-                  </Text>
-                )}
-                {item.content && <div className="mt-4 flex-1">{item.content}</div>}
-              </div>
-            ))}
-          </div>
-        </Container>
-      </Section>
-    );
-  },
+          ))}
+        </div>
+      </Container>
+    </Section>
+  ),
 );
 BentoGrid.displayName = 'BentoGrid';
