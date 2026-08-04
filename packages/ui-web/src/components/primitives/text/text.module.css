@@ -1,6 +1,5 @@
 /* Text — 本文テキスト。
-   overline 系は Eyebrow コンポーネントへ移行済み（@deprecated クラスは
-   未移行セクションが使用中のため暫定存置。Slice 4 完了時に削除する）。 */
+   overline 系は Eyebrow コンポーネントへ完全移行した（Slice 4 で削除済み）。 */
 
 .bodyLg {
   font-size: var(--text-body-lg);
@@ -37,74 +36,4 @@
    （長文段落に使うと行末が間延びするため Text の既定にはしない） */
 .clause {
   display: inline-block;
-}
-
-/* ---- 以下すべて @deprecated（Eyebrow へ移行。Slice 4 で削除） ---- */
-
-.overlineBase {
-  font-size: var(--text-body-sm);
-  line-height: var(--text-body-sm--line-height);
-  font-weight: 500;
-  letter-spacing: 0.025em;
-  color: var(--color-text-brand);
-}
-:global(.dark) .overlineBase {
-  color: var(--color-text-brand-on-dark);
-}
-
-.overlinePill {
-  display: inline-flex;
-  align-items: center;
-  border-radius: var(--radius-pill);
-  padding: var(--spacing-1) var(--spacing-3);
-  background: color-mix(in srgb, var(--color-text-brand) 10%, transparent);
-}
-:global(.dark) .overlinePill {
-  background: color-mix(in srgb, var(--color-text-brand-on-dark) 10%, transparent);
-}
-
-.overlineBorder {
-  display: inline-flex;
-  align-items: center;
-  border-radius: var(--radius-pill);
-  padding: var(--spacing-1) var(--spacing-3);
-  border: 1px solid color-mix(in srgb, var(--color-text-brand) 20%, transparent);
-}
-:global(.dark) .overlineBorder {
-  border-color: color-mix(in srgb, var(--color-text-brand-on-dark) 20%, transparent);
-}
-
-.overlineDot {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-2);
-}
-.overlineDot::before {
-  content: '';
-  height: 0.375rem;
-  width: 0.375rem;
-  border-radius: var(--radius-pill);
-  background: var(--color-text-brand);
-}
-:global(.dark) .overlineDot::before {
-  background: var(--color-text-brand-on-dark);
-}
-
-.overlineGradient {
-  background: linear-gradient(90deg, var(--color-decor-brand), var(--color-info-500));
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-}
-
-.overlineIconPill {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-1);
-  border-radius: var(--radius-pill);
-  padding: var(--spacing-1) var(--spacing-3);
-  background: color-mix(in srgb, var(--color-text-brand) 10%, transparent);
-}
-:global(.dark) .overlineIconPill {
-  background: color-mix(in srgb, var(--color-text-brand-on-dark) 10%, transparent);
 }

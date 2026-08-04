@@ -156,6 +156,35 @@ MarketingFooter
    Eyebrow が HTMLAttributes 経由で className を型受容していた穴も同時に修正。
    以後、props を消すとストーリー・テストの追従漏れが CI で落ちる。
 
+## 7b. Slice 4b（残りセクション移行）で見つかったこと
+
+8. **「見た目 prop の削除」はストーリーの作り直しを伴う** — `BentoItem.variant` や
+   CodeBlock の `layout` のように、ストーリーが**その prop のカタログ**として
+   存在していたケースがある（`WithVariants` / `SplitLayout`）。prop を消すと
+   ストーリーは型エラーで落ちるが、`background` を消すだけの箇所と違って
+   「削るだけ」では意味が失われる。導出後の新しい規則
+   （並び順が主役を決める / description があれば横並び）を見せる story に
+   書き換えること。件数導出系（FeatureGrid / Testimonial / CaseStudy）は
+   逆にストーリーが何も語らなくなるので、テスト側に導出の表を書いた。
+9. **`Text` / `Heading` は自前で `color` を持つため、外側からの色替えは
+   セマンティック変数の差し替えで行う** — ComparisonTable の推し列と
+   FAQ のホバーで必要になった。`className` を渡さずに色を変える方法は
+   実質これ1つで、section.module.css（暗面反転）と同じ流儀に揃う。
+   Slice 6 で `className` を落としても破綻しない形になった。
+10. **縦の余白は「ラッパーの gap + 例外だけ margin」に寄せると
+    `className` 渡しが消える** — 従来 `<Text className="mt-4">` で足していた間隔を、
+    親を flex column にして `gap` で持たせ、一段広げたい箇所だけ子に
+    `margin-top` を足す形にした（FeatureShowcase / CodeBlock / MigrationComparison）。
+    §7-1 の「内部の className 依存」はこの型でほぼ解消できる。
+11. **コード表示は面のトーンに追従させない例外領域** — CodeBlock は
+    shiki の `github-dark` を使うため、面が明るくなるとトークン色と衝突して
+    読めなくなる。暗面固定とし、その理由を module 冒頭に書いた。
+    Stage 3 のトーン設計でも、ここは対象外として扱うこと。
+12. **ロゴ帯のスクロール keyframes は module 内に持たせた** — `theme.css` の
+    `@keyframes scroll` を参照すると、CSS Modules が `animation-name` を
+    スコープ化する実装（ビルド系による）で壊れる可能性がある。
+    Slice 6 の「コンパイル済み CSS 同梱」でも単体で成立する形が安全。
+
 ---
 
 ## 進捗
@@ -164,6 +193,6 @@ MarketingFooter
 - [x] Slice 1（プリミティブ 8 + 新規 2）— 2026-08-04 完了。備考: 契約に --color-text-brand-strong（700段）を追加（Badge等の淡面上の濃文字用）。Text の overline 7種は未移行セクションが使用中のため @deprecated で暫定存置（Slice 4 で削除）。MarketingButton の gradient は cta へのエイリアス化（Slice 2 で削除）
 - [x] Slice 2（セクション 5 + 新規 1 + レイアウト 3）— 2026-08-04 完了（SectionHeader 内部共有を追加）
 - [x] Slice 3（コーポレートトップ = 検証関門）— 2026-08-04 完了（Examples/CorporateTop）
-- [ ] Slice 4（残りセクション 13 + プリミティブ残り + 新規 3）
+- [x] Slice 4（残りセクション 13 + プリミティブ残り + 新規 3）— 2026-08-04 完了。備考: 4a で新規3プリミティブ、4b で残り13セクション + プリミティブ5件を移行し、Text の overline 7種と MarketingButton の gradient エイリアスを削除した（フォーム3種の見出しだけは SectionHeader 化して overline 依存を切ってあるが、本体の移行は Slice 5）
 - [ ] Slice 5（フォーム + LandingPage 更新）
 - [ ] Slice 6（配布切替）

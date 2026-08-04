@@ -201,45 +201,45 @@ Stage 4 以降は minor で刻む。
 
 ### 2-1. 基盤（先に用意する）
 
-- [ ] トークン → CSS変数の codegen（値の二重管理を構造的に解消 + ブランドランプ生成）
-- [ ] `*.module.css.d.ts` の生成を typecheck に組み込む（**必須**）
-- [ ] stylelint で `var()` を既知トークンに制限
-- [ ] stylelint で hex リテラルの直書きを禁止
+- [x] トークン → CSS変数の codegen（値の二重管理を構造的に解消 + ブランドランプ生成）
+- [x] `*.module.css.d.ts` の生成を typecheck に組み込む（**必須**）
+- [x] stylelint で `var()` を既知トークンに制限（未定義参照は `css-modules-contract.test.ts` が検出）
+- [x] stylelint で hex リテラルの直書きを禁止
 - [ ] Web フォントを `@font-face` として配布CSSに同梱
 - [ ] `pnpm size` に CSS サイズの枠を追加
 
 ### 2-2. プリミティブ
 
-- [ ] Container / Section / Grid / Heading / Text
-- [ ] `Eyebrow` を新設（`Text` の overline 系7バリアントを切り出し、トーン連動に）
+- [x] Container / Section / Grid / Heading / Text
+- [x] `Eyebrow` を新設（`Text` の overline 系7バリアントを切り出し。トーン連動は Stage 3）
 - [ ] MarketingButton（`kicker` スロット追加 / `data-cta` 出力）
-- [ ] `MediaFrame` を新設（固定アスペクト比・`alt` 必須・角丸/影はトークン）
-- [ ] `ProductShot` を新設（**正対のみ。傾き・パースは実装しない**）
-- [ ] `LogoMark` を新設（光学サイズ正規化 / グレースケール化を切替可能に）
-- [ ] `Avatar` を新設（円形マスク・固定サイズ）
-- [ ] 画像未指定時のプレースホルダ機構
+- [x] `MediaFrame` を新設（固定アスペクト比・`alt` 必須・角丸/影はトークン）
+- [x] `ProductShot` を新設（**正対のみ。傾き・パースは実装しない**）
+- [x] `LogoMark` を新設（光学サイズ正規化 / グレースケール化を切替可能に）
+- [x] `Avatar` を新設（円形マスク・固定サイズ）
+- [x] 画像未指定時のプレースホルダ機構
 
 ### 2-3. 実ページ用セクション（5〜6本を先に完成させる）
 
 - [ ] HeroSection（`titleGradient` / `backgroundPattern` / `layout` 削除、
       `imagePlacement` へ統合、`offers` 化）
-- [ ] LogoCloud（`scrolling` 削除・件数から導出、`LogoMark` 適用）
-- [ ] FeatureGrid（`cardStyle` / `columns` 削除）
+- [x] LogoCloud（`scrolling` 削除・件数から導出、`LogoMark` 適用）
+- [x] FeatureGrid（`cardStyle` / `columns` 削除）
 - [ ] StatsSection（`animated` 削除、**4スロット化 + `asOf` 必須**）
 - [ ] CTASection（`backgroundMesh` / `logoStrip` 削除、`kicker` / `offers` 追加）
 - [ ] FormSection（`onSubmit` を第一級に。Formspree は既定実装へ降格）
-- [ ] **上記だけで実ページを1本組んで検証する**（契約の穴をここで出す）
+- [x] **上記だけで実ページを1本組んで検証する**（契約の穴をここで出す）— Examples/CorporateTop
 
 ### 2-4. 残りのセクション
 
-- [ ] 全セクションから `background` / `spacing` / `eyebrowStyle` を削除
-- [ ] CodeBlock（`alignment` / `layout` 削除）
-- [ ] BentoGrid（`BentoItem.variant` 削除、位置で自動決定）
-- [ ] CaseStudySection / TestimonialSection（`columns` 削除）
+- [x] 全セクションから `background` / `spacing` / `eyebrowStyle` を削除（フォーム3種は `eyebrowStyle` のみ。本体は Slice 5）
+- [x] CodeBlock（`alignment` / `layout` 削除）
+- [x] BentoGrid（`BentoItem.variant` 削除、位置で自動決定）
+- [x] CaseStudySection / TestimonialSection（`columns` 削除）
 - [ ] PricingCard ほか（`actions[].variant` を自動割当に）
 - [ ] SecurityBadges を**3系統**に（認証 / 第三者レビュー受賞 / 法定表示）
 - [ ] `ContentHub` を新設（資料・セミナー・コラム回遊。製品系12ページ中9ページが保有）
-- [ ] 全コンポーネントを Tailwind クラスから CSS Modules へ移行
+- [x] 全コンポーネントを Tailwind クラスから CSS Modules へ移行（残りはフォーム3種 = Slice 5）
 
 ## Stage 3: ページ層
 

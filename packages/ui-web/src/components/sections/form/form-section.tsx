@@ -6,6 +6,7 @@ import { Section } from '@/components/primitives/section';
 import { Container } from '@/components/primitives/container';
 import { Heading } from '@/components/primitives/heading';
 import { Text } from '@/components/primitives/text';
+import { SectionHeader } from '@/components/sections/section-header';
 import { FormInput, FormTextarea, FormSelect, FormButton } from './form-primitives';
 
 /* ============================================================
@@ -37,7 +38,6 @@ type FormStatus = 'idle' | 'submitting' | 'success' | 'error';
 
 interface BaseFormSectionProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {
   eyebrow?: string;
-  eyebrowStyle?: 'pill' | 'border' | 'text' | 'dot' | 'gradient' | 'icon-pill';
   title?: React.ReactNode;
   subtitle?: string;
   background?: 'default' | 'muted' | 'dark' | 'brand';
@@ -95,7 +95,6 @@ export const ContactForm = React.forwardRef<HTMLElement, ContactFormProps>(
     {
       className,
       eyebrow,
-      eyebrowStyle,
       title,
       subtitle,
       background = 'default',
@@ -122,44 +121,12 @@ export const ContactForm = React.forwardRef<HTMLElement, ContactFormProps>(
         {...props}
       >
         <Container size="sm">
-          {(eyebrow || title || subtitle) && (
-            <div className="mb-10 text-center">
-              {eyebrow && (
-                <Text
-                  size={
-                    eyebrowStyle === 'border'
-                      ? 'overline-border'
-                      : eyebrowStyle === 'text'
-                        ? 'overline-text'
-                        : eyebrowStyle === 'dot'
-                          ? 'overline-dot'
-                          : eyebrowStyle === 'gradient'
-                            ? 'overline-gradient'
-                            : eyebrowStyle === 'icon-pill'
-                              ? 'overline-icon-pill'
-                              : 'overline-pill'
-                  }
-                  className="mb-4"
-                >
-                  {eyebrow}
-                </Text>
-              )}
-              {title && (
-                <Heading as="h2" size="display-sm">
-                  {title}
-                </Heading>
-              )}
-              {subtitle && (
-                <Text
-                  size="body-lg"
-                  tone="secondary"
-                  className="mx-auto mt-4 max-w-xl dark:text-neutral-300"
-                >
-                  {subtitle}
-                </Text>
-              )}
-            </div>
-          )}
+          <SectionHeader
+            eyebrow={eyebrow}
+            title={title}
+            subtitle={subtitle}
+            headingSize="display-sm"
+          />
 
           {status === 'success' ? (
             <div className="rounded-2xl border border-success-500/30 bg-success-50 p-8 text-center dark:bg-success-500/10">
@@ -243,7 +210,6 @@ export const ResourceRequestForm = React.forwardRef<HTMLElement, ResourceRequest
     {
       className,
       eyebrow,
-      eyebrowStyle,
       title,
       subtitle,
       background = 'muted',
@@ -271,44 +237,12 @@ export const ResourceRequestForm = React.forwardRef<HTMLElement, ResourceRequest
         {...props}
       >
         <Container size="sm">
-          {(eyebrow || title || subtitle) && (
-            <div className="mb-10 text-center">
-              {eyebrow && (
-                <Text
-                  size={
-                    eyebrowStyle === 'border'
-                      ? 'overline-border'
-                      : eyebrowStyle === 'text'
-                        ? 'overline-text'
-                        : eyebrowStyle === 'dot'
-                          ? 'overline-dot'
-                          : eyebrowStyle === 'gradient'
-                            ? 'overline-gradient'
-                            : eyebrowStyle === 'icon-pill'
-                              ? 'overline-icon-pill'
-                              : 'overline-pill'
-                  }
-                  className="mb-4"
-                >
-                  {eyebrow}
-                </Text>
-              )}
-              {title && (
-                <Heading as="h2" size="display-sm">
-                  {title}
-                </Heading>
-              )}
-              {subtitle && (
-                <Text
-                  size="body-lg"
-                  tone="secondary"
-                  className="mx-auto mt-4 max-w-xl dark:text-neutral-300"
-                >
-                  {subtitle}
-                </Text>
-              )}
-            </div>
-          )}
+          <SectionHeader
+            eyebrow={eyebrow}
+            title={title}
+            subtitle={subtitle}
+            headingSize="display-sm"
+          />
 
           {status === 'success' ? (
             <div className="rounded-2xl border border-success-500/30 bg-success-50 p-8 text-center dark:bg-success-500/10">
@@ -389,7 +323,6 @@ export const DemoRequestForm = React.forwardRef<HTMLElement, DemoRequestFormProp
     {
       className,
       eyebrow,
-      eyebrowStyle,
       title,
       subtitle,
       background = 'default',
@@ -431,44 +364,12 @@ export const DemoRequestForm = React.forwardRef<HTMLElement, DemoRequestFormProp
         {...props}
       >
         <Container size="sm">
-          {(eyebrow || title || subtitle) && (
-            <div className="mb-10 text-center">
-              {eyebrow && (
-                <Text
-                  size={
-                    eyebrowStyle === 'border'
-                      ? 'overline-border'
-                      : eyebrowStyle === 'text'
-                        ? 'overline-text'
-                        : eyebrowStyle === 'dot'
-                          ? 'overline-dot'
-                          : eyebrowStyle === 'gradient'
-                            ? 'overline-gradient'
-                            : eyebrowStyle === 'icon-pill'
-                              ? 'overline-icon-pill'
-                              : 'overline-pill'
-                  }
-                  className="mb-4"
-                >
-                  {eyebrow}
-                </Text>
-              )}
-              {title && (
-                <Heading as="h2" size="display-sm">
-                  {title}
-                </Heading>
-              )}
-              {subtitle && (
-                <Text
-                  size="body-lg"
-                  tone="secondary"
-                  className="mx-auto mt-4 max-w-xl dark:text-neutral-300"
-                >
-                  {subtitle}
-                </Text>
-              )}
-            </div>
-          )}
+          <SectionHeader
+            eyebrow={eyebrow}
+            title={title}
+            subtitle={subtitle}
+            headingSize="display-sm"
+          />
 
           {status === 'success' ? (
             <div className="rounded-2xl border border-success-500/30 bg-success-50 p-8 text-center dark:bg-success-500/10">
