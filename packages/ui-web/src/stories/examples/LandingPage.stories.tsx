@@ -373,14 +373,18 @@ export const TopPage: Story = {
            ============================================================ */}
         <AnimateOnScroll animation="fade-up">
           <CodeBlock
-            layout="split"
-            alignment="top"
             eyebrow={isJa ? 'デベロッパーエクスペリエンス' : 'DEVELOPER EXPERIENCE'}
             title={isJa ? '5分でデプロイ、5行で統合' : 'Deploy in 5 min, integrate in 5 lines'}
             subtitle={
               isJa
                 ? '既存のTypeScriptスキルをそのまま活用。型安全なSDKを自動生成。'
                 : 'Use your existing TypeScript skills. Auto-generated type-safe SDK.'
+            }
+            description={
+              <ul>
+                <li>{isJa ? '既存の型定義をそのまま利用' : 'Reuse your existing type definitions'}</li>
+                <li>{isJa ? 'OpenAPI / MCP サーバーも同時生成' : 'OpenAPI and MCP server generated too'}</li>
+              </ul>
             }
             code={sdkCode}
             language="typescript"

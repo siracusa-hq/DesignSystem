@@ -44,39 +44,28 @@ export const Centered: Story = {
   },
 };
 
-export const SplitLayout: Story = {
+/**
+ * description を渡すと自動的に横並びになる（layout / alignment prop は削除済み）。
+ * 「コードの脇に補足がある」という中身の事実がレイアウトを決める。
+ */
+export const WithDescription: Story = {
   render: (_, { globals }) => {
     const isJa = globals.locale === 'ja';
     return (
       <CodeBlock
-        layout="split"
+        eyebrow={isJa ? 'デベロッパー体験' : 'DEVELOPER EXPERIENCE'}
         title={isJa ? '型安全なAPI呼び出し' : 'Type-safe API calls'}
         subtitle={
           isJa
             ? 'スキーマ定義からTypeScript SDKを自動生成。手動でのAPI実装は不要です。'
             : 'Auto-generate TypeScript SDK from schema definitions. No manual API implementation needed.'
         }
-        code={sampleCode}
-        language="typescript"
-        filename="app/api/users.ts"
-        background="dark"
-      />
-    );
-  },
-};
-
-export const SplitLayoutTopAligned: Story = {
-  render: (_, { globals }) => {
-    const isJa = globals.locale === 'ja';
-    return (
-      <CodeBlock
-        layout="split"
-        alignment="top"
-        title={isJa ? '型安全なAPI呼び出し' : 'Type-safe API calls'}
-        subtitle={
-          isJa
-            ? 'スキーマ定義からTypeScript SDKを自動生成。手動でのAPI実装は不要です。'
-            : 'Auto-generate TypeScript SDK from schema definitions. No manual API implementation needed.'
+        description={
+          <ul>
+            <li>{isJa ? 'スキーマ変更は型エラーで検知' : 'Schema changes surface as type errors'}</li>
+            <li>{isJa ? 'OpenAPI と MCP サーバーも同時生成' : 'OpenAPI and MCP server generated too'}</li>
+            <li>{isJa ? 'RLS/FLS は DB 最下層で強制' : 'RLS/FLS enforced at the DB layer'}</li>
+          </ul>
         }
         code={sampleCode}
         language="typescript"

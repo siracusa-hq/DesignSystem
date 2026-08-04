@@ -1,0 +1,111 @@
+/* CodeBlock — ターミナル風のコード面。
+   【例外領域】コード表示だけは常に暗面で固定する。
+   エディタ配色は開発者にとって「読むための規格」であり、面のトーンに追従させると
+   シンタックスハイライト（shiki の github-dark）のトークン色と衝突して読めなくなる。
+   そのためここは neutral スケールを直接使い、明暗の反転もしない。 */
+
+.frame {
+  overflow: hidden;
+  border: 1px solid var(--color-neutral-800);
+  border-radius: var(--radius-panel);
+  background: var(--color-neutral-950);
+}
+
+/* ウィンドウクロム */
+.chrome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--color-neutral-800);
+  padding: var(--spacing-2) var(--spacing-4);
+}
+.chromeLeft {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+.dots {
+  display: flex;
+  gap: 0.375rem;
+}
+.dot {
+  height: 0.75rem;
+  width: 0.75rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-neutral-700);
+}
+.filename {
+  font-size: var(--text-caption);
+  color: var(--color-neutral-500);
+}
+.copyButton {
+  font-size: var(--text-caption);
+  color: var(--color-neutral-500);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  transition: color var(--duration-normal) var(--ease-default);
+}
+.copyButton:hover {
+  color: var(--color-neutral-300);
+}
+.copyButton:focus-visible {
+  outline: 2px solid var(--color-ring-brand);
+  outline-offset: 2px;
+}
+
+/* コード面 */
+.code,
+.fallback {
+  overflow-x: auto;
+  padding: var(--spacing-4);
+  font-size: var(--text-body-sm);
+  line-height: 1.625;
+}
+.fallback code {
+  color: var(--color-neutral-300);
+}
+/* shiki が返す <pre> の既定余白と背景を打ち消す（枠は .frame が持つ） */
+.code pre {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+
+/* 行番号。counter は shiki の .line に付ける */
+.lineNumbers pre {
+  counter-reset: line;
+}
+.lineNumbers :global(.line) {
+  counter-increment: line;
+}
+.lineNumbers :global(.line)::before {
+  content: counter(line);
+  display: inline-block;
+  width: 1rem;
+  margin-right: var(--spacing-6);
+  text-align: right;
+  color: var(--color-neutral-600);
+}
+
+/* レイアウト（description の有無から導出。旧 layout / alignment prop は削除） */
+.split {
+  display: grid;
+  gap: var(--spacing-12);
+  align-items: center;
+}
+@media (min-width: 64rem) {
+  .split {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.splitCopy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-4);
+}
+.description {
+  /* .splitCopy の gap-4 に足して一段広く空ける */
+  margin-top: var(--spacing-2);
+}

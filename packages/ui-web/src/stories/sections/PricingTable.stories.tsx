@@ -26,11 +26,7 @@ export const FourPlans: Story = {
           {
             name: 'Sandbox',
             description: isJa ? '技術検証・学習専用' : 'Technical evaluation & learning',
-            price: (
-              <span className="text-display-sm font-bold tracking-tight md:text-display-md">
-                ¥0
-              </span>
-            ),
+            price: '¥0',
             priceNote: isJa ? '本番運用不可' : 'Not for production use',
             features: [
               { text: isJa ? '全11モジュール利用可能' : 'All 11 modules', included: true },
@@ -43,7 +39,6 @@ export const FourPlans: Story = {
             action: {
               label: isJa ? '無料で始める' : 'Start Free',
               href: '/signup',
-              variant: 'secondary',
             },
           },
           {
@@ -51,12 +46,8 @@ export const FourPlans: Story = {
             description: isJa ? '全利用者向け統一プラン' : 'Unified plan for all users',
             badge: isJa ? 'おすすめ' : 'Recommended',
             highlighted: true,
-            price: (
-              <span className="text-display-sm font-bold tracking-tight md:text-display-md">
-                ¥30,000
-                <span className="text-body-md font-normal text-neutral-500">{isJa ? '/月' : '/mo'}</span>
-              </span>
-            ),
+            price: '¥30,000',
+            priceUnit: isJa ? '/月' : '/mo',
             priceNote: isJa ? '税別・ユーザー枠¥10,000分 + アプリ枠¥20,000分含む' : 'excl. tax, includes ¥10K user + ¥20K app credits',
             features: [
               { text: isJa ? '全11モジュール統合' : 'All 11 modules integrated', included: true },
@@ -69,18 +60,13 @@ export const FourPlans: Story = {
             action: {
               label: isJa ? '申し込む' : 'Get Started',
               href: '/signup/growth',
-              variant: 'primary',
             },
           },
           {
             name: 'Partner',
             description: isJa ? 'ISV/受託開発会社向け（承認制）' : 'For ISVs & dev agencies (approval required)',
-            price: (
-              <span className="text-display-sm font-bold tracking-tight md:text-display-md">
-                ¥50,000
-                <span className="text-body-md font-normal text-neutral-500">{isJa ? '/月' : '/mo'}</span>
-              </span>
-            ),
+            price: '¥50,000',
+            priceUnit: isJa ? '/月' : '/mo',
             priceNote: isJa ? '税別・Builder 3名 + End User 50名含む' : 'excl. tax, includes 3 Builders + 50 End Users',
             features: [
               { text: isJa ? '全11モジュール統合' : 'All 11 modules integrated', included: true },
@@ -93,17 +79,12 @@ export const FourPlans: Story = {
             action: {
               label: isJa ? 'パートナー申請' : 'Apply for Partner',
               href: '/partner',
-              variant: 'secondary',
             },
           },
           {
             name: 'Self-Hosted',
             description: isJa ? '顧客インフラにデプロイ' : 'Deploy to your infrastructure',
-            price: (
-              <span className="text-display-sm font-bold tracking-tight md:text-display-md">
-                {isJa ? 'カスタム' : 'Custom'}
-              </span>
-            ),
+            price: isJa ? 'カスタム' : 'Custom',
             priceNote: isJa ? 'データ主権・コンプライアンス要件向け' : 'For data sovereignty & compliance',
             features: [
               { text: isJa ? '全11モジュール統合' : 'All 11 modules integrated', included: true },
@@ -116,7 +97,6 @@ export const FourPlans: Story = {
             action: {
               label: isJa ? 'お問い合わせ' : 'Contact Sales',
               href: '/contact',
-              variant: 'secondary',
             },
           },
         ]}

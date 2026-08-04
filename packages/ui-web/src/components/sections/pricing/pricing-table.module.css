@@ -1,0 +1,17 @@
+/* PricingTable — プランカードの並び。列数はプラン数（データ）で決まる */
+
+.grid {
+  display: grid;
+  gap: var(--spacing-6);
+}
+@media (min-width: 64rem) {
+  .grid {
+    gap: var(--spacing-8);
+  }
+  .cols3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .cols4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
