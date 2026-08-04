@@ -143,7 +143,7 @@ function MotionSection() {
   return (
     <section className="space-y-4">
       <h3 className="text-heading-md font-semibold text-[var(--color-on-surface)]">
-        演出系モーション — 旧（300ms / Material ease-out）との比較
+        モーション二系統 — 操作系と演出系の使い分け
       </h3>
       <button
         className="rounded-[var(--radius-control)] bg-[var(--color-bg-brand-primary)] px-5 py-2 text-body-sm font-semibold text-[var(--color-on-brand)]"
@@ -151,13 +151,16 @@ function MotionSection() {
       >
         ▶ 再生
       </button>
-      <div key={runId} className="grid gap-4 lg:grid-cols-3">
+      <div key={runId} className="grid gap-4 lg:grid-cols-2">
         {(
           [
-            ['旧: 300ms + Material ease-out', 'var(--duration-slow)', 'var(--ease-out)'],
-            ['前回案: 640ms + expo（立ち上がりが急）', '640ms', 'cubic-bezier(0.16, 1, 0.3, 1)'],
             [
-              '採用: reveal(720ms) + entrance quart',
+              '操作系: duration-slow(300ms) + ease-out — ボタン・ドロップダウン等の応答',
+              'var(--duration-slow)',
+              'var(--ease-out)',
+            ],
+            [
+              '演出系: duration-reveal(720ms) + ease-entrance — スクロール表出・登場演出',
               'var(--duration-reveal)',
               'var(--ease-entrance)',
             ],
@@ -184,8 +187,8 @@ function MotionSection() {
       </div>
       <style>{`@keyframes craft-reveal { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }`}</style>
       <p className="max-w-2xl text-caption text-[var(--color-on-surface-muted)]">
-        新カーブ（ease-out-expo）は出だしが速く着地が柔らかい。OS
-        の「視差効果を減らす」を有効にすると トークン層の prefers-reduced-motion
+        操作系のカーブを演出に流用しない（600ms超では序盤の減速が不足する）。OS
+        の「視差効果を減らす」を有効にすると、トークン層の prefers-reduced-motion
         処理により両方とも即時表示になる（コンポーネント側の対応は不要）。
       </p>
     </section>
