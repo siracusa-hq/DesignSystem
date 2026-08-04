@@ -31,15 +31,48 @@ export interface MigrationComparisonProps extends Omit<React.HTMLAttributes<HTML
 }
 
 export const MigrationComparison = React.forwardRef<HTMLElement, MigrationComparisonProps>(
-  ({ className, eyebrow, eyebrowStyle, title, subtitle, paths, background = 'default', spacing, ...props }, ref) => {
-
+  (
+    {
+      className,
+      eyebrow,
+      eyebrowStyle,
+      title,
+      subtitle,
+      paths,
+      background = 'default',
+      spacing,
+      ...props
+    },
+    ref,
+  ) => {
     return (
-      <Section ref={ref} background={background} spacing={spacing ?? 'lg'} className={className} {...props}>
+      <Section
+        ref={ref}
+        background={background}
+        spacing={spacing ?? 'lg'}
+        className={className}
+        {...props}
+      >
         <Container>
           {(eyebrow || title || subtitle) && (
             <div className="mb-12 text-center lg:mb-16">
               {eyebrow && (
-                <Text size={eyebrowStyle === 'border' ? 'overline-border' : eyebrowStyle === 'text' ? 'overline-text' : eyebrowStyle === 'dot' ? 'overline-dot' : eyebrowStyle === 'gradient' ? 'overline-gradient' : eyebrowStyle === 'icon-pill' ? 'overline-icon-pill' : 'overline-pill'} className="mb-4">
+                <Text
+                  size={
+                    eyebrowStyle === 'border'
+                      ? 'overline-border'
+                      : eyebrowStyle === 'text'
+                        ? 'overline-text'
+                        : eyebrowStyle === 'dot'
+                          ? 'overline-dot'
+                          : eyebrowStyle === 'gradient'
+                            ? 'overline-gradient'
+                            : eyebrowStyle === 'icon-pill'
+                              ? 'overline-icon-pill'
+                              : 'overline-pill'
+                  }
+                  className="mb-4"
+                >
                   {eyebrow}
                 </Text>
               )}
@@ -60,7 +93,9 @@ export const MigrationComparison = React.forwardRef<HTMLElement, MigrationCompar
             </div>
           )}
 
-          <div className={cn('grid gap-8', paths.length === 2 ? 'lg:grid-cols-2' : 'lg:grid-cols-1')}>
+          <div
+            className={cn('grid gap-8', paths.length === 2 ? 'lg:grid-cols-2' : 'lg:grid-cols-1')}
+          >
             {paths.map((path, i) => (
               <div
                 key={i}
@@ -69,7 +104,22 @@ export const MigrationComparison = React.forwardRef<HTMLElement, MigrationCompar
                   'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900',
                 )}
               >
-                <Text size={eyebrowStyle === 'border' ? 'overline-border' : eyebrowStyle === 'text' ? 'overline-text' : eyebrowStyle === 'dot' ? 'overline-dot' : eyebrowStyle === 'gradient' ? 'overline-gradient' : eyebrowStyle === 'icon-pill' ? 'overline-icon-pill' : 'overline-pill'} className="mb-2">
+                <Text
+                  size={
+                    eyebrowStyle === 'border'
+                      ? 'overline-border'
+                      : eyebrowStyle === 'text'
+                        ? 'overline-text'
+                        : eyebrowStyle === 'dot'
+                          ? 'overline-dot'
+                          : eyebrowStyle === 'gradient'
+                            ? 'overline-gradient'
+                            : eyebrowStyle === 'icon-pill'
+                              ? 'overline-icon-pill'
+                              : 'overline-pill'
+                  }
+                  className="mb-2"
+                >
                   {path.from}
                 </Text>
                 <Heading as="h3" size="heading-lg">
@@ -92,7 +142,12 @@ export const MigrationComparison = React.forwardRef<HTMLElement, MigrationCompar
                         'border-neutral-100 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950',
                       )}
                     >
-                      <Text as="div" size="body-sm" tone="default" className={cn('font-semibold', 'dark:text-white')}>
+                      <Text
+                        as="div"
+                        size="body-sm"
+                        tone="default"
+                        className={cn('font-semibold', 'dark:text-white')}
+                      >
                         {trigger.trigger}
                       </Text>
                       <Text size="caption" tone="muted" className="mt-1">

@@ -25,15 +25,48 @@ export interface AirPocketFeatureProps extends Omit<React.HTMLAttributes<HTMLEle
 }
 
 export const AirPocketFeature = React.forwardRef<HTMLElement, AirPocketFeatureProps>(
-  ({ className, eyebrow, eyebrowStyle, title, subtitle, airPockets, background = 'default', spacing, ...props }, ref) => {
-
+  (
+    {
+      className,
+      eyebrow,
+      eyebrowStyle,
+      title,
+      subtitle,
+      airPockets,
+      background = 'default',
+      spacing,
+      ...props
+    },
+    ref,
+  ) => {
     return (
-      <Section ref={ref} background={background} spacing={spacing ?? 'lg'} className={className} {...props}>
+      <Section
+        ref={ref}
+        background={background}
+        spacing={spacing ?? 'lg'}
+        className={className}
+        {...props}
+      >
         <Container>
           {(eyebrow || title || subtitle) && (
             <div className="mb-16 text-center">
               {eyebrow && (
-                <Text size={eyebrowStyle === 'border' ? 'overline-border' : eyebrowStyle === 'text' ? 'overline-text' : eyebrowStyle === 'dot' ? 'overline-dot' : eyebrowStyle === 'gradient' ? 'overline-gradient' : eyebrowStyle === 'icon-pill' ? 'overline-icon-pill' : 'overline-pill'} className="mb-4">
+                <Text
+                  size={
+                    eyebrowStyle === 'border'
+                      ? 'overline-border'
+                      : eyebrowStyle === 'text'
+                        ? 'overline-text'
+                        : eyebrowStyle === 'dot'
+                          ? 'overline-dot'
+                          : eyebrowStyle === 'gradient'
+                            ? 'overline-gradient'
+                            : eyebrowStyle === 'icon-pill'
+                              ? 'overline-icon-pill'
+                              : 'overline-pill'
+                  }
+                  className="mb-4"
+                >
                   {eyebrow}
                 </Text>
               )}
@@ -64,7 +97,22 @@ export const AirPocketFeature = React.forwardRef<HTMLElement, AirPocketFeaturePr
                 )}
               >
                 <div>
-                  <Text size={eyebrowStyle === 'border' ? 'overline-border' : eyebrowStyle === 'text' ? 'overline-text' : eyebrowStyle === 'dot' ? 'overline-dot' : eyebrowStyle === 'gradient' ? 'overline-gradient' : eyebrowStyle === 'icon-pill' ? 'overline-icon-pill' : 'overline-pill'} className="mb-3">
+                  <Text
+                    size={
+                      eyebrowStyle === 'border'
+                        ? 'overline-border'
+                        : eyebrowStyle === 'text'
+                          ? 'overline-text'
+                          : eyebrowStyle === 'dot'
+                            ? 'overline-dot'
+                            : eyebrowStyle === 'gradient'
+                              ? 'overline-gradient'
+                              : eyebrowStyle === 'icon-pill'
+                                ? 'overline-icon-pill'
+                                : 'overline-pill'
+                    }
+                    className="mb-3"
+                  >
                     {pocket.module}
                   </Text>
                   <Heading as="h3" size="display-sm">
@@ -77,11 +125,7 @@ export const AirPocketFeature = React.forwardRef<HTMLElement, AirPocketFeaturePr
                   >
                     {pocket.description}
                   </Text>
-                  <Text
-                    size="body-sm"
-                    tone="brand"
-                    className="mt-4 font-medium"
-                  >
+                  <Text size="body-sm" tone="brand" className="mt-4 font-medium">
                     {pocket.proof}
                   </Text>
 
@@ -98,7 +142,12 @@ export const AirPocketFeature = React.forwardRef<HTMLElement, AirPocketFeaturePr
                       </div>
                     ))}
                     <div className="flex items-center gap-3">
-                      <Text as="span" size="caption" tone="brand" className="w-24 shrink-0 font-semibold">
+                      <Text
+                        as="span"
+                        size="caption"
+                        tone="brand"
+                        className="w-24 shrink-0 font-semibold"
+                      >
                         Polastack
                       </Text>
                       <Text as="span" size="caption" tone="brand" className="font-semibold">
@@ -108,9 +157,7 @@ export const AirPocketFeature = React.forwardRef<HTMLElement, AirPocketFeaturePr
                   </div>
                 </div>
 
-                {pocket.visual && (
-                  <div className="relative">{pocket.visual}</div>
-                )}
+                {pocket.visual && <div className="relative">{pocket.visual}</div>}
               </div>
             ))}
           </div>

@@ -26,16 +26,48 @@ export const Default: Story = {
         badges={
           isJa
             ? [
-                { name: 'ISMS (ISO 27001)', icon: <ShieldCheck className="h-7 w-7 text-primary-500" />, description: '情報セキュリティ管理' },
-                { name: 'SOC 2 Type II', icon: <Lock className="h-7 w-7 text-primary-500" />, description: 'セキュリティ監査' },
-                { name: 'プライバシーマーク', icon: <FileCheck className="h-7 w-7 text-primary-500" />, description: '個人情報保護' },
-                { name: 'ISMAP', icon: <Award className="h-7 w-7 text-primary-500" />, description: '政府クラウド認定' },
+                {
+                  name: 'ISMS (ISO 27001)',
+                  icon: <ShieldCheck className="h-7 w-7 text-primary-500" />,
+                  description: '情報セキュリティ管理',
+                },
+                {
+                  name: 'SOC 2 Type II',
+                  icon: <Lock className="h-7 w-7 text-primary-500" />,
+                  description: 'セキュリティ監査',
+                },
+                {
+                  name: 'プライバシーマーク',
+                  icon: <FileCheck className="h-7 w-7 text-primary-500" />,
+                  description: '個人情報保護',
+                },
+                {
+                  name: 'ISMAP',
+                  icon: <Award className="h-7 w-7 text-primary-500" />,
+                  description: '政府クラウド認定',
+                },
               ]
             : [
-                { name: 'ISMS (ISO 27001)', icon: <ShieldCheck className="h-7 w-7 text-primary-500" />, description: 'InfoSec management' },
-                { name: 'SOC 2 Type II', icon: <Lock className="h-7 w-7 text-primary-500" />, description: 'Security audit' },
-                { name: 'GDPR', icon: <FileCheck className="h-7 w-7 text-primary-500" />, description: 'Data protection' },
-                { name: 'HIPAA', icon: <Award className="h-7 w-7 text-primary-500" />, description: 'Healthcare compliance' },
+                {
+                  name: 'ISMS (ISO 27001)',
+                  icon: <ShieldCheck className="h-7 w-7 text-primary-500" />,
+                  description: 'InfoSec management',
+                },
+                {
+                  name: 'SOC 2 Type II',
+                  icon: <Lock className="h-7 w-7 text-primary-500" />,
+                  description: 'Security audit',
+                },
+                {
+                  name: 'GDPR',
+                  icon: <FileCheck className="h-7 w-7 text-primary-500" />,
+                  description: 'Data protection',
+                },
+                {
+                  name: 'HIPAA',
+                  icon: <Award className="h-7 w-7 text-primary-500" />,
+                  description: 'Healthcare compliance',
+                },
               ]
         }
       />
@@ -49,7 +81,6 @@ export const DarkBackground: Story = {
     return (
       <SecurityBadges
         title={isJa ? 'セキュリティ認証' : 'Security Certifications'}
-        background="dark"
         badges={[
           { name: 'ISMS (ISO 27001)' },
           { name: 'SOC 2 Type II' },

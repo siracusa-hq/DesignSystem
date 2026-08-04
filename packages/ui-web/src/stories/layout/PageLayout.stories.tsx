@@ -25,14 +25,12 @@ export const FullPage: Story = {
             { label: isJa ? 'ドキュメント' : 'Docs', href: '/docs' },
           ],
           actions: [
-            { label: isJa ? 'ログイン' : 'Log in', href: '/login', variant: 'ghost' },
-            { label: isJa ? '無料で始める' : 'Start Free', href: '/signup', variant: 'primary' },
+            { label: isJa ? 'ログイン' : 'Log in', href: '/login' },
+            { label: isJa ? '無料で始める' : 'Start Free', href: '/signup' },
           ],
         }}
         footerProps={{
-          description: isJa
-            ? 'Enterprise Agent Stack'
-            : 'Enterprise Agent Stack',
+          description: isJa ? 'Enterprise Agent Stack' : 'Enterprise Agent Stack',
           linkGroups: [
             {
               title: isJa ? 'プロダクト' : 'Product',
@@ -69,7 +67,7 @@ export const FullPage: Story = {
           }
           actions={[
             { label: isJa ? '無料で始める' : 'Start Free', href: '/signup' },
-            { label: isJa ? 'ドキュメント' : 'Docs', href: '/docs', variant: 'secondary' },
+            { label: isJa ? 'ドキュメント' : 'Docs', href: '/docs' },
           ]}
         />
 
@@ -77,21 +75,20 @@ export const FullPage: Story = {
           eyebrow={isJa ? 'モジュール' : 'MODULES'}
           title={isJa ? '11の統合モジュール' : '11 Integrated Modules'}
           features={[
-            { title: 'PolaAuth', description: isJa ? '認証・アイデンティティ基盤' : 'Authentication & identity' },
+            {
+              title: 'PolaAuth',
+              description: isJa ? '認証・アイデンティティ基盤' : 'Authentication & identity',
+            },
             { title: 'PolaStore', description: isJa ? 'メタデータ駆動DB' : 'Metadata-driven DB' },
             { title: 'PolaGate', description: isJa ? 'Runtime Gateway' : 'Runtime Gateway' },
           ]}
           columns={3}
-          background="muted"
         />
 
         <CTASection
-          background="dark"
           title={isJa ? '無料で開発を始める' : 'Start building for free'}
           subtitle={isJa ? 'クレジットカード不要' : 'No credit card required'}
-          actions={[
-            { label: isJa ? '無料で始める' : 'Get Started', href: '/signup', variant: 'gradient' },
-          ]}
+          actions={[{ label: isJa ? '無料で始める' : 'Get Started', href: '/signup' }]}
         />
       </PageLayout>
     );

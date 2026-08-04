@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styles from './eyebrow.module.css';
 
-export interface EyebrowProps extends React.HTMLAttributes<HTMLElement> {
+export interface EyebrowProps extends Omit<React.HTMLAttributes<HTMLElement>, 'className'> {
   /** アイコン等を先頭に添える場合 */
   icon?: React.ReactNode;
   as?: 'span' | 'p';

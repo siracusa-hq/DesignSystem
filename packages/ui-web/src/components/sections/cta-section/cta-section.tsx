@@ -1,103 +1,72 @@
 import * as React from 'react';
-import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '@/lib/cn';
 import { Section } from '@/components/primitives/section';
 import { Container } from '@/components/primitives/container';
 import { Heading } from '@/components/primitives/heading';
 import { Text } from '@/components/primitives/text';
 import { MarketingButton } from '@/components/primitives/marketing-button';
-
-export const ctaSectionVariants = cva('', {
-  variants: {
-    layout: {
-      centered: 'text-center',
-      split: '',
-    },
-  },
-  defaultVariants: {
-    layout: 'centered',
-  },
-});
+import styles from './cta-section.module.css';
+import { cn } from '@/lib/cn';
 
 export interface CTAAction {
   label: string;
   href: string;
-  variant?: 'primary' | 'secondary' | 'ghost' | 'gradient';
 }
 
-export interface CTASectionProps
-  extends Omit<React.HTMLAttributes<HTMLElement>, 'title'>,
-    VariantProps<typeof ctaSectionVariants> {
+export interface CTASectionProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {
+  /** キッカー（例: 「＼5分でわかる資料をプレゼント／」。LP調査で実測7種のほぼ必須要素） */
+  kicker?: string;
   title: React.ReactNode;
   subtitle?: string;
+  /**
+   * 2オファー（軽+重 または 軽+軽）。variant は自動割当:
+   * 1つ目 = cta（第3役割・コンバージョン強調）/ 以降 = secondary
+   */
   actions: CTAAction[];
   note?: string;
-  background?: 'default' | 'muted' | 'dark' | 'brand';
-  spacing?: 'sm' | 'md' | 'lg' | 'xl' | 'none';
-  backgroundMesh?: boolean;
   socialProof?: string;
-  logoStrip?: React.ReactNode;
+  layout?: 'centered' | 'split';
 }
 
 export const CTASection = React.forwardRef<HTMLElement, CTASectionProps>(
-  (
-    {
-      className,
-      layout = 'centered',
-      title,
-      subtitle,
-      actions,
-      note,
-      background = 'dark',
-      spacing,
-      backgroundMesh = false,
-      socialProof,
-      logoStrip,
-      ...props
-    },
-    ref,
-  ) => {
-
-    const meshElement = backgroundMesh && (
-      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-        <div
-          className="absolute inset-0 [background-image:radial-gradient(ellipse_at_30%_50%,rgba(19,195,160,0.2),transparent_60%),radial-gradient(ellipse_at_70%_30%,rgba(59,130,246,0.1),transparent_60%)]"
-        />
+  ({ kicker, title, subtitle, actions, note, socialProof, layout = 'centered', ...props }, ref) => {
+    const buttons = actions.map((action, i) => (
+      <MarketingButton key={i} variant={i === 0 ? 'cta' : 'secondary'} size="lg" href={action.href}>
+        {action.label}
+      </MarketingButton>
+    ));
+    const meta = (note || socialProof) && (
+      <div className={styles.meta}>
+        {socialProof && (
+          <Text as="div" size="body-sm" tone="muted">
+            {socialProof}
+          </Text>
+        )}
+        {note && (
+          <Text as="div" size="caption" tone="muted">
+            {note}
+          </Text>
+        )}
       </div>
     );
 
     if (layout === 'split') {
       return (
-        <Section ref={ref} background={background} spacing={spacing ?? 'lg'} className={cn('relative overflow-hidden', className)} {...props}>
-          {meshElement}
+        <Section ref={ref} background="dark" spacing="lg" className={styles.section} {...props}>
           <Container>
-            <div className="flex flex-col items-center justify-between gap-8 lg:flex-row">
-              <div className="max-w-xl">
+            <div className={styles.splitRow}>
+              <div className={styles.splitText}>
+                {kicker && <span className={styles.kicker}>{kicker}</span>}
                 <Heading as="h2" size="display-sm">
                   {title}
                 </Heading>
                 {subtitle && (
-                  <Text
-                    size="body-lg"
-                    tone="secondary"
-                    className={cn('mt-4', 'dark:text-neutral-300')}
-                  >
+                  <Text size="body-lg" tone="secondary" clauseWrap className={styles.subtitleSplit}>
                     {subtitle}
                   </Text>
                 )}
+                {meta}
               </div>
-              <div className="flex flex-wrap gap-4">
-                {actions.map((action, i) => (
-                  <MarketingButton
-                    key={i}
-                    variant={action.variant ?? (i === 0 ? 'primary' : 'secondary')}
-                    size="lg"
-                    href={action.href}
-                  >
-                    {action.label}
-                  </MarketingButton>
-                ))}
-              </div>
+              <div className={styles.actionsSplit}>{buttons}</div>
             </div>
           </Container>
         </Section>
@@ -107,50 +76,23 @@ export const CTASection = React.forwardRef<HTMLElement, CTASectionProps>(
     return (
       <Section
         ref={ref}
-        background={background}
-        spacing={spacing ?? 'lg'}
-        className={cn('relative overflow-hidden', ctaSectionVariants({ layout }), className)}
+        background="dark"
+        spacing="lg"
+        className={cn(styles.section, styles.centered)}
         {...props}
       >
-        {meshElement}
         <Container size="md">
+          {kicker && <span className={styles.kicker}>{kicker}</span>}
           <Heading as="h2" size="display-md">
             {title}
           </Heading>
           {subtitle && (
-            <Text
-              size="body-lg"
-              tone="secondary"
-              className={cn('mx-auto mt-4 max-w-xl', 'dark:text-neutral-300')}
-            >
+            <Text size="body-lg" tone="secondary" clauseWrap className={styles.subtitleCentered}>
               {subtitle}
             </Text>
           )}
-          <div className="mt-8 flex flex-wrap justify-center gap-4">
-            {actions.map((action, i) => (
-              <MarketingButton
-                key={i}
-                variant={action.variant ?? (i === 0 ? 'primary' : 'secondary')}
-                size="lg"
-                href={action.href}
-              >
-                {action.label}
-              </MarketingButton>
-            ))}
-          </div>
-          {note && (
-            <Text size="caption" tone="muted" className={cn('mt-4', 'dark:text-neutral-500')}>
-              {note}
-            </Text>
-          )}
-          {socialProof && (
-            <Text size="body-sm" tone="muted" className={cn('mt-6 font-medium', 'dark:text-neutral-400')}>
-              {socialProof}
-            </Text>
-          )}
-          {logoStrip && (
-            <div className="mt-8">{logoStrip}</div>
-          )}
+          <div className={styles.actionsCentered}>{buttons}</div>
+          {meta}
         </Container>
       </Section>
     );

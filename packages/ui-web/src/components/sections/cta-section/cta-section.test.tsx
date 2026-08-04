@@ -6,10 +6,7 @@ import { CTASection } from './cta-section';
 describe('CTASection', () => {
   it('タイトルを表示する', () => {
     render(
-      <CTASection
-        title="無料で開発を始める"
-        actions={[{ label: '始める', href: '/signup' }]}
-      />,
+      <CTASection title="無料で開発を始める" actions={[{ label: '始める', href: '/signup' }]} />,
     );
     expect(screen.getByText('無料で開発を始める')).toBeInTheDocument();
   });
@@ -31,7 +28,7 @@ describe('CTASection', () => {
         title="タイトル"
         actions={[
           { label: '無料で始める', href: '/signup' },
-          { label: 'デモを予約', href: '/demo', variant: 'secondary' },
+          { label: 'デモを予約', href: '/demo' },
         ]}
       />,
     );

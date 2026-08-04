@@ -29,12 +29,33 @@
 .bgMuted {
   background: var(--color-surface-sunken);
 }
+/* 暗面は「背景を変える」のではなく「スコープ内のセマンティック文字色を反転する」。
+   これをしないと、Heading（--color-on-surface）や Text（-secondary/-muted）が
+   明モード用の黒インクのまま暗面に載り、ほぼ読めなくなる
+   （検証関門 CorporateTop で実際に発生した事故。workorder §7-5）。
+   値は theme.css の .dark 定義と同一。--color-text-brand 系は暗面用スロットへ振り替える */
 .bgDark {
   background: var(--color-neutral-950);
   color: var(--color-neutral-50);
+  --color-surface: var(--color-neutral-950);
+  --color-surface-raised: var(--color-neutral-900);
+  --color-surface-sunken: var(--color-neutral-900);
+  --color-surface-muted: var(--color-neutral-850);
+  --color-on-surface: var(--color-neutral-50);
+  --color-on-surface-secondary: var(--color-neutral-300);
+  --color-on-surface-muted: var(--color-neutral-400);
+  --color-border: var(--color-neutral-800);
+  --color-text-brand: var(--color-text-brand-on-dark);
+  --color-text-brand-strong: var(--color-text-brand-on-dark);
 }
 /* ブランド強調面。旧 primary-950 直参照から strong スロットへ（multi-brand 対応） */
 .bgBrand {
   background: var(--color-bg-brand-strong);
   color: var(--color-neutral-50);
+  --color-on-surface: var(--color-neutral-50);
+  --color-on-surface-secondary: var(--color-neutral-200);
+  --color-on-surface-muted: var(--color-neutral-300);
+  --color-border: color-mix(in srgb, var(--color-neutral-50) 20%, transparent);
+  --color-text-brand: var(--color-text-brand-on-dark);
+  --color-text-brand-strong: var(--color-text-brand-on-dark);
 }

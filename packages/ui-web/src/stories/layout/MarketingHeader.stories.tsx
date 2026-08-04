@@ -43,8 +43,8 @@ export const WithDropdown: Story = {
             { label: isJa ? 'ドキュメント' : 'Docs', href: '/docs' },
           ]}
           actions={[
-            { label: isJa ? 'ログイン' : 'Log in', href: '/login', variant: 'ghost' },
-            { label: isJa ? '無料で始める' : 'Start Free', href: '/signup', variant: 'primary' },
+            { label: isJa ? 'ログイン' : 'Log in', href: '/login' },
+            { label: isJa ? '無料で始める' : 'Start Free', href: '/signup' },
           ]}
         />
         <Section background="muted" spacing="xl">
@@ -77,8 +77,8 @@ export const Default: Story = {
             { label: isJa ? 'ブログ' : 'Blog', href: '/blog' },
           ]}
           actions={[
-            { label: isJa ? 'ログイン' : 'Log in', href: '/login', variant: 'ghost' },
-            { label: isJa ? '無料で始める' : 'Start Free', href: '/signup', variant: 'primary' },
+            { label: isJa ? 'ログイン' : 'Log in', href: '/login' },
+            { label: isJa ? '無料で始める' : 'Start Free', href: '/signup' },
           ]}
         />
         {/* ヘッダーの下にダミーコンテンツ */}

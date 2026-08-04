@@ -28,15 +28,48 @@ export interface ModuleOverviewProps extends Omit<React.HTMLAttributes<HTMLEleme
 }
 
 export const ModuleOverview = React.forwardRef<HTMLElement, ModuleOverviewProps>(
-  ({ className, eyebrow, eyebrowStyle, title, subtitle, layers, background = 'dark', spacing, ...props }, ref) => {
-
+  (
+    {
+      className,
+      eyebrow,
+      eyebrowStyle,
+      title,
+      subtitle,
+      layers,
+      background = 'dark',
+      spacing,
+      ...props
+    },
+    ref,
+  ) => {
     return (
-      <Section ref={ref} background={background} spacing={spacing ?? 'lg'} className={className} {...props}>
+      <Section
+        ref={ref}
+        background={background}
+        spacing={spacing ?? 'lg'}
+        className={className}
+        {...props}
+      >
         <Container>
           {(eyebrow || title || subtitle) && (
             <div className="mb-12 text-center lg:mb-16">
               {eyebrow && (
-                <Text size={eyebrowStyle === 'border' ? 'overline-border' : eyebrowStyle === 'text' ? 'overline-text' : eyebrowStyle === 'dot' ? 'overline-dot' : eyebrowStyle === 'gradient' ? 'overline-gradient' : eyebrowStyle === 'icon-pill' ? 'overline-icon-pill' : 'overline-pill'} className="mb-4">
+                <Text
+                  size={
+                    eyebrowStyle === 'border'
+                      ? 'overline-border'
+                      : eyebrowStyle === 'text'
+                        ? 'overline-text'
+                        : eyebrowStyle === 'dot'
+                          ? 'overline-dot'
+                          : eyebrowStyle === 'gradient'
+                            ? 'overline-gradient'
+                            : eyebrowStyle === 'icon-pill'
+                              ? 'overline-icon-pill'
+                              : 'overline-pill'
+                  }
+                  className="mb-4"
+                >
                   {eyebrow}
                 </Text>
               )}
@@ -104,7 +137,11 @@ export const ModuleOverview = React.forwardRef<HTMLElement, ModuleOverviewProps>
                             {mod.label}
                           </Text>
                         </div>
-                        <Text size="caption" tone="secondary" className={cn('mt-1', 'dark:text-neutral-400')}>
+                        <Text
+                          size="caption"
+                          tone="secondary"
+                          className={cn('mt-1', 'dark:text-neutral-400')}
+                        >
                           {mod.description}
                         </Text>
                       </div>

@@ -1,0 +1,47 @@
+/* StatsSection — 数値訴求（19/19社が保有・LP調査）。時点注記は景表法対応で推奨 */
+.grid {
+  display: grid;
+  gap: var(--spacing-8);
+  text-align: center;
+}
+@media (min-width: 40rem) {
+  .cols3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .cols4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 64rem) {
+  .cols4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+.value {
+  font-size: var(--text-display-sm);
+  line-height: var(--text-display-sm--line-height);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-brand);
+}
+@media (min-width: 48rem) {
+  .value {
+    font-size: var(--text-display-md);
+    line-height: var(--text-display-md--line-height);
+  }
+}
+:global(.dark) .value {
+  color: var(--color-neutral-50);
+}
+.label {
+  margin-top: var(--spacing-2);
+  font-weight: 600;
+}
+.description {
+  margin-top: var(--spacing-1);
+}
+.note {
+  margin-top: var(--spacing-8);
+  text-align: center;
+}

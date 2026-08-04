@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { cn } from '@/lib/cn';
+import styles from './marketing-footer.module.css';
 import { Container } from '@/components/primitives/container';
 import { Text } from '@/components/primitives/text';
 import { Logo } from '@/components/primitives/logo';
@@ -27,47 +28,31 @@ export interface MarketingFooterProps extends React.HTMLAttributes<HTMLElement> 
 
 export const MarketingFooter = React.forwardRef<HTMLElement, MarketingFooterProps>(
   (
-    {
-      className,
-      logo,
-      description,
-      linkGroups,
-      socialLinks,
-      legalLinks,
-      copyright,
-      ...props
-    },
+    { className, logo, description, linkGroups, socialLinks, legalLinks, copyright, ...props },
     ref,
   ) => (
-    <footer
-      ref={ref}
-      className={cn(
-        'border-t border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950',
-        className,
-      )}
-      {...props}
-    >
+    <footer ref={ref} className={cn(styles.footer, className)} {...props}>
       <Container>
-        <div className="py-12 lg:py-16">
-          <div className="grid gap-8 lg:grid-cols-12">
+        <div className={styles.main}>
+          <div className={styles.grid}>
             {/* ロゴ + 説明 */}
-            <div className="lg:col-span-4">
-              <div className="mb-4">
-                {logo ?? <Logo variant="full" colorScheme="primary" className="h-8" />}
+            <div className={styles.brandCol}>
+              <div className={styles.logoBox}>
+                {logo ?? <Logo variant="full" colorScheme="primary" height={32} />}
               </div>
               {description && (
-                <Text size="body-sm" tone="secondary" className="max-w-xs">
+                <Text size="body-sm" tone="secondary" className={styles.description}>
                   {description}
                 </Text>
               )}
               {socialLinks && socialLinks.length > 0 && (
-                <div className="mt-6 flex gap-4">
+                <div className={styles.social}>
                   {socialLinks.map((social, i) => (
                     <a
                       key={i}
                       href={social.href}
                       aria-label={social.label}
-                      className="text-neutral-500 transition-colors hover:text-neutral-900 dark:hover:text-white"
+                      className={styles.socialLink}
                     >
                       {social.icon}
                     </a>
@@ -78,19 +63,16 @@ export const MarketingFooter = React.forwardRef<HTMLElement, MarketingFooterProp
 
             {/* リンクカラム */}
             {linkGroups && linkGroups.length > 0 && (
-              <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:col-span-8">
+              <div className={styles.linkCols}>
                 {linkGroups.map((group, i) => (
                   <div key={i}>
-                    <Text as="div" size="body-sm" tone="default" className="mb-3 font-semibold">
+                    <Text as="div" size="body-sm" tone="default" className={styles.groupTitle}>
                       {group.title}
                     </Text>
-                    <ul className="space-y-2">
+                    <ul className={styles.linkList}>
                       {group.links.map((link, j) => (
                         <li key={j}>
-                          <a
-                            href={link.href}
-                            className="text-sm text-neutral-500 transition-colors hover:text-neutral-900 dark:hover:text-white"
-                          >
+                          <a href={link.href} className={styles.footerLink}>
                             {link.label}
                           </a>
                         </li>
@@ -106,20 +88,16 @@ export const MarketingFooter = React.forwardRef<HTMLElement, MarketingFooterProp
         <Divider variant="solid" spacing="none" />
 
         {/* ボトムバー */}
-        <div className="flex flex-col items-center justify-between gap-4 py-6 sm:flex-row">
+        <div className={styles.bottomBar}>
           {copyright && (
             <Text size="caption" tone="muted">
               {copyright}
             </Text>
           )}
           {legalLinks && legalLinks.length > 0 && (
-            <div className="flex flex-wrap gap-4">
+            <div className={styles.legalLinks}>
               {legalLinks.map((link, i) => (
-                <a
-                  key={i}
-                  href={link.href}
-                  className="text-xs text-neutral-500 transition-colors hover:text-neutral-900 dark:hover:text-white"
-                >
+                <a key={i} href={link.href} className={styles.legalLink}>
                   {link.label}
                 </a>
               ))}

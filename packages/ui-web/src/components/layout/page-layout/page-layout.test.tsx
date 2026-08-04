@@ -13,9 +13,7 @@ describe('PageLayout', () => {
 
   it('headerPropsでヘッダーをレンダリングする', () => {
     render(
-      <PageLayout
-        headerProps={{ navItems: [{ label: 'テスト', href: '/test' }] }}
-      >
+      <PageLayout headerProps={{ navItems: [{ label: 'テスト', href: '/test' }] }}>
         コンテンツ
       </PageLayout>,
     );
@@ -23,11 +21,7 @@ describe('PageLayout', () => {
   });
 
   it('footerPropsでフッターをレンダリングする', () => {
-    render(
-      <PageLayout footerProps={{ copyright: '© 2025' }}>
-        コンテンツ
-      </PageLayout>,
-    );
+    render(<PageLayout footerProps={{ copyright: '© 2025' }}>コンテンツ</PageLayout>);
     expect(document.querySelector('footer')).toBeInTheDocument();
   });
 

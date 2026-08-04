@@ -26,7 +26,7 @@ describe('HeroSection', () => {
         title="タイトル"
         actions={[
           { label: '無料で始める', href: '/signup' },
-          { label: 'ドキュメント', href: '/docs', variant: 'secondary' },
+          { label: 'ドキュメント', href: '/docs' },
         ]}
       />,
     );
@@ -38,7 +38,7 @@ describe('HeroSection', () => {
     render(
       <HeroSection
         title="タイトル"
-        layout="split-image"
+        imagePlacement="side"
         image={<img alt="hero" src="/test.png" />}
       />,
     );
@@ -53,5 +53,25 @@ describe('HeroSection', () => {
   it('a11y違反がない', async () => {
     const { container } = render(<HeroSection title="アクセシブルなヒーロー" />);
     expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe('backdrop（背景演出層）', () => {
+  it('backdrop は aria-hidden で描画され、コピーは左寄せになる', () => {
+    const { container } = render(
+      <HeroSection title="見出し" subtitle="サブ" backdrop={<svg data-testid="bg" />} />,
+    );
+    const backdrop = container.querySelector('[aria-hidden="true"]');
+    expect(backdrop).toBeInTheDocument();
+    expect(backdrop!.querySelector('svg')).toBeInTheDocument();
+    // centered クラスが付かない（= start 寄せ）
+    expect(container.querySelector('.centered')).not.toBeInTheDocument();
+  });
+
+  it('backdropTone=dark で暗面のセマンティック反転（Section bgDark）が効く', () => {
+    const { container } = render(
+      <HeroSection title="見出し" backdrop={<div />} backdropTone="dark" />,
+    );
+    expect(container.querySelector('section')).toHaveClass('bgDark');
   });
 });

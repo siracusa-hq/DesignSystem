@@ -32,6 +32,13 @@
   color: var(--color-text-brand);
 }
 
+/* 節ラップ（clauseWrap）: 読点・句点で区切った各節を inline-block にし、
+   改行を「文章の切れ目」に限定する。センター寄せの短いリード文専用
+   （長文段落に使うと行末が間延びするため Text の既定にはしない） */
+.clause {
+  display: inline-block;
+}
+
 /* ---- 以下すべて @deprecated（Eyebrow へ移行。Slice 4 で削除） ---- */
 
 .overlineBase {

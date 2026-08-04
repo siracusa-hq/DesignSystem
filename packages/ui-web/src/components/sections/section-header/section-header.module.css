@@ -1,0 +1,15 @@
+/* SectionHeader — セクション冒頭の定型（Eyebrow + 見出し + リード）。内部共有 */
+.header {
+  margin-bottom: var(--spacing-12);
+  text-align: center;
+}
+.eyebrowRow {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--spacing-4);
+}
+.subtitle {
+  margin-top: var(--spacing-4);
+  margin-inline: auto;
+  max-width: 42rem;
+}

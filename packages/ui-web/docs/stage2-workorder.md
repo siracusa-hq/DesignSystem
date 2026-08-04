@@ -124,7 +124,38 @@ MarketingFooter
 
 ## 7. 検証関門で見つかった設計不備（Slice 3 で記入）
 
-- [ ] （実施後に記入）
+1. **内部の `className` 依存が残存** — SectionHeader / 各セクションが Text へ
+   `className`（@deprecated）でレイアウト用クラスを渡している。レイアウトは
+   親のラッパー要素が持つ方針に Slice 4 で統一し、Text/Heading の className を
+   先に閉じられる状態にする。
+2. **MarketingHeader のモバイル全幅ボタンで inline style を使用** —
+   MarketingButton が幅指定の手段を持たない。`fullWidth?: boolean` を
+   Slice 4 で追加して置き換える。
+3. **ページのリズムが手動のまま成立はする** — 既定面の並び
+   （default→muted→default→muted→dark）が偶然交互になっているが、
+   これは構成依存。Stage 3 の `<Page>` リズムエンジンの必要性を再確認した。
+4. **HeroSection.image の型制約は未実装** — MediaFrame/ProductShot が
+   Slice 4 のため ReactNode のまま。予定どおり Slice 4 で制約する。
+5. **【ブランド側レビューで発見・修正済み】暗面 Section で文字が読めない** —
+   Section の dark/brand 面が背景色しか変えず、セマンティック文字色
+   （--color-on-surface 系）が明モードの黒インクのままだった（移行前からの
+   潜在バグ）。対処: 暗面はスコープ内のセマンティック変数と
+   --color-text-brand 系を反転する方式に変更（section.module.css）。
+   個別コンポーネントの対応は不要になり、今後の全セクションに効く。
+6. **【ブランド側レビューで発見・修正済み】リード文が語の途中で折り返す** —
+   ブラウザ既定の和文改行はどこでも折れる（auto-phrase は Chromium 限定かつ
+   文節単位）。対処: `Text` に `clauseWrap`（読点・句点で節を inline-block 化し
+   改行を文章の切れ目に限定）を追加し、subtitle 系スロット
+   （SectionHeader / Hero / CTA）に標準適用。長い段落には使わない
+   （行末が間延びするため）。Slice 4 の各セクションのリード文にも適用する。
+7. **【ブランド側レビューが誘発した発見・修正済み】stories/tests が型検査から
+   除外されていた** — tsconfig の exclude により、削除済み props を使う古い
+   ストーリーが型検査をすり抜け、Storybook 上に「存在しない機能のカタログ」が
+   残っていた（HeroSection の backgroundPattern 系ストーリー等）。
+   対処: tsconfig.stories.json を新設して typecheck に組み込み、
+   露見した stale 使用 20箇所超を一掃。vitest-axe のマッチャ型登録と、
+   Eyebrow が HTMLAttributes 経由で className を型受容していた穴も同時に修正。
+   以後、props を消すとストーリー・テストの追従漏れが CI で落ちる。
 
 ---
 
@@ -132,8 +163,8 @@ MarketingFooter
 
 - [x] Slice 0（基盤）— 2026-08-04 完了。備考: theme.css に spacing スケールの実体宣言を追加（Tailwind v4 は --spacing-N を変数として持たないため。小数キーは変数化しない）。className はレイアウトプリミティブのみ @deprecated で暫定存置（未移行コンポーネントが利用中のため。Slice 6 で削除）
 - [x] Slice 1（プリミティブ 8 + 新規 2）— 2026-08-04 完了。備考: 契約に --color-text-brand-strong（700段）を追加（Badge等の淡面上の濃文字用）。Text の overline 7種は未移行セクションが使用中のため @deprecated で暫定存置（Slice 4 で削除）。MarketingButton の gradient は cta へのエイリアス化（Slice 2 で削除）
-- [ ] Slice 2（セクション 5 + 新規 1 + レイアウト 3）
-- [ ] Slice 3（コーポレートトップ = 検証関門）
+- [x] Slice 2（セクション 5 + 新規 1 + レイアウト 3）— 2026-08-04 完了（SectionHeader 内部共有を追加）
+- [x] Slice 3（コーポレートトップ = 検証関門）— 2026-08-04 完了（Examples/CorporateTop）
 - [ ] Slice 4（残りセクション 13 + プリミティブ残り + 新規 3）
 - [ ] Slice 5（フォーム + LandingPage 更新）
 - [ ] Slice 6（配布切替）

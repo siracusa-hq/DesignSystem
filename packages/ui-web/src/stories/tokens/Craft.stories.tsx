@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 import { Heading } from '../../components/primitives/heading';
+import { Text } from '../../components/primitives/text';
 import { AnimateOnScroll } from '../../components/primitives/animate-on-scroll';
 
 /**
@@ -46,6 +47,30 @@ function JaTypographySection() {
           <Heading as="h2" size="display-lg">
             Enterprise agents, built for the audit trail.
           </Heading>
+        </div>
+      </div>
+      <div className="grid gap-4 lg:grid-cols-2" lang="ja">
+        <div
+          className="rounded-[var(--radius-card)] border border-[var(--color-border)] p-6"
+          style={{ maxWidth: '30rem' }}
+        >
+          <p className="mb-2 font-mono text-caption text-[var(--color-on-surface-muted)]">
+            clauseWrap なし — 語の途中で折れる
+          </p>
+          <Text size="body-lg" tone="secondary" style={{ textAlign: 'center' }}>
+            技術者向けの基盤と、非技術者向けの業務シリーズ。色が違っても、同じ会社のトーンで。
+          </Text>
+        </div>
+        <div
+          className="rounded-[var(--radius-card)] border border-[var(--color-border)] p-6"
+          style={{ maxWidth: '30rem' }}
+        >
+          <p className="mb-2 font-mono text-caption text-[var(--color-on-surface-muted)]">
+            clauseWrap あり — 読点・句点でしか折れない（subtitle 系に標準適用）
+          </p>
+          <Text size="body-lg" tone="secondary" clauseWrap style={{ textAlign: 'center' }}>
+            技術者向けの基盤と、非技術者向けの業務シリーズ。色が違っても、同じ会社のトーンで。
+          </Text>
         </div>
       </div>
       <div

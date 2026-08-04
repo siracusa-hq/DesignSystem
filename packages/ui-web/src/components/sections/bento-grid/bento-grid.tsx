@@ -36,15 +36,48 @@ const rowSpanClasses = {
 } as const;
 
 export const BentoGrid = React.forwardRef<HTMLElement, BentoGridProps>(
-  ({ className, eyebrow, eyebrowStyle, title, subtitle, items, background = 'default', spacing, ...props }, ref) => {
-
+  (
+    {
+      className,
+      eyebrow,
+      eyebrowStyle,
+      title,
+      subtitle,
+      items,
+      background = 'default',
+      spacing,
+      ...props
+    },
+    ref,
+  ) => {
     return (
-      <Section ref={ref} background={background} spacing={spacing ?? 'lg'} className={className} {...props}>
+      <Section
+        ref={ref}
+        background={background}
+        spacing={spacing ?? 'lg'}
+        className={className}
+        {...props}
+      >
         <Container>
           {(eyebrow || title || subtitle) && (
             <div className="mb-12 text-center lg:mb-16">
               {eyebrow && (
-                <Text size={eyebrowStyle === 'border' ? 'overline-border' : eyebrowStyle === 'text' ? 'overline-text' : eyebrowStyle === 'dot' ? 'overline-dot' : eyebrowStyle === 'gradient' ? 'overline-gradient' : eyebrowStyle === 'icon-pill' ? 'overline-icon-pill' : 'overline-pill'} className="mb-4">
+                <Text
+                  size={
+                    eyebrowStyle === 'border'
+                      ? 'overline-border'
+                      : eyebrowStyle === 'text'
+                        ? 'overline-text'
+                        : eyebrowStyle === 'dot'
+                          ? 'overline-dot'
+                          : eyebrowStyle === 'gradient'
+                            ? 'overline-gradient'
+                            : eyebrowStyle === 'icon-pill'
+                              ? 'overline-icon-pill'
+                              : 'overline-pill'
+                  }
+                  className="mb-4"
+                >
                   {eyebrow}
                 </Text>
               )}
@@ -85,7 +118,11 @@ export const BentoGrid = React.forwardRef<HTMLElement, BentoGridProps>(
                     {item.icon}
                   </div>
                 )}
-                <Heading as="h3" size="heading-md" className={item.variant === 'dark' ? 'text-white!' : ''}>
+                <Heading
+                  as="h3"
+                  size="heading-md"
+                  className={item.variant === 'dark' ? 'text-white!' : ''}
+                >
                   {item.title}
                 </Heading>
                 {item.description && (
@@ -97,9 +134,7 @@ export const BentoGrid = React.forwardRef<HTMLElement, BentoGridProps>(
                     {item.description}
                   </Text>
                 )}
-                {item.content && (
-                  <div className="mt-4 flex-1">{item.content}</div>
-                )}
+                {item.content && <div className="mt-4 flex-1">{item.content}</div>}
               </div>
             ))}
           </div>

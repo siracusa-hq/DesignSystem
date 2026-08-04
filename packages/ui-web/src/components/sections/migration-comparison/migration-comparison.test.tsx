@@ -9,7 +9,11 @@ const paths = [
     tagline: 'kintoneの限界を超える',
     description: '大規模データ対応へ',
     triggers: [
-      { trigger: 'データ量の壁', pain: '検索が遅くなる', solution: 'PostgreSQLベースで数百万件対応' },
+      {
+        trigger: 'データ量の壁',
+        pain: '検索が遅くなる',
+        solution: 'PostgreSQLベースで数百万件対応',
+      },
     ],
     action: { label: '移行ガイド', href: '/migration/kintone' },
   },

@@ -1,205 +1,159 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { HeroSection } from '../../components/sections/hero-section';
-import { GradientText } from '../../components/primitives/gradient-text';
-import { Heading } from '../../components/primitives/heading';
 
-const meta: Meta<typeof HeroSection> = {
+const meta = {
   title: 'Sections/HeroSection',
   component: HeroSection,
   parameters: { layout: 'fullscreen' },
-};
+} satisfies Meta<typeof HeroSection>;
+
 export default meta;
+type Story = StoryObj<typeof meta>;
 
-type Story = StoryObj<typeof HeroSection>;
-
-export const Centered: Story = {
-  render: (_, { globals }) => {
-    const isJa = globals.locale === 'ja';
-    return (
-      <HeroSection
-        layout="centered"
-        badge={isJa ? '新登場' : 'Now Available'}
-        title={
-          <Heading as="h1" size="display-2xl">
-            {isJa ? (
-              <>
-                AIがコードを書く時代。
-                <br />
-                <GradientText as="span">業務に耐える裏側は、Polastackが引き受ける。</GradientText>
-              </>
-            ) : (
-              <>
-                In the age of AI-generated code,
-                <br />
-                <GradientText as="span">Polastack handles the enterprise backend.</GradientText>
-              </>
-            )}
-          </Heading>
-        }
-        subtitle={
-          isJa
-            ? 'AIエージェントにAPI仕様を渡すだけで、エンタープライズ品質の検索・分析・認証基盤が即座に立ち上がる。'
-            : 'Just pass API specs to an AI agent, and enterprise-grade search, analytics, and auth infrastructure spins up instantly.'
-        }
-        actions={[
-          { label: isJa ? '無料で開発を始める' : 'Start Free', href: '/signup' },
-          { label: isJa ? 'ドキュメント' : 'Documentation', href: '/docs', variant: 'secondary' },
-        ]}
-      />
-    );
+export const 日本語: Story = {
+  args: {
+    badge: 'Enterprise Agent Stack',
+    title: (
+      <>
+        AIがコードを書く時代。
+        <br />
+        業務に耐える裏側は、Polastackが引き受ける。
+      </>
+    ),
+    subtitle:
+      'AIエージェントにAPI仕様を渡すだけで、エンタープライズ品質の検索・分析・認証基盤が即座に立ち上がる。',
+    actions: [
+      { label: '無料で開発を始める', href: '#signup' },
+      { label: 'デモを予約', href: '#demo' },
+    ],
   },
 };
 
-export const SplitImage: Story = {
-  render: (_, { globals }) => {
-    const isJa = globals.locale === 'ja';
-    return (
-      <HeroSection
-        layout="split-image"
-        title={
-          isJa
-            ? 'ノーコードの妥協を終わらせる。'
-            : 'End the no-code compromise.'
-        }
-        subtitle={
-          isJa
-            ? 'AIが描く自由なフロントエンドに、最強のバックエンドを直結。'
-            : 'Connect the most powerful backend directly to the free frontend drawn by AI.'
-        }
-        actions={[
-          { label: isJa ? '無料で始める' : 'Get Started Free', href: '/signup' },
-        ]}
-        image={
-          <div className="flex h-64 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-100 to-brand-50 text-primary-500 dark:from-brand-950 dark:to-neutral-900">
-            <span className="text-lg font-medium">Product Screenshot</span>
-          </div>
-        }
-      />
-    );
+export const English: Story = {
+  args: {
+    badge: 'Enterprise Agent Stack',
+    title: (
+      <>
+        In the age of AI-generated code,
+        <br />
+        Polastack handles the enterprise backend.
+      </>
+    ),
+    subtitle:
+      'Just pass API specs to an AI agent, and enterprise-grade search, analytics, and auth infrastructure spins up instantly.',
+    actions: [
+      { label: 'Start Free', href: '#signup' },
+      { label: 'Book a Demo', href: '#demo' },
+    ],
   },
 };
 
-export const WithGridPattern: Story = {
-  render: (_, { globals }) => {
-    const isJa = globals.locale === 'ja';
-    return (
-      <HeroSection
-        layout="centered"
-        background="dark"
-        backgroundPattern="grid"
-        title={
-          <Heading as="h1" size="display-2xl" className="text-white">
-            {isJa ? (
-              <>
-                AIがコードを書く時代。
-                <br />
-                <GradientText as="span">業務に耐える裏側は、Polastackが引き受ける。</GradientText>
-              </>
-            ) : (
-              <>
-                In the age of AI-generated code,
-                <br />
-                <GradientText as="span">Polastack handles the enterprise backend.</GradientText>
-              </>
-            )}
-          </Heading>
-        }
-        subtitle={
-          isJa
-            ? 'AIエージェントにAPI仕様を渡すだけで、エンタープライズ品質の検索・分析・認証基盤が即座に立ち上がる。'
-            : 'Just pass API specs to an AI agent, and enterprise-grade search, analytics, and auth infrastructure spins up instantly.'
-        }
-        actions={[
-          { label: isJa ? '無料で開発を始める' : 'Start Free', href: '/signup', variant: 'gradient' },
-          { label: isJa ? 'ドキュメント' : 'Documentation', href: '/docs', variant: 'secondary' },
-        ]}
-      />
-    );
+const DemoShot = () => (
+  <div
+    aria-hidden="true"
+    style={{
+      borderRadius: 'var(--radius-media)',
+      border: '1px solid var(--color-border)',
+      boxShadow: 'var(--shadow-card-hover)',
+      overflow: 'hidden',
+      background: 'var(--color-surface)',
+    }}
+  >
+    <div
+      style={{
+        display: 'flex',
+        gap: '6px',
+        padding: '10px 14px',
+        borderBottom: '1px solid var(--color-border)',
+        background: 'var(--color-surface-sunken)',
+      }}
+    >
+      {[0, 1, 2].map((i) => (
+        <span
+          key={i}
+          style={{
+            width: 10,
+            height: 10,
+            borderRadius: '50%',
+            background: 'var(--color-border)',
+          }}
+        />
+      ))}
+    </div>
+    <div style={{ aspectRatio: '16 / 9', display: 'grid', gridTemplateColumns: '160px 1fr' }}>
+      <div style={{ background: 'var(--color-surface-sunken)' }} />
+      <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        {[64, 88, 76, 52].map((w, i) => (
+          <div
+            key={i}
+            style={{
+              height: 12,
+              width: `${w}%`,
+              borderRadius: 6,
+              background: i === 0 ? 'var(--color-bg-brand-muted)' : 'var(--color-surface-sunken)',
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
+export const 画像を横に: Story = {
+  args: {
+    ...日本語.args,
+    image: <DemoShot />,
+    imagePlacement: 'side',
   },
 };
 
-export const WithDotsPattern: Story = {
-  render: (_, { globals }) => {
-    const isJa = globals.locale === 'ja';
-    return (
-      <HeroSection
-        layout="centered"
-        background="dark"
-        backgroundPattern="dots"
-        title={isJa ? 'ドットパターン背景' : 'Dots Pattern Background'}
-        subtitle={isJa ? 'backgroundPattern="dots" を指定した場合の表示例です。' : 'Example with backgroundPattern="dots" prop.'}
-        actions={[{ label: isJa ? '無料で始める' : 'Get Started', href: '/signup', variant: 'gradient' }]}
-      />
-    );
+export const 画像を下に: Story = {
+  args: {
+    ...日本語.args,
+    image: <DemoShot />,
+    imagePlacement: 'below',
   },
 };
 
-export const WithMeshPattern: Story = {
-  render: (_, { globals }) => {
-    const isJa = globals.locale === 'ja';
-    return (
-      <HeroSection
-        layout="centered"
-        background="dark"
-        backgroundPattern="mesh"
-        title={isJa ? 'メッシュグラデーション背景' : 'Mesh Gradient Background'}
-        subtitle={isJa ? 'backgroundPattern="mesh" を指定した場合の表示例です。' : 'Example with backgroundPattern="mesh" prop.'}
-        actions={[{ label: isJa ? '無料で始める' : 'Get Started', href: '/signup', variant: 'gradient' }]}
-      />
-    );
-  },
-};
+/** 貴社コーポレートサイトと同型の「淡背景 + 左寄せコピー + 明滅する装飾層」。
+    アニメーションは --duration-ambient を使うため reduced-motion に自動追従する */
+const AmbientBackdrop = () => (
+  <>
+    <style>{`@keyframes hero-pulse { 0%, 64%, 100% { opacity: var(--o); } 9% { opacity: calc(var(--o) * 2.6); } 26% { opacity: var(--o); } }`}</style>
+    <svg width="100%" height="100%" aria-hidden="true">
+      {[
+        { cx: '12%', cy: '30%', r: 90, o: 0.05, d: '0s' },
+        { cx: '78%', cy: '18%', r: 130, o: 0.07, d: '-3s' },
+        { cx: '88%', cy: '70%', r: 170, o: 0.06, d: '-6s' },
+        { cx: '45%', cy: '85%', r: 110, o: 0.05, d: '-9s' },
+      ].map((c, i) => (
+        <circle
+          key={i}
+          cx={c.cx}
+          cy={c.cy}
+          r={c.r}
+          fill="var(--color-decor-brand)"
+          style={{
+            ['--o' as string]: c.o,
+            opacity: c.o,
+            animation: `hero-pulse calc(var(--duration-ambient) * 9) ${c.d} infinite ease-in-out`,
+          }}
+        />
+      ))}
+    </svg>
+  </>
+);
 
-export const WithRadialGlow: Story = {
-  render: (_, { globals }) => {
-    const isJa = globals.locale === 'ja';
-    return (
-      <HeroSection
-        layout="centered"
-        background="dark"
-        backgroundPattern="radial-glow"
-        title={isJa ? 'ラジアルグロー背景' : 'Radial Glow Background'}
-        subtitle={isJa ? 'backgroundPattern="radial-glow" を指定した場合の表示例です。' : 'Example with backgroundPattern="radial-glow" prop.'}
-        actions={[{ label: isJa ? '無料で始める' : 'Get Started', href: '/signup', variant: 'gradient' }]}
-      />
-    );
-  },
-};
-
-export const DarkBackground: Story = {
-  render: (_, { globals }) => {
-    const isJa = globals.locale === 'ja';
-    return (
-      <HeroSection
-        layout="centered"
-        background="dark"
-        title={
-          <Heading as="h1" size="display-2xl" className="text-white">
-            {isJa ? (
-              <>
-                AIがコードを書いても、
-                <br />
-                <GradientText as="span">業務に耐えるバックエンドは残り続ける。</GradientText>
-              </>
-            ) : (
-              <>
-                Even when AI writes code,
-                <br />
-                <GradientText as="span">enterprise backends remain the hard part.</GradientText>
-              </>
-            )}
-          </Heading>
-        }
-        subtitle={
-          isJa
-            ? 'Polastackは11の統合モジュールで、セキュリティ・データ基盤・運用のすべてを引き受けます。'
-            : 'Polastack handles security, data infrastructure, and operations with 11 integrated modules.'
-        }
-        actions={[
-          { label: isJa ? '無料で開発を始める' : 'Start Free', href: '/signup', variant: 'gradient' },
-          { label: isJa ? 'デモを予約' : 'Book a Demo', href: '/demo', variant: 'secondary' },
-        ]}
-      />
-    );
+export const 背景演出_左寄せ: Story = {
+  args: {
+    badge: 'コーポレート',
+    title: '技術でレバレッジをかける。',
+    subtitle:
+      '最先端の技術で、人の能力を拡張する。私たちは、業務の現場に監査に耐えるソフトウェアを届けます。',
+    actions: [
+      { label: '会社紹介資料', href: '#' },
+      { label: '採用情報', href: '#' },
+    ],
+    backdrop: <AmbientBackdrop />,
   },
 };

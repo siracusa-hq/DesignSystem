@@ -31,3 +31,30 @@ describe('Text', () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 });
+
+describe('clauseWrap（和文リード文の節ラップ）', () => {
+  it('読点・句点で節に分割され、各節が inline-block になる', () => {
+    const { container } = render(<Text clauseWrap>{'色が違っても、同じ会社のトーンで。'}</Text>);
+    const clauses = container.querySelectorAll('span.clause');
+    expect(clauses).toHaveLength(2);
+    expect(clauses[0].textContent).toBe('色が違っても、');
+    expect(clauses[1].textContent).toBe('同じ会社のトーンで。');
+  });
+
+  it('区切りの無い欧文はそのまま', () => {
+    const { container } = render(<Text clauseWrap>{'One calm tone across brands'}</Text>);
+    expect(container.querySelectorAll('span.clause')).toHaveLength(0);
+  });
+
+  it('句読点のない和文は分割せず、従来の折り返しに委ねる', () => {
+    const { container } = render(
+      <Text clauseWrap>{'句読点がまったくない見出しコピーはそのまま描画される'}</Text>,
+    );
+    expect(container.querySelectorAll('span.clause')).toHaveLength(0);
+  });
+
+  it('一文だけ（末尾が句点）の場合も節が1つなので包まない', () => {
+    const { container } = render(<Text clauseWrap>{'一文だけで終わる文章です。'}</Text>);
+    expect(container.querySelectorAll('span.clause')).toHaveLength(0);
+  });
+});

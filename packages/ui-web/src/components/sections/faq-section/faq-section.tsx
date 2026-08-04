@@ -44,13 +44,17 @@ const AccordionItem: React.FC<{ item: FAQItem; index: number }> = ({ item, index
           {item.question}
         </Heading>
         <span
-          className={cn(
-            'shrink-0 transition-transform duration-200',
-            open && 'rotate-45',
-          )}
+          className={cn('shrink-0 transition-transform duration-200', open && 'rotate-45')}
           aria-hidden="true"
         >
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
             <line x1="10" y1="4" x2="10" y2="16" />
             <line x1="4" y1="10" x2="16" y2="10" />
           </svg>
@@ -78,15 +82,48 @@ const AccordionItem: React.FC<{ item: FAQItem; index: number }> = ({ item, index
 };
 
 export const FAQSection = React.forwardRef<HTMLElement, FAQSectionProps>(
-  ({ className, eyebrow, eyebrowStyle, title, subtitle, items, background = 'default', spacing, ...props }, ref) => {
-
+  (
+    {
+      className,
+      eyebrow,
+      eyebrowStyle,
+      title,
+      subtitle,
+      items,
+      background = 'default',
+      spacing,
+      ...props
+    },
+    ref,
+  ) => {
     return (
-      <Section ref={ref} background={background} spacing={spacing ?? 'lg'} className={className} {...props}>
+      <Section
+        ref={ref}
+        background={background}
+        spacing={spacing ?? 'lg'}
+        className={className}
+        {...props}
+      >
         <Container size="md">
           {(eyebrow || title || subtitle) && (
             <div className="mb-12 text-center">
               {eyebrow && (
-                <Text size={eyebrowStyle === 'border' ? 'overline-border' : eyebrowStyle === 'text' ? 'overline-text' : eyebrowStyle === 'dot' ? 'overline-dot' : eyebrowStyle === 'gradient' ? 'overline-gradient' : eyebrowStyle === 'icon-pill' ? 'overline-icon-pill' : 'overline-pill'} className="mb-4">
+                <Text
+                  size={
+                    eyebrowStyle === 'border'
+                      ? 'overline-border'
+                      : eyebrowStyle === 'text'
+                        ? 'overline-text'
+                        : eyebrowStyle === 'dot'
+                          ? 'overline-dot'
+                          : eyebrowStyle === 'gradient'
+                            ? 'overline-gradient'
+                            : eyebrowStyle === 'icon-pill'
+                              ? 'overline-icon-pill'
+                              : 'overline-pill'
+                  }
+                  className="mb-4"
+                >
                   {eyebrow}
                 </Text>
               )}

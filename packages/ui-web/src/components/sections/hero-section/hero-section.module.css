@@ -1,0 +1,83 @@
+/* HeroSection — 背景パターン・タイトルグラデーションは廃止（トーン連動は Stage 3）。
+   レイアウトは image の有無 + imagePlacement から決まる */
+.hero {
+  position: relative;
+  overflow: hidden;
+}
+/* 背景演出（backdrop）あり: コピーは左寄せ・ヒーローは背を高くして演出に場所を与える */
+.withBackdrop {
+  display: flex;
+  align-items: center;
+  min-height: min(38rem, 92vh);
+}
+.backdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.content {
+  position: relative;
+}
+.inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8);
+}
+.centered {
+  text-align: center;
+}
+.badgeRow {
+  display: flex;
+}
+.centered .badgeRow {
+  justify-content: center;
+}
+.titleBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+}
+/* 横並びはテキスト塊を画像の高さに寄せるため、内部の縦リズムを詰める */
+.split .inner {
+  gap: var(--spacing-6);
+}
+.split .titleBlock {
+  gap: var(--spacing-4);
+}
+.subtitle {
+  max-width: 42rem;
+}
+.centered .subtitle {
+  margin-inline: auto;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-4);
+}
+.centered .actions {
+  justify-content: center;
+}
+.split {
+  display: grid;
+  gap: var(--spacing-12);
+  align-items: center;
+}
+@media (min-width: 64rem) {
+  .split {
+    /* 1:1 だと display 級の見出しが窮屈になる。コピー側をやや広く */
+    grid-template-columns: 7fr 6fr;
+    gap: var(--spacing-16);
+  }
+}
+.mediaBelow {
+  margin-top: var(--spacing-12);
+  position: relative;
+  /* コンテナ全幅の 16:9 は間延びする。読み幅に絞って中央へ */
+  max-width: 56rem;
+  margin-inline: auto;
+}
+.mediaSide {
+  position: relative;
+}

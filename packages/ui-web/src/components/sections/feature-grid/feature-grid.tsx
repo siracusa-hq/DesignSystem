@@ -28,8 +28,7 @@ export interface FeatureItem {
   description: string;
 }
 
-export interface FeatureGridProps
-  extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {
+export interface FeatureGridProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {
   eyebrow?: string;
   eyebrowStyle?: 'pill' | 'border' | 'text' | 'dot' | 'gradient' | 'icon-pill';
   title?: React.ReactNode;
@@ -46,17 +45,18 @@ export const FeatureGrid = React.forwardRef<HTMLElement, FeatureGridProps>(
     {
       className,
       cardStyle,
-      eyebrow, eyebrowStyle,
+      eyebrow,
+      eyebrowStyle,
       title,
       subtitle,
       features,
       columns = 3,
-      background = 'default', spacing,
+      background = 'default',
+      spacing,
       ...props
     },
     ref,
   ) => {
-
     return (
       <Section
         ref={ref}
@@ -69,7 +69,22 @@ export const FeatureGrid = React.forwardRef<HTMLElement, FeatureGridProps>(
           {(eyebrow || title || subtitle) && (
             <div className="mb-12 text-center lg:mb-16">
               {eyebrow && (
-                <Text size={eyebrowStyle === 'border' ? 'overline-border' : eyebrowStyle === 'text' ? 'overline-text' : eyebrowStyle === 'dot' ? 'overline-dot' : eyebrowStyle === 'gradient' ? 'overline-gradient' : eyebrowStyle === 'icon-pill' ? 'overline-icon-pill' : 'overline-pill'} className="mb-4">
+                <Text
+                  size={
+                    eyebrowStyle === 'border'
+                      ? 'overline-border'
+                      : eyebrowStyle === 'text'
+                        ? 'overline-text'
+                        : eyebrowStyle === 'dot'
+                          ? 'overline-dot'
+                          : eyebrowStyle === 'gradient'
+                            ? 'overline-gradient'
+                            : eyebrowStyle === 'icon-pill'
+                              ? 'overline-icon-pill'
+                              : 'overline-pill'
+                  }
+                  className="mb-4"
+                >
                   {eyebrow}
                 </Text>
               )}

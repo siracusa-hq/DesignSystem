@@ -1,2 +1,1 @@
-export { CTASection, ctaSectionVariants } from './cta-section';
-export type { CTASectionProps, CTAAction } from './cta-section';
+export { CTASection, type CTASectionProps, type CTAAction } from './cta-section';
