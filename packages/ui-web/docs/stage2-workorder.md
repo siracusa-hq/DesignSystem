@@ -128,14 +128,13 @@ MarketingFooter
    `className`（@deprecated）でレイアウト用クラスを渡している。レイアウトは
    親のラッパー要素が持つ方針に Slice 4 で統一し、Text/Heading の className を
    先に閉じられる状態にする。
-2. **MarketingHeader のモバイル全幅ボタンで inline style を使用** —
-   MarketingButton が幅指定の手段を持たない。`fullWidth?: boolean` を
-   Slice 4 で追加して置き換える。
+2. **【解消済み・Slice 4a】** MarketingButton に `fullWidth` を追加し、
+   ヘッダーの inline style を置換した。
 3. **ページのリズムが手動のまま成立はする** — 既定面の並び
    （default→muted→default→muted→dark）が偶然交互になっているが、
    これは構成依存。Stage 3 の `<Page>` リズムエンジンの必要性を再確認した。
-4. **HeroSection.image の型制約は未実装** — MediaFrame/ProductShot が
-   Slice 4 のため ReactNode のまま。予定どおり Slice 4 で制約する。
+4. **【解消済み・Slice 4a】** MediaFrame / ProductShot / Avatar を実装し、
+   `HeroSection.image` を `ReactElement<MediaFrameProps | ProductShotProps>` に制約した。
 5. **【ブランド側レビューで発見・修正済み】暗面 Section で文字が読めない** —
    Section の dark/brand 面が背景色しか変えず、セマンティック文字色
    （--color-on-surface 系）が明モードの黒インクのままだった（移行前からの

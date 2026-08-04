@@ -100,3 +100,7 @@
 .button:hover .icon {
   transform: translateX(4px);
 }
+
+.fullWidth {
+  width: 100%;
+}

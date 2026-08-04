@@ -5,6 +5,8 @@ import { Heading } from '@/components/primitives/heading';
 import { Text } from '@/components/primitives/text';
 import { MarketingButton } from '@/components/primitives/marketing-button';
 import { Badge } from '@/components/primitives/badge';
+import type { MediaFrameProps } from '@/components/primitives/media-frame';
+import type { ProductShotProps } from '@/components/primitives/product-shot';
 import styles from './hero-section.module.css';
 import { cn } from '@/lib/cn';
 
@@ -19,8 +21,8 @@ export interface HeroSectionProps extends Omit<React.HTMLAttributes<HTMLElement>
   subtitle?: string;
   /** variant は自動割当: 1つ目 = primary / 以降 = secondary */
   actions?: HeroAction[];
-  /** MediaFrame / ProductShot を渡すこと（Slice 4 で型を制約する） */
-  image?: React.ReactNode;
+  /** MediaFrame / ProductShot の要素のみ受け付ける（素の ReactNode は不可） */
+  image?: React.ReactElement<MediaFrameProps | ProductShotProps>;
   /** image がある場合の配置。side = 右横 / below = 下（既定） */
   imagePlacement?: 'side' | 'below';
   /**
