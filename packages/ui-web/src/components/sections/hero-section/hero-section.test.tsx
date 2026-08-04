@@ -55,3 +55,23 @@ describe('HeroSection', () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 });
+
+describe('backdrop（背景演出層）', () => {
+  it('backdrop は aria-hidden で描画され、コピーは左寄せになる', () => {
+    const { container } = render(
+      <HeroSection title="見出し" subtitle="サブ" backdrop={<svg data-testid="bg" />} />,
+    );
+    const backdrop = container.querySelector('[aria-hidden="true"]');
+    expect(backdrop).toBeInTheDocument();
+    expect(backdrop!.querySelector('svg')).toBeInTheDocument();
+    // centered クラスが付かない（= start 寄せ）
+    expect(container.querySelector('.centered')).not.toBeInTheDocument();
+  });
+
+  it('backdropTone=dark で暗面のセマンティック反転（Section bgDark）が効く', () => {
+    const { container } = render(
+      <HeroSection title="見出し" backdrop={<div />} backdropTone="dark" />,
+    );
+    expect(container.querySelector('section')).toHaveClass('bgDark');
+  });
+});

@@ -1,7 +1,9 @@
 /* MarketingFooter */
 .footer {
   border-top: 1px solid var(--color-border);
-  background: var(--color-surface-sunken);
+  /* 白（surface）で確定（2026-08-04 ブランド側決定）。面の選択propは意図的に作らない
+     （ばらつきの装置になるため）。トーンによる差し替えは Stage 3 のリズムエンジンで行う */
+  background: var(--color-surface);
 }
 .main {
   padding-block: var(--spacing-12);

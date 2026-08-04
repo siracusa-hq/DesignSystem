@@ -4,6 +4,21 @@
   position: relative;
   overflow: hidden;
 }
+/* 背景演出（backdrop）あり: コピーは左寄せ・ヒーローは背を高くして演出に場所を与える */
+.withBackdrop {
+  display: flex;
+  align-items: center;
+  min-height: min(38rem, 92vh);
+}
+.backdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.content {
+  position: relative;
+}
 .inner {
   display: flex;
   flex-direction: column;

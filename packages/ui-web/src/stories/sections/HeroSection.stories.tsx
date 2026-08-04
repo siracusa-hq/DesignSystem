@@ -56,19 +56,13 @@ export const SplitImage: Story = {
     return (
       <HeroSection
         layout="split-image"
-        title={
-          isJa
-            ? 'ノーコードの妥協を終わらせる。'
-            : 'End the no-code compromise.'
-        }
+        title={isJa ? 'ノーコードの妥協を終わらせる。' : 'End the no-code compromise.'}
         subtitle={
           isJa
             ? 'AIが描く自由なフロントエンドに、最強のバックエンドを直結。'
             : 'Connect the most powerful backend directly to the free frontend drawn by AI.'
         }
-        actions={[
-          { label: isJa ? '無料で始める' : 'Get Started Free', href: '/signup' },
-        ]}
+        actions={[{ label: isJa ? '無料で始める' : 'Get Started Free', href: '/signup' }]}
         image={
           <div className="flex h-64 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-100 to-brand-50 text-primary-500 dark:from-brand-950 dark:to-neutral-900">
             <span className="text-lg font-medium">Product Screenshot</span>
@@ -110,7 +104,11 @@ export const WithGridPattern: Story = {
             : 'Just pass API specs to an AI agent, and enterprise-grade search, analytics, and auth infrastructure spins up instantly.'
         }
         actions={[
-          { label: isJa ? '無料で開発を始める' : 'Start Free', href: '/signup', variant: 'gradient' },
+          {
+            label: isJa ? '無料で開発を始める' : 'Start Free',
+            href: '/signup',
+            variant: 'gradient',
+          },
           { label: isJa ? 'ドキュメント' : 'Documentation', href: '/docs', variant: 'secondary' },
         ]}
       />
@@ -127,8 +125,14 @@ export const WithDotsPattern: Story = {
         background="dark"
         backgroundPattern="dots"
         title={isJa ? 'ドットパターン背景' : 'Dots Pattern Background'}
-        subtitle={isJa ? 'backgroundPattern="dots" を指定した場合の表示例です。' : 'Example with backgroundPattern="dots" prop.'}
-        actions={[{ label: isJa ? '無料で始める' : 'Get Started', href: '/signup', variant: 'gradient' }]}
+        subtitle={
+          isJa
+            ? 'backgroundPattern="dots" を指定した場合の表示例です。'
+            : 'Example with backgroundPattern="dots" prop.'
+        }
+        actions={[
+          { label: isJa ? '無料で始める' : 'Get Started', href: '/signup', variant: 'gradient' },
+        ]}
       />
     );
   },
@@ -143,8 +147,14 @@ export const WithMeshPattern: Story = {
         background="dark"
         backgroundPattern="mesh"
         title={isJa ? 'メッシュグラデーション背景' : 'Mesh Gradient Background'}
-        subtitle={isJa ? 'backgroundPattern="mesh" を指定した場合の表示例です。' : 'Example with backgroundPattern="mesh" prop.'}
-        actions={[{ label: isJa ? '無料で始める' : 'Get Started', href: '/signup', variant: 'gradient' }]}
+        subtitle={
+          isJa
+            ? 'backgroundPattern="mesh" を指定した場合の表示例です。'
+            : 'Example with backgroundPattern="mesh" prop.'
+        }
+        actions={[
+          { label: isJa ? '無料で始める' : 'Get Started', href: '/signup', variant: 'gradient' },
+        ]}
       />
     );
   },
@@ -159,8 +169,14 @@ export const WithRadialGlow: Story = {
         background="dark"
         backgroundPattern="radial-glow"
         title={isJa ? 'ラジアルグロー背景' : 'Radial Glow Background'}
-        subtitle={isJa ? 'backgroundPattern="radial-glow" を指定した場合の表示例です。' : 'Example with backgroundPattern="radial-glow" prop.'}
-        actions={[{ label: isJa ? '無料で始める' : 'Get Started', href: '/signup', variant: 'gradient' }]}
+        subtitle={
+          isJa
+            ? 'backgroundPattern="radial-glow" を指定した場合の表示例です。'
+            : 'Example with backgroundPattern="radial-glow" prop.'
+        }
+        actions={[
+          { label: isJa ? '無料で始める' : 'Get Started', href: '/signup', variant: 'gradient' },
+        ]}
       />
     );
   },
@@ -196,10 +212,58 @@ export const DarkBackground: Story = {
             : 'Polastack handles security, data infrastructure, and operations with 11 integrated modules.'
         }
         actions={[
-          { label: isJa ? '無料で開発を始める' : 'Start Free', href: '/signup', variant: 'gradient' },
+          {
+            label: isJa ? '無料で開発を始める' : 'Start Free',
+            href: '/signup',
+            variant: 'gradient',
+          },
           { label: isJa ? 'デモを予約' : 'Book a Demo', href: '/demo', variant: 'secondary' },
         ]}
       />
     );
   },
+};
+
+/** 貴社コーポレートサイトと同型の「淡背景 + 左寄せコピー + 明滅する装飾層」。
+    アニメーションは --duration-ambient を使うため reduced-motion に自動追従する */
+const AmbientBackdrop = () => (
+  <>
+    <style>{`@keyframes hero-pulse { 0%, 64%, 100% { opacity: var(--o); } 9% { opacity: calc(var(--o) * 2.6); } 26% { opacity: var(--o); } }`}</style>
+    <svg width="100%" height="100%" aria-hidden="true">
+      {[
+        { cx: '12%', cy: '30%', r: 90, o: 0.05, d: '0s' },
+        { cx: '78%', cy: '18%', r: 130, o: 0.07, d: '-3s' },
+        { cx: '88%', cy: '70%', r: 170, o: 0.06, d: '-6s' },
+        { cx: '45%', cy: '85%', r: 110, o: 0.05, d: '-9s' },
+      ].map((c, i) => (
+        <circle
+          key={i}
+          cx={c.cx}
+          cy={c.cy}
+          r={c.r}
+          fill="var(--color-decor-brand)"
+          style={{
+            ['--o' as string]: c.o,
+            opacity: c.o,
+            animation: `hero-pulse calc(var(--duration-ambient) * 9) ${c.d} infinite ease-in-out`,
+          }}
+        />
+      ))}
+    </svg>
+  </>
+);
+
+export const 背景演出_左寄せ: Story = {
+  render: () => (
+    <HeroSection
+      badge="コーポレート"
+      title={<>技術でレバレッジをかける。</>}
+      subtitle="最先端の技術で、人の能力を拡張する。私たちは、業務の現場に監査に耐えるソフトウェアを届けます。"
+      actions={[
+        { label: '会社紹介資料', href: '#' },
+        { label: '採用情報', href: '#' },
+      ]}
+      backdrop={<AmbientBackdrop />}
+    />
+  ),
 };

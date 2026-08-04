@@ -23,13 +23,39 @@ export interface HeroSectionProps extends Omit<React.HTMLAttributes<HTMLElement>
   image?: React.ReactNode;
   /** image がある場合の配置。side = 右横 / below = 下（既定） */
   imagePlacement?: 'side' | 'below';
+  /**
+   * 背景演出層（アニメーションSVG・動画・グラデーション等）。
+   * 絶対配置・クリック不能・スクリーンリーダー不可視で全面に敷かれ、
+   * コピーは自動的に左寄せになる。
+   * アニメーションは --duration-ambient を使うこと（reduced-motion に自動追従）。
+   */
+  backdrop?: React.ReactNode;
+  /**
+   * backdrop の明暗（文字色の反転に必要な情報。装飾の好みの選択肢ではない）。
+   * dark を指定すると暗面用のセマンティック反転が効く。
+   */
+  backdropTone?: 'light' | 'dark';
 }
 
 export const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
-  ({ badge, title, subtitle, actions, image, imagePlacement = 'below', ...props }, ref) => {
+  (
+    {
+      badge,
+      title,
+      subtitle,
+      actions,
+      image,
+      imagePlacement = 'below',
+      backdrop,
+      backdropTone = 'light',
+      ...props
+    },
+    ref,
+  ) => {
     const isSide = image != null && imagePlacement === 'side';
+    const isStart = isSide || backdrop != null;
     const content = (
-      <div className={cn(styles.inner, !isSide && styles.centered)}>
+      <div className={cn(styles.inner, !isStart && styles.centered)}>
         {badge && (
           <div className={styles.badgeRow}>
             <Badge variant="default">{badge}</Badge>
@@ -63,8 +89,19 @@ export const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
     );
 
     return (
-      <Section ref={ref} background="default" spacing="xl" className={styles.hero} {...props}>
-        <Container>
+      <Section
+        ref={ref}
+        background={backdropTone === 'dark' ? 'dark' : 'default'}
+        spacing="xl"
+        className={cn(styles.hero, backdrop != null && styles.withBackdrop)}
+        {...props}
+      >
+        {backdrop && (
+          <div className={styles.backdrop} aria-hidden="true">
+            {backdrop}
+          </div>
+        )}
+        <Container className={styles.content}>
           {isSide ? (
             <div className={styles.split}>
               {content}
