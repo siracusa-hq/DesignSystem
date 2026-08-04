@@ -60,7 +60,7 @@ export const CTASection = React.forwardRef<HTMLElement, CTASectionProps>(
                   {title}
                 </Heading>
                 {subtitle && (
-                  <Text size="body-lg" tone="secondary" className={styles.subtitleSplit}>
+                  <Text size="body-lg" tone="secondary" clauseWrap className={styles.subtitleSplit}>
                     {subtitle}
                   </Text>
                 )}
@@ -87,7 +87,7 @@ export const CTASection = React.forwardRef<HTMLElement, CTASectionProps>(
             {title}
           </Heading>
           {subtitle && (
-            <Text size="body-lg" tone="secondary" className={styles.subtitleCentered}>
+            <Text size="body-lg" tone="secondary" clauseWrap className={styles.subtitleCentered}>
               {subtitle}
             </Text>
           )}

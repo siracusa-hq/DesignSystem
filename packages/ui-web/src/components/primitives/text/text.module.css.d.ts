@@ -4,6 +4,7 @@ declare const styles: {
   readonly "bodyMd": string;
   readonly "bodySm": string;
   readonly "caption": string;
+  readonly "clause": string;
   readonly "dark": string;
   readonly "overlineBase": string;
   readonly "overlineBorder": string;

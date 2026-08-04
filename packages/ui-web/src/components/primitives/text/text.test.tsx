@@ -31,3 +31,18 @@ describe('Text', () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 });
+
+describe('clauseWrap（和文リード文の節ラップ）', () => {
+  it('読点・句点で節に分割され、各節が inline-block になる', () => {
+    const { container } = render(<Text clauseWrap>{'色が違っても、同じ会社のトーンで。'}</Text>);
+    const clauses = container.querySelectorAll('span.clause');
+    expect(clauses).toHaveLength(2);
+    expect(clauses[0].textContent).toBe('色が違っても、');
+    expect(clauses[1].textContent).toBe('同じ会社のトーンで。');
+  });
+
+  it('区切りの無い欧文はそのまま', () => {
+    const { container } = render(<Text clauseWrap>{'One calm tone across brands'}</Text>);
+    expect(container.querySelectorAll('span.clause')).toHaveLength(0);
+  });
+});

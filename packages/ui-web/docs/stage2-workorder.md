@@ -142,6 +142,12 @@ MarketingFooter
    潜在バグ）。対処: 暗面はスコープ内のセマンティック変数と
    --color-text-brand 系を反転する方式に変更（section.module.css）。
    個別コンポーネントの対応は不要になり、今後の全セクションに効く。
+6. **【ブランド側レビューで発見・修正済み】リード文が語の途中で折り返す** —
+   ブラウザ既定の和文改行はどこでも折れる（auto-phrase は Chromium 限定かつ
+   文節単位）。対処: `Text` に `clauseWrap`（読点・句点で節を inline-block 化し
+   改行を文章の切れ目に限定）を追加し、subtitle 系スロット
+   （SectionHeader / Hero / CTA）に標準適用。長い段落には使わない
+   （行末が間延びするため）。Slice 4 の各セクションのリード文にも適用する。
 
 ---
 

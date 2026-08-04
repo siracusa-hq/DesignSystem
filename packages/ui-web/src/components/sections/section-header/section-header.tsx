@@ -33,7 +33,7 @@ export function SectionHeader({
         </Heading>
       )}
       {subtitle && (
-        <Text size="body-lg" tone="secondary" className={styles.subtitle}>
+        <Text size="body-lg" tone="secondary" clauseWrap className={styles.subtitle}>
           {subtitle}
         </Text>
       )}
