@@ -62,8 +62,9 @@ export const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
           </div>
         )}
         <div className={styles.titleBlock}>
-          {/* 横並び時はカラム幅が半分になるため一段小さく（propではなく構造から導出） */}
-          <Heading as="h1" size={isSide ? 'display-xl' : 'display-2xl'}>
+          {/* 横並び時はカラム幅が狭く文量も短いため二段小さく（propではなく構造から導出）。
+              display-lg(最大48px) だと 6fr 幅の 16:9 画像（高さ約330px）と塊の高さが揃う */}
+          <Heading as="h1" size={isSide ? 'display-lg' : 'display-2xl'}>
             {title}
           </Heading>
           {subtitle && (

@@ -38,6 +38,13 @@
   flex-direction: column;
   gap: var(--spacing-6);
 }
+/* 横並びはテキスト塊を画像の高さに寄せるため、内部の縦リズムを詰める */
+.split .inner {
+  gap: var(--spacing-6);
+}
+.split .titleBlock {
+  gap: var(--spacing-4);
+}
 .subtitle {
   max-width: 42rem;
 }
