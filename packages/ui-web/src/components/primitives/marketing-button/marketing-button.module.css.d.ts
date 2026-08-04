@@ -2,6 +2,7 @@
 declare const styles: {
   readonly "button": string;
   readonly "cta": string;
+  readonly "fullWidth": string;
   readonly "ghost": string;
   readonly "icon": string;
   readonly "primary": string;

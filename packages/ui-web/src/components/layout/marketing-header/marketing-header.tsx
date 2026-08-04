@@ -45,7 +45,7 @@ export const MarketingHeader = React.forwardRef<HTMLElement, MarketingHeaderProp
           variant={i === actions.length - 1 ? 'primary' : 'ghost'}
           size="sm"
           href={action.href}
-          {...(fullWidth ? { style: { width: '100%' } } : {})}
+          fullWidth={fullWidth}
         >
           {action.label}
         </MarketingButton>

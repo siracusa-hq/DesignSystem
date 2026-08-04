@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { HeroSection } from '../../components/sections/hero-section';
+import { ProductShot } from '../../components/primitives/product-shot';
 
 const meta = {
   title: 'Sections/HeroSection',
@@ -48,61 +49,10 @@ export const English: Story = {
   },
 };
 
-const DemoShot = () => (
-  <div
-    aria-hidden="true"
-    style={{
-      borderRadius: 'var(--radius-media)',
-      border: '1px solid var(--color-border)',
-      boxShadow: 'var(--shadow-card-hover)',
-      overflow: 'hidden',
-      background: 'var(--color-surface)',
-    }}
-  >
-    <div
-      style={{
-        display: 'flex',
-        gap: '6px',
-        padding: '10px 14px',
-        borderBottom: '1px solid var(--color-border)',
-        background: 'var(--color-surface-sunken)',
-      }}
-    >
-      {[0, 1, 2].map((i) => (
-        <span
-          key={i}
-          style={{
-            width: 10,
-            height: 10,
-            borderRadius: '50%',
-            background: 'var(--color-border)',
-          }}
-        />
-      ))}
-    </div>
-    <div style={{ aspectRatio: '16 / 9', display: 'grid', gridTemplateColumns: '160px 1fr' }}>
-      <div style={{ background: 'var(--color-surface-sunken)' }} />
-      <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        {[64, 88, 76, 52].map((w, i) => (
-          <div
-            key={i}
-            style={{
-              height: 12,
-              width: `${w}%`,
-              borderRadius: 6,
-              background: i === 0 ? 'var(--color-bg-brand-muted)' : 'var(--color-surface-sunken)',
-            }}
-          />
-        ))}
-      </div>
-    </div>
-  </div>
-);
-
 export const 画像を横に: Story = {
   args: {
     ...日本語.args,
-    image: <DemoShot />,
+    image: <ProductShot />,
     imagePlacement: 'side',
   },
 };
@@ -110,7 +60,7 @@ export const 画像を横に: Story = {
 export const 画像を下に: Story = {
   args: {
     ...日本語.args,
-    image: <DemoShot />,
+    image: <ProductShot fade />,
     imagePlacement: 'below',
   },
 };

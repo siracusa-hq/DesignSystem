@@ -33,12 +33,14 @@ export interface MarketingButtonProps
     VariantProps<typeof marketingButtonVariants> {
   href?: string;
   rightIcon?: React.ReactNode;
+  /** モバイルメニュー等での全幅表示 */
+  fullWidth?: boolean;
 }
 
 export const MarketingButton = React.forwardRef<
   HTMLButtonElement | HTMLAnchorElement,
   MarketingButtonProps
->(({ className, variant, size, href, rightIcon, children, ...props }, ref) => {
+>(({ className, variant, size, href, rightIcon, fullWidth = false, children, ...props }, ref) => {
   const content = (
     <>
       {children}
@@ -51,7 +53,11 @@ export const MarketingButton = React.forwardRef<
       <a
         ref={ref as React.Ref<HTMLAnchorElement>}
         href={href}
-        className={cn(marketingButtonVariants({ variant, size }), className)}
+        className={cn(
+          marketingButtonVariants({ variant, size }),
+          fullWidth && styles.fullWidth,
+          className,
+        )}
         {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
       >
         {content}
@@ -62,7 +68,11 @@ export const MarketingButton = React.forwardRef<
   return (
     <button
       ref={ref as React.Ref<HTMLButtonElement>}
-      className={cn(marketingButtonVariants({ variant, size }), className)}
+      className={cn(
+        marketingButtonVariants({ variant, size }),
+        fullWidth && styles.fullWidth,
+        className,
+      )}
       {...props}
     >
       {content}
