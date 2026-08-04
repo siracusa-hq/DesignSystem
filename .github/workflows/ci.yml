@@ -39,6 +39,10 @@ jobs:
       - name: Verify codegen committed
         run: git diff --exit-code
 
+      # CSS Modules の契約: 生hex / 名前色 / --ramp-* 直参照を禁止
+      - name: Stylelint (CSS Modules)
+        run: pnpm --filter @siracusahq/gtm-design-system lint:css
+
       - name: Typecheck
         run: pnpm typecheck
 

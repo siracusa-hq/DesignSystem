@@ -1,0 +1,10 @@
+{
+  "rules": {
+    "color-no-hex": [true, { "message": "生の hex は禁止。抽象スロット（--color-*-brand-* / semantic）を var() で参照すること" }],
+    "color-named": ["never", { "message": "名前色は禁止。トークンを var() で参照すること" }],
+    "declaration-property-value-disallowed-list": [
+      { "/.*/": ["/--ramp-/"] },
+      { "message": "--ramp-* の直接参照は禁止。層3の抽象スロットを使うこと（テーマ契約）" }
+    ]
+  }
+}

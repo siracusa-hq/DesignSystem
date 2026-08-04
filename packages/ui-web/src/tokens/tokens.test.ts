@@ -15,7 +15,7 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { colors, shadows, radii, duration, easing } from './index';
+import { colors, shadows, radii, duration, easing, spacing, sectionSpacing } from './index';
 
 // パスはパッケージルート（= vitest の cwd）基準で解決する。
 // このテストは environment: 'jsdom' で走るため `import.meta.url` が
@@ -69,6 +69,20 @@ describe('カラートークンと CSS 変数の一致', () => {
     // ここが #13c3a0 に戻ったら分岐の再発。
     expect(colors.primary[500]).toBe('#008575');
     expect(colors.brand[500]).toBe('#13c3a0');
+  });
+});
+
+describe('スペーシングトークンと CSS 変数の一致', () => {
+  it('整数キーの spacing が TS 定数と同値（小数キーは変数化しない設計）', () => {
+    const declared = cssVars('spacing');
+    for (const [key, value] of Object.entries(spacing)) {
+      if (key.includes('.')) continue; // CSS変数名にできないため対象外
+      expect(declared.get(key), `--spacing-${key}`).toBe(value);
+    }
+    // セクション余白（ui-web 固有）も揃っていること
+    for (const [key, value] of Object.entries(sectionSpacing)) {
+      expect(declared.get(`section-${key}`), `--spacing-section-${key}`).toBe(value);
+    }
   });
 });
 

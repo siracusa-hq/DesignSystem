@@ -1,0 +1,32 @@
+/* Container — 中央寄せの最大幅コンテナ。幅はコンテナ幅トークンを参照 */
+
+.container {
+  margin-inline: auto;
+  width: 100%;
+  padding-inline: var(--spacing-4);
+}
+
+@media (min-width: 40rem) {
+  .container {
+    padding-inline: var(--spacing-6);
+  }
+}
+
+@media (min-width: 64rem) {
+  .container {
+    padding-inline: var(--spacing-8);
+  }
+}
+
+.sizeSm {
+  max-width: var(--container-sm);
+}
+.sizeMd {
+  max-width: var(--container-md);
+}
+.sizeLg {
+  max-width: var(--container-lg);
+}
+.sizeXl {
+  max-width: var(--container-xl);
+}

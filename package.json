@@ -24,7 +24,7 @@
     "changeset": "changeset",
     "version-packages": "changeset version && pnpm install --lockfile-only",
     "release": "pnpm build && changeset publish",
-    "codegen": "pnpm --filter @siracusahq/tokens codegen"
+    "codegen": "pnpm -r codegen"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.12",

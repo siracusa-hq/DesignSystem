@@ -130,7 +130,7 @@ MarketingFooter
 
 ## 進捗
 
-- [ ] Slice 0（基盤）
+- [x] Slice 0（基盤）— 2026-08-04 完了。備考: theme.css に spacing スケールの実体宣言を追加（Tailwind v4 は --spacing-N を変数として持たないため。小数キーは変数化しない）。className はレイアウトプリミティブのみ @deprecated で暫定存置（未移行コンポーネントが利用中のため。Slice 6 で削除）
 - [ ] Slice 1（プリミティブ 8 + 新規 2）
 - [ ] Slice 2（セクション 5 + 新規 1 + レイアウト 3）
 - [ ] Slice 3（コーポレートトップ = 検証関門）
