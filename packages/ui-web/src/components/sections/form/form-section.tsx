@@ -8,7 +8,7 @@ import { FormInput, FormTextarea, FormSelect, FormButton } from './form-primitiv
 import styles from './form-section.module.css';
 
 /* ============================================================
-   一酸フォーム スクリプト読み込みフック（会社名から住所等を自動補完）
+   イチサンフォーム スクリプト読み込みフック（会社名から住所等を自動補完）
    ============================================================ */
 
 function useIchisanForm(enabled: boolean) {
@@ -112,7 +112,7 @@ function NameEmailRow({ isJa }: { isJa: boolean }) {
   );
 }
 
-/** 会社名 + 一酸フォーム自動補完の隠しフィールド */
+/** 会社名 + イチサンフォーム自動補完の隠しフィールド */
 function CompanyField({ isJa }: { isJa: boolean }) {
   return (
     <>
@@ -124,7 +124,7 @@ function CompanyField({ isJa }: { isJa: boolean }) {
         autoComplete="off"
         required
       />
-      {/* 一酸フォームで自動取得される隠しフィールド */}
+      {/* イチサンフォームで自動取得される隠しフィールド */}
       <input type="hidden" name="zipcode" className="location_zipcode" />
       <input type="hidden" name="address" className="location_full" />
       <input type="hidden" name="corporate_number" className="corporate_number" />
@@ -138,7 +138,7 @@ function CompanyField({ isJa }: { isJa: boolean }) {
    ============================================================ */
 
 export interface ContactFormProps extends BaseFormSectionProps {
-  /** 一酸フォームによる会社名自動補完を有効化 */
+  /** イチサンフォームによる会社名自動補完を有効化 */
   ichisanEnabled?: boolean;
 }
 
