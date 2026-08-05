@@ -194,5 +194,5 @@ MarketingFooter
 - [x] Slice 2（セクション 5 + 新規 1 + レイアウト 3）— 2026-08-04 完了（SectionHeader 内部共有を追加）
 - [x] Slice 3（コーポレートトップ = 検証関門）— 2026-08-04 完了（Examples/CorporateTop）
 - [x] Slice 4（残りセクション 13 + プリミティブ残り + 新規 3）— 2026-08-04 完了。備考: 4a で新規3プリミティブ、4b で残り13セクション + プリミティブ5件を移行し、Text の overline 7種と MarketingButton の gradient エイリアスを削除した（フォーム3種の見出しだけは SectionHeader 化して overline 依存を切ってあるが、本体の移行は Slice 5）
-- [ ] Slice 5（フォーム + LandingPage 更新）
+- [x] Slice 5（フォーム + LandingPage 更新）— 2026-08-05 完了。Netlify Forms 標準化（Formspree 完全削除）。**BentoGrid をコンポーネントごと削除**（国内実測19頁で採用ゼロ・FeatureGrid 等と役割重複・ブランド側決定。海外 dev-tool 向けが現実になった時点で調査込みで再設計する）。LogoCloud のグレースケール標準はブランド側承認で確定
 - [ ] Slice 6（配布切替）

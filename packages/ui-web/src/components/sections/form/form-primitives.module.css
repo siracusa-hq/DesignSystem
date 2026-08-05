@@ -1,0 +1,93 @@
+/* フォームプリミティブ — 入力の摩擦を減らす整った器（LP調査: フォームはCV直結） */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+.label {
+  display: block;
+  font-size: var(--text-body-sm);
+  font-weight: 500;
+  color: var(--color-on-surface);
+}
+.control {
+  display: block;
+  width: 100%;
+  border-radius: var(--radius-control);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  padding: var(--spacing-3) var(--spacing-4);
+  font-size: var(--text-body-sm);
+  color: var(--color-on-surface);
+  transition:
+    border-color var(--duration-fast) var(--ease-default),
+    box-shadow var(--duration-fast) var(--ease-default);
+}
+.control::placeholder {
+  color: var(--color-on-surface-muted);
+}
+.control:focus {
+  outline: none;
+  border-color: var(--color-border-brand-strong);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-ring-brand) 20%, transparent);
+}
+.textarea {
+  resize: vertical;
+  min-height: 6rem;
+}
+.hasError {
+  border-color: var(--color-error-500);
+}
+.hasError:focus {
+  border-color: var(--color-error-500);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-error-500) 20%, transparent);
+}
+.errorText {
+  font-size: var(--text-caption);
+  color: var(--color-error-500);
+}
+
+/* 送信ボタン = コンバージョン導線なので CTA 第3役割を使う */
+.button {
+  display: inline-flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  border: none;
+  cursor: pointer;
+  border-radius: var(--radius-control);
+  background: var(--color-bg-cta);
+  color: var(--color-on-cta);
+  padding: var(--spacing-3) var(--spacing-6);
+  font-size: var(--text-body-sm);
+  font-weight: 600;
+  transition: all var(--duration-normal) var(--ease-default);
+}
+.button:hover {
+  background: var(--color-bg-cta-hover);
+  transform: translateY(-2px);
+}
+.button:active {
+  background: var(--color-bg-cta-active);
+  transform: translateY(0);
+}
+.button:focus-visible {
+  outline: 2px solid var(--color-ring-brand);
+  outline-offset: 2px;
+}
+.button:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.spinner {
+  height: 1rem;
+  width: 1rem;
+  animation: form-spin var(--duration-ambient) linear infinite;
+}
+@keyframes form-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

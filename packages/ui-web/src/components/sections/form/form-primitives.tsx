@@ -2,10 +2,7 @@
 
 import * as React from 'react';
 import { cn } from '@/lib/cn';
-
-/* ============================================================
-   FormInput — テキスト入力
-   ============================================================ */
+import styles from './form-primitives.module.css';
 
 export interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -16,37 +13,24 @@ export const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
   ({ className, label, error, id, ...props }, ref) => {
     const inputId = id ?? `input-${label?.replace(/\s/g, '-').toLowerCase()}`;
     return (
-      <div className="space-y-1.5">
+      <div className={styles.field}>
         {label && (
-          <label
-            htmlFor={inputId}
-            className="block text-sm font-medium text-[var(--color-on-surface)]"
-          >
+          <label htmlFor={inputId} className={styles.label}>
             {label}
           </label>
         )}
         <input
           ref={ref}
           id={inputId}
-          className={cn(
-            'block w-full rounded-lg border border-neutral-200 bg-[var(--color-surface)] px-4 py-2.5 text-sm text-[var(--color-on-surface)] placeholder:text-neutral-400 transition-colors',
-            'focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20',
-            'dark:border-neutral-700 dark:placeholder:text-neutral-500',
-            error && 'border-error-500 focus:border-error-500 focus:ring-error-500/20',
-            className,
-          )}
+          className={cn(styles.control, error && styles.hasError, className)}
           {...props}
         />
-        {error && <p className="text-xs text-error-500">{error}</p>}
+        {error && <p className={styles.errorText}>{error}</p>}
       </div>
     );
   },
 );
 FormInput.displayName = 'FormInput';
-
-/* ============================================================
-   FormTextarea — テキストエリア
-   ============================================================ */
 
 export interface FormTextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
@@ -57,37 +41,24 @@ export const FormTextarea = React.forwardRef<HTMLTextAreaElement, FormTextareaPr
   ({ className, label, error, id, ...props }, ref) => {
     const textareaId = id ?? `textarea-${label?.replace(/\s/g, '-').toLowerCase()}`;
     return (
-      <div className="space-y-1.5">
+      <div className={styles.field}>
         {label && (
-          <label
-            htmlFor={textareaId}
-            className="block text-sm font-medium text-[var(--color-on-surface)]"
-          >
+          <label htmlFor={textareaId} className={styles.label}>
             {label}
           </label>
         )}
         <textarea
           ref={ref}
           id={textareaId}
-          className={cn(
-            'block w-full rounded-lg border border-neutral-200 bg-[var(--color-surface)] px-4 py-2.5 text-sm text-[var(--color-on-surface)] placeholder:text-neutral-400 transition-colors resize-y min-h-24',
-            'focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20',
-            'dark:border-neutral-700 dark:placeholder:text-neutral-500',
-            error && 'border-error-500 focus:border-error-500 focus:ring-error-500/20',
-            className,
-          )}
+          className={cn(styles.control, styles.textarea, error && styles.hasError, className)}
           {...props}
         />
-        {error && <p className="text-xs text-error-500">{error}</p>}
+        {error && <p className={styles.errorText}>{error}</p>}
       </div>
     );
   },
 );
 FormTextarea.displayName = 'FormTextarea';
-
-/* ============================================================
-   FormSelect — セレクト
-   ============================================================ */
 
 export interface FormSelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
@@ -100,25 +71,16 @@ export const FormSelect = React.forwardRef<HTMLSelectElement, FormSelectProps>(
   ({ className, label, error, id, options, placeholder, ...props }, ref) => {
     const selectId = id ?? `select-${label?.replace(/\s/g, '-').toLowerCase()}`;
     return (
-      <div className="space-y-1.5">
+      <div className={styles.field}>
         {label && (
-          <label
-            htmlFor={selectId}
-            className="block text-sm font-medium text-[var(--color-on-surface)]"
-          >
+          <label htmlFor={selectId} className={styles.label}>
             {label}
           </label>
         )}
         <select
           ref={ref}
           id={selectId}
-          className={cn(
-            'block w-full rounded-lg border border-neutral-200 bg-[var(--color-surface)] px-4 py-2.5 text-sm text-[var(--color-on-surface)] transition-colors',
-            'focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20',
-            'dark:border-neutral-700',
-            error && 'border-error-500 focus:border-error-500 focus:ring-error-500/20',
-            className,
-          )}
+          className={cn(styles.control, error && styles.hasError, className)}
           {...props}
         >
           {placeholder && <option value="">{placeholder}</option>}
@@ -128,40 +90,31 @@ export const FormSelect = React.forwardRef<HTMLSelectElement, FormSelectProps>(
             </option>
           ))}
         </select>
-        {error && <p className="text-xs text-error-500">{error}</p>}
+        {error && <p className={styles.errorText}>{error}</p>}
       </div>
     );
   },
 );
 FormSelect.displayName = 'FormSelect';
 
-/* ============================================================
-   FormButton — 送信ボタン
-   ============================================================ */
-
 export interface FormButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   loading?: boolean;
 }
 
+/** 送信ボタン。コンバージョン導線のため CTA 第3役割（--color-*-cta）を使う */
 export const FormButton = React.forwardRef<HTMLButtonElement, FormButtonProps>(
   ({ className, children, loading, disabled, ...props }, ref) => (
     <button
       ref={ref}
       type="submit"
       disabled={disabled || loading}
-      className={cn(
-        'inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary-500 px-6 py-3 text-sm font-semibold !text-white transition-all',
-        'hover:bg-primary-600 hover:-translate-y-0.5 active:translate-y-0',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50',
-        'disabled:opacity-50 disabled:pointer-events-none',
-        className,
-      )}
+      className={cn(styles.button, className)}
       {...props}
     >
       {loading && (
-        <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+        <svg className={styles.spinner} viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <circle
-            className="opacity-25"
+            style={{ opacity: 0.25 }}
             cx="12"
             cy="12"
             r="10"
@@ -169,7 +122,7 @@ export const FormButton = React.forwardRef<HTMLButtonElement, FormButtonProps>(
             strokeWidth="4"
           />
           <path
-            className="opacity-75"
+            style={{ opacity: 0.75 }}
             fill="currentColor"
             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
           />
