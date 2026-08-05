@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.6.1
+
+### Patch Changes
+
+- Updated dependencies [7426843]
+- Updated dependencies [592ede3]
+- Updated dependencies [635b68f]
+- Updated dependencies [56ac3f1]
+  - @siracusahq/tokens@0.3.0
+
 ## 0.6.0
 
 ### Minor Changes
