@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '@/lib/cn';
 import styles from './text.module.css';
 
 export const textVariants = cva('', {
@@ -63,23 +62,19 @@ export function splitJaClauses(text: string): React.ReactNode {
 }
 
 export interface TextProps
-  extends React.HTMLAttributes<HTMLParagraphElement>, VariantProps<typeof textVariants> {
+  extends Omit<React.HTMLAttributes<HTMLParagraphElement>, 'className'>,
+    VariantProps<typeof textVariants> {
   as?: 'p' | 'span' | 'div';
   /**
    * 和文リード文の改行を読点・句点に限定する（children が文字列のときのみ有効）。
    * センター寄せの短い説明文（subtitle 等）専用。長い段落には使わないこと。
    */
   clauseWrap?: boolean;
-  /**
-   * @deprecated 移行期間限定（未移行コンポーネントからのレイアウト調整用）。
-   * Slice 6 で削除する（stage2-workorder.md §0）。新規利用は禁止。
-   */
-  className?: string;
 }
 
 export const Text = React.forwardRef<HTMLParagraphElement, TextProps>(
-  ({ className, size, tone, as: Tag = 'p', clauseWrap = false, children, ...props }, ref) => (
-    <Tag ref={ref} className={cn(textVariants({ size, tone }), className)} {...props}>
+  ({ size, tone, as: Tag = 'p', clauseWrap = false, children, ...props }, ref) => (
+    <Tag ref={ref} className={textVariants({ size, tone })} {...props}>
       {clauseWrap && typeof children === 'string' ? splitJaClauses(children) : children}
     </Tag>
   ),

@@ -13,12 +13,17 @@ type Story = StoryObj<typeof GradientText>;
 export const Default: Story = {
   render: () => (
     <div className="space-y-4 text-center">
-      <GradientText as="h1" className="text-display-xl font-extrabold" gradient="brand">
-        Enterprise Agent Stack
-      </GradientText>
-      <GradientText as="h2" className="text-display-md font-bold" gradient="neutral">
-        Polastack
-      </GradientText>
+      {/* 文字サイズ・ウェイトはラッパーが持つ（GradientText は className を受け取らない） */}
+      <div className="text-display-xl font-extrabold">
+        <GradientText as="h1" gradient="brand">
+          Enterprise Agent Stack
+        </GradientText>
+      </div>
+      <div className="text-display-md font-bold">
+        <GradientText as="h2" gradient="neutral">
+          Polastack
+        </GradientText>
+      </div>
     </div>
   ),
 };

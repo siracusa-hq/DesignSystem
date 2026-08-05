@@ -195,4 +195,23 @@ MarketingFooter
 - [x] Slice 3（コーポレートトップ = 検証関門）— 2026-08-04 完了（Examples/CorporateTop）
 - [x] Slice 4（残りセクション 13 + プリミティブ残り + 新規 3）— 2026-08-04 完了。備考: 4a で新規3プリミティブ、4b で残り13セクション + プリミティブ5件を移行し、Text の overline 7種と MarketingButton の gradient エイリアスを削除した（フォーム3種の見出しだけは SectionHeader 化して overline 依存を切ってあるが、本体の移行は Slice 5）
 - [x] Slice 5（フォーム + LandingPage 更新）— 2026-08-05 完了。Netlify Forms 標準化（Formspree 完全削除）。**BentoGrid をコンポーネントごと削除**（国内実測19頁で採用ゼロ・FeatureGrid 等と役割重複・ブランド側決定。海外 dev-tool 向けが現実になった時点で調査込みで再設計する）。LogoCloud のグレースケール標準はブランド側承認で確定
-- [ ] Slice 6（配布切替）
+- [x] Slice 6（配布切替）— 2026-08-05 完了。
+      **配布**: tsup に `loader: { '.css': 'local-css' }` を追加（無いと CSS Modules の
+      クラス名マッピングが `{}` になり dist が無スタイルで publish される。Slice 0 の検証は
+      CSS ファイルの存在しか見ていなかった——配布物は JS 側のマッピングまで見ること）。
+      `scripts/build-styles.mjs` が フォント + theme.css の Tailwind 非依存化
+      （`@theme`→`:root` / `@custom-variant` 除去 / generated-brand インライン）+
+      コンポーネント CSS を連結して `dist/styles.css` を生成。消費側は
+      `import '@siracusahq/gtm-design-system/styles.css'` の1行（`@source` 手順廃止、
+      旧 `./globals.css` `./theme.css` export 削除）。`scripts/consumer-smoke.mjs` が
+      dist からの SSR + マッピング + Netlify 属性 + Tailwind 構文残存なしを CI で検証。
+      size に styles.css 全量枠（実測 gzip 8.45KB / 上限 10KB）。
+      **className 全廃**: プリミティブ8種の `@deprecated className` 削除に加え、
+      `React.HTMLAttributes` 継承経由で型受容していた穴を全公開インターフェース37件で
+      `Omit<…, 'className'>` に統一。内部の受け渡し14箇所はラッパー要素方式へ（§7b-10 の型。
+      HeroSection / CTASection のみ backdrop の絶対配置・暗面の塗りがセクション要素に
+      紐づくため `sectionVariants` 直接合成）。
+      例外は `FormInput.autofillKey`（イチサンフォームが class 名でしか入力欄を特定できないため、
+      値を `'company_name'` の1種に閉じた識別子として受ける）。
+      Slides（別エントリ・Stage 2 対象外）は spectacle の props を素通ししているため未着手。
+      残課題: Netlify プレビューでの CorporateTop / LandingPage 目視（PR 上で実施）

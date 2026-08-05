@@ -20,7 +20,8 @@ export interface ShowcaseItem {
   features?: string[];
 }
 
-export interface FeatureShowcaseProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {
+export interface FeatureShowcaseProps
+  extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'className'> {
   eyebrow?: string;
   title?: React.ReactNode;
   subtitle?: string;

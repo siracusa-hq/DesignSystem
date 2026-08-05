@@ -18,7 +18,8 @@ export interface ArchitectureLayer {
   modules: ModuleInfo[];
 }
 
-export interface ModuleOverviewProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {
+export interface ModuleOverviewProps
+  extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'className'> {
   eyebrow?: string;
   title?: React.ReactNode;
   subtitle?: string;

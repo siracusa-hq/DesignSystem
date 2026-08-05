@@ -18,7 +18,8 @@ export interface CaseStudy {
   linkLabel?: string;
 }
 
-export interface CaseStudySectionProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {
+export interface CaseStudySectionProps
+  extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'className'> {
   eyebrow?: string;
   title?: React.ReactNode;
   subtitle?: string;

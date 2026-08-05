@@ -23,7 +23,8 @@ export interface MigrationPath {
   action: { label: string; href: string };
 }
 
-export interface MigrationComparisonProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {
+export interface MigrationComparisonProps
+  extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'className'> {
   eyebrow?: string;
   title?: React.ReactNode;
   subtitle?: string;

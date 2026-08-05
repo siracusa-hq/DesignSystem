@@ -17,7 +17,8 @@ export interface AirPocket {
   visual?: React.ReactNode;
 }
 
-export interface AirPocketFeatureProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {
+export interface AirPocketFeatureProps
+  extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'className'> {
   eyebrow?: string;
   title?: React.ReactNode;
   subtitle?: string;

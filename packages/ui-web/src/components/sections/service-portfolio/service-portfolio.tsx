@@ -16,7 +16,8 @@ export interface ServiceCard {
   linkLabel?: string;
 }
 
-export interface ServicePortfolioProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {
+export interface ServicePortfolioProps
+  extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'className'> {
   eyebrow?: string;
   title?: React.ReactNode;
   subtitle?: string;

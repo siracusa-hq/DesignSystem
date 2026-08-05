@@ -15,10 +15,10 @@ describe('AnimateOnScroll', () => {
     expect(el.className).toContain('fadeUp');
   });
 
-  it('カスタムクラスが適用される', () => {
-    render(<AnimateOnScroll className="custom-class">コンテンツ</AnimateOnScroll>);
-    const el = screen.getByText('コンテンツ').closest('div');
-    expect(el?.className).toContain('custom-class');
+  it('className を受け付けない（迂回路を持たない）', () => {
+    // @ts-expect-error className は公開 props に存在しない
+    const el = <AnimateOnScroll className="custom-class">コンテンツ</AnimateOnScroll>;
+    expect(el).toBeTruthy();
   });
 
   it('staggerIndex でトランジション遅延が設定される', () => {

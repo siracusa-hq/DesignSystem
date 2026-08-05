@@ -17,7 +17,8 @@ export interface LogoItem {
 /** 8件を超えると1画面に収まらず、静的な帯は行が崩れる */
 const SCROLL_THRESHOLD = 8;
 
-export interface LogoCloudProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {
+export interface LogoCloudProps
+  extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'className'> {
   eyebrow?: string;
   title?: React.ReactNode;
   /**

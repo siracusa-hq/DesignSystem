@@ -14,11 +14,13 @@ export const Default: Story = {
   render: () => (
     <div className="bg-[var(--color-surface-sunken)] py-8">
       {(['sm', 'md', 'lg', 'xl'] as const).map((size) => (
-        <Container key={size} size={size} className="mb-4">
-          <div className="rounded-lg bg-primary-100 p-4 text-center text-body-sm dark:bg-primary-950">
-            Container size=&quot;{size}&quot;
-          </div>
-        </Container>
+        <div key={size} className="mb-4">
+          <Container size={size}>
+            <div className="rounded-lg bg-primary-100 p-4 text-center text-body-sm dark:bg-primary-950">
+              Container size=&quot;{size}&quot;
+            </div>
+          </Container>
+        </div>
       ))}
     </div>
   ),

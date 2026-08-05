@@ -15,5 +15,10 @@
     "path": "dist/index.js",
     "import": "{ HeroSection, FeatureGrid, CTASection, MarketingHeader, MarketingFooter }",
     "limit": "15 kB"
+  },
+  {
+    "name": "styles.css（配布スタイル全量・gzip）",
+    "path": "dist/styles.css",
+    "limit": "10 kB"
   }
 ]

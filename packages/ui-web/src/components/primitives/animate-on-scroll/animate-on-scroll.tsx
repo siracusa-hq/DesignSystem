@@ -7,7 +7,8 @@ import styles from './animate-on-scroll.module.css';
 
 export type ScrollAnimation = 'fade-up' | 'fade-in' | 'fade-down' | 'scale' | 'blur-in';
 
-export interface AnimateOnScrollProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface AnimateOnScrollProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'className'> {
   /** アニメーションの種類 */
   animation?: ScrollAnimation;
   /** stagger delay のインデックス（グリッド内の順番出現用） */
@@ -21,11 +22,6 @@ export interface AnimateOnScrollProps extends React.HTMLAttributes<HTMLDivElemen
   /** アニメーション時間（ms）。既定は演出系トークン --duration-reveal と同値 */
   duration?: number;
   children: React.ReactNode;
-  /**
-   * @deprecated 移行期間限定（未移行コンポーネントからのレイアウト調整用）。
-   * Slice 6 で削除する（stage2-workorder.md §0）。新規利用は禁止。
-   */
-  className?: string;
 }
 
 /** 画面外にいるときの初期状態。到達状態は共通の styles.visible が打ち消す */
@@ -50,7 +46,6 @@ export const AnimateOnScroll = forwardRef<HTMLDivElement, AnimateOnScrollProps>(
       threshold = 0.1,
       once = true,
       duration = 720,
-      className,
       children,
       style,
       ...props
@@ -74,12 +69,7 @@ export const AnimateOnScroll = forwardRef<HTMLDivElement, AnimateOnScrollProps>(
     return (
       <div
         ref={combinedRef}
-        className={cn(
-          styles.base,
-          initialClasses[animation],
-          inView && styles.visible,
-          className,
-        )}
+        className={cn(styles.base, initialClasses[animation], inView && styles.visible)}
         style={{
           // 時間と遅延はインスタンスごとに変わるため inline のまま
           // （カーブ = --ease-entrance は module 側。Material系 ease-out は

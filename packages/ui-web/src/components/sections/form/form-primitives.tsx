@@ -4,13 +4,20 @@ import * as React from 'react';
 import { cn } from '@/lib/cn';
 import styles from './form-primitives.module.css';
 
-export interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface FormInputProps
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'className'> {
   label?: string;
   error?: string;
+  /**
+   * 外部フォーム補完サービス（イチサンフォーム）が入力欄を特定するための識別子。
+   * 仕様上 class 名でしか指定できないため、この1点だけ class を出力する。
+   * 見た目の上書き口ではないので、値は列挙で閉じてある。
+   */
+  autofillKey?: 'company_name';
 }
 
 export const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
-  ({ className, label, error, id, ...props }, ref) => {
+  ({ label, error, id, autofillKey, ...props }, ref) => {
     const inputId = id ?? `input-${label?.replace(/\s/g, '-').toLowerCase()}`;
     return (
       <div className={styles.field}>
@@ -22,7 +29,7 @@ export const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
         <input
           ref={ref}
           id={inputId}
-          className={cn(styles.control, error && styles.hasError, className)}
+          className={cn(styles.control, error && styles.hasError, autofillKey)}
           {...props}
         />
         {error && <p className={styles.errorText}>{error}</p>}
@@ -32,13 +39,14 @@ export const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
 );
 FormInput.displayName = 'FormInput';
 
-export interface FormTextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+export interface FormTextareaProps
+  extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'className'> {
   label?: string;
   error?: string;
 }
 
 export const FormTextarea = React.forwardRef<HTMLTextAreaElement, FormTextareaProps>(
-  ({ className, label, error, id, ...props }, ref) => {
+  ({ label, error, id, ...props }, ref) => {
     const textareaId = id ?? `textarea-${label?.replace(/\s/g, '-').toLowerCase()}`;
     return (
       <div className={styles.field}>
@@ -50,7 +58,7 @@ export const FormTextarea = React.forwardRef<HTMLTextAreaElement, FormTextareaPr
         <textarea
           ref={ref}
           id={textareaId}
-          className={cn(styles.control, styles.textarea, error && styles.hasError, className)}
+          className={cn(styles.control, styles.textarea, error && styles.hasError)}
           {...props}
         />
         {error && <p className={styles.errorText}>{error}</p>}
@@ -60,7 +68,8 @@ export const FormTextarea = React.forwardRef<HTMLTextAreaElement, FormTextareaPr
 );
 FormTextarea.displayName = 'FormTextarea';
 
-export interface FormSelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
+export interface FormSelectProps
+  extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'className'> {
   label?: string;
   error?: string;
   options: { value: string; label: string }[];
@@ -68,7 +77,7 @@ export interface FormSelectProps extends React.SelectHTMLAttributes<HTMLSelectEl
 }
 
 export const FormSelect = React.forwardRef<HTMLSelectElement, FormSelectProps>(
-  ({ className, label, error, id, options, placeholder, ...props }, ref) => {
+  ({ label, error, id, options, placeholder, ...props }, ref) => {
     const selectId = id ?? `select-${label?.replace(/\s/g, '-').toLowerCase()}`;
     return (
       <div className={styles.field}>
@@ -80,7 +89,7 @@ export const FormSelect = React.forwardRef<HTMLSelectElement, FormSelectProps>(
         <select
           ref={ref}
           id={selectId}
-          className={cn(styles.control, error && styles.hasError, className)}
+          className={cn(styles.control, error && styles.hasError)}
           {...props}
         >
           {placeholder && <option value="">{placeholder}</option>}
@@ -97,18 +106,19 @@ export const FormSelect = React.forwardRef<HTMLSelectElement, FormSelectProps>(
 );
 FormSelect.displayName = 'FormSelect';
 
-export interface FormButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface FormButtonProps
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'className'> {
   loading?: boolean;
 }
 
 /** 送信ボタン。コンバージョン導線のため CTA 第3役割（--color-*-cta）を使う */
 export const FormButton = React.forwardRef<HTMLButtonElement, FormButtonProps>(
-  ({ className, children, loading, disabled, ...props }, ref) => (
+  ({ children, loading, disabled, ...props }, ref) => (
     <button
       ref={ref}
       type="submit"
       disabled={disabled || loading}
-      className={cn(styles.button, className)}
+      className={styles.button}
       {...props}
     >
       {loading && (

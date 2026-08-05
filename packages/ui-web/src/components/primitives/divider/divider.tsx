@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '@/lib/cn';
 import styles from './divider.module.css';
 
 export const dividerVariants = cva(styles.divider, {
@@ -26,17 +25,12 @@ export const dividerVariants = cva(styles.divider, {
 });
 
 export interface DividerProps
-  extends React.HTMLAttributes<HTMLHRElement>, VariantProps<typeof dividerVariants> {
-  /**
-   * @deprecated 移行期間限定（未移行コンポーネントからのレイアウト調整用）。
-   * Slice 6 で削除する（stage2-workorder.md §0）。新規利用は禁止。
-   */
-  className?: string;
-}
+  extends Omit<React.HTMLAttributes<HTMLHRElement>, 'className'>,
+    VariantProps<typeof dividerVariants> {}
 
 export const Divider = React.forwardRef<HTMLHRElement, DividerProps>(
-  ({ className, variant, spacing, ...props }, ref) => (
-    <hr ref={ref} className={cn(dividerVariants({ variant, spacing }), className)} {...props} />
+  ({ variant, spacing, ...props }, ref) => (
+    <hr ref={ref} className={dividerVariants({ variant, spacing })} {...props} />
   ),
 );
 Divider.displayName = 'Divider';

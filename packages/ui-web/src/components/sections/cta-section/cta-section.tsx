@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Section } from '@/components/primitives/section';
+import { sectionVariants } from '@/components/primitives/section';
 import { Container } from '@/components/primitives/container';
 import { Heading } from '@/components/primitives/heading';
 import { Text } from '@/components/primitives/text';
@@ -12,7 +12,8 @@ export interface CTAAction {
   href: string;
 }
 
-export interface CTASectionProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {
+export interface CTASectionProps
+  extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'className'> {
   /** キッカー（例: 「＼5分でわかる資料をプレゼント／」。LP調査で実測7種のほぼ必須要素） */
   kicker?: string;
   title: React.ReactNode;
@@ -51,7 +52,11 @@ export const CTASection = React.forwardRef<HTMLElement, CTASectionProps>(
 
     if (layout === 'split') {
       return (
-        <Section ref={ref} background="dark" spacing="lg" className={styles.section} {...props}>
+        <section
+          ref={ref}
+          className={cn(sectionVariants({ background: 'dark', spacing: 'lg' }), styles.section)}
+          {...props}
+        >
           <Container>
             <div className={styles.splitRow}>
               <div className={styles.splitText}>
@@ -60,25 +65,29 @@ export const CTASection = React.forwardRef<HTMLElement, CTASectionProps>(
                   {title}
                 </Heading>
                 {subtitle && (
-                  <Text size="body-lg" tone="secondary" clauseWrap className={styles.subtitleSplit}>
-                    {subtitle}
-                  </Text>
+                  <div className={styles.subtitleSplit}>
+                    <Text size="body-lg" tone="secondary" clauseWrap>
+                      {subtitle}
+                    </Text>
+                  </div>
                 )}
                 {meta}
               </div>
               <div className={styles.actionsSplit}>{buttons}</div>
             </div>
           </Container>
-        </Section>
+        </section>
       );
     }
 
     return (
-      <Section
+      <section
         ref={ref}
-        background="dark"
-        spacing="lg"
-        className={cn(styles.section, styles.centered)}
+        className={cn(
+          sectionVariants({ background: 'dark', spacing: 'lg' }),
+          styles.section,
+          styles.centered,
+        )}
         {...props}
       >
         <Container size="md">
@@ -87,14 +96,16 @@ export const CTASection = React.forwardRef<HTMLElement, CTASectionProps>(
             {title}
           </Heading>
           {subtitle && (
-            <Text size="body-lg" tone="secondary" clauseWrap className={styles.subtitleCentered}>
-              {subtitle}
-            </Text>
+            <div className={styles.subtitleCentered}>
+              <Text size="body-lg" tone="secondary" clauseWrap>
+                {subtitle}
+              </Text>
+            </div>
           )}
           <div className={styles.actionsCentered}>{buttons}</div>
           {meta}
         </Container>
-      </Section>
+      </section>
     );
   },
 );

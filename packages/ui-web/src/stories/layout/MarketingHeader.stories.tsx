@@ -52,11 +52,13 @@ export const WithDropdown: Story = {
             <Heading as="h1" size="display-lg">
               {isJa ? 'ドロップダウンナビ付きヘッダー' : 'Header with Dropdown Nav'}
             </Heading>
-            <Text tone="secondary" className="mt-4">
-              {isJa
-                ? '「プロダクト」「ソリューション」にホバーするとドロップダウンが表示されます。'
-                : 'Hover over "Products" or "Solutions" to see the dropdown menu.'}
-            </Text>
+            <div className="mt-4">
+              <Text tone="secondary">
+                {isJa
+                  ? '「プロダクト」「ソリューション」にホバーするとドロップダウンが表示されます。'
+                  : 'Hover over "Products" or "Solutions" to see the dropdown menu.'}
+              </Text>
+            </div>
           </Container>
         </Section>
       </div>
@@ -87,11 +89,13 @@ export const Default: Story = {
             <Heading as="h1" size="display-lg">
               {isJa ? 'ページコンテンツ' : 'Page Content'}
             </Heading>
-            <Text tone="secondary" className="mt-4">
-              {isJa
-                ? 'スクロールするとヘッダーの背景がブラーに変化します。'
-                : 'Scroll to see the header background blur effect.'}
-            </Text>
+            <div className="mt-4">
+              <Text tone="secondary">
+                {isJa
+                  ? 'スクロールするとヘッダーの背景がブラーに変化します。'
+                  : 'Scroll to see the header background blur effect.'}
+              </Text>
+            </div>
           </Container>
         </Section>
         <Section spacing="xl">

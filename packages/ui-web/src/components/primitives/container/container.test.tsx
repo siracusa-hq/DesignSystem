@@ -14,9 +14,10 @@ describe('Container', () => {
     expect(container.firstChild).toHaveClass('sizeSm');
   });
 
-  it('カスタムclassNameを追加できる', () => {
-    const { container } = render(<Container className="custom-class">内容</Container>);
-    expect(container.firstChild).toHaveClass('custom-class');
+  it('className を受け付けない（迂回路を持たない）', () => {
+    // @ts-expect-error className は公開 props に存在しない
+    const el = <Container className="custom-class">内容</Container>;
+    expect(el).toBeTruthy();
   });
 
   it('a11y違反がない', async () => {

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '@/lib/cn';
 import styles from './link.module.css';
 
 export const linkVariants = cva(styles.link, {
@@ -17,11 +16,12 @@ export const linkVariants = cva(styles.link, {
 });
 
 export interface LinkProps
-  extends React.AnchorHTMLAttributes<HTMLAnchorElement>, VariantProps<typeof linkVariants> {}
+  extends Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'className'>,
+    VariantProps<typeof linkVariants> {}
 
 export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
-  ({ className, variant, children, ...props }, ref) => (
-    <a ref={ref} className={cn(linkVariants({ variant }), className)} {...props}>
+  ({ variant, children, ...props }, ref) => (
+    <a ref={ref} className={linkVariants({ variant })} {...props}>
       {children}
       {variant === 'arrow' && (
         <svg

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { cn } from '@/lib/cn';
 import styles from './marketing-footer.module.css';
 import { Container } from '@/components/primitives/container';
 import { Text } from '@/components/primitives/text';
@@ -17,7 +16,7 @@ export interface SocialLink {
   icon: React.ReactNode;
 }
 
-export interface MarketingFooterProps extends React.HTMLAttributes<HTMLElement> {
+export interface MarketingFooterProps extends Omit<React.HTMLAttributes<HTMLElement>, 'className'> {
   logo?: React.ReactNode;
   description?: string;
   linkGroups?: FooterLinkGroup[];
@@ -27,11 +26,8 @@ export interface MarketingFooterProps extends React.HTMLAttributes<HTMLElement> 
 }
 
 export const MarketingFooter = React.forwardRef<HTMLElement, MarketingFooterProps>(
-  (
-    { className, logo, description, linkGroups, socialLinks, legalLinks, copyright, ...props },
-    ref,
-  ) => (
-    <footer ref={ref} className={cn(styles.footer, className)} {...props}>
+  ({ logo, description, linkGroups, socialLinks, legalLinks, copyright, ...props }, ref) => (
+    <footer ref={ref} className={styles.footer} {...props}>
       <Container>
         <div className={styles.main}>
           <div className={styles.grid}>
@@ -41,9 +37,11 @@ export const MarketingFooter = React.forwardRef<HTMLElement, MarketingFooterProp
                 {logo ?? <Logo variant="full" colorScheme="primary" height={32} />}
               </div>
               {description && (
-                <Text size="body-sm" tone="secondary" className={styles.description}>
-                  {description}
-                </Text>
+                <div className={styles.description}>
+                  <Text size="body-sm" tone="secondary">
+                    {description}
+                  </Text>
+                </div>
               )}
               {socialLinks && socialLinks.length > 0 && (
                 <div className={styles.social}>
@@ -66,9 +64,11 @@ export const MarketingFooter = React.forwardRef<HTMLElement, MarketingFooterProp
               <div className={styles.linkCols}>
                 {linkGroups.map((group, i) => (
                   <div key={i}>
-                    <Text as="div" size="body-sm" tone="default" className={styles.groupTitle}>
-                      {group.title}
-                    </Text>
+                    <div className={styles.groupTitle}>
+                      <Text as="div" size="body-sm" tone="default">
+                        {group.title}
+                      </Text>
+                    </div>
                     <ul className={styles.linkList}>
                       {group.links.map((link, j) => (
                         <li key={j}>

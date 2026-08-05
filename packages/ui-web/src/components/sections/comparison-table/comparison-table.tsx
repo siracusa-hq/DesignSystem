@@ -18,7 +18,8 @@ export interface ComparisonRow {
   values: (string | boolean | React.ReactNode)[];
 }
 
-export interface ComparisonTableProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {
+export interface ComparisonTableProps
+  extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'className'> {
   eyebrow?: string;
   title?: React.ReactNode;
   subtitle?: string;

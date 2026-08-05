@@ -32,10 +32,13 @@ export function SectionHeader({
           {title}
         </Heading>
       )}
+      {/* 余白・読み幅はラッパーが持つ（Text は className を受け取らない） */}
       {subtitle && (
-        <Text size="body-lg" tone="secondary" clauseWrap className={styles.subtitle}>
-          {subtitle}
-        </Text>
+        <div className={styles.subtitle}>
+          <Text size="body-lg" tone="secondary" clauseWrap>
+            {subtitle}
+          </Text>
+        </div>
       )}
     </div>
   );

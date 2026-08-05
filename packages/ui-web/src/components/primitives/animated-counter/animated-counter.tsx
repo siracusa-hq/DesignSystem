@@ -1,10 +1,10 @@
 'use client';
 
 import * as React from 'react';
-import { cn } from '@/lib/cn';
 import styles from './animated-counter.module.css';
 
-export interface AnimatedCounterProps extends React.HTMLAttributes<HTMLSpanElement> {
+export interface AnimatedCounterProps
+  extends Omit<React.HTMLAttributes<HTMLSpanElement>, 'className'> {
   /** 表示する最終値 */
   value: number;
   /** アニメーション時間（ms） */
@@ -17,25 +17,11 @@ export interface AnimatedCounterProps extends React.HTMLAttributes<HTMLSpanEleme
   suffix?: string;
   /** 小数点以下の桁数 */
   decimals?: number;
-  /**
-   * @deprecated 移行期間限定（未移行コンポーネントからのレイアウト調整用）。
-   * Slice 6 で削除する（stage2-workorder.md §0）。新規利用は禁止。
-   */
-  className?: string;
 }
 
 export const AnimatedCounter = React.forwardRef<HTMLSpanElement, AnimatedCounterProps>(
   (
-    {
-      className,
-      value,
-      duration = 2000,
-      locale = 'ja-JP',
-      prefix = '',
-      suffix = '',
-      decimals = 0,
-      ...props
-    },
+    { value, duration = 2000, locale = 'ja-JP', prefix = '', suffix = '', decimals = 0, ...props },
     ref,
   ) => {
     const [displayValue, setDisplayValue] = React.useState(0);
@@ -85,7 +71,7 @@ export const AnimatedCounter = React.forwardRef<HTMLSpanElement, AnimatedCounter
     }).format(displayValue);
 
     return (
-      <span ref={combinedRef} className={cn(styles.counter, className)} {...props}>
+      <span ref={combinedRef} className={styles.counter} {...props}>
         {prefix}
         {formatted}
         {suffix}

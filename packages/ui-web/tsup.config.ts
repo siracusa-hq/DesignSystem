@@ -23,5 +23,10 @@ export default defineConfig({
   clean: true,
   splitting: true,
   treeshake: true,
+  // CSS Modules を esbuild の local-css で処理する。
+  // これが無いと styles オブジェクトが {} になり、dist のコンポーネントが
+  // 無スタイルで publish される（Slice 6 で発覚した事故。CSSファイルの存在
+  // だけでなく JS 側のクラス名マッピングまで消費側スモークで検証すること）。
+  loader: { '.css': 'local-css' },
   external: ['react', 'react-dom', 'shiki', 'spectacle'],
 });

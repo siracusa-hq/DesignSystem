@@ -11,7 +11,8 @@ import { SectionHeader } from '@/components/sections/section-header';
 import styles from './code-block.module.css';
 // shiki はオプショナル peerDependency — 動的importでバンドルサイズ増加を防止
 
-export interface CodeBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {
+export interface CodeBlockProps
+  extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'className'> {
   eyebrow?: string;
   title?: React.ReactNode;
   subtitle?: string;

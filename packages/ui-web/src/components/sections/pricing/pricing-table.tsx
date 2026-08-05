@@ -6,7 +6,8 @@ import { SectionHeader } from '@/components/sections/section-header';
 import { PricingCard, type PricingCardProps } from './pricing-card';
 import styles from './pricing-table.module.css';
 
-export interface PricingTableProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {
+export interface PricingTableProps
+  extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'className'> {
   eyebrow?: string;
   title?: React.ReactNode;
   subtitle?: string;

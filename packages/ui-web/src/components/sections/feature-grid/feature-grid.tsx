@@ -13,7 +13,8 @@ export interface FeatureItem {
   description: string;
 }
 
-export interface FeatureGridProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {
+export interface FeatureGridProps
+  extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'className'> {
   eyebrow?: string;
   title?: React.ReactNode;
   subtitle?: string;
