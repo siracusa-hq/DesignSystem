@@ -5,6 +5,7 @@ import { Container } from '@/components/primitives/container';
 import { Text } from '@/components/primitives/text';
 import { SectionHeader } from '@/components/sections/section-header';
 import styles from './module-overview.module.css';
+import { markPageSurface } from '@/lib/page-surface';
 
 export interface ModuleInfo {
   name: string;
@@ -88,3 +89,5 @@ export const ModuleOverview = React.forwardRef<HTMLElement, ModuleOverviewProps>
   ),
 );
 ModuleOverview.displayName = 'ModuleOverview';
+// 自分で暗面を塗るため、Page の面リズムから除外する
+markPageSurface(ModuleOverview, 'dark');

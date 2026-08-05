@@ -9,6 +9,7 @@ import type { MediaFrameProps } from '@/components/primitives/media-frame';
 import type { ProductShotProps } from '@/components/primitives/product-shot';
 import styles from './hero-section.module.css';
 import { cn } from '@/lib/cn';
+import { markPageSurface } from '@/lib/page-surface';
 
 export interface HeroAction {
   label: string;
@@ -139,3 +140,7 @@ export const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
   },
 );
 HeroSection.displayName = 'HeroSection';
+// backdropTone=dark のときだけ自分で暗面を塗る
+markPageSurface<typeof HeroSection, HeroSectionProps>(HeroSection, (p) =>
+  p.backdropTone === 'dark' ? 'dark' : 'default',
+);

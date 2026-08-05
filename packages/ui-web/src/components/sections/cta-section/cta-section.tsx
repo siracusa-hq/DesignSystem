@@ -6,6 +6,7 @@ import { Text } from '@/components/primitives/text';
 import { MarketingButton } from '@/components/primitives/marketing-button';
 import styles from './cta-section.module.css';
 import { cn } from '@/lib/cn';
+import { markPageSurface } from '@/lib/page-surface';
 
 export interface CTAAction {
   label: string;
@@ -110,3 +111,5 @@ export const CTASection = React.forwardRef<HTMLElement, CTASectionProps>(
   },
 );
 CTASection.displayName = 'CTASection';
+// centered / split とも自分で暗面を塗る
+markPageSurface(CTASection, 'dark');
