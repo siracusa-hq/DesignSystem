@@ -26,8 +26,7 @@ export const marketingButtonVariants = cva(styles.button, {
 });
 
 export interface MarketingButtonProps
-  extends
-    React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'className'>,
     VariantProps<typeof marketingButtonVariants> {
   href?: string;
   rightIcon?: React.ReactNode;
@@ -38,7 +37,7 @@ export interface MarketingButtonProps
 export const MarketingButton = React.forwardRef<
   HTMLButtonElement | HTMLAnchorElement,
   MarketingButtonProps
->(({ className, variant, size, href, rightIcon, fullWidth = false, children, ...props }, ref) => {
+>(({ variant, size, href, rightIcon, fullWidth = false, children, ...props }, ref) => {
   const content = (
     <>
       {children}
@@ -51,11 +50,7 @@ export const MarketingButton = React.forwardRef<
       <a
         ref={ref as React.Ref<HTMLAnchorElement>}
         href={href}
-        className={cn(
-          marketingButtonVariants({ variant, size }),
-          fullWidth && styles.fullWidth,
-          className,
-        )}
+        className={cn(marketingButtonVariants({ variant, size }), fullWidth && styles.fullWidth)}
         {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
       >
         {content}
@@ -66,11 +61,7 @@ export const MarketingButton = React.forwardRef<
   return (
     <button
       ref={ref as React.Ref<HTMLButtonElement>}
-      className={cn(
-        marketingButtonVariants({ variant, size }),
-        fullWidth && styles.fullWidth,
-        className,
-      )}
+      className={cn(marketingButtonVariants({ variant, size }), fullWidth && styles.fullWidth)}
       {...props}
     >
       {content}

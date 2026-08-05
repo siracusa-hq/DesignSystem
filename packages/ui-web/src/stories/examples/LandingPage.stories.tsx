@@ -15,7 +15,6 @@ import { FAQSection } from '../../components/sections/faq-section';
 import { CTASection } from '../../components/sections/cta-section';
 import { AnimateOnScroll } from '../../components/primitives/animate-on-scroll';
 import { GradientText } from '../../components/primitives/gradient-text';
-import { Heading } from '../../components/primitives/heading';
 import { ShieldCheck, Lock, FileCheck, Award } from 'lucide-react';
 
 const meta: Meta = {
@@ -152,24 +151,23 @@ export const TopPage: Story = {
         {/* ============================================================
            1. Hero — dark + mesh背景
            ============================================================ */}
+        {/* title は HeroSection 側が h1（display-2xl）で包むため中身だけ渡す */}
         <HeroSection
           badge={isJa ? 'Enterprise Agent Stack' : 'Enterprise Agent Stack'}
           title={
-            <Heading as="h1" size="display-2xl" className="!text-white">
-              {isJa ? (
-                <>
-                  AIがコードを書く時代。
-                  <br />
-                  <GradientText as="span">業務に耐える裏側は、Polastackが引き受ける。</GradientText>
-                </>
-              ) : (
-                <>
-                  In the age of AI-generated code,
-                  <br />
-                  <GradientText as="span">Polastack handles the enterprise backend.</GradientText>
-                </>
-              )}
-            </Heading>
+            isJa ? (
+              <>
+                AIがコードを書く時代。
+                <br />
+                <GradientText as="span">業務に耐える裏側は、Polastackが引き受ける。</GradientText>
+              </>
+            ) : (
+              <>
+                In the age of AI-generated code,
+                <br />
+                <GradientText as="span">Polastack handles the enterprise backend.</GradientText>
+              </>
+            )
           }
           subtitle={
             isJa

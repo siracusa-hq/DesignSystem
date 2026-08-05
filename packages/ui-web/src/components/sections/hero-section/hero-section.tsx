@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Section } from '@/components/primitives/section';
+import { sectionVariants } from '@/components/primitives/section';
 import { Container } from '@/components/primitives/container';
 import { Heading } from '@/components/primitives/heading';
 import { Text } from '@/components/primitives/text';
@@ -15,7 +15,8 @@ export interface HeroAction {
   href: string;
 }
 
-export interface HeroSectionProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {
+export interface HeroSectionProps
+  extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'className'> {
   badge?: string;
   title: React.ReactNode;
   subtitle?: string;
@@ -75,9 +76,11 @@ export const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
             {title}
           </Heading>
           {subtitle && (
-            <Text size="body-lg" tone="secondary" clauseWrap className={styles.subtitle}>
-              {subtitle}
-            </Text>
+            <div className={styles.subtitle}>
+              <Text size="body-lg" tone="secondary" clauseWrap>
+                {subtitle}
+              </Text>
+            </div>
           )}
         </div>
         {actions && actions.length > 0 && (
@@ -98,11 +101,16 @@ export const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
     );
 
     return (
-      <Section
+      <section
         ref={ref}
-        background={backdropTone === 'dark' ? 'dark' : 'default'}
-        spacing="xl"
-        className={cn(styles.hero, backdrop != null && styles.withBackdrop)}
+        className={cn(
+          sectionVariants({
+            background: backdropTone === 'dark' ? 'dark' : 'default',
+            spacing: 'xl',
+          }),
+          styles.hero,
+          backdrop != null && styles.withBackdrop,
+        )}
         {...props}
       >
         {backdrop && (
@@ -110,20 +118,23 @@ export const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
             {backdrop}
           </div>
         )}
-        <Container className={styles.content}>
-          {isSide ? (
-            <div className={styles.split}>
-              {content}
-              <div className={styles.mediaSide}>{image}</div>
-            </div>
-          ) : (
-            <>
-              {content}
-              {image && <div className={styles.mediaBelow}>{image}</div>}
-            </>
-          )}
+        <Container>
+          {/* backdrop（absolute）より前面に出すための positioned 層 */}
+          <div className={styles.content}>
+            {isSide ? (
+              <div className={styles.split}>
+                {content}
+                <div className={styles.mediaSide}>{image}</div>
+              </div>
+            ) : (
+              <>
+                {content}
+                {image && <div className={styles.mediaBelow}>{image}</div>}
+              </>
+            )}
+          </div>
         </Container>
-      </Section>
+      </section>
     );
   },
 );

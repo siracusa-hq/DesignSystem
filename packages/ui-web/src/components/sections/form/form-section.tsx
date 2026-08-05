@@ -34,7 +34,8 @@ function useIchisanForm(enabled: boolean) {
      一本化されているため、Netlify Forms を標準とする）
    ============================================================ */
 
-interface BaseFormSectionProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {
+interface BaseFormSectionProps
+  extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'className'> {
   eyebrow?: string;
   title?: React.ReactNode;
   subtitle?: string;
@@ -119,7 +120,7 @@ function CompanyField({ isJa }: { isJa: boolean }) {
         name="company"
         label={isJa ? '会社名' : 'Company'}
         placeholder={isJa ? '株式会社...' : 'Company name'}
-        className="company_name"
+        autofillKey="company_name"
         autoComplete="off"
         required
       />

@@ -17,7 +17,8 @@ export interface StatItem {
   suffix?: string;
 }
 
-export interface StatsSectionProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {
+export interface StatsSectionProps
+  extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'className'> {
   eyebrow?: string;
   title?: React.ReactNode;
   subtitle?: string;
@@ -49,21 +50,28 @@ export const StatsSection = React.forwardRef<HTMLElement, StatsSectionProps>(
                   stat.value
                 )}
               </div>
-              <Text as="div" size="body-md" className={styles.label}>
-                {stat.label}
-              </Text>
-              {stat.description && (
-                <Text size="body-sm" tone="muted" className={styles.description}>
-                  {stat.description}
+              {/* 余白・太字はラッパーが持つ（Text は className を受け取らない） */}
+              <div className={styles.label}>
+                <Text as="div" size="body-md">
+                  {stat.label}
                 </Text>
+              </div>
+              {stat.description && (
+                <div className={styles.description}>
+                  <Text size="body-sm" tone="muted">
+                    {stat.description}
+                  </Text>
+                </div>
               )}
             </div>
           ))}
         </div>
         {note && (
-          <Text size="caption" tone="muted" className={styles.note}>
-            {note}
-          </Text>
+          <div className={styles.note}>
+            <Text size="caption" tone="muted">
+              {note}
+            </Text>
+          </div>
         )}
       </Container>
     </Section>

@@ -1,8 +1,7 @@
 import * as React from 'react';
-import { cn } from '@/lib/cn';
 import styles from './logo.module.css';
 
-export interface LogoProps extends React.SVGAttributes<SVGSVGElement> {
+export interface LogoProps extends Omit<React.SVGAttributes<SVGSVGElement>, 'className'> {
   /** ロゴバリエーション */
   variant?: 'full' | 'mark' | 'type';
   /** カラーバリエーション */
@@ -17,7 +16,7 @@ export interface LogoProps extends React.SVGAttributes<SVGSVGElement> {
  * 実際のロゴアセットが確定次第、SVGパスを差し替える。
  */
 export const Logo = React.forwardRef<SVGSVGElement, LogoProps>(
-  ({ className, variant = 'full', colorScheme = 'primary', height = 32, ...props }, ref) => {
+  ({ variant = 'full', colorScheme = 'primary', height = 32, ...props }, ref) => {
     // ロゴマークは装飾要素のため装飾スロットを使う（data-brand に追従する）。
     const brandColor = 'var(--color-decor-brand)';
 
@@ -33,7 +32,7 @@ export const Logo = React.forwardRef<SVGSVGElement, LogoProps>(
           fill="none"
           height={height}
           width={height}
-          className={cn(styles.logo, className)}
+          className={styles.logo}
           aria-label="Polastack"
           role="img"
           {...props}
@@ -62,7 +61,7 @@ export const Logo = React.forwardRef<SVGSVGElement, LogoProps>(
           fill="none"
           height={height}
           width={(140 / 32) * height}
-          className={cn(styles.logo, className)}
+          className={styles.logo}
           aria-label="Polastack"
           role="img"
           {...props}
@@ -89,7 +88,7 @@ export const Logo = React.forwardRef<SVGSVGElement, LogoProps>(
         fill="none"
         height={height}
         width={(180 / 32) * height}
-        className={cn(styles.logo, className)}
+        className={styles.logo}
         aria-label="Polastack"
         role="img"
         {...props}

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '@/lib/cn';
 import styles from './heading.module.css';
 
 export const headingVariants = cva(styles.heading, {
@@ -24,13 +23,14 @@ export const headingVariants = cva(styles.heading, {
 type HeadingLevel = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 
 export interface HeadingProps
-  extends React.HTMLAttributes<HTMLHeadingElement>, VariantProps<typeof headingVariants> {
+  extends Omit<React.HTMLAttributes<HTMLHeadingElement>, 'className'>,
+    VariantProps<typeof headingVariants> {
   as?: HeadingLevel;
 }
 
 export const Heading = React.forwardRef<HTMLHeadingElement, HeadingProps>(
-  ({ className, size, as: Tag = 'h2', ...props }, ref) => (
-    <Tag ref={ref} className={cn(headingVariants({ size }), className)} {...props} />
+  ({ size, as: Tag = 'h2', ...props }, ref) => (
+    <Tag ref={ref} className={headingVariants({ size })} {...props} />
   ),
 );
 Heading.displayName = 'Heading';

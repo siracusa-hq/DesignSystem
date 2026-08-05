@@ -14,9 +14,10 @@ describe('Badge', () => {
     expect(container.firstChild).toHaveClass('variantBeta');
   });
 
-  it('カスタムclassNameを追加できる', () => {
-    const { container } = render(<Badge className="ml-2">タグ</Badge>);
-    expect(container.firstChild).toHaveClass('ml-2');
+  it('className を受け付けない（迂回路を持たない）', () => {
+    // @ts-expect-error className は公開 props に存在しない
+    const el = <Badge className="ml-2">タグ</Badge>;
+    expect(el).toBeTruthy();
   });
 
   it('a11y違反がない', async () => {

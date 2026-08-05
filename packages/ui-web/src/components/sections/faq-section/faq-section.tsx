@@ -14,7 +14,8 @@ export interface FAQItem {
   answer: string;
 }
 
-export interface FAQSectionProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {
+export interface FAQSectionProps
+  extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'className'> {
   eyebrow?: string;
   title?: React.ReactNode;
   subtitle?: string;

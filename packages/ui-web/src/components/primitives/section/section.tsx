@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '@/lib/cn';
 import styles from './section.module.css';
 
 export const sectionVariants = cva(styles.section, {
@@ -26,21 +25,12 @@ export const sectionVariants = cva(styles.section, {
 });
 
 export interface SectionProps
-  extends React.HTMLAttributes<HTMLElement>, VariantProps<typeof sectionVariants> {
-  /**
-   * @deprecated 移行期間限定（未移行コンポーネントからのレイアウト調整用）。
-   * Slice 6 で削除する（stage2-workorder.md §0）。新規利用は禁止。
-   */
-  className?: string;
-}
+  extends Omit<React.HTMLAttributes<HTMLElement>, 'className'>,
+    VariantProps<typeof sectionVariants> {}
 
 export const Section = React.forwardRef<HTMLElement, SectionProps>(
-  ({ className, spacing, background, ...props }, ref) => (
-    <section
-      ref={ref}
-      className={cn(sectionVariants({ spacing, background }), className)}
-      {...props}
-    />
+  ({ spacing, background, ...props }, ref) => (
+    <section ref={ref} className={sectionVariants({ spacing, background })} {...props} />
   ),
 );
 Section.displayName = 'Section';

@@ -12,7 +12,7 @@ export interface PricingFeature {
   included: boolean;
 }
 
-export interface PricingCardProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface PricingCardProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'className'> {
   name: string;
   description?: string;
   price: React.ReactNode;
@@ -36,7 +36,6 @@ export interface PricingCardProps extends React.HTMLAttributes<HTMLDivElement> {
 export const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
   (
     {
-      className,
       highlighted = false,
       name,
       description,
@@ -50,11 +49,7 @@ export const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
     },
     ref,
   ) => (
-    <div
-      ref={ref}
-      className={cn(styles.card, highlighted && styles.highlighted, className)}
-      {...props}
-    >
+    <div ref={ref} className={cn(styles.card, highlighted && styles.highlighted)} {...props}>
       {badgeText && (
         <div className={styles.badgeSlot}>
           <Badge variant="new">{badgeText}</Badge>

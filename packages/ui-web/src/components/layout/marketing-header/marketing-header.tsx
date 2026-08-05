@@ -18,7 +18,7 @@ export interface HeaderAction {
   href: string;
 }
 
-export interface MarketingHeaderProps extends React.HTMLAttributes<HTMLElement> {
+export interface MarketingHeaderProps extends Omit<React.HTMLAttributes<HTMLElement>, 'className'> {
   logo?: React.ReactNode;
   navItems?: NavItem[];
   /** variant は自動割当: 末尾 = primary / それ以外 = ghost */

@@ -23,7 +23,8 @@ const CATEGORY_LABEL: Record<NonNullable<SecurityBadge['category']>, string> = {
   legal: '法定表示',
 };
 
-export interface SecurityBadgesProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {
+export interface SecurityBadgesProps
+  extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'className'> {
   eyebrow?: string;
   title?: React.ReactNode;
   subtitle?: string;
@@ -44,18 +45,25 @@ export const SecurityBadges = React.forwardRef<HTMLElement, SecurityBadgesProps>
           {badges.map((badge, i) => (
             <div key={i} className={styles.item}>
               <div className={styles.iconBox}>{badge.icon ?? <ShieldCheck size={28} />}</div>
-              <Text as="div" size="body-sm" className={styles.name}>
-                {badge.name}
-              </Text>
-              {badge.description && (
-                <Text as="div" size="caption" tone="muted" className={styles.description}>
-                  {badge.description}
+              {/* 意匠（太字・読み幅・ピル枠）はラッパーが持つ（Text は className を受け取らない） */}
+              <div className={styles.name}>
+                <Text as="div" size="body-sm">
+                  {badge.name}
                 </Text>
+              </div>
+              {badge.description && (
+                <div className={styles.description}>
+                  <Text as="div" size="caption" tone="muted">
+                    {badge.description}
+                  </Text>
+                </div>
               )}
               {badge.category && (
-                <Text as="div" size="caption" tone="muted" className={styles.categoryTag}>
-                  {CATEGORY_LABEL[badge.category]}
-                </Text>
+                <div className={styles.categoryTag}>
+                  <Text as="div" size="caption" tone="muted">
+                    {CATEGORY_LABEL[badge.category]}
+                  </Text>
+                </div>
               )}
             </div>
           ))}

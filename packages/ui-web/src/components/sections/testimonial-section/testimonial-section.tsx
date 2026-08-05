@@ -24,7 +24,8 @@ export interface Testimonial {
   companyLogo?: React.ReactElement<LogoMarkProps>;
 }
 
-export interface TestimonialSectionProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {
+export interface TestimonialSectionProps
+  extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'className'> {
   eyebrow?: string;
   title?: React.ReactNode;
   subtitle?: string;
@@ -51,11 +52,7 @@ export const TestimonialSection = React.forwardRef<HTMLElement, TestimonialSecti
                   &ldquo;
                 </span>
                 {t.rating && (
-                  <div
-                    className={styles.rating}
-                    role="img"
-                    aria-label={`${t.rating} / 5`}
-                  >
+                  <div className={styles.rating} role="img" aria-label={`${t.rating} / 5`}>
                     {Array.from({ length: 5 }).map((_, s) => (
                       <svg
                         key={s}
