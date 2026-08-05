@@ -28,62 +28,34 @@ pnpm add shiki
 
 ### セットアップ
 
-#### 1. スタイルの読み込み（`@source` の指定が必須）
-
-本パッケージは Tailwind CSS v4 を前提としており、**利用側の Tailwind が本パッケージの
-`dist` を走査してユーティリティを生成する**構成になっています。Tailwind v4 は既定で
-`node_modules` を走査しないため、`@source` の指定が必要です。
-
-> **これを省略するとコンポーネントは無スタイルでレンダリングされます。**
-> エラーにはならないため気づきにくい点に注意してください。
-
-利用側が自前の Tailwind 設定を持つ場合:
+スタイルは**コンパイル済み CSS を1行読み込むだけ**です。Tailwind の導入・設定は不要です。
 
 ```css
-/* app.css */
-@import 'tailwindcss';
-@import '@siracusahq/gtm-design-system/theme.css';
-@source '../node_modules/@siracusahq/gtm-design-system/dist';
+/* app.css（またはエントリポイントの JS/TS から） */
+@import '@siracusahq/gtm-design-system/styles.css';
 ```
 
-利用側が Tailwind を持たない場合（スタンドアロン）:
+これに含まれるもの:
 
-```css
-/* app.css */
-@import '@siracusahq/gtm-design-system/globals.css';
-@source '../node_modules/@siracusahq/gtm-design-system/dist';
-```
+- 全コンポーネントのスタイル（CSS Modules でハッシュ済み。利用側のクラス名と衝突しません）
+- デザイントークン（CSS 変数）と 4 ブランドのテーマ定義（`data-brand` 属性で切替）
+- Web フォントの読み込み（Google Fonts の `@import`: `Inter` + `Noto Sans JP` + `JetBrains Mono`）
 
-`@source` のパスは**この CSS ファイルからの相対パス**で記述します。
-pnpm の symlink を越えても解決されます。
+#### フォントをセルフホストする場合
 
-指定の有無による実測値:
+`next/font` や Astro の Fonts API でセルフホストする場合は、フォントを自前で読み込んだうえで
+CSS 変数 `--font-sans` / `--font-mono` を上書きしてください（`styles.css` 先頭の
+`@import url('https://fonts.googleapis.com/...')` は後勝ちの `:root` 上書きで無効化できます）。
 
-| 設定           | 出力CSS | 生成されるユーティリティ                 |
-| -------------- | ------- | ---------------------------------------- |
-| `@source` なし | 9.15 kB | **0件**（トークン変数と preflight のみ） |
-| `@source` あり | 67.8 kB | 全件                                     |
+#### ブランドの切替
 
-#### 2. Web フォントの読み込み
-
-トークンは `Inter`（欧文）+ `Noto Sans JP`（和文）+ `JetBrains Mono`（等幅）を指定しますが、
-**フォント本体は本パッケージに含まれていません。** 読み込まない場合 `system-ui` に
-フォールバックします。
+ページまたは任意のサブツリーに `data-brand` 属性を付けるとテーマが切り替わります。
 
 ```html
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link
-  href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap"
-  rel="stylesheet"
-/>
+<body data-brand="polastack">
+  <!-- corporate（既定） / polastack / peerdesk / peerdesk-taxpeer -->
+</body>
 ```
-
-Next.js の `next/font` や Astro の Fonts API でセルフホストする場合は、
-CSS変数 `--font-sans` / `--font-mono` を上書きしてください。
-
-> **この手順は暫定です。** 将来のバージョンではコンパイル済みCSSとフォント定義を
-> 同梱し、Tailwind と `@source` の設定を不要にする予定です。
 
 ### 使い方
 
@@ -247,62 +219,34 @@ pnpm add shiki
 
 ### Setup
 
-#### 1. Loading styles (`@source` is required)
-
-This package targets Tailwind CSS v4 and relies on **your Tailwind build scanning the
-package's `dist` directory** to generate the utilities its components use. Tailwind v4
-does not scan `node_modules` by default, so an explicit `@source` is required.
-
-> **Without it, components render completely unstyled.**
-> No error is raised, which makes this easy to miss.
-
-If your app has its own Tailwind setup:
+Styles ship as a **single precompiled CSS file** — one import, no Tailwind required.
 
 ```css
-/* app.css */
-@import 'tailwindcss';
-@import '@siracusahq/gtm-design-system/theme.css';
-@source '../node_modules/@siracusahq/gtm-design-system/dist';
+/* app.css (or from your JS/TS entry point) */
+@import '@siracusahq/gtm-design-system/styles.css';
 ```
 
-If your app does not use Tailwind (standalone):
+This includes:
 
-```css
-/* app.css */
-@import '@siracusahq/gtm-design-system/globals.css';
-@source '../node_modules/@siracusahq/gtm-design-system/dist';
-```
+- All component styles (hashed via CSS Modules — no class-name collisions with your app)
+- Design tokens (CSS variables) and the 4 brand themes (switched via the `data-brand` attribute)
+- Web fonts (a Google Fonts `@import`: `Inter` + `Noto Sans JP` + `JetBrains Mono`)
 
-The `@source` path is **relative to the CSS file itself**, and resolves correctly
-through pnpm's symlinks.
+#### Self-hosting fonts
 
-Measured impact:
+To self-host via `next/font` or Astro's Fonts API, load the fonts yourself and override
+the `--font-sans` / `--font-mono` CSS variables (a later `:root` rule wins over the
+Google Fonts `@import` at the top of `styles.css`).
 
-| Setup             | Output CSS | Utilities generated                        |
-| ----------------- | ---------- | ------------------------------------------ |
-| Without `@source` | 9.15 kB    | **0** (token variables and preflight only) |
-| With `@source`    | 67.8 kB    | All                                        |
+#### Switching brands
 
-#### 2. Loading web fonts
-
-The tokens reference `Inter` (Latin), `Noto Sans JP` (Japanese) and `JetBrains Mono`
-(monospace), but **the font files are not bundled with this package.** Without loading
-them, text falls back to `system-ui`.
+Set the `data-brand` attribute on the page or any subtree:
 
 ```html
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link
-  href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap"
-  rel="stylesheet"
-/>
+<body data-brand="polastack">
+  <!-- corporate (default) / polastack / peerdesk / peerdesk-taxpeer -->
+</body>
 ```
-
-To self-host via `next/font` or Astro's Fonts API, override the `--font-sans` and
-`--font-mono` CSS variables.
-
-> **This setup is temporary.** A future release will ship precompiled CSS with the font
-> definitions included, removing the need for Tailwind and `@source` entirely.
 
 ### Usage
 

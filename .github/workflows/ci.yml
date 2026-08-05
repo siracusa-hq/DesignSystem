@@ -43,6 +43,11 @@ jobs:
       - name: Stylelint (CSS Modules)
         run: pnpm --filter @siracusahq/gtm-design-system lint:css
 
+      # 配布物が消費側で動くことの検証（SSR + CSSマッピング + Netlify属性）。
+      # Storybook でも vitest でも見えない配布事故（styles={} 等）を止める最後の砦
+      - name: Consumer smoke (dist)
+        run: pnpm --filter @siracusahq/gtm-design-system smoke
+
       - name: Typecheck
         run: pnpm typecheck
 

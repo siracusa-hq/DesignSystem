@@ -30,15 +30,13 @@
       "import": "./dist/slides.js",
       "types": "./dist/slides.d.ts"
     },
-    "./globals.css": "./src/styles/globals.css",
-    "./theme.css": "./src/styles/theme.css"
+    "./styles.css": "./dist/styles.css"
   },
   "files": [
-    "dist",
-    "src/styles"
+    "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && node scripts/build-styles.mjs",
     "dev": "tsup --watch",
     "storybook": "storybook dev -p 6007 --host 0.0.0.0",
     "build-storybook": "storybook build",
@@ -48,7 +46,8 @@
     "clean": "rm -rf dist",
     "size": "size-limit",
     "codegen": "node scripts/css-modules-dts.mjs",
-    "lint:css": "stylelint 'src/**/*.module.css'"
+    "lint:css": "stylelint 'src/**/*.module.css'",
+    "smoke": "node scripts/consumer-smoke.mjs"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
