@@ -130,7 +130,6 @@ export {
   type StatsSectionProps,
   type StatItem,
 } from './components/sections/stats-section';
-export { BentoGrid, type BentoGridProps, type BentoItem } from './components/sections/bento-grid';
 export { CodeBlock, type CodeBlockProps } from './components/sections/code-block';
 export {
   ModuleOverview,

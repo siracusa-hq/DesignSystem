@@ -5,7 +5,6 @@ import { LogoCloud } from '../../components/sections/logo-cloud';
 import { ModuleOverview } from '../../components/sections/module-overview';
 import { CodeBlock } from '../../components/sections/code-block';
 import { AirPocketFeature } from '../../components/sections/air-pocket-feature';
-import { BentoGrid } from '../../components/sections/bento-grid';
 import { StatsSection } from '../../components/sections/stats-section';
 import { CaseStudySection } from '../../components/sections/case-study-card';
 import { TestimonialSection } from '../../components/sections/testimonial-section';
@@ -195,7 +194,13 @@ export const TopPage: Story = {
             logos={Array.from({ length: 10 }).map((_, i) => ({
               name: `Company ${i + 1}`,
               node: (
-                <svg width="96" height="32" viewBox="0 0 96 32" role="img" aria-label={`Company ${i + 1}`}>
+                <svg
+                  width="96"
+                  height="32"
+                  viewBox="0 0 96 32"
+                  role="img"
+                  aria-label={`Company ${i + 1}`}
+                >
                   <rect width="96" height="32" rx="4" fill="var(--color-surface-sunken)" />
                   <text
                     x="48"
@@ -382,8 +387,14 @@ export const TopPage: Story = {
             }
             description={
               <ul>
-                <li>{isJa ? '既存の型定義をそのまま利用' : 'Reuse your existing type definitions'}</li>
-                <li>{isJa ? 'OpenAPI / MCP サーバーも同時生成' : 'OpenAPI and MCP server generated too'}</li>
+                <li>
+                  {isJa ? '既存の型定義をそのまま利用' : 'Reuse your existing type definitions'}
+                </li>
+                <li>
+                  {isJa
+                    ? 'OpenAPI / MCP サーバーも同時生成'
+                    : 'OpenAPI and MCP server generated too'}
+                </li>
               </ul>
             }
             code={sdkCode}
@@ -466,62 +477,6 @@ export const TopPage: Story = {
                         { name: 'kintone', status: 'Not supported' },
                         { name: 'Supabase', status: 'Not supported' },
                       ],
-                    },
-                  ]
-            }
-          />
-        </AnimateOnScroll>
-
-        {/* ============================================================
-           6. Bento Grid — DX機能群
-           ============================================================ */}
-        <AnimateOnScroll animation="scale">
-          <BentoGrid
-            eyebrow={isJa ? 'プラットフォーム' : 'PLATFORM'}
-            title={isJa ? '開発チームが求める機能' : 'Built for development teams'}
-            items={
-              isJa
-                ? [
-                    {
-                      title: 'TypeScript SDK',
-                      description: '型安全なAPI呼び出し。スキーマからSDKを自動生成。',
-                      span: 2,
-                    },
-                    {
-                      title: 'ダッシュボード',
-                      description: 'テナント管理・ユーザー管理・分析を一画面で。',
-                    },
-                    {
-                      title: 'CLI',
-                      description: 'ターミナルからスキーマ定義・マイグレーション・デプロイ。',
-                    },
-                    {
-                      title: 'CI/CD連携',
-                      description: 'GitHub Actions対応。PRごとにプレビュー環境を自動構築。',
-                      span: 2,
-                    },
-                  ]
-                : [
-                    {
-                      title: 'TypeScript SDK',
-                      description: 'Type-safe API calls. Auto-generated SDK from schema.',
-                      span: 2,
-                    },
-                    {
-                      title: 'Dashboard',
-                      description:
-                        'Tenant management, user management, and analytics in one screen.',
-                    },
-                    {
-                      title: 'CLI',
-                      description:
-                        'Schema definition, migration, and deployment from your terminal.',
-                    },
-                    {
-                      title: 'CI/CD Integration',
-                      description:
-                        'GitHub Actions ready. Auto-provision preview environments per PR.',
-                      span: 2,
                     },
                   ]
             }

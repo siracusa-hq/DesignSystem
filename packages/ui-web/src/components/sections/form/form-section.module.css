@@ -1,0 +1,24 @@
+/* フォームセクション共通 */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-5);
+}
+.row2 {
+  display: grid;
+  gap: var(--spacing-5);
+}
+@media (min-width: 40rem) {
+  .row2 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+/* Netlify のスパム対策 honeypot。視覚・支援技術の両方から隠す */
+.honeypot {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

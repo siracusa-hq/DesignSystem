@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from '@storybook/react';
  * Stage 2 移行ステータス — 各 Slice の PR ごとに status を更新する（DoD の一部）。
  * 「migrated」= CSS Modules + スロット参照 + DoD 全項目クリア。
  */
-const STATUS: Array<{ name: string; group: string; state: '済' | '未' | '新規' }> = [
+const STATUS: Array<{ name: string; group: string; state: '済' | '未' | '新規' | '削除' }> = [
   { name: 'Container', group: 'primitives', state: '済' },
   { name: 'Section', group: 'primitives', state: '済' },
   { name: 'Heading', group: 'primitives', state: '済' },
@@ -31,7 +31,7 @@ const STATUS: Array<{ name: string; group: string; state: '済' | '未' | '新�
   { name: 'ServicePortfolio', group: 'sections', state: '新規' },
   { name: 'SectionHeader（内部共有）', group: 'sections', state: '新規' },
   {
-    name: 'FeatureGrid / FeatureShowcase / BentoGrid / ComparisonTable',
+    name: 'FeatureGrid / FeatureShowcase / ComparisonTable',
     group: 'sections',
     state: '済',
   },
@@ -51,7 +51,7 @@ const STATUS: Array<{ name: string; group: string; state: '済' | '未' | '新�
 ];
 
 function StatusStory() {
-  const color = { 済: '#008575', 新規: '#2f4989', 未: '#a1a1aa' } as const;
+  const color = { 済: '#008575', 新規: '#2f4989', 未: '#a1a1aa', 削除: '#8d4f4d' } as const;
   const done = STATUS.filter((s) => s.state !== '未').length;
   return (
     <div className="p-8">

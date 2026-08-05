@@ -1,16 +1,14 @@
 'use client';
 
 import * as React from 'react';
-import { cn } from '@/lib/cn';
 import { Section } from '@/components/primitives/section';
 import { Container } from '@/components/primitives/container';
-import { Heading } from '@/components/primitives/heading';
-import { Text } from '@/components/primitives/text';
 import { SectionHeader } from '@/components/sections/section-header';
 import { FormInput, FormTextarea, FormSelect, FormButton } from './form-primitives';
+import styles from './form-section.module.css';
 
 /* ============================================================
-   一酸フォーム スクリプト読み込みフック
+   一酸フォーム スクリプト読み込みフック（会社名から住所等を自動補完）
    ============================================================ */
 
 function useIchisanForm(enabled: boolean) {
@@ -31,58 +29,111 @@ function useIchisanForm(enabled: boolean) {
 }
 
 /* ============================================================
-   共通フォームセクションラッパー
+   共通: Netlify Forms 対応フォーム
+   （2026-08-04 決定: Formspree 廃止。ホスティングが Netlify に
+     一本化されているため、Netlify Forms を標準とする）
    ============================================================ */
-
-type FormStatus = 'idle' | 'submitting' | 'success' | 'error';
 
 interface BaseFormSectionProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {
   eyebrow?: string;
   title?: React.ReactNode;
   subtitle?: string;
-  background?: 'default' | 'muted' | 'dark' | 'brand';
-  spacing?: 'sm' | 'md' | 'lg' | 'xl' | 'none';
-  /** Formspree のフォームID（例: "xpznqkdl"） */
-  formspreeId?: string;
-  /** 送信成功時メッセージ */
-  successMessage?: string;
-  /** 送信失敗時メッセージ */
-  errorMessage?: string;
+  /**
+   * Netlify Forms のフォーム名（管理画面での識別子）。
+   * 同一サイト内で用途ごとに一意にすること。
+   */
+  formName?: string;
+  /** 送信後に遷移するサンクスページ（未指定なら Netlify の既定サクセス画面） */
+  action?: string;
+  /**
+   * 独自バックエンドに送る場合のハンドラ（e.preventDefault() は呼び出し側で行う）。
+   * 未指定なら素の POST として Netlify Forms が受ける。
+   */
+  onSubmit?: React.FormEventHandler<HTMLFormElement>;
 }
 
-function useFormspree(formspreeId?: string) {
-  const [status, setStatus] = React.useState<FormStatus>('idle');
+function NetlifyForm({
+  formName,
+  action,
+  onSubmit,
+  children,
+}: {
+  formName: string;
+  action?: string;
+  onSubmit?: React.FormEventHandler<HTMLFormElement>;
+  children: React.ReactNode;
+}) {
+  return (
+    <form
+      name={formName}
+      method="POST"
+      action={action}
+      data-netlify="true"
+      data-netlify-honeypot="bot-field"
+      onSubmit={onSubmit}
+      className={styles.form}
+    >
+      {/* Netlify がビルド時にフォームを識別するための必須フィールド */}
+      <input type="hidden" name="form-name" value={formName} />
+      <p className={styles.honeypot} aria-hidden="true">
+        <label>
+          記入しないでください: <input name="bot-field" tabIndex={-1} autoComplete="off" />
+        </label>
+      </p>
+      {children}
+    </form>
+  );
+}
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!formspreeId) return;
+const useIsJa = () => typeof document !== 'undefined' && document.documentElement.lang === 'ja';
 
-    setStatus('submitting');
-    const form = e.currentTarget;
-    const data = new FormData(form);
+/** 氏名+メールの定型行（autocomplete で入力摩擦を減らす） */
+function NameEmailRow({ isJa }: { isJa: boolean }) {
+  return (
+    <div className={styles.row2}>
+      <FormInput
+        name="name"
+        label={isJa ? 'お名前' : 'Name'}
+        placeholder={isJa ? '田中 太郎' : 'Taro Tanaka'}
+        autoComplete="name"
+        required
+      />
+      <FormInput
+        name="email"
+        type="email"
+        label={isJa ? 'メールアドレス' : 'Email'}
+        placeholder="you@company.com"
+        autoComplete="email"
+        inputMode="email"
+        required
+      />
+    </div>
+  );
+}
 
-    try {
-      const res = await fetch(`https://formspree.io/f/${formspreeId}`, {
-        method: 'POST',
-        body: data,
-        headers: { Accept: 'application/json' },
-      });
-      if (res.ok) {
-        setStatus('success');
-        form.reset();
-      } else {
-        setStatus('error');
-      }
-    } catch {
-      setStatus('error');
-    }
-  };
-
-  return { status, handleSubmit };
+/** 会社名 + 一酸フォーム自動補完の隠しフィールド */
+function CompanyField({ isJa }: { isJa: boolean }) {
+  return (
+    <>
+      <FormInput
+        name="company"
+        label={isJa ? '会社名' : 'Company'}
+        placeholder={isJa ? '株式会社...' : 'Company name'}
+        className="company_name"
+        autoComplete="off"
+        required
+      />
+      {/* 一酸フォームで自動取得される隠しフィールド */}
+      <input type="hidden" name="zipcode" className="location_zipcode" />
+      <input type="hidden" name="address" className="location_full" />
+      <input type="hidden" name="corporate_number" className="corporate_number" />
+      <input type="hidden" name="employee_count" className="employee_count" />
+    </>
+  );
 }
 
 /* ============================================================
-   ContactForm — お問い合わせフォーム
+   ContactForm — お問い合わせ
    ============================================================ */
 
 export interface ContactFormProps extends BaseFormSectionProps {
@@ -93,33 +144,22 @@ export interface ContactFormProps extends BaseFormSectionProps {
 export const ContactForm = React.forwardRef<HTMLElement, ContactFormProps>(
   (
     {
-      className,
       eyebrow,
       title,
       subtitle,
-      background = 'default',
-      formspreeId,
-      successMessage,
-      errorMessage,
-      spacing,
+      formName = 'contact',
+      action,
+      onSubmit,
       ichisanEnabled = true,
       ...props
     },
     ref,
   ) => {
-    const { status, handleSubmit } = useFormspree(formspreeId);
     useIchisanForm(ichisanEnabled);
-
-    const isJa = typeof document !== 'undefined' && document.documentElement.lang === 'ja';
+    const isJa = useIsJa();
 
     return (
-      <Section
-        ref={ref}
-        background={background}
-        spacing={spacing ?? 'lg'}
-        className={className}
-        {...props}
-      >
+      <Section ref={ref} background="default" spacing="lg" {...props}>
         <Container size="sm">
           <SectionHeader
             eyebrow={eyebrow}
@@ -127,67 +167,18 @@ export const ContactForm = React.forwardRef<HTMLElement, ContactFormProps>(
             subtitle={subtitle}
             headingSize="display-sm"
           />
-
-          {status === 'success' ? (
-            <div className="rounded-2xl border border-success-500/30 bg-success-50 p-8 text-center dark:bg-success-500/10">
-              <Text size="body-lg" className="font-semibold text-success-600">
-                {successMessage ??
-                  (isJa
-                    ? 'お問い合わせありがとうございます。担当者より折り返しご連絡いたします。'
-                    : 'Thank you for your inquiry. We will get back to you shortly.')}
-              </Text>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="grid gap-5 sm:grid-cols-2">
-                <FormInput
-                  name="name"
-                  label={isJa ? 'お名前' : 'Name'}
-                  placeholder={isJa ? '田中 太郎' : 'Taro Tanaka'}
-                  required
-                />
-                <FormInput
-                  name="email"
-                  type="email"
-                  label={isJa ? 'メールアドレス' : 'Email'}
-                  placeholder="you@company.com"
-                  required
-                />
-              </div>
-              <FormInput
-                name="company"
-                label={isJa ? '会社名' : 'Company'}
-                placeholder={isJa ? '株式会社...' : 'Company name'}
-                className="company_name"
-                autoComplete="off"
-                required
-              />
-              {/* 一酸フォームで自動取得される隠しフィールド */}
-              <input type="hidden" name="zipcode" className="location_zipcode" />
-              <input type="hidden" name="address" className="location_full" />
-              <input type="hidden" name="corporate_number" className="corporate_number" />
-              <input type="hidden" name="employee_count" className="employee_count" />
-
-              <FormTextarea
-                name="message"
-                label={isJa ? 'お問い合わせ内容' : 'Message'}
-                placeholder={isJa ? 'ご質問やご要望をお聞かせください' : 'Tell us about your needs'}
-                rows={5}
-                required
-              />
-              <FormButton loading={status === 'submitting'}>
-                {isJa ? '送信する' : 'Send Message'}
-              </FormButton>
-              {status === 'error' && (
-                <Text size="body-sm" className="text-center text-error-500">
-                  {errorMessage ??
-                    (isJa
-                      ? '送信に失敗しました。時間をおいて再度お試しください。'
-                      : 'Failed to send. Please try again later.')}
-                </Text>
-              )}
-            </form>
-          )}
+          <NetlifyForm formName={formName} action={action} onSubmit={onSubmit}>
+            <NameEmailRow isJa={isJa} />
+            <CompanyField isJa={isJa} />
+            <FormTextarea
+              name="message"
+              label={isJa ? 'お問い合わせ内容' : 'Message'}
+              placeholder={isJa ? 'ご質問やご要望をお聞かせください' : 'Tell us about your needs'}
+              rows={5}
+              required
+            />
+            <FormButton>{isJa ? '送信する' : 'Send Message'}</FormButton>
+          </NetlifyForm>
         </Container>
       </Section>
     );
@@ -196,46 +187,35 @@ export const ContactForm = React.forwardRef<HTMLElement, ContactFormProps>(
 ContactForm.displayName = 'ContactForm';
 
 /* ============================================================
-   ResourceRequestForm — 資料請求フォーム
+   ResourceRequestForm — 資料請求
    ============================================================ */
 
 export interface ResourceRequestFormProps extends BaseFormSectionProps {
   ichisanEnabled?: boolean;
-  /** 資料名（フォーム内に表示） */
+  /** 請求対象の資料名（hidden フィールドとして送信される） */
   resourceName?: string;
 }
 
 export const ResourceRequestForm = React.forwardRef<HTMLElement, ResourceRequestFormProps>(
   (
     {
-      className,
       eyebrow,
       title,
       subtitle,
-      background = 'muted',
-      formspreeId,
-      successMessage,
-      errorMessage,
-      spacing,
+      formName = 'resource-request',
+      action,
+      onSubmit,
       ichisanEnabled = true,
       resourceName,
       ...props
     },
     ref,
   ) => {
-    const { status, handleSubmit } = useFormspree(formspreeId);
     useIchisanForm(ichisanEnabled);
-
-    const isJa = typeof document !== 'undefined' && document.documentElement.lang === 'ja';
+    const isJa = useIsJa();
 
     return (
-      <Section
-        ref={ref}
-        background={background}
-        spacing={spacing ?? 'lg'}
-        className={className}
-        {...props}
-      >
+      <Section ref={ref} background="default" spacing="lg" {...props}>
         <Container size="sm">
           <SectionHeader
             eyebrow={eyebrow}
@@ -243,64 +223,20 @@ export const ResourceRequestForm = React.forwardRef<HTMLElement, ResourceRequest
             subtitle={subtitle}
             headingSize="display-sm"
           />
-
-          {status === 'success' ? (
-            <div className="rounded-2xl border border-success-500/30 bg-success-50 p-8 text-center dark:bg-success-500/10">
-              <Text size="body-lg" className="font-semibold text-success-600">
-                {successMessage ??
-                  (isJa
-                    ? '資料をメールでお送りしました。ご確認ください。'
-                    : 'The document has been sent to your email.')}
-              </Text>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-5">
-              {resourceName && <input type="hidden" name="resource" value={resourceName} />}
-              <div className="grid gap-5 sm:grid-cols-2">
-                <FormInput
-                  name="name"
-                  label={isJa ? 'お名前' : 'Name'}
-                  placeholder={isJa ? '田中 太郎' : 'Taro Tanaka'}
-                  required
-                />
-                <FormInput
-                  name="email"
-                  type="email"
-                  label={isJa ? 'メールアドレス' : 'Email'}
-                  placeholder="you@company.com"
-                  required
-                />
-              </div>
-              <FormInput
-                name="company"
-                label={isJa ? '会社名' : 'Company'}
-                placeholder={isJa ? '株式会社...' : 'Company name'}
-                className="company_name"
-                autoComplete="off"
-                required
-              />
-              <input type="hidden" name="zipcode" className="location_zipcode" />
-              <input type="hidden" name="address" className="location_full" />
-              <input type="hidden" name="corporate_number" className="corporate_number" />
-              <input type="hidden" name="employee_count" className="employee_count" />
-
-              <FormInput
-                name="role"
-                label={isJa ? '役職' : 'Job Title'}
-                placeholder={
-                  isJa ? 'CTO / エンジニアリングマネージャー 等' : 'CTO / Engineering Manager etc.'
-                }
-              />
-              <FormButton loading={status === 'submitting'}>
-                {isJa ? '資料をダウンロード' : 'Download Resource'}
-              </FormButton>
-              {status === 'error' && (
-                <Text size="body-sm" className="text-center text-error-500">
-                  {errorMessage ?? (isJa ? '送信に失敗しました。' : 'Failed to send.')}
-                </Text>
-              )}
-            </form>
-          )}
+          <NetlifyForm formName={formName} action={action} onSubmit={onSubmit}>
+            {resourceName && <input type="hidden" name="resource" value={resourceName} />}
+            <NameEmailRow isJa={isJa} />
+            <CompanyField isJa={isJa} />
+            <FormInput
+              name="role"
+              label={isJa ? '役職' : 'Job Title'}
+              autoComplete="organization-title"
+              placeholder={
+                isJa ? 'CTO / エンジニアリングマネージャー 等' : 'CTO / Engineering Manager etc.'
+              }
+            />
+            <FormButton>{isJa ? '資料をダウンロード' : 'Download Resource'}</FormButton>
+          </NetlifyForm>
         </Container>
       </Section>
     );
@@ -309,60 +245,41 @@ export const ResourceRequestForm = React.forwardRef<HTMLElement, ResourceRequest
 ResourceRequestForm.displayName = 'ResourceRequestForm';
 
 /* ============================================================
-   DemoRequestForm — デモ予約フォーム
+   DemoRequestForm — デモ予約
    ============================================================ */
 
 export interface DemoRequestFormProps extends BaseFormSectionProps {
   ichisanEnabled?: boolean;
-  /** 希望日時の選択肢 */
+  /** 希望時間帯の選択肢 */
   timeSlots?: { value: string; label: string }[];
 }
 
 export const DemoRequestForm = React.forwardRef<HTMLElement, DemoRequestFormProps>(
   (
     {
-      className,
       eyebrow,
       title,
       subtitle,
-      background = 'default',
-      formspreeId,
-      successMessage,
-      errorMessage,
-      spacing,
+      formName = 'demo-request',
+      action,
+      onSubmit,
       ichisanEnabled = true,
       timeSlots,
       ...props
     },
     ref,
   ) => {
-    const { status, handleSubmit } = useFormspree(formspreeId);
     useIchisanForm(ichisanEnabled);
+    const isJa = useIsJa();
 
-    const isJa = typeof document !== 'undefined' && document.documentElement.lang === 'ja';
-
-    const defaultTimeSlots =
-      timeSlots ??
-      (isJa
-        ? [
-            { value: 'weekday-am', label: '平日 午前（10:00-12:00）' },
-            { value: 'weekday-pm', label: '平日 午後（13:00-17:00）' },
-            { value: 'weekday-evening', label: '平日 夕方（17:00-19:00）' },
-          ]
-        : [
-            { value: 'weekday-am', label: 'Weekday morning (10:00-12:00)' },
-            { value: 'weekday-pm', label: 'Weekday afternoon (13:00-17:00)' },
-            { value: 'weekday-evening', label: 'Weekday evening (17:00-19:00)' },
-          ]);
+    const defaultTimeSlots = timeSlots ?? [
+      { value: 'morning', label: isJa ? '午前（10:00-12:00）' : 'Morning (10:00-12:00)' },
+      { value: 'afternoon', label: isJa ? '午後（13:00-16:00）' : 'Afternoon (13:00-16:00)' },
+      { value: 'evening', label: isJa ? '夕方（16:00-18:00）' : 'Evening (16:00-18:00)' },
+    ];
 
     return (
-      <Section
-        ref={ref}
-        background={background}
-        spacing={spacing ?? 'lg'}
-        className={className}
-        {...props}
-      >
+      <Section ref={ref} background="default" spacing="lg" {...props}>
         <Container size="sm">
           <SectionHeader
             eyebrow={eyebrow}
@@ -370,77 +287,33 @@ export const DemoRequestForm = React.forwardRef<HTMLElement, DemoRequestFormProp
             subtitle={subtitle}
             headingSize="display-sm"
           />
-
-          {status === 'success' ? (
-            <div className="rounded-2xl border border-success-500/30 bg-success-50 p-8 text-center dark:bg-success-500/10">
-              <Text size="body-lg" className="font-semibold text-success-600">
-                {successMessage ??
-                  (isJa
-                    ? 'デモのご予約ありがとうございます。日程調整のご連絡をお送りします。'
-                    : 'Thank you for booking a demo. We will send you a scheduling confirmation.')}
-              </Text>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="grid gap-5 sm:grid-cols-2">
-                <FormInput
-                  name="name"
-                  label={isJa ? 'お名前' : 'Name'}
-                  placeholder={isJa ? '田中 太郎' : 'Taro Tanaka'}
-                  required
-                />
-                <FormInput
-                  name="email"
-                  type="email"
-                  label={isJa ? 'メールアドレス' : 'Email'}
-                  placeholder="you@company.com"
-                  required
-                />
-              </div>
-              <FormInput
-                name="company"
-                label={isJa ? '会社名' : 'Company'}
-                placeholder={isJa ? '株式会社...' : 'Company name'}
-                className="company_name"
-                autoComplete="off"
-                required
-              />
-              <input type="hidden" name="zipcode" className="location_zipcode" />
-              <input type="hidden" name="address" className="location_full" />
-              <input type="hidden" name="corporate_number" className="corporate_number" />
-              <input type="hidden" name="employee_count" className="employee_count" />
-
-              <FormInput
-                name="role"
-                label={isJa ? '役職' : 'Job Title'}
-                placeholder={isJa ? 'CTO / VPoE 等' : 'CTO / VPoE etc.'}
-              />
-              <FormSelect
-                name="preferred_time"
-                label={isJa ? 'ご希望の時間帯' : 'Preferred Time'}
-                placeholder={isJa ? '選択してください' : 'Select a time slot'}
-                options={defaultTimeSlots}
-              />
-              <FormTextarea
-                name="notes"
-                label={isJa ? 'ご質問・ご要望（任意）' : 'Questions or notes (optional)'}
-                placeholder={
-                  isJa
-                    ? '事前にお伝えしたいことがあればご記入ください'
-                    : 'Anything you would like us to know beforehand'
-                }
-                rows={3}
-              />
-              <FormButton loading={status === 'submitting'}>
-                {isJa ? 'デモを予約する' : 'Book a Demo'}
-              </FormButton>
-              {status === 'error' && (
-                <Text size="body-sm" className="text-center text-error-500">
-                  {errorMessage ?? (isJa ? '送信に失敗しました。' : 'Failed to send.')}
-                </Text>
-              )}
-            </form>
-          )}
+          <NetlifyForm formName={formName} action={action} onSubmit={onSubmit}>
+            <NameEmailRow isJa={isJa} />
+            <CompanyField isJa={isJa} />
+            <FormInput
+              name="role"
+              label={isJa ? '役職' : 'Job Title'}
+              autoComplete="organization-title"
+              placeholder={isJa ? 'CTO / VPoE 等' : 'CTO / VPoE etc.'}
+            />
+            <FormSelect
+              name="preferred_time"
+              label={isJa ? 'ご希望の時間帯' : 'Preferred Time'}
+              placeholder={isJa ? '選択してください' : 'Select a time slot'}
+              options={defaultTimeSlots}
+            />
+            <FormTextarea
+              name="notes"
+              label={isJa ? 'ご質問・ご要望（任意）' : 'Questions or notes (optional)'}
+              placeholder={
+                isJa
+                  ? '事前にお伝えしたいことがあればご記入ください'
+                  : 'Anything you would like us to know beforehand'
+              }
+              rows={3}
+            />
+            <FormButton>{isJa ? 'デモを予約する' : 'Book a Demo'}</FormButton>
+          </NetlifyForm>
         </Container>
       </Section>
     );

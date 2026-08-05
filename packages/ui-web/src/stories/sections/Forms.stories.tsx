@@ -1,80 +1,74 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { ContactForm, ResourceRequestForm, DemoRequestForm } from '../../components/sections/form';
 
-const meta: Meta = {
+/**
+ * フォーム3種 — Netlify Forms 標準（2026-08-04 決定・Formspree 廃止）。
+ *
+ * Netlify にデプロイするだけで送信が機能する（data-netlify / form-name /
+ * honeypot を標準で描画。Astro のプリレンダでビルド時に検出される）。
+ * 独自バックエンドに送る場合は `onSubmit` を渡す（preventDefault は呼び出し側）。
+ */
+
+const meta = {
   title: 'Sections/Forms',
   parameters: { layout: 'fullscreen' },
-};
-export default meta;
+} satisfies Meta;
 
+export default meta;
 type Story = StoryObj;
 
-export const Contact: Story = {
-  render: (_, { globals }) => {
-    const isJa = globals.locale === 'ja';
-    return (
-      <ContactForm
-        eyebrow={isJa ? 'お問い合わせ' : 'CONTACT'}
-        title={isJa ? 'お気軽にご相談ください' : 'Get in touch'}
-        subtitle={
-          isJa
-            ? '技術的なご質問や導入のご相談、お見積りなど、何でもお問い合わせください。'
-            : 'Have questions about pricing, features, or implementation? We are here to help.'
-        }
-        formspreeId="your-formspree-id"
-      />
-    );
-  },
+export const お問い合わせ: Story = {
+  render: () => (
+    <ContactForm
+      eyebrow="お問い合わせ"
+      title="まずはお気軽にご相談ください"
+      subtitle="内容を確認のうえ、担当者より1営業日以内にご連絡いたします。"
+    />
+  ),
 };
 
-export const ResourceRequest: Story = {
-  render: (_, { globals }) => {
-    const isJa = globals.locale === 'ja';
-    return (
-      <ResourceRequestForm
-        eyebrow={isJa ? '資料請求' : 'RESOURCES'}
-        title={isJa ? '製品資料をダウンロード' : 'Download product resources'}
-        subtitle={
-          isJa
-            ? 'Polastackの詳細な機能説明、導入事例、料金体系をまとめた資料をお送りします。'
-            : 'Get our detailed product guide with features, case studies, and pricing.'
-        }
-        formspreeId="your-formspree-id"
-        resourceName="Polastack Product Guide"
-        background="muted"
-      />
-    );
-  },
+export const 資料請求_サンクスページ指定: Story = {
+  render: () => (
+    <ResourceRequestForm
+      eyebrow="資料請求"
+      title="製品資料をダウンロード"
+      subtitle="機能の詳細、料金の考え方、導入の流れをまとめた資料をお送りします。"
+      resourceName="polastack-overview"
+      action="/thanks"
+    />
+  ),
 };
 
-export const DemoRequest: Story = {
-  render: (_, { globals }) => {
-    const isJa = globals.locale === 'ja';
-    return (
-      <DemoRequestForm
-        eyebrow={isJa ? 'デモ予約' : 'BOOK A DEMO'}
-        title={isJa ? 'デモを予約する' : 'Book a demo'}
-        subtitle={
-          isJa
-            ? '30分のオンラインデモで、Polastackがどのように開発を加速するかをご確認いただけます。'
-            : 'See how Polastack accelerates development in a 30-minute online demo.'
-        }
-        formspreeId="your-formspree-id"
-      />
-    );
-  },
+export const デモ予約: Story = {
+  render: () => (
+    <DemoRequestForm
+      eyebrow="デモ予約"
+      title="30分のオンラインデモ"
+      subtitle="実際の画面を見ながら、貴社のユースケースに沿ってご説明します。"
+    />
+  ),
 };
 
-export const ContactDark: Story = {
-  render: (_, { globals }) => {
-    const isJa = globals.locale === 'ja';
-    return (
-      <ContactForm
-        eyebrow={isJa ? 'お問い合わせ' : 'CONTACT'}
-        title={isJa ? 'お気軽にご相談ください' : 'Get in touch'}
-        background="dark"
-        formspreeId="your-formspree-id"
-      />
-    );
-  },
+export const 独自バックエンド_onSubmit: Story = {
+  render: () => (
+    <ContactForm
+      title="独自バックエンドに送る例"
+      subtitle="onSubmit で preventDefault し、自前の API へ送信する。"
+      onSubmit={(e) => {
+        e.preventDefault();
+        // eslint-disable-next-line no-alert
+        alert('カスタム送信ハンドラが呼ばれました（Netlify へは送信されません）');
+      }}
+    />
+  ),
+};
+
+export const English: Story = {
+  render: () => (
+    <ContactForm
+      eyebrow="CONTACT"
+      title="Talk to our team"
+      subtitle="We will get back to you within one business day."
+    />
+  ),
 };
