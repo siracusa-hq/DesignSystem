@@ -42,15 +42,15 @@ component-name/
 
 ## 1. Slice 構成（縦切りの順序）
 
-| Slice | 内容                                                                                                                                                                                                                                                                                                                                                                                | 完了の意味                                                                      |
-| ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| **0** | CSS Modules 基盤: `scripts/css-modules-dts.mjs`（d.ts 生成・codegen と同じ「生成物コミット + CI差分検査」方式）/ stylelint 導入（生hex禁止・`--ramp-*` 直参照禁止・未知の `var()` 禁止）/ tsup で `.module.css` が dist に出ることの実証（esbuild ネイティブ対応は検証済み）                                                                                                        | 移行パイプラインが1コンポーネント（Container）で end-to-end に通る              |
-| **1** | コーポレートトップに必要なプリミティブ移行: Container / Section / Heading / Text / MarketingButton / Badge / Link / Logo + **新規: Eyebrow, LogoMark**                                                                                                                                                                                                                              | ページの部品が揃う                                                              |
-| **2** | 同セクション移行: HeroSection / **新規: ServicePortfolio** / StatsSection / SecurityBadges / CTASection + レイアウト: MarketingHeader / MarketingFooter / PageLayout                                                                                                                                                                                                                | ページの構成要素が揃う                                                          |
-| **3** | **検証関門: コーポレートトップを Storybook に実装**（`Examples/CorporateTop`）。4ブランドのサービスチップ（data-brand 切替）・数値訴求・信頼バッジ・2オファーCTA を含む実ページ                                                                                                                                                                                                     | ここで見つかった設計不備を §7 に記録し、必要なら指示書を改訂してから Slice 4 へ |
-| **4** | 残りのセクション移行: FeatureGrid / FeatureShowcase / BentoGrid / ComparisonTable / TestimonialSection / LogoCloud / CaseStudySection / FAQSection / PricingTable+Card / CodeBlock / ModuleOverview / MigrationComparison / AirPocketFeature + プリミティブ残り（Grid / Divider / GradientText / AnimatedCounter / AnimateOnScroll※済 / **新規: MediaFrame, ProductShot, Avatar**） | 全コンポーネント移行完了                                                        |
-| **5** | フォーム3種の移行 + `onSubmit` の口（Formspree を便利オプションに降格）。LandingPage ストーリーの更新                                                                                                                                                                                                                                                                               |                                                                                 |
-| **6** | **配布切替**: コンパイル済み CSS + `@font-face` 同梱 / Tailwind クラス依存の完全除去 / `@source` 手順を README から削除 / `pnpm size` に CSS 枠 / Astro 消費側スモークを CI へ                                                                                                                                                                                                      | Stage 2 完了 = 0.x 最大の minor                                                 |
+| Slice | 内容                                                                                                                                                                                                                                                                                                                                                                                         | 完了の意味                                                                      |
+| ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| **0** | CSS Modules 基盤: `scripts/css-modules-dts.mjs`（d.ts 生成・codegen と同じ「生成物コミット + CI差分検査」方式）/ stylelint 導入（生hex禁止・`--ramp-*` 直参照禁止・未知の `var()` 禁止）/ tsup で `.module.css` が dist に出ることの実証（esbuild ネイティブ対応は検証済み）                                                                                                                 | 移行パイプラインが1コンポーネント（Container）で end-to-end に通る              |
+| **1** | コーポレートトップに必要なプリミティブ移行: Container / Section / Heading / Text / MarketingButton / Badge / Link / Logo + **新規: Eyebrow, LogoMark**                                                                                                                                                                                                                                       | ページの部品が揃う                                                              |
+| **2** | 同セクション移行: HeroSection / **新規: ServicePortfolio** / StatsSection / SecurityBadges / CTASection + レイアウト: MarketingHeader / MarketingFooter / PageLayout                                                                                                                                                                                                                         | ページの構成要素が揃う                                                          |
+| **3** | **検証関門: コーポレートトップを Storybook に実装**（`Examples/CorporateTop`）。4ブランドのサービスチップ（data-brand 切替）・数値訴求・信頼バッジ・2オファーCTA を含む実ページ                                                                                                                                                                                                              | ここで見つかった設計不備を §7 に記録し、必要なら指示書を改訂してから Slice 4 へ |
+| **4** | 残りのセクション移行: FeatureGrid / FeatureShowcase / BentoGrid / ComparisonTable / TestimonialSection / LogoCloud / CaseStudySection / FAQSection / PricingTable+Card / CodeBlock / ModuleOverview / MigrationComparison / AirPocketFeature + プリミティブ残り（Grid / Divider / GradientText / AnimatedCounter / AnimateOnScroll※済 / **新規: MediaFrame, ProductShot, Avatar**）          | 全コンポーネント移行完了                                                        |
+| **5** | フォーム3種の移行 + **Formspree 廃止 → Netlify Forms 標準**（2026-08-04 ブランド側決定。ホスティングが Netlify に一本化済みのため相性が良い）。実装: `name` / `method=POST` / `data-netlify` / hidden `form-name` / honeypot を標準で描画（Astro のプリレンダで Netlify がビルド時に検出する方式）+ 独自バックエンド用の `onSubmit` の口。`formspreeId` は削除。LandingPage ストーリーの更新 |                                                                                 |
+| **6** | **配布切替**: コンパイル済み CSS + `@font-face` 同梱 / Tailwind クラス依存の完全除去 / `@source` 手順を README から削除 / `pnpm size` に CSS 枠 / Astro 消費側スモークを CI へ                                                                                                                                                                                                               | Stage 2 完了 = 0.x 最大の minor                                                 |
 
 Slides（27種）は別エントリのため Stage 2 対象外（現状維持）。
 
@@ -156,6 +156,35 @@ MarketingFooter
    Eyebrow が HTMLAttributes 経由で className を型受容していた穴も同時に修正。
    以後、props を消すとストーリー・テストの追従漏れが CI で落ちる。
 
+## 7b. Slice 4b（残りセクション移行）で見つかったこと
+
+8. **「見た目 prop の削除」はストーリーの作り直しを伴う** — `BentoItem.variant` や
+   CodeBlock の `layout` のように、ストーリーが**その prop のカタログ**として
+   存在していたケースがある（`WithVariants` / `SplitLayout`）。prop を消すと
+   ストーリーは型エラーで落ちるが、`background` を消すだけの箇所と違って
+   「削るだけ」では意味が失われる。導出後の新しい規則
+   （並び順が主役を決める / description があれば横並び）を見せる story に
+   書き換えること。件数導出系（FeatureGrid / Testimonial / CaseStudy）は
+   逆にストーリーが何も語らなくなるので、テスト側に導出の表を書いた。
+9. **`Text` / `Heading` は自前で `color` を持つため、外側からの色替えは
+   セマンティック変数の差し替えで行う** — ComparisonTable の推し列と
+   FAQ のホバーで必要になった。`className` を渡さずに色を変える方法は
+   実質これ1つで、section.module.css（暗面反転）と同じ流儀に揃う。
+   Slice 6 で `className` を落としても破綻しない形になった。
+10. **縦の余白は「ラッパーの gap + 例外だけ margin」に寄せると
+    `className` 渡しが消える** — 従来 `<Text className="mt-4">` で足していた間隔を、
+    親を flex column にして `gap` で持たせ、一段広げたい箇所だけ子に
+    `margin-top` を足す形にした（FeatureShowcase / CodeBlock / MigrationComparison）。
+    §7-1 の「内部の className 依存」はこの型でほぼ解消できる。
+11. **コード表示は面のトーンに追従させない例外領域** — CodeBlock は
+    shiki の `github-dark` を使うため、面が明るくなるとトークン色と衝突して
+    読めなくなる。暗面固定とし、その理由を module 冒頭に書いた。
+    Stage 3 のトーン設計でも、ここは対象外として扱うこと。
+12. **ロゴ帯のスクロール keyframes は module 内に持たせた** — `theme.css` の
+    `@keyframes scroll` を参照すると、CSS Modules が `animation-name` を
+    スコープ化する実装（ビルド系による）で壊れる可能性がある。
+    Slice 6 の「コンパイル済み CSS 同梱」でも単体で成立する形が安全。
+
 ---
 
 ## 進捗
@@ -164,6 +193,6 @@ MarketingFooter
 - [x] Slice 1（プリミティブ 8 + 新規 2）— 2026-08-04 完了。備考: 契約に --color-text-brand-strong（700段）を追加（Badge等の淡面上の濃文字用）。Text の overline 7種は未移行セクションが使用中のため @deprecated で暫定存置（Slice 4 で削除）。MarketingButton の gradient は cta へのエイリアス化（Slice 2 で削除）
 - [x] Slice 2（セクション 5 + 新規 1 + レイアウト 3）— 2026-08-04 完了（SectionHeader 内部共有を追加）
 - [x] Slice 3（コーポレートトップ = 検証関門）— 2026-08-04 完了（Examples/CorporateTop）
-- [ ] Slice 4（残りセクション 13 + プリミティブ残り + 新規 3）
+- [x] Slice 4（残りセクション 13 + プリミティブ残り + 新規 3）— 2026-08-04 完了。備考: 4a で新規3プリミティブ、4b で残り13セクション + プリミティブ5件を移行し、Text の overline 7種と MarketingButton の gradient エイリアスを削除した（フォーム3種の見出しだけは SectionHeader 化して overline 依存を切ってあるが、本体の移行は Slice 5）
 - [ ] Slice 5（フォーム + LandingPage 更新）
 - [ ] Slice 6（配布切替）

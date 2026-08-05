@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { cn } from '@/lib/cn';
+import styles from './animated-counter.module.css';
 
 export interface AnimatedCounterProps extends React.HTMLAttributes<HTMLSpanElement> {
   /** 表示する最終値 */
@@ -16,6 +17,11 @@ export interface AnimatedCounterProps extends React.HTMLAttributes<HTMLSpanEleme
   suffix?: string;
   /** 小数点以下の桁数 */
   decimals?: number;
+  /**
+   * @deprecated 移行期間限定（未移行コンポーネントからのレイアウト調整用）。
+   * Slice 6 で削除する（stage2-workorder.md §0）。新規利用は禁止。
+   */
+  className?: string;
 }
 
 export const AnimatedCounter = React.forwardRef<HTMLSpanElement, AnimatedCounterProps>(
@@ -79,7 +85,7 @@ export const AnimatedCounter = React.forwardRef<HTMLSpanElement, AnimatedCounter
     }).format(displayValue);
 
     return (
-      <span ref={combinedRef} className={cn('tabular-nums', className)} {...props}>
+      <span ref={combinedRef} className={cn(styles.counter, className)} {...props}>
         {prefix}
         {formatted}
         {suffix}

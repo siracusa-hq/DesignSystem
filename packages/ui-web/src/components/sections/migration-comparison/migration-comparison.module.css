@@ -1,0 +1,60 @@
+/* MigrationComparison — 移行元ごとの「きっかけ→痛み→解決」を並べる。
+   カード内の小見出しは Eyebrow に置き換えた（旧 eyebrowStyle は削除）。 */
+
+.grid {
+  display: grid;
+  gap: var(--spacing-8);
+}
+@media (min-width: 64rem) {
+  .cols2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  padding: var(--spacing-6);
+  box-shadow: var(--shadow-card);
+}
+@media (min-width: 64rem) {
+  .card {
+    padding: var(--spacing-8);
+  }
+}
+
+.triggers {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  /* .card の gap-2 に足して一段広く空ける */
+  margin-top: var(--spacing-4);
+  width: 100%;
+}
+
+.trigger {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-surface-sunken);
+  padding: var(--spacing-4);
+}
+.triggerTitle {
+  font-weight: 600;
+}
+.triggerPain {
+  margin-top: var(--spacing-1);
+}
+.triggerSolution {
+  margin-top: var(--spacing-1);
+  font-weight: 500;
+}
+
+.action {
+  /* .card の gap-2 に足して一段広く空ける */
+  margin-top: var(--spacing-4);
+}

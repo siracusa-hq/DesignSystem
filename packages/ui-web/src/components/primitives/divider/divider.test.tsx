@@ -11,12 +11,12 @@ describe('Divider', () => {
 
   it('variantを適用する', () => {
     const { container } = render(<Divider variant="brand" />);
-    expect(container.firstChild).toHaveClass('via-brand-500');
+    expect(container.firstChild).toHaveClass('brand');
   });
 
   it('spacingを適用する', () => {
     const { container } = render(<Divider spacing="lg" />);
-    expect(container.firstChild).toHaveClass('my-12');
+    expect(container.firstChild).toHaveClass('spacingLg');
   });
 
   it('a11y違反がない', async () => {

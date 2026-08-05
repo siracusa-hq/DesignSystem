@@ -22,7 +22,6 @@ export const Default: Story = {
             ? 'AIがコードを書く時代。業務に耐える裏側は、Polastackが引き受ける。'
             : 'In the age of AI-generated code, Polastack handles the enterprise backend.'
         }
-        background="dark"
         layers={
           isJa
             ? [

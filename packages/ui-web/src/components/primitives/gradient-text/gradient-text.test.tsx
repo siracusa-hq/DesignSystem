@@ -9,10 +9,10 @@ describe('GradientText', () => {
     expect(screen.getByText('Polastack')).toBeInTheDocument();
   });
 
-  it('bg-clip-textクラスが適用される', () => {
+  it('グラデーション塗りのクラスが適用される', () => {
     const { container } = render(<GradientText>テキスト</GradientText>);
-    expect(container.firstChild).toHaveClass('bg-clip-text');
-    expect(container.firstChild).toHaveClass('text-transparent');
+    expect(container.firstChild).toHaveClass('gradientText');
+    expect(container.firstChild).toHaveClass('brand');
   });
 
   it('as propでタグを変更できる', () => {

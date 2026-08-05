@@ -93,7 +93,6 @@ export {
 export { PricingTable, type PricingTableProps } from './components/sections/pricing';
 export {
   PricingCard,
-  pricingCardVariants,
   type PricingCardProps,
   type PricingFeature,
 } from './components/sections/pricing';

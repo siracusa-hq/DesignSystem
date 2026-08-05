@@ -1,113 +1,63 @@
 import * as React from 'react';
-import { cn } from '@/lib/cn';
 import { Section } from '@/components/primitives/section';
 import { Container } from '@/components/primitives/container';
-import { Heading } from '@/components/primitives/heading';
-import { Text } from '@/components/primitives/text';
+import { LogoMark } from '@/components/primitives/logo-mark';
+import { SectionHeader } from '@/components/sections/section-header';
+import styles from './logo-cloud.module.css';
 
 export interface LogoItem {
+  /** 企業名。img の alt / スクロール時のラベルに使う */
   name: string;
-  logo: React.ReactNode;
+  /** 画像ロゴの URL。node とどちらか一方 */
+  src?: string;
+  /** インライン SVG 等を渡す場合 */
+  node?: React.ReactNode;
 }
+
+/** 8件を超えると1画面に収まらず、静的な帯は行が崩れる */
+const SCROLL_THRESHOLD = 8;
 
 export interface LogoCloudProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {
   eyebrow?: string;
-  eyebrowStyle?: 'pill' | 'border' | 'text' | 'dot' | 'gradient' | 'icon-pill';
   title?: React.ReactNode;
+  /**
+   * ロゴは 6 社以上そろってから出すこと。
+   * 数が足りないうちは説得力が逆に落ちるため、ロゴ帯と数値バッジは**代替関係**に置く
+   * （6社未満なら LogoCloud ではなく StatsSection で「導入◯社」を数字で見せる）。
+   * 8件以上で自動的にスクロール表示に切り替わる（旧 scrolling prop は削除）。
+   */
   logos: LogoItem[];
-  scrolling?: boolean;
-  background?: 'default' | 'muted' | 'dark' | 'brand';
-  spacing?: 'sm' | 'md' | 'lg' | 'xl' | 'none';
 }
 
 export const LogoCloud = React.forwardRef<HTMLElement, LogoCloudProps>(
-  (
-    {
-      className,
-      eyebrow,
-      eyebrowStyle,
-      title,
-      logos,
-      scrolling = false,
-      background = 'default',
-      spacing,
-      ...props
-    },
-    ref,
-  ) => {
-    return (
-      <Section
-        ref={ref}
-        background={background}
-        spacing={spacing ?? 'md'}
-        className={className}
-        {...props}
-      >
-        <Container>
-          {(eyebrow || title) && (
-            <div className="mb-10 text-center">
-              {eyebrow && (
-                <Text
-                  size={
-                    eyebrowStyle === 'border'
-                      ? 'overline-border'
-                      : eyebrowStyle === 'text'
-                        ? 'overline-text'
-                        : eyebrowStyle === 'dot'
-                          ? 'overline-dot'
-                          : eyebrowStyle === 'gradient'
-                            ? 'overline-gradient'
-                            : eyebrowStyle === 'icon-pill'
-                              ? 'overline-icon-pill'
-                              : 'overline-pill'
-                  }
-                  className="mb-4"
-                >
-                  {eyebrow}
-                </Text>
-              )}
-              {title && (
-                <Heading as="h2" size="heading-lg">
-                  {title}
-                </Heading>
-              )}
-            </div>
-          )}
+  ({ eyebrow, title, logos, ...props }, ref) => {
+    // ロゴ帯は既定でグレースケール（ロゴの原色が並ぶと自社の面が主張を失う）
+    const renderMarks = (copy: number) =>
+      logos.map((item, i) => (
+        <div key={`${copy}-${i}`} className={styles.item}>
+          <LogoMark src={item.src} alt={item.name} grayscale>
+            {item.node}
+          </LogoMark>
+        </div>
+      ));
 
-          {scrolling ? (
-            <div className="group relative overflow-hidden">
-              <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-32 bg-gradient-to-r from-[var(--color-surface)] to-transparent" />
-              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-32 bg-gradient-to-l from-[var(--color-surface)] to-transparent" />
-              <div className="flex gap-12 animate-[scroll_40s_linear_infinite] group-hover:[animation-play-state:paused]">
-                {[...logos, ...logos, ...logos].map((item, i) => (
-                  <div
-                    key={i}
-                    className={cn(
-                      'flex shrink-0 items-center justify-center opacity-60 grayscale transition-all hover:opacity-100 hover:grayscale-0',
-                      'dark:invert',
-                    )}
-                    aria-label={item.name}
-                  >
-                    {item.logo}
-                  </div>
-                ))}
+    return (
+      <Section ref={ref} background="default" spacing="md" {...props}>
+        <Container>
+          <SectionHeader eyebrow={eyebrow} title={title} headingSize="heading-lg" />
+          {logos.length >= SCROLL_THRESHOLD ? (
+            <div className={styles.marquee}>
+              <div className={styles.fadeLeft} aria-hidden="true" />
+              <div className={styles.fadeRight} aria-hidden="true" />
+              {/* keyframes は -33.333% 送りなので、3周ぶん並べて途切れなく繋ぐ */}
+              <div className={styles.track}>
+                {renderMarks(0)}
+                {renderMarks(1)}
+                {renderMarks(2)}
               </div>
             </div>
           ) : (
-            <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-8">
-              {logos.map((item, i) => (
-                <div
-                  key={i}
-                  className={cn(
-                    'flex items-center justify-center opacity-60 grayscale transition-all hover:opacity-100 hover:grayscale-0',
-                    'dark:invert',
-                  )}
-                  aria-label={item.name}
-                >
-                  {item.logo}
-                </div>
-              ))}
-            </div>
+            <div className={styles.row}>{renderMarks(0)}</div>
           )}
         </Container>
       </Section>

@@ -1,0 +1,121 @@
+/* PricingCard — 料金プラン1枚。CTA は常に cta バリアント（action.variant は削除）。
+   強調プランは --shadow-card-hover + --color-border-brand で持ち上げる。 */
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  padding: var(--spacing-6);
+  box-shadow: var(--shadow-card);
+  transition:
+    box-shadow var(--duration-normal) var(--ease-default),
+    transform var(--duration-normal) var(--ease-default),
+    border-color var(--duration-normal) var(--ease-default);
+}
+@media (min-width: 64rem) {
+  .card {
+    padding: var(--spacing-8);
+  }
+}
+.card:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+.highlighted {
+  border-color: var(--color-border-brand);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.badgeSlot {
+  position: absolute;
+  top: -0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.head {
+  margin-bottom: var(--spacing-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.priceBlock {
+  margin-bottom: var(--spacing-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+.price {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-1);
+  font-size: var(--text-display-sm);
+  line-height: var(--text-display-sm--line-height);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--color-on-surface);
+}
+@media (min-width: 48rem) {
+  .price {
+    font-size: var(--text-display-md);
+    line-height: var(--text-display-md--line-height);
+  }
+}
+/* 「/月」等の単位。金額と同じ大きさで並べると数字が読み取りにくい */
+.priceUnit {
+  font-size: var(--text-body-md);
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--color-on-surface-muted);
+}
+
+.features {
+  margin-bottom: var(--spacing-8);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  list-style: none;
+  padding: 0;
+}
+.feature {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-3);
+}
+.markYes,
+.markNo {
+  margin-top: 0.125rem;
+  display: inline-flex;
+  height: 1.25rem;
+  width: 1.25rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+}
+.markYes {
+  background: var(--color-bg-brand-subtle);
+  color: var(--color-text-brand-strong);
+}
+:global(.dark) .markYes {
+  background: color-mix(in srgb, var(--color-text-brand-on-dark) 15%, transparent);
+  color: var(--color-text-brand-on-dark);
+}
+.markNo {
+  background: var(--color-surface-sunken);
+  color: var(--color-on-surface-muted);
+}
+:global(.dark) .markNo {
+  background: var(--color-neutral-800);
+  color: var(--color-neutral-500);
+}
+.markIcon {
+  height: 0.75rem;
+  width: 0.75rem;
+}

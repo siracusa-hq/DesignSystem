@@ -1,0 +1,102 @@
+/* ComparisonTable — 競合比較表。columns はデータ（比較対象）であって
+   見た目の選択肢ではないため、他セクションと違い prop のまま維持する。 */
+
+.scroller {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.headRow {
+  background: var(--color-surface);
+}
+.head {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.headCell {
+  padding: var(--spacing-4);
+  text-align: center;
+}
+.featureHeadCell {
+  padding: var(--spacing-4);
+  text-align: left;
+}
+
+/* 推し列。Heading は色を自前で持つため、section.module.css と同じ流儀で
+   スコープ内のセマンティック変数を差し替えて反転させる */
+.highlighted {
+  background: var(--color-bg-brand-subtle);
+  --color-on-surface: var(--color-text-brand);
+}
+:global(.dark) .highlighted {
+  background: color-mix(in srgb, var(--color-text-brand-on-dark) 12%, transparent);
+  --color-on-surface: var(--color-text-brand-on-dark);
+}
+
+.row {
+  border-top: 1px solid var(--color-border);
+}
+
+.featureCell {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  padding: var(--spacing-4);
+  background-color: inherit;
+}
+
+.cell {
+  padding: var(--spacing-4);
+  text-align: center;
+  font-size: var(--text-body-sm);
+}
+
+/* 真偽値セルの丸バッジ */
+.markYes,
+.markNo {
+  display: inline-flex;
+  height: 1.5rem;
+  width: 1.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+}
+.markYes {
+  background: var(--color-bg-brand-subtle);
+  color: var(--color-text-brand-strong);
+}
+:global(.dark) .markYes {
+  background: color-mix(in srgb, var(--color-text-brand-on-dark) 15%, transparent);
+  color: var(--color-text-brand-on-dark);
+}
+.markNo {
+  background: var(--color-surface-sunken);
+  color: var(--color-on-surface-muted);
+}
+:global(.dark) .markNo {
+  background: var(--color-neutral-800);
+  color: var(--color-neutral-500);
+}
+.markIcon {
+  height: 0.875rem;
+  width: 0.875rem;
+}
+
+/* 視覚的には隠すがスクリーンリーダーには読ませる（Tailwind の sr-only 相当） */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

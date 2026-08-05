@@ -11,8 +11,6 @@ export const marketingButtonVariants = cva(styles.button, {
       ghost: styles.ghost,
       /** CTA 第3役割（--color-cta-*）。コンバージョン導線用 */
       cta: styles.cta,
-      /** @deprecated cta に置き換え（トーン連動の再導入は Stage 3。Slice 2 で削除） */
-      gradient: styles.cta,
     },
     size: {
       sm: styles.sizeSm,

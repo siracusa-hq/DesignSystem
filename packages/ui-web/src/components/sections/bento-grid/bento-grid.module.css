@@ -1,0 +1,78 @@
+/* BentoGrid — 大小のタイルで機能を見せる。強調は「1件目」という位置で決まり、
+   item 側の見た目 prop（旧 variant）は持たない（workorder §3）。 */
+
+.grid {
+  display: grid;
+  gap: var(--spacing-4);
+}
+@media (min-width: 48rem) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--spacing-6);
+  }
+  .span2 {
+    grid-column: span 2 / span 2;
+  }
+  .rowSpan2 {
+    grid-row: span 2 / span 2;
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-2);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  padding: var(--spacing-6);
+  box-shadow: var(--shadow-card);
+  transition:
+    box-shadow var(--duration-normal) var(--ease-default),
+    transform var(--duration-normal) var(--ease-default),
+    border-color var(--duration-normal) var(--ease-default);
+}
+.card:hover {
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--color-border-brand);
+  transform: translateY(-2px);
+}
+
+/* 1件目だけの強調。淡いブランド面 + グロー（装飾スロット） */
+.featured {
+  border-color: var(--color-border-brand);
+  background: linear-gradient(135deg, var(--color-bg-brand-subtle), var(--color-surface));
+  box-shadow: var(--shadow-glow-brand);
+}
+:global(.dark) .featured {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-decor-brand) 12%, var(--color-surface)),
+    var(--color-surface)
+  );
+}
+
+.iconBox {
+  display: flex;
+  height: 2.5rem;
+  width: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-control);
+  background: var(--color-bg-brand-subtle);
+  color: var(--color-text-brand);
+  margin-bottom: var(--spacing-2);
+}
+:global(.dark) .iconBox {
+  background: color-mix(in srgb, var(--color-text-brand-on-dark) 15%, transparent);
+  color: var(--color-text-brand-on-dark);
+}
+
+.content {
+  /* .card の gap-2 に足して一段広く空ける */
+  margin-top: var(--spacing-2);
+  flex: 1;
+  width: 100%;
+}

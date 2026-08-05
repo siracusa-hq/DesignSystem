@@ -1,0 +1,52 @@
+/* Grid — 等幅カラムのレイアウトプリミティブ。
+   ブレークポイントはコンテナ幅トークンに合わせる（40rem = sm / 48rem = md / 64rem = lg）。 */
+
+.grid {
+  display: grid;
+}
+
+/* 列数（モバイルは常に1列から積み上げる） */
+.cols1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+.cols2,
+.cols3,
+.cols4 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 40rem) {
+  .cols4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 48rem) {
+  .cols2,
+  .cols3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64rem) {
+  .cols3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .cols4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* 間隔 */
+.gapSm {
+  gap: var(--spacing-4);
+}
+.gapMd {
+  gap: var(--spacing-6);
+}
+.gapLg {
+  gap: var(--spacing-8);
+}
+.gapXl {
+  gap: var(--spacing-12);
+}

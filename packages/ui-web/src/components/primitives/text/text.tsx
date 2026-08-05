@@ -10,20 +10,6 @@ export const textVariants = cva('', {
       'body-md': styles.bodyMd,
       'body-sm': styles.bodySm,
       caption: styles.caption,
-      /** @deprecated Eyebrow コンポーネントを使うこと（Slice 4 で削除） */
-      overline: cn(styles.overlineBase, styles.overlinePill),
-      /** @deprecated 同上 */
-      'overline-pill': cn(styles.overlineBase, styles.overlinePill),
-      /** @deprecated 同上 */
-      'overline-border': cn(styles.overlineBase, styles.overlineBorder),
-      /** @deprecated 同上 */
-      'overline-text': styles.overlineBase,
-      /** @deprecated 同上 */
-      'overline-dot': cn(styles.overlineBase, styles.overlineDot),
-      /** @deprecated 同上 */
-      'overline-gradient': cn(styles.overlineBase, styles.overlineGradient),
-      /** @deprecated 同上 */
-      'overline-icon-pill': cn(styles.overlineBase, styles.overlineIconPill),
     },
     tone: {
       default: styles.toneDefault,

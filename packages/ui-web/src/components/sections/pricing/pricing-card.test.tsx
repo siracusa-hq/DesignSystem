@@ -44,7 +44,19 @@ describe('PricingCard', () => {
 
   it('ハイライトスタイルを適用する', () => {
     const { container } = render(<PricingCard {...defaultProps} highlighted />);
-    expect(container.firstChild).toHaveClass('border-primary-500');
+    expect(container.firstChild).toHaveClass('highlighted');
+  });
+
+  it('CTA ボタンは常に cta バリアント（action.variant は選べない）', () => {
+    render(<PricingCard {...defaultProps} />);
+    const link = screen.getByRole('link', { name: '無料で始める' });
+    expect(link).toHaveClass('cta');
+    expect(link).toHaveClass('fullWidth');
+  });
+
+  it('priceUnit を金額の脇に小さく添える', () => {
+    const { container } = render(<PricingCard {...defaultProps} price="¥30,000" priceUnit="/月" />);
+    expect(container.querySelector('.priceUnit')).toHaveTextContent('/月');
   });
 
   it('a11y違反がない', async () => {

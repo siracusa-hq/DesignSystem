@@ -1,26 +1,11 @@
 import * as React from 'react';
-import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '@/lib/cn';
 import { Section } from '@/components/primitives/section';
 import { Container } from '@/components/primitives/container';
 import { Grid } from '@/components/primitives/grid';
 import { Heading } from '@/components/primitives/heading';
 import { Text } from '@/components/primitives/text';
-
-const featureCardVariants = cva(
-  'rounded-2xl border border-neutral-200 p-6 transition-all duration-200 hover:-translate-y-1 hover:border-primary-500/30 hover:shadow-xl dark:border-neutral-800',
-  {
-    variants: {
-      cardStyle: {
-        default: 'bg-white dark:bg-neutral-900',
-        muted: 'bg-neutral-50 dark:bg-neutral-900/50',
-      },
-    },
-    defaultVariants: {
-      cardStyle: 'default',
-    },
-  },
-);
+import { SectionHeader } from '@/components/sections/section-header';
+import styles from './feature-grid.module.css';
 
 export interface FeatureItem {
   icon?: React.ReactNode;
@@ -30,101 +15,42 @@ export interface FeatureItem {
 
 export interface FeatureGridProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {
   eyebrow?: string;
-  eyebrowStyle?: 'pill' | 'border' | 'text' | 'dot' | 'gradient' | 'icon-pill';
   title?: React.ReactNode;
   subtitle?: string;
+  /** 列数は件数から導出する（見た目の選択肢としては持たない。workorder §3） */
   features: FeatureItem[];
-  columns?: 2 | 3 | 4;
-  cardStyle?: 'default' | 'muted';
-  background?: 'default' | 'muted' | 'dark' | 'brand';
-  spacing?: 'sm' | 'md' | 'lg' | 'xl' | 'none';
+}
+
+/**
+ * 件数 → 列数。2件を3列に流すと右端が空いて崩れるため、割り切れる形に寄せる。
+ * 2→2 / 3→3 / 4→2列2段 / 5件以上→3列（1件のみのときは全幅の1列）
+ */
+function columnsFor(count: number): 1 | 2 | 3 {
+  if (count <= 1) return 1;
+  if (count === 2 || count === 4) return 2;
+  return 3;
 }
 
 export const FeatureGrid = React.forwardRef<HTMLElement, FeatureGridProps>(
-  (
-    {
-      className,
-      cardStyle,
-      eyebrow,
-      eyebrowStyle,
-      title,
-      subtitle,
-      features,
-      columns = 3,
-      background = 'default',
-      spacing,
-      ...props
-    },
-    ref,
-  ) => {
-    return (
-      <Section
-        ref={ref}
-        background={background}
-        spacing={spacing ?? 'lg'}
-        className={className}
-        {...props}
-      >
-        <Container>
-          {(eyebrow || title || subtitle) && (
-            <div className="mb-12 text-center lg:mb-16">
-              {eyebrow && (
-                <Text
-                  size={
-                    eyebrowStyle === 'border'
-                      ? 'overline-border'
-                      : eyebrowStyle === 'text'
-                        ? 'overline-text'
-                        : eyebrowStyle === 'dot'
-                          ? 'overline-dot'
-                          : eyebrowStyle === 'gradient'
-                            ? 'overline-gradient'
-                            : eyebrowStyle === 'icon-pill'
-                              ? 'overline-icon-pill'
-                              : 'overline-pill'
-                  }
-                  className="mb-4"
-                >
-                  {eyebrow}
-                </Text>
-              )}
-              {title && (
-                <Heading as="h2" size="display-md">
-                  {title}
-                </Heading>
-              )}
-              {subtitle && (
-                <Text
-                  size="body-lg"
-                  tone="secondary"
-                  className={cn('mx-auto mt-4 max-w-2xl', 'dark:text-neutral-300')}
-                >
-                  {subtitle}
-                </Text>
-              )}
+  ({ eyebrow, title, subtitle, features, ...props }, ref) => (
+    <Section ref={ref} background="default" spacing="lg" {...props}>
+      <Container>
+        <SectionHeader eyebrow={eyebrow} title={title} subtitle={subtitle} />
+        <Grid columns={columnsFor(features.length)} gap="lg">
+          {features.map((feature, i) => (
+            <div key={i} className={styles.card}>
+              {feature.icon && <div className={styles.iconBox}>{feature.icon}</div>}
+              <Heading as="h3" size="heading-md">
+                {feature.title}
+              </Heading>
+              <Text size="body-sm" tone="secondary">
+                {feature.description}
+              </Text>
             </div>
-          )}
-
-          <Grid columns={columns} gap="lg">
-            {features.map((feature, i) => (
-              <div key={i} className={featureCardVariants({ cardStyle })}>
-                {feature.icon && (
-                  <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-primary-50 text-primary-500 dark:bg-primary-950">
-                    {feature.icon}
-                  </div>
-                )}
-                <Heading as="h3" size="heading-md" className="mb-2">
-                  {feature.title}
-                </Heading>
-                <Text size="body-sm" tone="secondary">
-                  {feature.description}
-                </Text>
-              </div>
-            ))}
-          </Grid>
-        </Container>
-      </Section>
-    );
-  },
+          ))}
+        </Grid>
+      </Container>
+    </Section>
+  ),
 );
 FeatureGrid.displayName = 'FeatureGrid';

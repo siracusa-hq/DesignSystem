@@ -1,0 +1,24 @@
+/* GradientText — 文字をグラデーションで塗る装飾。
+   brand 系の停止点は装飾スロット（--color-decor-brand）を参照する。
+   彩度の高い装飾色は文字の意味を担わない前提なので、見出しの一部の強調にのみ使うこと。 */
+
+.gradientText {
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* ティール → ブルー。装飾スロット + semantic info */
+.brand {
+  background-image: linear-gradient(90deg, var(--color-decor-brand), var(--color-info-500));
+}
+
+/* 暗面用（明るいニュートラルから落とす） */
+.neutral {
+  background-image: linear-gradient(90deg, var(--color-neutral-50), var(--color-neutral-400));
+}
+
+/* custom は customGradient prop の inline style が背景を与える */
+.custom {
+  background-image: none;
+}

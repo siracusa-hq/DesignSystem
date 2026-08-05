@@ -20,7 +20,6 @@ export const SizesAndTones: Story = {
     return (
       <div className="space-y-6 p-8">
         <div className="space-y-2">
-          <Text size="overline" tone="brand">OVERLINE</Text>
           <Text size="body-lg">{bodyText}</Text>
           <Text size="body-md" tone="secondary">{bodyText}</Text>
           <Text size="body-sm" tone="muted">{bodyText}</Text>

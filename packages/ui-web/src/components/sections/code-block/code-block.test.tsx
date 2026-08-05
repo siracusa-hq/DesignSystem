@@ -33,6 +33,17 @@ describe('CodeBlock', () => {
     expect(container.querySelector('section')).toBeInTheDocument();
   });
 
+  it('description が無ければ中央寄せ、あれば横並びになる（layout prop は持たない）', () => {
+    const centered = render(<CodeBlock code={sampleCode} title="t" />).container;
+    expect(centered.querySelector('.split')).not.toBeInTheDocument();
+
+    const split = render(
+      <CodeBlock code={sampleCode} title="t" description={<p>補足</p>} />,
+    ).container;
+    expect(split.querySelector('.split')).toBeInTheDocument();
+    expect(split).toHaveTextContent('補足');
+  });
+
   it('a11y違反がない', async () => {
     const { container } = render(<CodeBlock code={sampleCode} />);
     expect(await axe(container)).toHaveNoViolations();

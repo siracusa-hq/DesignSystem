@@ -15,20 +15,39 @@ const STATUS: Array<{ name: string; group: string; state: '済' | '未' | '新�
   { name: 'Logo', group: 'primitives', state: '済' },
   { name: 'Eyebrow', group: 'primitives', state: '新規' },
   { name: 'LogoMark', group: 'primitives', state: '新規' },
+  { name: 'MediaFrame', group: 'primitives', state: '新規' },
+  { name: 'ProductShot', group: 'primitives', state: '新規' },
+  { name: 'Avatar', group: 'primitives', state: '新規' },
   {
     name: 'Grid / Divider / GradientText / AnimatedCounter / AnimateOnScroll',
     group: 'primitives',
-    state: '未',
+    state: '済',
   },
   {
     name: 'HeroSection / StatsSection / SecurityBadges / CTASection',
     group: 'sections',
-    state: '未',
+    state: '済',
   },
-  { name: 'ServicePortfolio（新規予定）', group: 'sections', state: '未' },
-  { name: '残り13セクション', group: 'sections', state: '未' },
-  { name: 'MarketingHeader / MarketingFooter / PageLayout', group: 'layout', state: '未' },
-  { name: 'フォーム3種', group: 'sections', state: '未' },
+  { name: 'ServicePortfolio', group: 'sections', state: '新規' },
+  { name: 'SectionHeader（内部共有）', group: 'sections', state: '新規' },
+  {
+    name: 'FeatureGrid / FeatureShowcase / BentoGrid / ComparisonTable',
+    group: 'sections',
+    state: '済',
+  },
+  {
+    name: 'TestimonialSection / LogoCloud / CaseStudySection / FAQSection',
+    group: 'sections',
+    state: '済',
+  },
+  { name: 'PricingTable / PricingCard / CodeBlock', group: 'sections', state: '済' },
+  {
+    name: 'ModuleOverview / MigrationComparison / AirPocketFeature',
+    group: 'sections',
+    state: '済',
+  },
+  { name: 'MarketingHeader / MarketingFooter / PageLayout', group: 'layout', state: '済' },
+  { name: 'フォーム3種（Slice 5）', group: 'sections', state: '未' },
 ];
 
 function StatusStory() {

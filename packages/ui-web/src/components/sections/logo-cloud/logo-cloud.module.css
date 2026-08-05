@@ -1,0 +1,60 @@
+/* LogoCloud — 導入企業のロゴ帯。8件以上で自動スクロールに切り替わる
+   （並べきれない件数を手で選ばせない。workorder §3）。
+   keyframes はこの module 内に持つ（配布時に単体で成立させるため）。 */
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  column-gap: var(--spacing-12);
+  row-gap: var(--spacing-8);
+}
+
+.marquee {
+  position: relative;
+  overflow: hidden;
+}
+/* 両端のフェード。面の色に溶かすので surface を参照する */
+.fadeLeft,
+.fadeRight {
+  pointer-events: none;
+  position: absolute;
+  inset-block: 0;
+  z-index: 10;
+  width: 8rem;
+}
+.fadeLeft {
+  left: 0;
+  background: linear-gradient(90deg, var(--color-surface), transparent);
+}
+.fadeRight {
+  right: 0;
+  background: linear-gradient(270deg, var(--color-surface), transparent);
+}
+
+.track {
+  display: flex;
+  gap: var(--spacing-12);
+  animation: logoScroll 40s linear infinite;
+}
+/* ホバーで止められないと読めない（ロゴは情報であって背景ではない） */
+.marquee:hover .track {
+  animation-play-state: paused;
+}
+
+.item {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes logoScroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-33.333%);
+  }
+}

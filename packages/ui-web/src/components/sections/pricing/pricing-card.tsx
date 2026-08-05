@@ -1,55 +1,47 @@
 import * as React from 'react';
-import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/cn';
 import { Heading } from '@/components/primitives/heading';
 import { Text } from '@/components/primitives/text';
 import { MarketingButton } from '@/components/primitives/marketing-button';
 import { Badge } from '@/components/primitives/badge';
 import { Check, Minus } from 'lucide-react';
-
-export const pricingCardVariants = cva(
-  'relative flex flex-col rounded-2xl border p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl lg:p-8',
-  {
-    variants: {
-      highlighted: {
-        true: 'border-primary-500 shadow-glow-primary bg-white dark:bg-neutral-900',
-        false: 'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900',
-      },
-    },
-    defaultVariants: {
-      highlighted: false,
-    },
-  },
-);
+import styles from './pricing-card.module.css';
 
 export interface PricingFeature {
   text: string;
   included: boolean;
 }
 
-export interface PricingCardProps
-  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof pricingCardVariants> {
+export interface PricingCardProps extends React.HTMLAttributes<HTMLDivElement> {
   name: string;
   description?: string;
   price: React.ReactNode;
+  /** 「/月」等の単位。金額と大きさを揃えると数字が読み取りにくいので別スロットにする */
+  priceUnit?: string;
   priceNote?: string;
   badge?: string;
   features: PricingFeature[];
+  /**
+   * ボタンの見た目は選べない（料金表のボタンは常にコンバージョン導線 = cta）。
+   * 旧 action.variant は削除した（workorder §3）。
+   */
   action: {
     label: string;
     href: string;
-    variant?: 'primary' | 'secondary' | 'ghost' | 'gradient';
   };
+  /** 推しプラン。ブランドのボーダーと持ち上げた影で1枚だけ強調する */
+  highlighted?: boolean;
 }
 
 export const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
   (
     {
       className,
-      highlighted,
+      highlighted = false,
       name,
       description,
       price,
+      priceUnit,
       priceNote,
       badge: badgeText,
       features,
@@ -58,15 +50,19 @@ export const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
     },
     ref,
   ) => (
-    <div ref={ref} className={cn(pricingCardVariants({ highlighted }), className)} {...props}>
+    <div
+      ref={ref}
+      className={cn(styles.card, highlighted && styles.highlighted, className)}
+      {...props}
+    >
       {badgeText && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+        <div className={styles.badgeSlot}>
           <Badge variant="new">{badgeText}</Badge>
         </div>
       )}
 
-      <div className="mb-6">
-        <Heading as="h3" size="heading-lg" className="mb-1">
+      <div className={styles.head}>
+        <Heading as="h3" size="heading-lg">
           {name}
         </Heading>
         {description && (
@@ -76,35 +72,28 @@ export const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
         )}
       </div>
 
-      <div className="mb-6">
-        <div className="flex items-baseline gap-1">
-          {typeof price === 'string' ? (
-            <span className="text-display-sm font-bold tracking-tight md:text-display-md">
-              {price}
-            </span>
-          ) : (
-            price
-          )}
+      <div className={styles.priceBlock}>
+        <div className={styles.price}>
+          {price}
+          {priceUnit && <span className={styles.priceUnit}>{priceUnit}</span>}
         </div>
         {priceNote && (
-          <Text size="caption" tone="muted" className="mt-1">
+          <Text size="caption" tone="muted">
             {priceNote}
           </Text>
         )}
       </div>
 
-      <ul className="mb-8 flex-1 space-y-3">
+      <ul className={styles.features}>
         {features.map((feature, i) => (
-          <li key={i} className="flex items-start gap-3">
-            {feature.included ? (
-              <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary-100 text-primary-600 dark:bg-primary-950 dark:text-primary-400">
-                <Check className="h-3 w-3" />
-              </span>
-            ) : (
-              <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-neutral-400 dark:bg-neutral-800 dark:text-neutral-500">
-                <Minus className="h-3 w-3" />
-              </span>
-            )}
+          <li key={i} className={styles.feature}>
+            <span className={feature.included ? styles.markYes : styles.markNo}>
+              {feature.included ? (
+                <Check className={styles.markIcon} />
+              ) : (
+                <Minus className={styles.markIcon} />
+              )}
+            </span>
             <Text as="span" size="body-sm" tone={feature.included ? 'default' : 'muted'}>
               {feature.text}
             </Text>
@@ -112,11 +101,7 @@ export const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
         ))}
       </ul>
 
-      <MarketingButton
-        variant={action.variant ?? (highlighted ? 'primary' : 'secondary')}
-        href={action.href}
-        className="w-full"
-      >
+      <MarketingButton variant="cta" href={action.href} fullWidth>
         {action.label}
       </MarketingButton>
     </div>

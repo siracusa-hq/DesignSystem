@@ -25,7 +25,7 @@ export const Variants: Story = {
         <MarketingButton variant="ghost">
           {isJa ? '詳しく見る' : 'Learn More'}
         </MarketingButton>
-        <MarketingButton variant="gradient">
+        <MarketingButton variant="cta">
           {isJa ? '今すぐ試す' : 'Try Now'}
         </MarketingButton>
       </div>
@@ -55,7 +55,7 @@ export const WithRightIcon: Story = {
         <MarketingButton variant="secondary" rightIcon={<ExternalLink className="h-4 w-4" />}>
           {isJa ? 'ドキュメントを見る' : 'View Docs'}
         </MarketingButton>
-        <MarketingButton variant="gradient" size="lg" rightIcon={<ArrowRight className="h-4 w-4" />}>
+        <MarketingButton variant="cta" size="lg" rightIcon={<ArrowRight className="h-4 w-4" />}>
           {isJa ? '今すぐ試す' : 'Try Now'}
         </MarketingButton>
       </div>
