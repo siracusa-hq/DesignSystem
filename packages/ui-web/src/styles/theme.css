@@ -327,6 +327,29 @@
 }
 
 /* ============================================================
+   トーン軸（Stage 3）— 何を狙うページか。ブランド軸（data-brand）と直交する。
+   product はトーンの基準（規則を持たない）。値は @theme の
+   --spacing-section-* を1段ずらしたもの。
+   ============================================================ */
+
+/* trust: コーポレート・エンタープライズ向け。余白広め・装飾最小 */
+[data-tone='trust'] {
+  --spacing-section-sm: 6rem;
+  --spacing-section-md: 8rem;
+  --spacing-section-lg: 10rem;
+  --spacing-section-xl: 12rem;
+}
+
+/* campaign: 獲得LP・広告着地。密度を上げてファーストビューに情報を寄せる。
+   コントラスト・CTA 強調の規則は Stage 3 Slice 1 以降で追加する */
+[data-tone='campaign'] {
+  --spacing-section-sm: 4rem;
+  --spacing-section-md: 5rem;
+  --spacing-section-lg: 6rem;
+  --spacing-section-xl: 8rem;
+}
+
+/* ============================================================
    Keyframes
    ============================================================ */
 

@@ -33,7 +33,8 @@ export interface SecurityBadgesProps
 
 export const SecurityBadges = React.forwardRef<HTMLElement, SecurityBadgesProps>(
   ({ eyebrow, title, subtitle, badges, ...props }, ref) => (
-    <Section ref={ref} background="muted" spacing="md" {...props}>
+    // 面はページ（Page のリズム）が決める。自己 muted は Stage 3 で廃止
+    <Section ref={ref} background="default" spacing="md" {...props}>
       <Container>
         <SectionHeader
           eyebrow={eyebrow}

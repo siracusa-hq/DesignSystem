@@ -1,0 +1,14 @@
+/* Page — ページのリズム（面・トーン）を割り当てるコンテナ（Stage 3 Slice 0）。
+   セクションは自分では面を選ばない。Page が子を走査し、muted 面を
+   割り当てるときだけスロットで包む。 */
+
+.page {
+  width: 100%;
+}
+
+/* muted スロット: セマンティック面変数の再定義で、中のセクションの
+   塗り（var(--color-surface)）を沈んだ面に振り替える。
+   セクション側は無改修（Section .bgDark と同じ技法）。 */
+.slotMuted {
+  --color-surface: var(--color-surface-sunken);
+}

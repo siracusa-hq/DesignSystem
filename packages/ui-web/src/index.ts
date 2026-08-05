@@ -192,3 +192,12 @@ export {
   type SocialLink,
 } from './components/layout/marketing-footer';
 export { PageLayout, type PageLayoutProps } from './components/layout/page-layout';
+export {
+  Page,
+  PAGE_BRANDS,
+  PAGE_TONES,
+  type PageProps,
+  type PageBrand,
+  type PageTone,
+} from './components/layout/page';
+export { markPageSurface, type PageSurface } from './lib/page-surface';

@@ -31,7 +31,8 @@ export interface ServicePortfolioProps
  */
 export const ServicePortfolio = React.forwardRef<HTMLElement, ServicePortfolioProps>(
   ({ eyebrow, title, subtitle, services, ...props }, ref) => (
-    <Section ref={ref} background="muted" spacing="lg" {...props}>
+    // 面はページ（Page のリズム）が決める。自己 muted は Stage 3 で廃止
+    <Section ref={ref} background="default" spacing="lg" {...props}>
       <Container>
         <SectionHeader eyebrow={eyebrow} title={title} subtitle={subtitle} />
         <div className={styles.grid}>
