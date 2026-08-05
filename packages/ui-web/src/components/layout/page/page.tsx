@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { cn } from '@/lib/cn';
+import { CTARegistryContext, createCTALabelRegistry } from '@/lib/cta-registry';
 import { isDev } from '@/lib/dev';
 import { resolvePageSurface } from '@/lib/page-surface';
 import styles from './page.module.css';
@@ -36,6 +37,14 @@ export const Page = React.forwardRef<HTMLDivElement, PageProps>(
   ({ brand = 'corporate', tone = 'product', children, ...props }, ref) => {
     const items = React.Children.toArray(children);
 
+    /* CTA ラベル2種ルールの dev レジストリ。MarketingButton（variant="cta"）が
+       context 経由で登録する。prod では張らない（DCE でコードごと落ちる） */
+    const ctaRegistry = React.useMemo(
+      () => (isDev ? createCTALabelRegistry() : null),
+      // ページ（=このコンポーネントのライフサイクル）につき1つ
+      [],
+    );
+
     let alternation = 0;
     let darkRun = 0;
     let darkRunWarned = false;
@@ -57,6 +66,13 @@ export const Page = React.forwardRef<HTMLDivElement, PageProps>(
         return child;
       }
 
+      if (surface === 'accent') {
+        // 自前の強調面（CTABand 等）。リズムから除外し、直後は default から再開
+        alternation = 0;
+        darkRun = 0;
+        return child;
+      }
+
       darkRun = 0;
       const muted = alternation % 2 === 1;
       alternation += 1;
@@ -69,15 +85,17 @@ export const Page = React.forwardRef<HTMLDivElement, PageProps>(
     });
 
     return (
-      <div
-        ref={ref}
-        data-brand={brand}
-        data-tone={tone}
-        className={cn(styles.page)}
-        {...props}
-      >
-        {assigned}
-      </div>
+      <CTARegistryContext.Provider value={ctaRegistry}>
+        <div
+          ref={ref}
+          data-brand={brand}
+          data-tone={tone}
+          className={cn(styles.page)}
+          {...props}
+        >
+          {assigned}
+        </div>
+      </CTARegistryContext.Provider>
     );
   },
 );

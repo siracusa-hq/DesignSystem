@@ -1,0 +1,45 @@
+/* CTABand — セクション区切りに繰り返し置くコンバージョン帯（Stage 3 Slice 1）。
+   LP 実測の標準形は「同じ2種の CTA をセクション区切りごとに反復する」であり、
+   これは CTASection（ページ末尾の暗い締め面）とは別物。
+   淡いブランド面 + 控えめな高さで、本文の流れを切らずに導線だけ差し込む。 */
+
+.band {
+  background: var(--color-bg-brand-subtle);
+  border-block: 1px solid var(--color-border-brand);
+  padding-block: var(--spacing-10);
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-5);
+}
+@media (min-width: 48rem) {
+  .row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-8);
+  }
+}
+
+/* 見出しではなく強調段落。同じ帯を1ページに何度も置くため、
+   h タグにすると文書アウトラインに同名見出しが乱立する */
+.title {
+  margin: 0;
+  font-size: var(--text-heading-md);
+  line-height: var(--text-heading-md--line-height);
+  font-weight: 700;
+  color: var(--color-on-surface);
+}
+
+.note {
+  margin-top: var(--spacing-2);
+}
+
+.actions {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: var(--spacing-3);
+}

@@ -79,7 +79,11 @@ AI の品質事故はコンポーネント単体ではなく**構成**で起き�
       ServicePortfolio / SecurityBadges の自己 muted を default に正規化。
       dev 警告は lib/dev.ts（`process.env.NODE_ENV` をリテラルで残し消費側バンドラの DCE に乗せる。
       tsup の dts ビルドは node types を持たないため型はローカル宣言）
-- [ ] Slice 1
+- [x] Slice 1 — 2026-08-05 完了。CTA ラベル2種ルール（lib/cta-registry.ts、Page が dev のみ
+      context を張り、MarketingButton variant="cta" がマウント時に textContent を登録。
+      3種類目で警告・回数は数えない）+ CTABand（淡いブランド面の反復用コンバージョン帯。
+      タイトルは h タグでなく強調段落 = 反復してもアウトラインを汚さない）。
+      pageSurface に `accent` を追加（自前の強調面。リズム除外・カウンタリセット・暗面扱いしない）
 - [ ] Slice 2
 - [ ] Slice 3
 - [ ] Slice 4

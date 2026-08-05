@@ -7,10 +7,14 @@
  * 閉じている（Stage 2 で background props を削除した）ため、
  * 外から検出する手段としてコンポーネントの静的プロパティを使う。
  *
- * 申告するのは「暗いか否か」だけ。muted は Page だけが割り当てる。
+ * 申告できるのは以下だけ。muted は Page だけが割り当てる。
+ *
+ * - `default`: 塗らない（Page のリズム対象）
+ * - `dark`:    自分で暗面を塗る（リズム除外 + 暗面連続の検査対象）
+ * - `accent`:  自分で強調面（暗くない）を塗る（リズム除外。CTABand 等）
  */
 
-export type PageSurface = 'default' | 'dark';
+export type PageSurface = 'default' | 'dark' | 'accent';
 
 export type PageSurfaceResolver<P> = PageSurface | ((props: P) => PageSurface);
 

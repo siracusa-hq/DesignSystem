@@ -1,7 +1,23 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/cn';
+import { CTARegistryContext } from '@/lib/cta-registry';
+import { isDev } from '@/lib/dev';
 import styles from './marketing-button.module.css';
+
+/** dev のみ: variant="cta" のラベルを Page のレジストリに登録する
+    （ラベル2種ルールの検査。Page の外・prod では何もしない） */
+function useCTALabelReport(
+  isCta: boolean,
+  elementRef: React.RefObject<HTMLElement | null>,
+) {
+  const registry = React.useContext(CTARegistryContext);
+  React.useEffect(() => {
+    if (!isDev || !isCta || !registry) return;
+    const text = elementRef.current?.textContent;
+    if (text) registry.register(text);
+  }, [isCta, registry, elementRef]);
+}
 
 export const marketingButtonVariants = cva(styles.button, {
   variants: {
@@ -38,6 +54,14 @@ export const MarketingButton = React.forwardRef<
   HTMLButtonElement | HTMLAnchorElement,
   MarketingButtonProps
 >(({ variant, size, href, rightIcon, fullWidth = false, children, ...props }, ref) => {
+  const innerRef = React.useRef<HTMLElement | null>(null);
+  useCTALabelReport(variant === 'cta', innerRef);
+  const setRefs = (node: HTMLAnchorElement | HTMLButtonElement | null) => {
+    innerRef.current = node;
+    if (typeof ref === 'function') ref(node);
+    else if (ref) (ref as React.MutableRefObject<HTMLElement | null>).current = node;
+  };
+
   const content = (
     <>
       {children}
@@ -48,7 +72,7 @@ export const MarketingButton = React.forwardRef<
   if (href) {
     return (
       <a
-        ref={ref as React.Ref<HTMLAnchorElement>}
+        ref={setRefs}
         href={href}
         className={cn(marketingButtonVariants({ variant, size }), fullWidth && styles.fullWidth)}
         {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
@@ -60,7 +84,7 @@ export const MarketingButton = React.forwardRef<
 
   return (
     <button
-      ref={ref as React.Ref<HTMLButtonElement>}
+      ref={setRefs}
       className={cn(marketingButtonVariants({ variant, size }), fullWidth && styles.fullWidth)}
       {...props}
     >
