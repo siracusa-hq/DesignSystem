@@ -35,6 +35,8 @@ export type Duration = keyof typeof duration;
 export type Easing = keyof typeof easing;
 
 export const zIndex = {
+  /** 追従カード（FloatingCornerCTA）。本文より上・固定ヘッダーより下 */
+  floating: 50,
   header: 100,
   mobileMenu: 200,
   modal: 300,

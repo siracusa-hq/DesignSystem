@@ -73,7 +73,22 @@ Stage 3 までは「崩れないページが速く出る」まで。LP は**成�
     既存の `onSubmit` / `action` / ネイティブ POST の挙動は不変（テストで固定）
   - `pnpm build` / `smoke` / codegen 差分なし / `lint:css` / `typecheck` / `test`（343件）/
     `size`（全枠が上限内。MarketingButton 8.18kB / 上限 10kB）すべて緑
-- [ ] Slice 1
+- [x] Slice 1 — 追従 CTA 2部品（`StickyHeaderCTA` / `FloatingCornerCTA`）
+  - 実測で確認できた2形態**だけ**を作った。全幅の下部固定バーは作っていない（実測 0/19）
+  - `StickyHeaderCTA`: `position: fixed; top: 0; width: 100%` / `--z-header`。
+    モバイルは CTA 2本が各 `45vw`・高さ `40px` で横並び、行高 60px。
+    **高さぶんのスペーサーを部品が内蔵する**（呼び出し側で上余白を作らせない）。
+    ナビは持たない（獲得 LP 用の簡易ヘッダー。フルナビは `MarketingHeader` の領分）
+  - `FloatingCornerCTA`: `bottom/right: 30px; width: 380px`、モバイルは左右 `1rem` に張り
+    内部ボタン `90%`。**× は常に描画され、消すための props を持たない**。
+    閉じると同じマウントの間は再表示しない（内部 state。永続化はしない = 再訪時は出る）
+  - data-cta 自動割当: `sticky-header-${i}` / `floating-${i}`
+  - `--z-floating: 50`（`--z-header` より下・本文より上）を theme.css と
+    `src/tokens/animation.ts` の `zIndex` の両方に追加
+  - `createCTAClickCapture` を公開エクスポートに追加（下記 §7 の理由）
+  - `pnpm build` / `smoke` / `codegen`（新規 d.ts 2件をコミット）/ `lint:css` /
+    `typecheck`（src + stories）/ `test`（371件。うち新規26件）/
+    `size`（バレル 49.27kB / 上限 55kB、styles.css 9.48kB / 上限 10kB）すべて緑
 - [ ] Slice 2
 
 ## 7. 実装で判明した事項
@@ -101,3 +116,44 @@ Stage 3 までは「崩れないページが速く出る」まで。LP は**成�
 - `@storybook/addon-actions` は addon-essentials 経由の推移的依存でしかなく、
   pnpm の strict な node_modules では ui-web から直接 import できない。
   `action()` を直接呼ぶ書き方は使えない
+
+### Slice 1（追従 CTA）
+
+- **委譲の罠（Slice 0 §7 の予告）は現実になった。両部品とも `Page` の外に置かれる。**
+  `StickyHeaderCTA` は `PageLayout` の `header` スロット、`FloatingCornerCTA` は
+  `footer` スロットか `PageLayout` の外（body 直下）。どちらも `Page.onCTAClick` では
+  拾えない。委譲点は**両方を含む祖先の `onClickCapture` 1箇所**に置くのが正解で、
+  そのために `createCTAClickCapture` を公開エクスポートに追加した
+  （これが無いと JSDoc の「祖先に張れ」という案内を利用者が実行できない）。
+  両部品の JSDoc に「単体使用時は `Page.onCTAClick` では拾えない」と明記済み。
+  テストは `PageLayout` の header / footer スロットに挿して委譲を固定している
+- **`LandingPage` は現状この2部品を内包できない。** `PageLayout` の
+  `header` / `footer` は ReactNode スロットを持つが、`LandingPage` は
+  `headerProps` / `footerProps`（データ）しか通さないため。
+  実戦例のストーリーは `<div onClickCapture>` で `StickyHeaderCTA` +
+  `LandingPage` + `FloatingCornerCTA` を包む形にした。
+  **パターン（`defineLandingPage`）への組み込みは今回やらない。**
+  どのページ型に追従 CTA を既定で付けるべきかの実測データが無く、
+  「常時 CTA を出す/出さない」は事業判断であって DS が決めることではない。
+  やるとしたら `PageLayout` に `overlays?: React.ReactNode` スロットを足し、
+  `LandingPage` に `stickyCta` / `floatingCta` を通す形になる（根拠が出たら）
+- **`45vw × 2` は `Container` の中に収まらない。** `Container` のモバイル
+  `padding-inline` は 1rem（両側 2rem）で、`90vw + gap` が収まるのは画面幅 400px 以上。
+  375px 端末で横スクロールが出るため、`StickyHeaderCTA` だけ `Container` を使わず
+  自前の padding（0.5rem）を持たせた。**実測の `45vw` は「ロゴを出さない」と
+  セットの値**（2本で 90vw を使い切るため物理的にロゴが入らない）。
+  モバイルでロゴを隠す判断はここから来ている
+- **`FloatingCornerCTA` の高さ（実測 240px）は固定しなかった。** 実測値は
+  「その内容での結果」であって仕様ではない。和文コピーは長さが暴れるため
+  高さを固定すると溢れる（Stage 5 の「日本語の最悪ケース」と同じ問題）。
+  幅・位置は実測どおり固定している。長い和文のストーリーで確認できる
+- デスクトップの行高だけ実測が無いため、`MarketingHeader` の bar（4rem）に
+  揃えた。モバイル 60px は実測どおり
+- `--z-floating: 50` を追加した。`src/tokens/tokens.test.ts` の TS ⇄ CSS 突き合わせは
+  color / spacing / elevation / motion の4系統だけを見ており `--z-*` は対象外だが、
+  値を2箇所に書かない原則に従って `src/tokens/animation.ts` の `zIndex` にも入れた。
+  `css-modules-contract.test.ts` は module.css ごとに自動でテストが増える作りなので、
+  新規 CSS Modules 2件はそのまま検査対象に入った（追記不要）
+- `FloatingCornerCTA` の `title` だけ `React.ReactNode` ではなく `string` にした。
+  `role="complementary"` の `aria-label` の既定値に使うため。
+  ハードコードテキストを持たずに a11y の既定を成立させる唯一の手
