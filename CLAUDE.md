@@ -132,6 +132,13 @@ pnpm --filter @siracusahq/gtm-design-system build
 
 4. その PR をマージすると、同じワークフローが npm publish とタグ作成まで実行する
 
+**Version PR は、新しい changeset を含む機能 PR より先にマージすること。**
+逆順にすると、リリース実行時に未処理の changeset が残っているため
+changesets/action が publish ではなく「次の Version PR 作成」の経路に入り、
+バンプ済みバージョンが npm 未公開のまま残る（0.6.0 で実際に発生）。
+その場合は Actions から Release ワークフローを手動実行（workflow_dispatch）すると
+publish だけが走って復旧する。
+
 npm への公開は Trusted Publishing（OIDC）。`NPM_TOKEN` は不要。
 **`.github/workflows/release.yml` のファイル名は変更しないこと**
 （npm側の信頼設定がリポジトリ+ワークフローファイル名に紐づいているため）。

@@ -24,6 +24,13 @@ name: Release
 on:
   push:
     branches: [main]
+  # 復旧用の手動実行。Version PR のマージより先に「新しい changeset を含む PR」を
+  # マージしてしまうと、changesets/action は publish ではなく次の Version PR 作成の
+  # 経路に入り、バンプ済みバージョンが未公開のまま残る（0.6.0 で実際に発生）。
+  # その場合はこのトリガーで publish だけを実行する。
+  # `changeset publish` は「package.json の版が npm に無いパッケージ」だけを
+  # 公開するため、二重公開の危険はない。
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -31,6 +38,7 @@ concurrency:
 
 jobs:
   release:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       contents: write # Version PR のブランチ push とタグ作成
@@ -93,3 +101,44 @@ jobs:
           title: 'chore: release packages'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # workflow_dispatch 専用: 未公開バージョンの publish のみ実行する（上記コメント参照）
+  publish-only:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # タグ作成
+      id-token: write # OIDC token request for npm Trusted Publishing
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - name: Update npm to 11 (for trusted publishing support)
+        run: npm install -g npm@11
+
+      - name: Strip placeholder _authToken from .npmrc (force OIDC auth)
+        run: |
+          if [ -f ~/.npmrc ]; then
+            sed -i -e '/_authToken=XXXXX/d' -e '/always-auth/d' ~/.npmrc
+            echo "Cleaned ~/.npmrc:"
+            cat ~/.npmrc
+          fi
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Publish unpublished versions
+        run: |
+          pnpm release
+          git push --tags
