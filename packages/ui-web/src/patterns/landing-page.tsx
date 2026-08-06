@@ -7,6 +7,7 @@ import { StatsSection } from '@/components/sections/stats-section';
 import { FeatureGrid } from '@/components/sections/feature-grid';
 import { PricingTable } from '@/components/sections/pricing';
 import { CaseStudySection } from '@/components/sections/case-study-card';
+import { CaseStudyListSection } from '@/components/sections/case-study-list';
 import { FAQSection } from '@/components/sections/faq-section';
 import { ServicePortfolio } from '@/components/sections/service-portfolio';
 import { CTASection } from '@/components/sections/cta-section';
@@ -103,6 +104,22 @@ export const LandingPage: React.FC<LandingPageProps> = (props) => {
         props.stats && <StatsSection key="stats" {...props.stats} />,
         /* コンバージョン CTA は置かない型。closing は採用等の導線に限る */
         closing(props.closing, props.hero.offers ?? []),
+      ];
+      break;
+    }
+    case 'case-study-list': {
+      /* ヒーローを持たない唯一の型。ページタイトルは一覧セクションの見出しが兼ねる
+         （新しいヒーロー部品は作らない。§3-1 の実測どおり） */
+      sections = [
+        <CaseStudyListSection
+          key="list"
+          {...props.list}
+          eyebrow={props.page.eyebrow}
+          title={props.page.title}
+          subtitle={props.page.description}
+        />,
+        /* オファーの再利用元（hero）が無いため、closing の actions は呼び出し側が必ず渡す */
+        props.closing && <CTASection key="closing" {...props.closing} />,
       ];
       break;
     }

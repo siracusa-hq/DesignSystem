@@ -92,7 +92,19 @@ AI の品質事故はコンポーネント単体ではなく**構成**で起き�
       （証明帯はヒーローの章 = セクション余白の物差しを縮めた div で包む）。
       「サポート・導入の流れ」「コンテンツ回遊」のスロットは対応部品が無いため未実装
       （必要になった時点で部品ごと追加。推測で型だけ作らない）
-- [ ] Slice 3
+- [x] Slice 3 — 2026-08-06 完了。CaseStudyListSection（多軸フィルタ + ページネーション）+
+      パターン `case-study-list`（tone 既定 product）。実測 2/2 の形をそのまま持つ:
+      短いページタイトル（**この型だけヒーローが無いので見出しは h1**。SectionHeader に
+      `as` を追加した。既定は h2 のまま）+ ピックアップ（フィルタ・ページ送りの外）+
+      軸ごと1値の select（データから選択肢を自動生成・軸間 AND・challenges は配列包含）+
+      件数（aria-live="polite"）+ カードグリッド + ページ送り（aria-current="page"、
+      フィルタ変更で1ページ目へ）。**フリーワード検索は実測に無いため作らない。**
+      フィルタ行は帯にしない（§7-1）—— 面も線も持たせず、区切りは余白だけ。
+      線を持つのは入力コントロール自身のみ（affordance は別の話）。
+      状態は内部 useState で URL 同期はしない（Astro では `client:visible` 等での
+      hydration が必要。JSDoc に明記）。UI 語彙は `labels` 1プロパティに集約して
+      英語ページで差し替え可能にした（テキストをハードコードしない方針 ×
+      語彙ごとに props を生やさない方針の折衷）
 - [ ] Slice 4
 
 ## 7. 実装で判明した事項
@@ -105,3 +117,9 @@ AI の品質事故はコンポーネント単体ではなく**構成**で起き�
 2. **面を持つ CTA 帯の反復は中間1〜2回 + 末尾が実測上限**（同 §3-1）。4〜6回の高頻度反復は
    面を持たない裸 CTA の領分。CTABand は3つ目で dev 警告を出す。
    面なし反復用の部品（InlineCTA 相当）は未実装 — Slice 2 以降で必要になった時点で追加を判断
+3. **開いた後まで塗れる select には Radix が必要で、その費用は brotli 約23KB**（popper/
+   dismissable layer/focus scope が本体。どのライブラリでも branded dropdown の入場料はほぼ同額）。
+   SelectField はフィルタ等の画面内状態専用とし、**フォーム送信の値には使わない**
+   （Netlify Forms はデプロイ時に静的 HTML の生コントロールを解析するため FormSelect は素の select）。
+   費用は splitting で SelectField の import 元だけが払う（MarketingButton 枠 8.17KB 無変化で確認済み)。
+   size に「CaseStudyList のみ」枠（38KB）を新設して重い経路を監視する

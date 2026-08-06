@@ -23,3 +23,13 @@ globalThis.IntersectionObserver = class IntersectionObserver {
     return [];
   }
 } as unknown as typeof IntersectionObserver;
+
+// Radix Select が要求する API（jsdom に無い）
+if (!Element.prototype.hasPointerCapture) {
+  Element.prototype.hasPointerCapture = () => false;
+  Element.prototype.setPointerCapture = () => {};
+  Element.prototype.releasePointerCapture = () => {};
+}
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = () => {};
+}

@@ -48,6 +48,9 @@ describe('CSS Modules の var() 参照は既知のトークンのみ', () => {
       const unknown: string[] = [];
       for (const m of css.matchAll(/var\(\s*(--[a-z0-9-]+)/gi) as Iterable<RegExpMatchArray>) {
         const name = m[1];
+        // --radix-* は Radix UI が実行時に注入する変数（トリガー幅・可用高さ等）で、
+        // テーマ契約の対象外。SelectField が使用する
+        if (name.startsWith('--radix-')) continue;
         if (!themeVars.has(name) && !brandVars.has(name) && !local.has(name)) {
           unknown.push(name);
         }

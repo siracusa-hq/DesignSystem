@@ -2,7 +2,7 @@
   {
     "name": "全エクスポート（バレル import）",
     "path": "dist/index.js",
-    "limit": "26 kB"
+    "limit": "55 kB"
   },
   {
     "name": "MarketingButton のみ（tree-shaking の番人）",
@@ -15,6 +15,12 @@
     "path": "dist/index.js",
     "import": "{ HeroSection, FeatureGrid, CTASection, MarketingHeader, MarketingFooter }",
     "limit": "15 kB"
+  },
+  {
+    "name": "CaseStudyList のみ（Radix Select 込み・重い経路の番人)",
+    "path": "dist/index.js",
+    "import": "{ CaseStudyListSection }",
+    "limit": "38 kB"
   },
   {
     "name": "styles.css（配布スタイル全量・gzip）",
