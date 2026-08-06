@@ -101,6 +101,7 @@ export {
   type CTASectionProps,
   type CTAAction,
 } from './components/sections/cta-section';
+export { CTABand, type CTABandProps, type CTABandAction } from './components/sections/cta-band';
 export {
   ServicePortfolio,
   type ServicePortfolioProps,

@@ -1,0 +1,55 @@
+/* CTABand — ページ中間に置くコンバージョン帯（Stage 3 Slice 1）。
+   ページ末尾の締め（CTASection・暗面）とは役割が別。
+
+   境界は「面の色差のみ」で作り、線を引かない。
+   国内 BtoB SaaS 11サイトの CSS 実測で、セクション面を上下の線で
+   区切る例は 0 件だった（docs/research/research-cta-band.md §3-2）。
+   淡い面（白との対比 1.16:1）はそれ自体では弱いが、freee人事労務の実例に
+   倣い、余白の確保（56px）と中身の濃さ（lg ボタン）で面を立たせる。
+   Page 側も淡面の隣に muted を割り当てない（面差の確保）。 */
+
+.band {
+  background: var(--color-bg-brand-subtle);
+  padding-block: var(--spacing-10);
+}
+@media (min-width: 48rem) {
+  .band {
+    /* 実測の中央値 ≈ 50px（freee 56 / カミナシ 56 / Bill One 48） */
+    padding-block: var(--spacing-14);
+  }
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-5);
+}
+@media (min-width: 48rem) {
+  .row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-8);
+  }
+}
+
+/* 見出しではなく強調段落。同じ帯を1ページに複数置くため、
+   h タグにすると文書アウトラインに同名見出しが乱立する */
+.title {
+  margin: 0;
+  font-size: var(--text-heading-md);
+  line-height: var(--text-heading-md--line-height);
+  font-weight: 700;
+  color: var(--color-on-surface);
+}
+
+.note {
+  margin-top: var(--spacing-2);
+}
+
+.actions {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: var(--spacing-3);
+}
