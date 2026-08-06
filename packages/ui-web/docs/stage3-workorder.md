@@ -117,3 +117,9 @@ AI の品質事故はコンポーネント単体ではなく**構成**で起き�
 2. **面を持つ CTA 帯の反復は中間1〜2回 + 末尾が実測上限**（同 §3-1）。4〜6回の高頻度反復は
    面を持たない裸 CTA の領分。CTABand は3つ目で dev 警告を出す。
    面なし反復用の部品（InlineCTA 相当）は未実装 — Slice 2 以降で必要になった時点で追加を判断
+3. **開いた後まで塗れる select には Radix が必要で、その費用は brotli 約23KB**（popper/
+   dismissable layer/focus scope が本体。どのライブラリでも branded dropdown の入場料はほぼ同額）。
+   SelectField はフィルタ等の画面内状態専用とし、**フォーム送信の値には使わない**
+   （Netlify Forms はデプロイ時に静的 HTML の生コントロールを解析するため FormSelect は素の select）。
+   費用は splitting で SelectField の import 元だけが払う（MarketingButton 枠 8.17KB 無変化で確認済み)。
+   size に「CaseStudyList のみ」枠（38KB）を新設して重い経路を監視する

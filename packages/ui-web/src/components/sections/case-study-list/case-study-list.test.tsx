@@ -52,6 +52,12 @@ const list = (props: Partial<React.ComponentProps<typeof CaseStudyListSection>> 
   <CaseStudyListSection title="導入事例" cases={cases} {...props} />
 );
 
+/** Radix Select の操作: トリガーを開いて選択肢をクリックする */
+async function pick(user: ReturnType<typeof userEvent.setup>, label: string, option: string) {
+  await user.click(screen.getByLabelText(label));
+  await user.click(await screen.findByRole('option', { name: option }));
+}
+
 describe('CaseStudyListSection', () => {
   it('全件を描画し、件数を表示する', () => {
     render(list());
@@ -79,19 +85,21 @@ describe('CaseStudyListSection', () => {
     expect(screen.queryByLabelText('サービス')).toBeNull();
   });
 
-  it('選択肢はデータから重複除去・出現順で生成する', () => {
+  it('選択肢はデータから重複除去・出現順で生成する', async () => {
+    const user = userEvent.setup();
     render(list({ filterAxes: ['industry'] }));
-    const options = within(screen.getByLabelText('業種')).getAllByRole('option');
+    await user.click(screen.getByLabelText('業種'));
+    const options = await screen.findAllByRole('option');
     expect(options.map((o) => o.textContent)).toEqual(['すべて', '製造業', '卸売業', '運輸業']);
   });
 
   it('軸間は AND で絞り込む', async () => {
     const user = userEvent.setup();
     render(list());
-    await user.selectOptions(screen.getByLabelText('業種'), '製造業');
+    await pick(user, '業種', '製造業');
     expect(screen.getByText('4件中 2件')).toBeInTheDocument();
 
-    await user.selectOptions(screen.getByLabelText('サービス'), 'タックスピア');
+    await pick(user, 'サービス', 'タックスピア');
     expect(screen.getByText('4件中 1件')).toBeInTheDocument();
     expect(screen.getByText('あさひ製作所')).toBeInTheDocument();
     expect(screen.queryByText('そらまめ工業')).toBeNull();
@@ -100,7 +108,7 @@ describe('CaseStudyListSection', () => {
   it('challenges は配列が値を含むかで判定する', async () => {
     const user = userEvent.setup();
     render(list());
-    await user.selectOptions(screen.getByLabelText('課題'), '月次決算');
+    await pick(user, '課題', '月次決算');
     // あさひ（2値の配列）とみなと（1値）が残り、かもめ（未設定）は落ちる
     expect(screen.getByText('4件中 2件')).toBeInTheDocument();
     expect(screen.getByText('あさひ製作所')).toBeInTheDocument();
@@ -110,17 +118,17 @@ describe('CaseStudyListSection', () => {
   it('「すべて」でフィルタを解除する', async () => {
     const user = userEvent.setup();
     render(list());
-    await user.selectOptions(screen.getByLabelText('業種'), '製造業');
+    await pick(user, '業種', '製造業');
     expect(screen.getByText('4件中 2件')).toBeInTheDocument();
-    await user.selectOptions(screen.getByLabelText('業種'), 'すべて');
+    await pick(user, '業種', 'すべて');
     expect(screen.getByText('4件中 4件')).toBeInTheDocument();
   });
 
   it('0件のときは空状態メッセージを出す', async () => {
     const user = userEvent.setup();
     render(list());
-    await user.selectOptions(screen.getByLabelText('業種'), '運輸業');
-    await user.selectOptions(screen.getByLabelText('サービス'), 'タックスピア');
+    await pick(user, '業種', '運輸業');
+    await pick(user, 'サービス', 'タックスピア');
     expect(screen.getByText('4件中 0件')).toBeInTheDocument();
     expect(screen.getByText(/条件に一致する事例はありません/)).toBeInTheDocument();
   });
@@ -173,7 +181,7 @@ describe('CaseStudyListSection', () => {
     await user.click(screen.getByRole('button', { name: '3' }));
     expect(screen.getByText('小売13')).toBeInTheDocument();
 
-    await user.selectOptions(screen.getByLabelText('業種'), '製造業');
+    await pick(user, '業種', '製造業');
     expect(screen.getByRole('button', { name: '1' })).toHaveAttribute('aria-current', 'page');
     expect(screen.getByText('製造1')).toBeInTheDocument();
   });
@@ -193,8 +201,8 @@ describe('CaseStudyListSection', () => {
       within(screen.getByLabelText('業種')).queryByRole('option', { name: '金融業' }),
     ).toBeNull();
 
-    await user.selectOptions(screen.getByLabelText('業種'), '運輸業');
-    await user.selectOptions(screen.getByLabelText('サービス'), 'タックスピア');
+    await pick(user, '業種', '運輸業');
+    await pick(user, 'サービス', 'タックスピア');
     expect(screen.getByText(/条件に一致する事例はありません/)).toBeInTheDocument();
     // 0件でもピックアップは残る
     expect(screen.getByText('ピックアップ社')).toBeInTheDocument();

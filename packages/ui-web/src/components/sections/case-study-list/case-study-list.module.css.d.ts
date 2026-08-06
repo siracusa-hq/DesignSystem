@@ -7,8 +7,6 @@ declare const styles: {
   readonly "dark": string;
   readonly "empty": string;
   readonly "filter": string;
-  readonly "filterControl": string;
-  readonly "filterLabel": string;
   readonly "filters": string;
   readonly "linkRow": string;
   readonly "logo": string;

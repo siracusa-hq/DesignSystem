@@ -6,6 +6,7 @@ import { Text } from '@/components/primitives/text';
 import { Link } from '@/components/primitives/link';
 import type { LogoMarkProps } from '@/components/primitives/logo-mark';
 import { SectionHeader } from '@/components/sections/section-header';
+import { SelectField } from '@/components/primitives/select-field';
 import { cn } from '@/lib/cn';
 import styles from './case-study-list.module.css';
 
@@ -257,24 +258,15 @@ export const CaseStudyListSection = React.forwardRef<HTMLElement, CaseStudyListS
           {axes.length > 0 && (
             <div className={styles.filters}>
               {axes.map(({ axis, options }) => (
-                <div key={axis} className={styles.filter}>
-                  <label className={styles.filterLabel} htmlFor={`${uid}-${axis}`}>
-                    {l[axis]}
-                  </label>
-                  <select
-                    id={`${uid}-${axis}`}
-                    className={styles.filterControl}
-                    value={selected[axis] ?? ''}
-                    onChange={(e) => handleFilter(axis, e.target.value)}
-                  >
-                    <option value="">{l.all}</option>
-                    {options.map((o) => (
-                      <option key={o} value={o}>
-                        {o}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <SelectField
+                  key={axis}
+                  id={`${uid}-${axis}`}
+                  label={l[axis]}
+                  value={selected[axis] ?? ''}
+                  onValueChange={(v) => handleFilter(axis, v)}
+                  options={options.map((o) => ({ value: o, label: o }))}
+                  emptyLabel={l.all}
+                />
               ))}
             </div>
           )}

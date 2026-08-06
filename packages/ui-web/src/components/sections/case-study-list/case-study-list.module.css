@@ -92,29 +92,7 @@
   gap: var(--spacing-1);
   min-width: 12rem;
 }
-.filterLabel {
-  font-size: var(--text-caption);
-  font-weight: 500;
-  color: var(--color-on-surface-secondary);
-}
 /* 入力コントロールは affordance が要るので線を持つ（面の区切りとは別の話） */
-.filterControl {
-  border-radius: var(--radius-control);
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  padding: var(--spacing-2) var(--spacing-3);
-  font-size: var(--text-body-sm);
-  color: var(--color-on-surface);
-  transition:
-    border-color var(--duration-fast) var(--ease-default),
-    box-shadow var(--duration-fast) var(--ease-default);
-}
-.filterControl:focus {
-  outline: none;
-  border-color: var(--color-border-brand-strong);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-ring-brand) 20%, transparent);
-}
-
 .count {
   margin-bottom: var(--spacing-4);
   font-variant-numeric: tabular-nums;

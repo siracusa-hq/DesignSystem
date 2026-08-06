@@ -49,6 +49,11 @@ export {
   marketingButtonVariants,
   type MarketingButtonProps,
 } from './components/primitives/marketing-button';
+export {
+  SelectField,
+  type SelectFieldProps,
+  type SelectFieldOption,
+} from './components/primitives/select-field';
 export { Link, linkVariants, type LinkProps } from './components/primitives/link';
 
 // Primitives - Animation

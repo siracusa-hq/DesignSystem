@@ -1,0 +1,94 @@
+/* SelectField — ブランドスタイルの選択コントロール（Radix Select）。
+   開いた後のパネルまでテーマ契約で塗る（OS 標準ポップアップを使わない）。
+   業務システムUI（@siracusahq/design-system）の Select と操作感を揃えている。
+
+   用途は画面内の状態切替（フィルタ等）に限る。フォーム送信の値には
+   FormSelect（素の select）を使うこと — Netlify Forms がデプロイ時に
+   静的 HTML を解析するため、生のフォームコントロールが必要。 */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.label {
+  font-size: var(--text-body-sm);
+  font-weight: 500;
+  color: var(--color-on-surface);
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-2);
+  min-width: 10rem;
+  border-radius: var(--radius-control);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  padding: var(--spacing-2) var(--spacing-3);
+  font-size: var(--text-body-sm);
+  color: var(--color-on-surface);
+  cursor: pointer;
+  transition:
+    border-color var(--duration-fast) var(--ease-default),
+    box-shadow var(--duration-fast) var(--ease-default);
+}
+.trigger:focus-visible {
+  outline: none;
+  border-color: var(--color-border-brand-strong);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-ring-brand) 20%, transparent);
+}
+.trigger[data-placeholder] {
+  color: var(--color-on-surface-secondary);
+}
+
+.chevron {
+  color: var(--color-on-surface-muted);
+  flex-shrink: 0;
+}
+
+.content {
+  z-index: var(--z-modal);
+  min-width: var(--radix-select-trigger-width);
+  max-height: var(--radix-select-content-available-height);
+  overflow: hidden;
+  border-radius: var(--radius-control);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-raised);
+  box-shadow: var(--shadow-raised);
+}
+
+.viewport {
+  padding: var(--spacing-1);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  border-radius: calc(var(--radius-control) - 2px);
+  padding: var(--spacing-2) var(--spacing-3);
+  padding-right: var(--spacing-8);
+  position: relative;
+  font-size: var(--text-body-sm);
+  color: var(--color-on-surface);
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+}
+.item[data-highlighted] {
+  background: var(--color-bg-brand-subtle);
+  color: var(--color-text-brand-strong);
+}
+.item[data-state='checked'] {
+  font-weight: 600;
+}
+
+.itemIndicator {
+  position: absolute;
+  right: var(--spacing-3);
+  display: inline-flex;
+  color: var(--color-text-brand);
+}
