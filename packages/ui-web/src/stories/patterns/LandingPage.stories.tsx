@@ -134,6 +134,15 @@ export const 製品LP_タックスピア: Story = {
   }),
 };
 
+/**
+ * トーンはパターン既定を上書きできる（ブランド軸と直交）。
+ * 同じ製品 LP でも campaign トーンでは全セクションの余白が1段詰まり、
+ * ファーストビューに入る情報量が増える。製品LP_タックスピア と見比べること。
+ */
+export const 製品LP_campaignトーン: Story = {
+  args: { ...製品LP_タックスピア.args, tone: 'campaign' },
+};
+
 /** コンパウンド企業の玄関（実測 7/19 で最重要の型）。カードグリッドで下層 LP へ分岐 */
 export const ポートフォリオトップ_ピアデスク: Story = {
   args: defineLandingPage({

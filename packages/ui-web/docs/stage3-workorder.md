@@ -105,7 +105,13 @@ AI の品質事故はコンポーネント単体ではなく**構成**で起き�
       hydration が必要。JSDoc に明記）。UI 語彙は `labels` 1プロパティに集約して
       英語ページで差し替え可能にした（テキストをハードコードしない方針 ×
       語彙ごとに props を生やさない方針の折衷）
-- [ ] Slice 4
+- [x] Slice 4 — 2026-08-06 完了。README 全面更新（日英: BentoGrid の消し忘れ2箇所を削除、
+      コンポーネント一覧を現状に同期、「ページを組む2つの方法」= defineLandingPage / Page を追加、
+      技術スタックの Tailwind 前提記述を CSS Modules + テーマ契約に修正）。
+      パターンのトーン上書き実例ストーリーを追加（製品LP × campaign）。
+      計画ドキュメントの整合: plan.md に「現行計画は composition-redesign + workorder」の
+      ポインタを追記、CLAUDE.md の計画管理ルールを3層管理（正本/workorder/plan.md=初期記録）に改訂、
+      composition-redesign のリリース計画に実績（Stage1〜2 = 0.5.0 公開済み、Stage 3 = 0.6.0 予定）を追記
 
 ## 7. 実装で判明した事項
 
