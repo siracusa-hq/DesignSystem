@@ -58,9 +58,15 @@ export const 製品LP_タックスピア: Story = {
       eyebrow: 'Features',
       title: '書類回収の「催促する仕事」をなくす',
       features: [
-        { title: '自動リマインド', description: '未提出の顧問先に、期日から逆算して自動で催促します。' },
+        {
+          title: '自動リマインド',
+          description: '未提出の顧問先に、期日から逆算して自動で催促します。',
+        },
         { title: '進捗ボード', description: '全顧問先の提出状況が一枚のボードで見えます。' },
-        { title: '顧問先アプリ不要', description: '顧問先はメールのリンクから撮影・アップロードするだけ。' },
+        {
+          title: '顧問先アプリ不要',
+          description: '顧問先はメールのリンクから撮影・アップロードするだけ。',
+        },
       ],
     },
     midCta: { title: 'まずは資料からご覧ください', note: '無料・1分で完了' },
@@ -98,7 +104,8 @@ export const 製品LP_タックスピア: Story = {
       cases: [
         {
           companyName: 'サンプル会計事務所',
-          quote: '1月の繁忙期でも、書類の回収率が9割を超えました。電話での催促がほぼゼロになっています。',
+          quote:
+            '1月の繁忙期でも、書類の回収率が9割を超えました。電話での催促がほぼゼロになっています。',
           metrics: [
             { label: '回収率', value: '92%' },
             { label: '催促時間', value: '-80%' },
@@ -109,8 +116,14 @@ export const 製品LP_タックスピア: Story = {
     faq: {
       title: 'よくある質問',
       items: [
-        { question: '顧問先にも費用がかかりますか?', answer: 'かかりません。顧問先は無料でご利用いただけます。' },
-        { question: '導入までどのくらいかかりますか?', answer: '平均3日です。初期設定は導入担当が代行します。' },
+        {
+          question: '顧問先にも費用がかかりますか?',
+          answer: 'かかりません。顧問先は無料でご利用いただけます。',
+        },
+        {
+          question: '導入までどのくらいかかりますか?',
+          answer: '平均3日です。初期設定は導入担当が代行します。',
+        },
       ],
     },
     closing: {
@@ -168,7 +181,8 @@ export const ポートフォリオトップ_ピアデスク: Story = {
       cases: [
         {
           companyName: '株式会社サンプル製作所',
-          quote: '月末の残業がなくなりました。紙の山と格闘していた時間が、まるごと戻ってきた感覚です。',
+          quote:
+            '月末の残業がなくなりました。紙の山と格闘していた時間が、まるごと戻ってきた感覚です。',
         },
       ],
     },
@@ -239,6 +253,113 @@ export const コーポレートトップ: Story = {
       stats: [
         { value: '2', suffix: '事業', label: 'プロダクトライン', numericValue: 2 },
         { value: '1,200', suffix: '社', label: '取引社数', numericValue: 1200 },
+      ],
+    },
+  }),
+};
+
+/**
+ * 事例一覧ページ（実測 2/2: SmartHR `/case/`、バクラク `/case/`）。
+ * この型だけキャッチコピー型ヒーローを持たず、短いページタイトルから始まる。
+ * ピックアップ + 多軸フィルタ + カードグリッド + ページネーション。
+ */
+export const 事例一覧_タックスピア: Story = {
+  args: defineLandingPage({
+    pattern: 'case-study-list',
+    brand: 'peerdesk-taxpeer',
+    header: {
+      logo: <strong>タックスピア</strong>,
+      navItems: [
+        { label: '機能', href: '#features' },
+        { label: '料金', href: '#pricing' },
+        { label: '導入事例', href: '#cases' },
+      ],
+      actions: [{ label: '資料をダウンロード', href: '#dl' }],
+    },
+    page: {
+      eyebrow: 'Case Studies',
+      title: '導入事例',
+      description: '業種・規模・課題から、自社に近い事例を探せます。',
+    },
+    list: {
+      pickup: [
+        {
+          companyName: 'あさひ製作所',
+          summary:
+            '未提出の顧問先を追いかける仕事がなくなり、決算前の残業がゼロになりました。導入から3日で全顧問先が使い始めています。',
+          service: 'タックスピア',
+          industry: '製造業',
+          employeeRange: '51〜300名',
+          challenges: ['書類回収', '月次決算'],
+          metrics: [{ label: '期限内回収率', value: '98%' }],
+          href: '/case/asahi',
+        },
+      ],
+      cases: [
+        {
+          companyName: 'みなと商事',
+          summary: '紙で回っていた経費精算をやめ、月次決算が5営業日早まりました。',
+          service: 'タックスピア',
+          industry: '卸売業',
+          employeeRange: '1〜50名',
+          challenges: ['月次決算'],
+          href: '/case/minato',
+        },
+        {
+          companyName: 'そらまめ工業',
+          summary: '書類の紛失と再依頼がなくなり、問い合わせ対応が半分になりました。',
+          service: 'ピアデスク',
+          industry: '製造業',
+          employeeRange: '301名〜',
+          challenges: ['書類回収', '問い合わせ対応'],
+          href: '/case/soramame',
+        },
+        {
+          companyName: 'つばき会計事務所',
+          summary: '顧問先100社への催促を自動化し、担当1人あたりの受け持ちが1.5倍になりました。',
+          service: 'タックスピア',
+          industry: '士業',
+          employeeRange: '1〜50名',
+          challenges: ['書類回収'],
+          href: '/case/tsubaki',
+        },
+        {
+          companyName: 'かもめ運輸',
+          summary: 'ドライバーからの申請をスマートフォンで完結させました。',
+          service: 'ピアデスク',
+          industry: '運輸業',
+          employeeRange: '51〜300名',
+          challenges: ['問い合わせ対応'],
+          href: '/case/kamome',
+        },
+        {
+          companyName: 'まつり印刷',
+          summary: '請求書の突合を自動化し、経理担当の月末残業が20時間減りました。',
+          service: 'タックスピア',
+          industry: '印刷業',
+          employeeRange: '1〜50名',
+          challenges: ['月次決算'],
+          href: '/case/matsuri',
+        },
+        {
+          companyName: 'ひまわり調剤',
+          summary: '各店舗の提出状況が一覧で見え、本部の確認作業がなくなりました。',
+          service: 'ピアデスク',
+          industry: '医療・薬局',
+          employeeRange: '51〜300名',
+          challenges: ['書類回収', '月次決算'],
+          href: '/case/himawari',
+        },
+      ],
+      pageSize: 3,
+    },
+    /* ヒーローが無くオファーの再利用元が無いため、closing の actions は必須 */
+    closing: {
+      title: '自社に近い事例をお探しですか',
+      subtitle: '業種別の導入事例集を無料で配布しています。',
+      actions: [
+        { label: '資料をダウンロード', href: '#dl' },
+        { label: '料金を見る', href: '#pricing' },
       ],
     },
   }),

@@ -8,6 +8,7 @@ export {
   type PortfolioTopInput,
   type LeadGenInput,
   type CorporateTopInput,
+  type CaseStudyListInput,
   type LandingHero,
   type LandingProof,
   type LandingMidCta,

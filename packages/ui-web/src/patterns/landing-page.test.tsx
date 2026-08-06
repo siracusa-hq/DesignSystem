@@ -46,6 +46,30 @@ const productInput = defineLandingPage({
   closing: { title: 'まずは資料からご覧ください', socialProof: '800事務所が利用中' },
 });
 
+const caseListInput = defineLandingPage({
+  pattern: 'case-study-list',
+  brand: 'peerdesk-taxpeer',
+  page: {
+    eyebrow: 'Case Studies',
+    title: '導入事例',
+    description: '業種・規模から近い事例を探せます。',
+  },
+  list: {
+    cases: [
+      {
+        companyName: 'あさひ製作所',
+        summary: '書類回収の催促がゼロになりました。',
+        industry: '製造業',
+        employeeRange: '51〜300名',
+      },
+    ],
+  },
+  closing: {
+    title: '自社の事例を見つけてください',
+    actions: [{ label: '資料をダウンロード', href: '#dl' }],
+  },
+});
+
 afterEach(() => vi.restoreAllMocks());
 
 describe('defineLandingPage', () => {
@@ -68,6 +92,14 @@ describe('defineLandingPage', () => {
         services: { services: [] },
       }).tone,
     ).toBe('trust');
+    expect(
+      defineLandingPage({
+        pattern: 'case-study-list',
+        brand: 'corporate',
+        page: { title: '導入事例' },
+        list: { cases: [] },
+      }).tone,
+    ).toBe('product');
   });
 
   it('明示した tone は上書きしない', () => {
@@ -100,7 +132,9 @@ describe('LandingPage', () => {
       '800事務所が利用中', // 締め
     ];
     const positions = texts.map((t) => {
-      const el = screen.getAllByText((content, node) => node?.textContent === t || content === t)[0];
+      const el = screen.getAllByText(
+        (content, node) => node?.textContent === t || content === t,
+      )[0];
       return Array.prototype.indexOf.call(container.querySelectorAll('*'), el);
     });
     const sorted = [...positions].sort((a, b) => a - b);
@@ -158,6 +192,32 @@ describe('LandingPage', () => {
     );
     expect(screen.queryByText('まずは資料からご覧ください')).toBeNull();
   });
+
+  it('case-study-list: ページタイトル（h1）→ 一覧 → 締めの順。ヒーローは持たない', () => {
+    const { container } = render(<LandingPage {...caseListInput} />);
+    // キャッチコピー型ヒーローではなく短いページタイトル（実測）
+    expect(screen.getByRole('heading', { level: 1, name: '導入事例' })).toBeInTheDocument();
+    const texts = ['導入事例', 'あさひ製作所', '自社の事例を見つけてください'];
+    const positions = texts.map((t) => {
+      const el = screen.getAllByText(
+        (content, node) => node?.textContent === t || content === t,
+      )[0];
+      return Array.prototype.indexOf.call(container.querySelectorAll('*'), el);
+    });
+    expect(positions).toEqual([...positions].sort((a, b) => a - b));
+  });
+
+  it('case-study-list: closing 省略時は最終 CTA を描画しない', () => {
+    const { closing: _closing, ...withoutClosing } = caseListInput;
+    render(<LandingPage {...(withoutClosing as typeof caseListInput)} />);
+    expect(screen.queryByText('自社の事例を見つけてください')).toBeNull();
+    expect(screen.getByRole('heading', { level: 1, name: '導入事例' })).toBeInTheDocument();
+  });
+
+  it('a11y 違反なし（case-study-list パターン全体）', async () => {
+    const { container } = render(<LandingPage {...caseListInput} />);
+    expect(await axe(container)).toHaveNoViolations();
+  }, 15000);
 
   it('a11y 違反なし（product パターン全体）', async () => {
     const { container } = render(<LandingPage {...productInput} />);

@@ -10,6 +10,12 @@ export interface SectionHeaderProps {
   subtitle?: string;
   /** 見出しサイズ（セクションの格に応じて） */
   headingSize?: 'display-md' | 'display-sm' | 'heading-lg';
+  /**
+   * 見出しタグ。既定は h2。
+   * ページタイトルを担うセクション（HeroSection を持たない case-study-list 型の
+   * CaseStudyListSection）だけが h1 を使う。
+   */
+  as?: 'h1' | 'h2';
 }
 
 /** セクション冒頭の定型。全セクションで同一の並び・余白にする（内部共有） */
@@ -18,6 +24,7 @@ export function SectionHeader({
   title,
   subtitle,
   headingSize = 'display-md',
+  as = 'h2',
 }: SectionHeaderProps) {
   if (!eyebrow && !title && !subtitle) return null;
   return (
@@ -28,7 +35,7 @@ export function SectionHeader({
         </div>
       )}
       {title && (
-        <Heading as="h2" size={headingSize}>
+        <Heading as={as} size={headingSize}>
           {title}
         </Heading>
       )}

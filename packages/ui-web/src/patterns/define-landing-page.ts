@@ -6,6 +6,7 @@ import type { StatsSectionProps } from '@/components/sections/stats-section';
 import type { FeatureGridProps } from '@/components/sections/feature-grid';
 import type { PricingTableProps } from '@/components/sections/pricing';
 import type { CaseStudySectionProps } from '@/components/sections/case-study-card';
+import type { CaseStudyListSectionProps } from '@/components/sections/case-study-list';
 import type { FAQSectionProps } from '@/components/sections/faq-section';
 import type { ServicePortfolioProps } from '@/components/sections/service-portfolio';
 import type { CTASectionProps } from '@/components/sections/cta-section';
@@ -32,11 +33,10 @@ export interface OfferAction {
 /** セクション Props からページ層が管理する項目を除いたもの */
 type Slot<P> = Omit<P, 'children'>;
 
-export interface LandingHero
-  extends Pick<
-    HeroSectionProps,
-    'badge' | 'title' | 'subtitle' | 'image' | 'imagePlacement' | 'backdrop' | 'backdropTone'
-  > {
+export interface LandingHero extends Pick<
+  HeroSectionProps,
+  'badge' | 'title' | 'subtitle' | 'image' | 'imagePlacement' | 'backdrop' | 'backdropTone'
+> {
   /** 1〜2オファー。midCta / closing にも同じラベルが再利用される（ラベル2種ルール） */
   offers: OfferAction[];
 }
@@ -119,11 +119,27 @@ export interface CorporateTopInput extends LandingPageCommon {
   closing?: LandingClosing;
 }
 
+/**
+ * 事例の一覧ページ（実測 2/2: SmartHR `/case/`、バクラク `/case/`）。
+ *
+ * この型だけヒーローを持たない。キャッチコピー型のヒーローではなく
+ * 短いページタイトルから始まり、ピックアップ + 多軸フィルタ + カードグリッド
+ * + ページネーションで構成される（composition-redesign.md §3-1）。
+ */
+export interface CaseStudyListInput extends LandingPageCommon {
+  pattern: 'case-study-list';
+  /** キャッチコピー型ヒーローは使わない（実測）。短いページタイトル */
+  page: { eyebrow?: string; title: React.ReactNode; description?: string };
+  list: Slot<CaseStudyListSectionProps>;
+  /**
+   * 事例ページ末尾の導線（任意）。
+   * hero が無く再利用できるオファーが存在しないため、actions は必須。
+   */
+  closing?: Slot<CTASectionProps>;
+}
+
 export type LandingPageInput =
-  | ProductPageInput
-  | PortfolioTopInput
-  | LeadGenInput
-  | CorporateTopInput;
+  ProductPageInput | PortfolioTopInput | LeadGenInput | CorporateTopInput | CaseStudyListInput;
 
 export type LandingPagePattern = LandingPageInput['pattern'];
 
@@ -133,6 +149,7 @@ const DEFAULT_TONES: Record<LandingPagePattern, PageTone> = {
   'product-portfolio-top': 'product',
   'lead-gen': 'campaign',
   'corporate-top': 'trust',
+  'case-study-list': 'product',
 };
 
 export type LandingPageProps = LandingPageInput & { tone: PageTone };

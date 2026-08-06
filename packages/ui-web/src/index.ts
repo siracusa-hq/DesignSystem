@@ -178,6 +178,14 @@ export {
   type CaseStudySectionProps,
   type CaseStudy,
 } from './components/sections/case-study-card';
+export {
+  CaseStudyListSection,
+  CASE_STUDY_FILTER_AXES,
+  type CaseStudyListSectionProps,
+  type CaseStudyListItem,
+  type CaseStudyListLabels,
+  type CaseStudyFilterAxis,
+} from './components/sections/case-study-list';
 
 // Layout
 export {
