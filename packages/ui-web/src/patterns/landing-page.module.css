@@ -1,0 +1,12 @@
+/* LandingPage — 章立て余白（Stage 3 Slice 2）。
+   「関連するセクション間は詰め、話題が変わるところで開く」
+   （composition-redesign.md §3-3）。前のセクションに従属する帯
+   （ヒーロー直下の社会的証明など）は、セクション余白の物差しを
+   縮めたスコープで描画する。 */
+
+.attached {
+  --spacing-section-sm: var(--spacing-8);
+  --spacing-section-md: var(--spacing-10);
+  --spacing-section-lg: var(--spacing-12);
+  --spacing-section-xl: var(--spacing-16);
+}
