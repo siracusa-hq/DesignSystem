@@ -48,12 +48,21 @@ export interface MarketingButtonProps
   rightIcon?: React.ReactNode;
   /** モバイルメニュー等での全幅表示 */
   fullWidth?: boolean;
+  /**
+   * 計測用の CTA 識別子。指定すると `data-cta` 属性を出力し、
+   * `Page.onCTAClick` がクリックをページ単位で受け取れるようになる。
+   *
+   * セクション部品（HeroSection / CTABand / CTASection / MarketingHeader /
+   * PricingTable）は自分で id を自動割当するため、呼び出し側の指定は不要。
+   * 消費側が独自に MarketingButton を配置する場合だけ明示する。
+   */
+  ctaId?: string;
 }
 
 export const MarketingButton = React.forwardRef<
   HTMLButtonElement | HTMLAnchorElement,
   MarketingButtonProps
->(({ variant, size, href, rightIcon, fullWidth = false, children, ...props }, ref) => {
+>(({ variant, size, href, rightIcon, fullWidth = false, ctaId, children, ...props }, ref) => {
   const innerRef = React.useRef<HTMLElement | null>(null);
   useCTALabelReport(variant === 'cta', innerRef);
   const setRefs = (node: HTMLAnchorElement | HTMLButtonElement | null) => {
@@ -74,6 +83,7 @@ export const MarketingButton = React.forwardRef<
       <a
         ref={setRefs}
         href={href}
+        data-cta={ctaId}
         className={cn(marketingButtonVariants({ variant, size }), fullWidth && styles.fullWidth)}
         {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
       >
@@ -85,6 +95,7 @@ export const MarketingButton = React.forwardRef<
   return (
     <button
       ref={setRefs}
+      data-cta={ctaId}
       className={cn(marketingButtonVariants({ variant, size }), fullWidth && styles.fullWidth)}
       {...props}
     >

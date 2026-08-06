@@ -46,6 +46,10 @@ export const MarketingHeader = React.forwardRef<HTMLElement, MarketingHeaderProp
           size="sm"
           href={action.href}
           fullWidth={fullWidth}
+          /* 計測用 ID はヘッダーが自動割当する（stage4-workorder.md §3）。
+             デスクトップとモバイルメニューは同じ導線なので同じ id を共有する
+             （どちらか一方しか表示されない） */
+          ctaId={`header-${i}`}
         >
           {action.label}
         </MarketingButton>

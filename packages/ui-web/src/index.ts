@@ -177,6 +177,7 @@ export type {
   ContactFormProps,
   ResourceRequestFormProps,
   DemoRequestFormProps,
+  FormSubmitResult,
 } from './components/sections/form';
 export {
   CaseStudySection,
@@ -213,6 +214,8 @@ export {
   type PageProps,
   type PageBrand,
   type PageTone,
+  type PageCTA,
+  type PageCTAClickHandler,
 } from './components/layout/page';
 export { markPageSurface, type PageSurface } from './lib/page-surface';
 

@@ -31,6 +31,11 @@ export interface PricingCardProps extends Omit<React.HTMLAttributes<HTMLDivEleme
   };
   /** 推しプラン。ブランドのボーダーと持ち上げた影で1枚だけ強調する */
   highlighted?: boolean;
+  /**
+   * 計測用の CTA 識別子（`data-cta`）。PricingTable 経由なら `pricing-${i}` が
+   * 自動で入るため、単体で置くときだけ指定する。
+   */
+  ctaId?: string;
 }
 
 export const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
@@ -45,6 +50,7 @@ export const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
       badge: badgeText,
       features,
       action,
+      ctaId,
       ...props
     },
     ref,
@@ -96,7 +102,7 @@ export const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
         ))}
       </ul>
 
-      <MarketingButton variant="cta" href={action.href} fullWidth>
+      <MarketingButton variant="cta" href={action.href} fullWidth ctaId={ctaId}>
         {action.label}
       </MarketingButton>
     </div>

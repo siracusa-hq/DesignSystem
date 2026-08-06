@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Page } from '@/components/layout/page';
 import { PageLayout } from '@/components/layout/page-layout';
+import { createCTAClickCapture } from '@/lib/cta-click';
 import { HeroSection } from '@/components/sections/hero-section';
 import { LogoCloud } from '@/components/sections/logo-cloud';
 import { StatsSection } from '@/components/sections/stats-section';
@@ -51,8 +52,14 @@ const closing = (c: LandingClosing | undefined, offers: OfferAction[]) =>
   c ? <CTASection key="closing" {...c} actions={c.actions ?? offers} /> : null;
 
 export const LandingPage: React.FC<LandingPageProps> = (props) => {
-  const { brand, tone, footer } = props;
+  const { brand, tone, footer, onCTAClick } = props;
   const header = props.pattern === 'lead-gen' ? undefined : props.header;
+
+  /* CTA クリックの委譲は Page ではなく PageLayout に張る。
+     ヘッダー（header-${i}）は Page の外・PageLayout の直下に描画されるため、
+     Page.onCTAClick に素通しするとヘッダーの CTA だけ取りこぼす
+     （stage4-workorder.md §7）。委譲は1箇所だけに置き、二重発火を避ける */
+  const handleClickCapture = createCTAClickCapture<HTMLDivElement>(onCTAClick, undefined);
 
   let sections: React.ReactNode[];
   switch (props.pattern) {
@@ -126,7 +133,13 @@ export const LandingPage: React.FC<LandingPageProps> = (props) => {
   }
 
   return (
-    <PageLayout headerProps={header} footerProps={footer} data-brand={brand} data-tone={tone}>
+    <PageLayout
+      headerProps={header}
+      footerProps={footer}
+      data-brand={brand}
+      data-tone={tone}
+      onClickCapture={handleClickCapture}
+    >
       <Page brand={brand} tone={tone}>
         {sections.filter(Boolean)}
       </Page>

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { cn } from '@/lib/cn';
+import { createCTAClickCapture, type PageCTAClickHandler } from '@/lib/cta-click';
 import { CTARegistryContext, createCTALabelRegistry } from '@/lib/cta-registry';
 import { isDev } from '@/lib/dev';
 import { resolvePageSurface } from '@/lib/page-surface';
@@ -21,6 +22,18 @@ export interface PageProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'c
   brand?: PageBrand;
   /** 何を狙うページか。余白・装飾量を決める（既定: product = 基準） */
   tone?: PageTone;
+  /**
+   * ページ内の CTA クリックを一括で受け取る計測フック（stage4-workorder.md §3）。
+   *
+   * `data-cta` を持つ要素（＝ MarketingButton / FormButton に `ctaId` が付いたもの）の
+   * クリックだけが届く。実装はルート要素の capture フェーズでのクリック委譲なので、
+   * context もマウント時コストも要らず SSR でも安全。
+   *
+   * **計測タグ（GA4 / GTM 等）はこのパッケージには同梱しない。**
+   * ベンダーの選択は利用側の決定であり、デザインシステムが決めてはならない。
+   * ここで受けたイベントを利用側が自分の計測基盤へ送る。
+   */
+  onCTAClick?: PageCTAClickHandler;
   children?: React.ReactNode;
 }
 
@@ -32,10 +45,16 @@ export interface PageProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'c
  *   （暗面直後は必ず default から再開）
  * - 暗面の3連続は禁止（dev 警告）。可読性の問題であり、確定規則
  * - トーン/ブランドは data 属性で配下に伝播する
+ * - 計測: `onCTAClick` で配下の `data-cta` 付き CTA のクリックを一括で受け取れる
  */
 export const Page = React.forwardRef<HTMLDivElement, PageProps>(
-  ({ brand = 'corporate', tone = 'product', children, ...props }, ref) => {
+  (
+    { brand = 'corporate', tone = 'product', children, onCTAClick, onClickCapture, ...props },
+    ref,
+  ) => {
     const items = React.Children.toArray(children);
+
+    const handleClickCapture = createCTAClickCapture<HTMLDivElement>(onCTAClick, onClickCapture);
 
     /* CTA ラベル2種ルールの dev レジストリ。MarketingButton（variant="cta"）が
        context 経由で登録する。prod では張らない（DCE でコードごと落ちる） */
@@ -111,6 +130,7 @@ export const Page = React.forwardRef<HTMLDivElement, PageProps>(
           data-brand={brand}
           data-tone={tone}
           className={cn(styles.page)}
+          onClickCapture={handleClickCapture}
           {...props}
         >
           {assigned}

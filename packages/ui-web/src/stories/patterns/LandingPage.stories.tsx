@@ -374,6 +374,27 @@ export const 事例一覧_タックスピア: Story = {
   }),
 };
 
+/**
+ * 計測フック（Stage 4 Slice 0）。`onCTAClick` を渡すと、ページ内のすべての CTA の
+ * クリックが1つのハンドラに届く（`{ id, label, href }` + 元イベント）。
+ *
+ * id はセクションが自動割当する: ヘッダー `header-${i}` / FV `hero-${i}` /
+ * 中間帯 `cta-band-${i}` / 料金 `pricing-${i}` / 締め `closing-${i}` /
+ * フォーム送信 `form-submit`。呼び出し側に命名させないので、どのページでも
+ * 同じキーで集計できる。
+ *
+ * **計測タグ（GA4 / GTM 等）は同梱しない。** ベンダー選択は利用側の決定であり、
+ * デザインシステムが決めてはならない。ここで受けたイベントを利用側が自分の基盤へ送る。
+ *
+ * 下の CTA を押して、Storybook 下部の **Actions** パネルを見ること。
+ */
+export const 計測_onCTAClick: Story = {
+  /* args では渡さない。actions アドオンに onCTAClick を差し込ませ、
+     受け取った { id, label, href } をそのまま Actions パネルに出す */
+  argTypes: { onCTAClick: { action: 'onCTAClick' } },
+  args: 製品LP_タックスピア.args,
+};
+
 /** English example (product pattern, Polastack) */
 export const English_Product_Polastack: Story = {
   args: defineLandingPage({

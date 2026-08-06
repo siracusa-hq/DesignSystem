@@ -6,3 +6,4 @@ export {
   type PageBrand,
   type PageTone,
 } from './page';
+export type { PageCTA, PageCTAClickHandler } from '@/lib/cta-click';
