@@ -1,5 +1,34 @@
 # @polastack/gtm-design-system
 
+## 0.7.0
+
+### Minor Changes
+
+- 980b111: 計測フックを追加（Stage 4 Slice 0）。`MarketingButton` / `FormButton` / `PricingCard` に `ctaId` を追加し、指定時に `data-cta` を出力する。id はセクションが自動割当するため呼び出し側は命名不要（ヘッダー `header-${i}` / FV `hero-${i}` / 中間帯 `cta-band-${i}` / 料金 `pricing-${i}` / 締め `closing-${i}` / フォーム送信 `form-submit`）。`Page` と `LandingPage` に `onCTAClick` を追加し、ページ内の CTA クリックを `{ id, label, href }` として一括で受け取れるようにした（capture フェーズのクリック委譲）。フォーム3種に `onResult` を追加し、指定時は Netlify Forms の AJAX 仕様（URL エンコード・`form-name` 同梱）で fetch 送信して成功/失敗を返す。既存の `onSubmit` / `action` / ネイティブ POST の挙動は変えていない。計測タグ（GA4 / GTM 等）は同梱しない。
+- bfc1e66: 追従 CTA 2部品を追加（Stage 4 Slice 1）
+
+  実測（国内 BtoB SaaS 19ページ）で確認できた2形態だけを部品化した。
+  全幅の下部固定バーは実測 0 件のため作っていない。
+
+  - `StickyHeaderCTA` — 固定ヘッダーに CTA を2本内包する追従形態。
+    モバイルは CTA 2本が各 `45vw` / 高さ `40px` で横並び、行高 60px。
+    高さぶんのスペーサーを部品が内蔵するので、呼び出し側で上余白を作る必要はない。
+    グローバルナビは持たない（獲得 LP 用の簡易ヘッダー。
+    ナビ・ドロップダウンが要る通常のページは `MarketingHeader` の領分）
+  - `FloatingCornerCTA` — 右下フローティングカード。
+    閉じるボタンは常に描画され、消すための props を持たない
+    （閉じられない追従要素はモバイルで本文を覆うため）。
+    閉じた状態は永続化しない。覚えさせたい場合は `onDismiss` で受ける
+
+  どちらも CTA に `data-cta`（`sticky-header-${i}` / `floating-${i}`）を自動割当する。
+  両部品は `Page` の外に置かれるため `Page.onCTAClick` では拾えない。
+  両方を含む祖先の `onClickCapture` に張るための
+  `createCTAClickCapture` を公開エクスポートに追加した。
+
+  `--z-floating: 50`（固定ヘッダーより下・本文より上）をトークンに追加。
+
+- db9926c: FV の CTA 本数規範と送信ボタンラベル規範を追加（Stage 4 Slice 2）。HeroSection は CTA 3本以上で dev 警告、defineLandingPage の offers は最大2本のタプル型（3本目は型エラー）。フォームに submitLabel を追加し、ContactForm の既定を「問い合わせる」に変更（汎用の「送信する」は dev 警告対象）。
+
 ## 0.6.0
 
 ### Minor Changes
