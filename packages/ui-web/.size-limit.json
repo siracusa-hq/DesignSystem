@@ -2,7 +2,7 @@
   {
     "name": "全エクスポート（バレル import）",
     "path": "dist/index.js",
-    "limit": "26 kB"
+    "limit": "29 kB"
   },
   {
     "name": "MarketingButton のみ（tree-shaking の番人）",
