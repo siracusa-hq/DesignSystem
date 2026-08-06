@@ -92,27 +92,63 @@ import { SlideDeck, TitleSlide, StatSlide } from '@siracusahq/gtm-design-system/
 | 最大サイズ | 24px                                       | 72px (display-2xl)       |
 | Display系  | なし                                       | 30 / 36 / 48 / 60 / 72px |
 
+### ページを組む2つの方法
+
+#### (a) LP 量産 — `defineLandingPage()`（データ駆動）
+
+構成（セクションの順序・背景リズム・CTA の配置とラベル）は国内 BtoB SaaS の
+実測に基づいてパターンが決めます。呼び出し側は内容だけを渡し、
+必須スロットの欠落は型エラーで落ちます。
+
+```tsx
+import { defineLandingPage, LandingPage } from '@siracusahq/gtm-design-system';
+
+<LandingPage {...defineLandingPage({
+  pattern: 'product',            // product / product-portfolio-top / lead-gen / corporate-top / case-study-list
+  brand: 'peerdesk-taxpeer',     // corporate / polastack / peerdesk / peerdesk-taxpeer
+  hero: { title: '…', subtitle: '…', offers: [/* 1〜2オファー。帯と締めに自動再利用 */] },
+  features: { title: '…', features: [/* … */] },
+  closing: { title: '…' },
+})} />
+```
+
+#### (b) 一点物のページ — `<Page>`（コンポジション）
+
+並べ方は自由、背景と余白のリズムは自動。暗い面の3連続や
+プライマリ CTA ラベル3種類目は開発中に警告が出ます。
+
+```tsx
+<Page brand="corporate" tone="trust">
+  <HeroSection … />
+  <ModuleOverview … />
+  <CTASection … />
+</Page>
+```
+
+`tone` はページの狙い（`trust` = 余白広め・信頼 / `product` = 基準 /
+`campaign` = 高密度・獲得）で、ブランドと直交します。
+
 ### コンポーネント一覧
 
-#### プリミティブ（13）
+#### プリミティブ（19）
 
-Container, Section, Grid, Heading, Text, MarketingButton, Logo, GradientText, Divider, Link, Badge, AnimatedCounter, AnimateOnScroll
+Container, Section, Grid, Heading, Text, Eyebrow, MarketingButton, SelectField, Logo, LogoMark, MediaFrame, ProductShot, Avatar, GradientText, Divider, Link, Badge, AnimatedCounter, AnimateOnScroll
 
-#### セクション — Tier 1（6）
+#### セクション（16）
 
-HeroSection, FeatureGrid, PricingTable, PricingCard, CTASection, FAQSection
+HeroSection, FeatureGrid, FeatureShowcase, PricingTable, PricingCard, CTASection, CTABand, FAQSection, ComparisonTable, TestimonialSection, LogoCloud, StatsSection, CodeBlock, ServicePortfolio, CaseStudySection, CaseStudyListSection
 
-#### セクション — Tier 2（7）
+#### フォーム（Netlify Forms 対応）
 
-FeatureShowcase, ComparisonTable, TestimonialSection, LogoCloud, StatsSection, BentoGrid, CodeBlock
+ContactForm, ResourceRequestForm, DemoRequestForm（+ FormInput / FormTextarea / FormSelect / FormButton）
 
-#### プロダクト固有 + 日本市場向け（5）
+#### プロダクト固有 + 日本市場向け（4）
 
-ModuleOverview, MigrationComparison, AirPocketFeature, SecurityBadges, CaseStudySection
+ModuleOverview, MigrationComparison, AirPocketFeature, SecurityBadges
 
-#### レイアウト（3）
+#### レイアウト / ページ（4）
 
-MarketingHeader, MarketingFooter, PageLayout
+MarketingHeader, MarketingFooter, PageLayout, Page
 
 #### フック（1）
 
@@ -151,7 +187,7 @@ const MyDeck = () => (
 ### 技術スタック
 
 - **React** 18/19
-- **Tailwind CSS** v4（`@theme` ディレクティブ）
+- **CSS Modules** + テーマ契約（CSS 変数スロット。利用側に Tailwind は不要）
 - **TypeScript**（strict mode）
 - **CVA**（class-variance-authority）によるバリアント管理
 - **Spectacle** 10（スライドコンポーネント）
@@ -283,27 +319,64 @@ Shared brand identity with `@siracusahq/design-system`, extended for marketing:
 | Max size      | 24px                                     | 72px (display-2xl)       |
 | Display sizes | —                                        | 30 / 36 / 48 / 60 / 72px |
 
+### Two ways to build a page
+
+#### (a) Mass-producing LPs — `defineLandingPage()` (data-driven)
+
+Composition — section order, background rhythm, CTA placement and labels — is
+decided by patterns backed by field research of Japanese B2B SaaS sites.
+You provide the content; missing required slots fail at the type level.
+
+```tsx
+import { defineLandingPage, LandingPage } from '@siracusahq/gtm-design-system';
+
+<LandingPage {...defineLandingPage({
+  pattern: 'product',            // product / product-portfolio-top / lead-gen / corporate-top / case-study-list
+  brand: 'polastack',            // corporate / polastack / peerdesk / peerdesk-taxpeer
+  hero: { title: '…', subtitle: '…', offers: [/* 1–2 offers, reused for the band and closing */] },
+  features: { title: '…', features: [/* … */] },
+  closing: { title: '…' },
+})} />
+```
+
+#### (b) One-off pages — `<Page>` (composition)
+
+Arrange sections freely; background/spacing rhythm is automatic. Dev-time
+warnings fire on three consecutive dark surfaces or a third distinct primary
+CTA label.
+
+```tsx
+<Page brand="corporate" tone="trust">
+  <HeroSection … />
+  <ModuleOverview … />
+  <CTASection … />
+</Page>
+```
+
+`tone` expresses the page's intent (`trust` = spacious / `product` = baseline /
+`campaign` = dense, acquisition-oriented) and is orthogonal to `brand`.
+
 ### Components
 
-#### Primitives (13)
+#### Primitives (19)
 
-Container, Section, Grid, Heading, Text, MarketingButton, Logo, GradientText, Divider, Link, Badge, AnimatedCounter, AnimateOnScroll
+Container, Section, Grid, Heading, Text, Eyebrow, MarketingButton, SelectField, Logo, LogoMark, MediaFrame, ProductShot, Avatar, GradientText, Divider, Link, Badge, AnimatedCounter, AnimateOnScroll
 
-#### Sections — Tier 1 (6)
+#### Sections (16)
 
-HeroSection, FeatureGrid, PricingTable, PricingCard, CTASection, FAQSection
+HeroSection, FeatureGrid, FeatureShowcase, PricingTable, PricingCard, CTASection, CTABand, FAQSection, ComparisonTable, TestimonialSection, LogoCloud, StatsSection, CodeBlock, ServicePortfolio, CaseStudySection, CaseStudyListSection
 
-#### Sections — Tier 2 (7)
+#### Forms (Netlify Forms ready)
 
-FeatureShowcase, ComparisonTable, TestimonialSection, LogoCloud, StatsSection, BentoGrid, CodeBlock
+ContactForm, ResourceRequestForm, DemoRequestForm (+ FormInput / FormTextarea / FormSelect / FormButton)
 
-#### Product-specific + Japan market (5)
+#### Product-specific + Japan market (4)
 
-ModuleOverview, MigrationComparison, AirPocketFeature, SecurityBadges, CaseStudySection
+ModuleOverview, MigrationComparison, AirPocketFeature, SecurityBadges
 
-#### Layout (3)
+#### Layout / Page (4)
 
-MarketingHeader, MarketingFooter, PageLayout
+MarketingHeader, MarketingFooter, PageLayout, Page
 
 #### Hooks (1)
 
@@ -342,7 +415,7 @@ const MyDeck = () => (
 ### Tech Stack
 
 - **React** 18/19
-- **Tailwind CSS** v4 (`@theme` directive)
+- **CSS Modules** + theme contract (CSS variable slots; no Tailwind required on the consumer side)
 - **TypeScript** (strict mode)
 - **CVA** (class-variance-authority) for variant management
 - **Spectacle** 10 for slide components

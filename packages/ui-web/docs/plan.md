@@ -1,3 +1,9 @@
+> **現行の計画はこのファイルではありません。**
+> 本ファイルは初期構築（Phase 0〜: 2026-08-03 以前）の記録として残している。
+> 現在の設計の正本は [composition-redesign.md](./composition-redesign.md)、
+> 実装の分解と進捗は [stage2-workorder.md](./stage2-workorder.md) /
+> [stage3-workorder.md](./stage3-workorder.md)（以降 Stage ごとに追加）を参照すること。
+
 # Polastack GTM Design System 構築計画
 
 ## Phase 0: プロジェクト初期化
