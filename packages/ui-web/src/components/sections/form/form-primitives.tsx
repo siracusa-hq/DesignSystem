@@ -109,15 +109,22 @@ FormSelect.displayName = 'FormSelect';
 export interface FormButtonProps
   extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'className'> {
   loading?: boolean;
+  /**
+   * 計測用の CTA 識別子。指定すると `data-cta` 属性を出力する。
+   * 3フォーム（ContactForm / ResourceRequestForm / DemoRequestForm）の送信ボタンには
+   * `form-submit` が自動で割り当たる（どのフォームかは form-name で区別できるため一律）。
+   */
+  ctaId?: string;
 }
 
 /** 送信ボタン。コンバージョン導線のため CTA 第3役割（--color-*-cta）を使う */
 export const FormButton = React.forwardRef<HTMLButtonElement, FormButtonProps>(
-  ({ children, loading, disabled, ...props }, ref) => (
+  ({ children, loading, disabled, ctaId, ...props }, ref) => (
     <button
       ref={ref}
       type="submit"
       disabled={disabled || loading}
+      data-cta={ctaId}
       className={styles.button}
       {...props}
     >

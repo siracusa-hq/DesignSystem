@@ -3,6 +3,7 @@ export {
   defineLandingPage,
   type LandingPageInput,
   type LandingPageProps,
+  type LandingPageEvents,
   type LandingPagePattern,
   type ProductPageInput,
   type PortfolioTopInput,

@@ -34,6 +34,16 @@ function useIchisanForm(enabled: boolean) {
      一本化されているため、Netlify Forms を標準とする）
    ============================================================ */
 
+/** AJAX 送信（onResult 指定時）の結果 */
+export interface FormSubmitResult {
+  /** HTTP レスポンスが 2xx なら true。fetch 自体が失敗した場合も false */
+  ok: boolean;
+  /** レスポンスが返った場合のみ入る HTTP ステータス */
+  status?: number;
+  /** fetch が例外を投げた場合の原因（ネットワーク断など） */
+  error?: unknown;
+}
+
 interface BaseFormSectionProps
   extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'className'> {
   eyebrow?: string;
@@ -51,19 +61,69 @@ interface BaseFormSectionProps
    * 未指定なら素の POST として Netlify Forms が受ける。
    */
   onSubmit?: React.FormEventHandler<HTMLFormElement>;
+  /**
+   * 送信の成功/失敗を受け取る計測フック（stage4-workorder.md §3）。
+   *
+   * 指定すると送信経路が **fetch による AJAX** に切り替わる。フォームの内容を
+   * URL エンコード（`form-name` を必ず同梱）して `action ?? location.pathname` へ
+   * POST する ── Netlify Forms の AJAX 送信仕様に一致する。ページ遷移は起きないので、
+   * サンクス表示やイベント送信は呼び出し側が担当する。
+   *
+   * **ネイティブ POST（onResult 未指定）ではこのイベントは原理的に出せない。**
+   * ブラウザがページごと遷移してしまい、JS が結果を観測する機会がないため。
+   * 送信を計測したいなら onResult を使うこと。
+   *
+   * 送信経路の優先順位: `onSubmit`（完全手動） > `onResult`（AJAX） > ネイティブ POST。
+   * `onSubmit` を渡した場合 `onResult` は呼ばれない（送信は呼び出し側の責任になる）。
+   */
+  onResult?: (result: FormSubmitResult) => void;
 }
 
 function NetlifyForm({
   formName,
   action,
   onSubmit,
+  onResult,
   children,
 }: {
   formName: string;
   action?: string;
   onSubmit?: React.FormEventHandler<HTMLFormElement>;
+  onResult?: (result: FormSubmitResult) => void;
   children: React.ReactNode;
 }) {
+  /* 優先順位: onSubmit（完全手動） > onResult（AJAX） > ネイティブ POST。
+     どれも未指定なら onSubmit を張らず、既存の素の POST 経路のままにする */
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> | undefined =
+    onSubmit ??
+    (onResult
+      ? (event) => {
+          event.preventDefault();
+          const form = event.currentTarget;
+          /* FormData → URL エンコード（Netlify Forms の AJAX 送信仕様）。
+             ファイル入力は URL エンコードで送れないため文字列だけを積む */
+          const body = new URLSearchParams();
+          new FormData(form).forEach((value, key) => {
+            if (typeof value === 'string') body.append(key, value);
+          });
+          // hidden 入力が外された場合の保険。Netlify は form-name が無いと受け取れない
+          if (!body.has('form-name')) body.set('form-name', formName);
+
+          void (async () => {
+            try {
+              const res = await fetch(action ?? window.location.pathname, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: body.toString(),
+              });
+              onResult({ ok: res.ok, status: res.status });
+            } catch (error) {
+              onResult({ ok: false, error });
+            }
+          })();
+        }
+      : undefined);
+
   return (
     <form
       name={formName}
@@ -71,7 +131,7 @@ function NetlifyForm({
       action={action}
       data-netlify="true"
       data-netlify-honeypot="bot-field"
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit}
       className={styles.form}
     >
       {/* Netlify がビルド時にフォームを識別するための必須フィールド */}
@@ -151,6 +211,7 @@ export const ContactForm = React.forwardRef<HTMLElement, ContactFormProps>(
       formName = 'contact',
       action,
       onSubmit,
+      onResult,
       ichisanEnabled = true,
       ...props
     },
@@ -168,7 +229,12 @@ export const ContactForm = React.forwardRef<HTMLElement, ContactFormProps>(
             subtitle={subtitle}
             headingSize="display-sm"
           />
-          <NetlifyForm formName={formName} action={action} onSubmit={onSubmit}>
+          <NetlifyForm
+            formName={formName}
+            action={action}
+            onSubmit={onSubmit}
+            onResult={onResult}
+          >
             <NameEmailRow isJa={isJa} />
             <CompanyField isJa={isJa} />
             <FormTextarea
@@ -178,7 +244,7 @@ export const ContactForm = React.forwardRef<HTMLElement, ContactFormProps>(
               rows={5}
               required
             />
-            <FormButton>{isJa ? '送信する' : 'Send Message'}</FormButton>
+            <FormButton ctaId="form-submit">{isJa ? '送信する' : 'Send Message'}</FormButton>
           </NetlifyForm>
         </Container>
       </Section>
@@ -206,6 +272,7 @@ export const ResourceRequestForm = React.forwardRef<HTMLElement, ResourceRequest
       formName = 'resource-request',
       action,
       onSubmit,
+      onResult,
       ichisanEnabled = true,
       resourceName,
       ...props
@@ -224,7 +291,12 @@ export const ResourceRequestForm = React.forwardRef<HTMLElement, ResourceRequest
             subtitle={subtitle}
             headingSize="display-sm"
           />
-          <NetlifyForm formName={formName} action={action} onSubmit={onSubmit}>
+          <NetlifyForm
+            formName={formName}
+            action={action}
+            onSubmit={onSubmit}
+            onResult={onResult}
+          >
             {resourceName && <input type="hidden" name="resource" value={resourceName} />}
             <NameEmailRow isJa={isJa} />
             <CompanyField isJa={isJa} />
@@ -236,7 +308,9 @@ export const ResourceRequestForm = React.forwardRef<HTMLElement, ResourceRequest
                 isJa ? 'CTO / エンジニアリングマネージャー 等' : 'CTO / Engineering Manager etc.'
               }
             />
-            <FormButton>{isJa ? '資料をダウンロード' : 'Download Resource'}</FormButton>
+            <FormButton ctaId="form-submit">
+              {isJa ? '資料をダウンロード' : 'Download Resource'}
+            </FormButton>
           </NetlifyForm>
         </Container>
       </Section>
@@ -264,6 +338,7 @@ export const DemoRequestForm = React.forwardRef<HTMLElement, DemoRequestFormProp
       formName = 'demo-request',
       action,
       onSubmit,
+      onResult,
       ichisanEnabled = true,
       timeSlots,
       ...props
@@ -288,7 +363,12 @@ export const DemoRequestForm = React.forwardRef<HTMLElement, DemoRequestFormProp
             subtitle={subtitle}
             headingSize="display-sm"
           />
-          <NetlifyForm formName={formName} action={action} onSubmit={onSubmit}>
+          <NetlifyForm
+            formName={formName}
+            action={action}
+            onSubmit={onSubmit}
+            onResult={onResult}
+          >
             <NameEmailRow isJa={isJa} />
             <CompanyField isJa={isJa} />
             <FormInput
@@ -313,7 +393,7 @@ export const DemoRequestForm = React.forwardRef<HTMLElement, DemoRequestFormProp
               }
               rows={3}
             />
-            <FormButton>{isJa ? 'デモを予約する' : 'Book a Demo'}</FormButton>
+            <FormButton ctaId="form-submit">{isJa ? 'デモを予約する' : 'Book a Demo'}</FormButton>
           </NetlifyForm>
         </Container>
       </Section>

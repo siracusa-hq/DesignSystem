@@ -92,6 +92,8 @@ export const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
                 variant={i === 0 ? 'primary' : 'secondary'}
                 size="lg"
                 href={action.href}
+                /* 計測用 ID はセクションが自動割当する（stage4-workorder.md §3） */
+                ctaId={`hero-${i}`}
               >
                 {action.label}
               </MarketingButton>

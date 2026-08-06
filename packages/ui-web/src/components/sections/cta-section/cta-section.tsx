@@ -32,7 +32,15 @@ export interface CTASectionProps
 export const CTASection = React.forwardRef<HTMLElement, CTASectionProps>(
   ({ kicker, title, subtitle, actions, note, socialProof, layout = 'centered', ...props }, ref) => {
     const buttons = actions.map((action, i) => (
-      <MarketingButton key={i} variant={i === 0 ? 'cta' : 'secondary'} size="lg" href={action.href}>
+      <MarketingButton
+        key={i}
+        variant={i === 0 ? 'cta' : 'secondary'}
+        size="lg"
+        href={action.href}
+        /* 計測用 ID はセクションが自動割当する（stage4-workorder.md §3）。
+           CTASection はページ末尾の締めなので closing-${i} */
+        ctaId={`closing-${i}`}
+      >
         {action.label}
       </MarketingButton>
     ));

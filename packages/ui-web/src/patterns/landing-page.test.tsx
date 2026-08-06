@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { axe } from 'vitest-axe';
 import { defineLandingPage, LandingPage } from './index';
 import { ResourceRequestForm } from '@/components/sections/form';
@@ -223,4 +224,113 @@ describe('LandingPage', () => {
     const { container } = render(<LandingPage {...productInput} />);
     expect(await axe(container)).toHaveNoViolations();
   }, 15000);
+});
+
+/* ============================================================
+   計測フック（Stage 4 Slice 0）
+   ============================================================ */
+
+const ctaIdsOf = (container: HTMLElement) =>
+  Array.from(container.querySelectorAll('[data-cta]')).map((el) => el.getAttribute('data-cta'));
+
+const withHeader = {
+  ...productInput,
+  header: { actions: [{ label: '資料をダウンロード', href: '#dl' }] },
+};
+
+describe('data-cta の自動割当', () => {
+  it('product: ヘッダー → hero → 帯 → 料金 → 締め の順に一意な id が付く', () => {
+    const { container } = render(<LandingPage {...withHeader} />);
+    /* id はセクションが割り当てる（呼び出し側は命名しない）。
+       DOM 順 = ページ上の出現順 */
+    expect(ctaIdsOf(container)).toEqual([
+      'header-0',
+      'hero-0',
+      'hero-1',
+      'cta-band-0',
+      'cta-band-1',
+      'pricing-0',
+      'closing-0',
+      'closing-1',
+    ]);
+  });
+
+  it('料金プランが複数ならインデックスで区別される', () => {
+    const { container } = render(
+      <LandingPage
+        {...defineLandingPage({
+          pattern: 'product',
+          brand: 'corporate',
+          hero: { title: 't', offers: [] },
+          features: { features: [] },
+          pricing: {
+            plans: [
+              { name: 'A', price: '¥1', features: [], action: { label: 'x', href: '#a' } },
+              { name: 'B', price: '¥2', features: [], action: { label: 'x', href: '#b' } },
+            ],
+          },
+          closing: { title: '締め', actions: [] },
+        })}
+      />,
+    );
+    expect(ctaIdsOf(container)).toEqual(['pricing-0', 'pricing-1']);
+  });
+
+  it('lead-gen: フォームの送信ボタンは form-submit（form-name で区別できるため一律）', () => {
+    const { container } = render(
+      <LandingPage
+        {...defineLandingPage({
+          pattern: 'lead-gen',
+          brand: 'peerdesk',
+          hero: { title: '5分でわかるピアデスク', offers: [{ label: '資料へ', href: '#form' }] },
+          contents: { features: [] },
+          form: <ResourceRequestForm title="資料請求" ichisanEnabled={false} />,
+        })}
+      />,
+    );
+    expect(ctaIdsOf(container)).toEqual(['hero-0', 'form-submit']);
+  });
+
+  it('case-study-list: 締めの CTA だけが id を持つ', () => {
+    const { container } = render(<LandingPage {...caseListInput} />);
+    expect(ctaIdsOf(container)).toEqual(['closing-0']);
+  });
+});
+
+describe('LandingPage.onCTAClick', () => {
+  it('ページ内の全 CTA のクリックを1つのハンドラで受け取る（ヘッダー含む）', async () => {
+    const onCTAClick = vi.fn();
+    render(<LandingPage {...withHeader} onCTAClick={onCTAClick} />);
+
+    /* ヘッダーは Page ではなく PageLayout の直下に描画される。
+       委譲を PageLayout に張っているので、ここも取りこぼさない（§7） */
+    await userEvent.click(
+      within(screen.getByRole('banner')).getByRole('link', { name: '資料をダウンロード' }),
+    );
+    expect(onCTAClick).toHaveBeenLastCalledWith(
+      { id: 'header-0', label: '資料をダウンロード', href: '#dl' },
+      expect.anything(),
+    );
+
+    // 同じラベルが hero と締めで反復される（ラベル2種ルール）ので先頭 = hero を押す
+    await userEvent.click(screen.getAllByRole('link', { name: '料金を見る' })[0]);
+    expect(onCTAClick).toHaveBeenLastCalledWith(
+      { id: 'hero-1', label: '料金を見る', href: '#price' },
+      expect.anything(),
+    );
+    expect(onCTAClick).toHaveBeenCalledTimes(2);
+  });
+
+  it('CTA 以外のリンク（ナビゲーション）では発火しない', async () => {
+    const onCTAClick = vi.fn();
+    render(
+      <LandingPage
+        {...productInput}
+        header={{ navItems: [{ label: '機能', href: '#features' }] }}
+        onCTAClick={onCTAClick}
+      />,
+    );
+    await userEvent.click(screen.getByRole('link', { name: '機能' }));
+    expect(onCTAClick).not.toHaveBeenCalled();
+  });
 });

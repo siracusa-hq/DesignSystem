@@ -56,6 +56,8 @@ export const CTABand = React.forwardRef<HTMLElement, CTABandProps>(
                 variant={i === 0 ? 'cta' : 'secondary'}
                 size="lg"
                 href={action.href}
+                /* 計測用 ID はセクションが自動割当する（stage4-workorder.md §3） */
+                ctaId={`cta-band-${i}`}
               >
                 {action.label}
               </MarketingButton>

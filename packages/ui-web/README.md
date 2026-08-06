@@ -128,6 +128,49 @@ import { defineLandingPage, LandingPage } from '@siracusahq/gtm-design-system';
 `tone` はページの狙い（`trust` = 余白広め・信頼 / `product` = 基準 /
 `campaign` = 高密度・獲得）で、ブランドと直交します。
 
+### 計測フック
+
+**計測タグ（GA4 / GTM 等）は同梱しません。** ベンダーの選択は利用側の決定です。
+このパッケージが提供するのは「口」だけで、受けたイベントの送り先は利用側が決めます。
+
+#### CTA クリック
+
+CTA には `data-cta` が自動で付き、`onCTAClick` でページ単位に一括で受け取れます。
+id はセクションが割り当てるため、呼び出し側で命名する必要はありません
+（ヘッダー `header-${i}` / FV `hero-${i}` / 中間帯 `cta-band-${i}` /
+料金 `pricing-${i}` / 締め `closing-${i}` / フォーム送信 `form-submit`）。
+
+```tsx
+<LandingPage
+  {...defineLandingPage({ /* … */ })}
+  onCTAClick={({ id, label, href }) => analytics.track('cta_click', { id, label, href })}
+/>
+
+// 一点物のページでも同じ
+<Page brand="corporate" onCTAClick={(cta) => analytics.track('cta_click', cta)}>…</Page>
+
+// 独自に置いたボタンは ctaId を明示する
+<MarketingButton ctaId="sidebar-trial" href="/trial">無料で試す</MarketingButton>
+```
+
+#### フォーム送信
+
+`onResult` を渡すと送信が fetch（AJAX）に切り替わり、ページ遷移せずに
+成功/失敗を受け取れます（URL エンコード・`form-name` 同梱・POST 先は
+`action ?? location.pathname`。Netlify Forms の AJAX 仕様どおり）。
+
+```tsx
+<ResourceRequestForm
+  title="資料請求"
+  resourceName="polastack-overview"
+  onResult={({ ok, status, error }) => (ok ? showThanks() : showError(status ?? error))}
+/>
+```
+
+**ネイティブ POST（`onResult` 未指定）では送信イベントは原理的に出せません。**
+ブラウザがページごと遷移するため、JS が結果を観測する機会がないからです。
+送信経路の優先順位は `onSubmit`（完全手動） > `onResult`（AJAX） > ネイティブ POST。
+
 ### コンポーネント一覧
 
 #### プリミティブ（19）
@@ -355,6 +398,50 @@ CTA label.
 
 `tone` expresses the page's intent (`trust` = spacious / `product` = baseline /
 `campaign` = dense, acquisition-oriented) and is orthogonal to `brand`.
+
+### Analytics hooks
+
+**No analytics tags (GA4 / GTM / …) are bundled.** Picking a vendor is the
+consumer's call. This package only exposes the hooks; where the events go is
+entirely up to you.
+
+#### CTA clicks
+
+CTAs carry an automatic `data-cta` attribute, and `onCTAClick` receives every
+click on the page. Sections assign the ids, so callers never name them
+(header `header-${i}` / hero `hero-${i}` / mid-page band `cta-band-${i}` /
+pricing `pricing-${i}` / closing `closing-${i}` / form submit `form-submit`).
+
+```tsx
+<LandingPage
+  {...defineLandingPage({ /* … */ })}
+  onCTAClick={({ id, label, href }) => analytics.track('cta_click', { id, label, href })}
+/>
+
+// Same on one-off pages
+<Page brand="corporate" onCTAClick={(cta) => analytics.track('cta_click', cta)}>…</Page>
+
+// Buttons you place yourself declare their own id
+<MarketingButton ctaId="sidebar-trial" href="/trial">Start free</MarketingButton>
+```
+
+#### Form submissions
+
+Passing `onResult` switches submission to `fetch` (AJAX), so you get
+success/failure without a page transition (URL-encoded, `form-name` included,
+posted to `action ?? location.pathname` — matching the Netlify Forms AJAX spec).
+
+```tsx
+<ResourceRequestForm
+  title="Download the resource"
+  resourceName="polastack-overview"
+  onResult={({ ok, status, error }) => (ok ? showThanks() : showError(status ?? error))}
+/>
+```
+
+**A native POST (no `onResult`) cannot emit a submission event** — the browser
+navigates away, so JS never observes the outcome. Precedence:
+`onSubmit` (fully manual) > `onResult` (AJAX) > native POST.
 
 ### Components
 

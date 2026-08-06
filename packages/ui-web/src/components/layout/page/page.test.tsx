@@ -1,9 +1,11 @@
 import * as React from 'react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { axe } from 'vitest-axe';
 import { resolveAllBrands } from '@siracusahq/tokens';
 import { Page, PAGE_BRANDS } from './page';
+import { MarketingButton } from '@/components/primitives/marketing-button';
 import { markPageSurface } from '@/lib/page-surface';
 import styles from './page.module.css';
 
@@ -151,5 +153,92 @@ describe('Page', () => {
       </Page>,
     );
     expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe('Page.onCTAClick（計測フック・Stage 4 Slice 0）', () => {
+  it('data-cta を持つ CTA のクリックで id / label / href が届く', async () => {
+    const onCTAClick = vi.fn();
+    render(
+      <Page onCTAClick={onCTAClick}>
+        <section>
+          <MarketingButton ctaId="hero-0" href="#dl">
+            資料をダウンロード
+          </MarketingButton>
+        </section>
+      </Page>,
+    );
+    await userEvent.click(screen.getByRole('link', { name: '資料をダウンロード' }));
+    expect(onCTAClick).toHaveBeenCalledOnce();
+    expect(onCTAClick.mock.calls[0][0]).toEqual({
+      id: 'hero-0',
+      label: '資料をダウンロード',
+      href: '#dl',
+    });
+    // 第2引数は元の React イベント（preventDefault 等を呼べる）
+    expect(typeof onCTAClick.mock.calls[0][1].preventDefault).toBe('function');
+  });
+
+  it('button（href なし）では href が undefined になる', async () => {
+    const onCTAClick = vi.fn();
+    render(
+      <Page onCTAClick={onCTAClick}>
+        <section>
+          <MarketingButton ctaId="hero-1">相談する</MarketingButton>
+        </section>
+      </Page>,
+    );
+    await userEvent.click(screen.getByRole('button', { name: '相談する' }));
+    expect(onCTAClick.mock.calls[0][0]).toEqual({
+      id: 'hero-1',
+      label: '相談する',
+      href: undefined,
+    });
+  });
+
+  it('data-cta を持たないボタンでは発火しない', async () => {
+    const onCTAClick = vi.fn();
+    render(
+      <Page onCTAClick={onCTAClick}>
+        <section>
+          <MarketingButton href="#docs">ドキュメント</MarketingButton>
+          <button type="button">素のボタン</button>
+        </section>
+      </Page>,
+    );
+    await userEvent.click(screen.getByRole('link', { name: 'ドキュメント' }));
+    await userEvent.click(screen.getByRole('button', { name: '素のボタン' }));
+    expect(onCTAClick).not.toHaveBeenCalled();
+  });
+
+  it('CTA の内側（アイコン等）をクリックしても closest で親の CTA まで遡る', async () => {
+    const onCTAClick = vi.fn();
+    render(
+      <Page onCTAClick={onCTAClick}>
+        <section>
+          <MarketingButton ctaId="cta-band-0" href="#dl" rightIcon={<span>→</span>}>
+            資料をダウンロード
+          </MarketingButton>
+        </section>
+      </Page>,
+    );
+    await userEvent.click(screen.getByText('→'));
+    expect(onCTAClick).toHaveBeenCalledOnce();
+    expect(onCTAClick.mock.calls[0][0].id).toBe('cta-band-0');
+    // label は rightIcon を含む textContent（空白正規化済み）
+    expect(onCTAClick.mock.calls[0][0].label).toBe('資料をダウンロード→');
+  });
+
+  it('onCTAClick 未指定でも onClickCapture は素通しする', async () => {
+    const onClickCapture = vi.fn();
+    render(
+      <Page onClickCapture={onClickCapture}>
+        <section>
+          <MarketingButton ctaId="hero-0">押す</MarketingButton>
+        </section>
+      </Page>,
+    );
+    await userEvent.click(screen.getByRole('button', { name: '押す' }));
+    expect(onClickCapture).toHaveBeenCalledOnce();
   });
 });

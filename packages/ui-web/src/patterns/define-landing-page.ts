@@ -1,5 +1,5 @@
 import type * as React from 'react';
-import type { PageBrand, PageTone } from '@/components/layout/page';
+import type { PageBrand, PageTone, PageCTAClickHandler } from '@/components/layout/page';
 import type { HeroSectionProps } from '@/components/sections/hero-section';
 import type { LogoCloudProps } from '@/components/sections/logo-cloud';
 import type { StatsSectionProps } from '@/components/sections/stats-section';
@@ -152,7 +152,19 @@ const DEFAULT_TONES: Record<LandingPagePattern, PageTone> = {
   'case-study-list': 'product',
 };
 
-export type LandingPageProps = LandingPageInput & { tone: PageTone };
+/**
+ * defineLandingPage が扱う「内容」とは別に、描画時に渡すイベント（計測フック）。
+ * データ記述に混ぜないため、入力型ではなく LandingPage の props 側に足す。
+ */
+export interface LandingPageEvents {
+  /**
+   * ページ内の CTA クリックを一括で受け取る（Page.onCTAClick への素通し）。
+   * 各 CTA の id はセクションが自動割当する（stage4-workorder.md §3）。
+   */
+  onCTAClick?: PageCTAClickHandler;
+}
+
+export type LandingPageProps = LandingPageInput & { tone: PageTone } & LandingPageEvents;
 
 export function defineLandingPage<T extends LandingPageInput>(input: T): T & { tone: PageTone } {
   return {
