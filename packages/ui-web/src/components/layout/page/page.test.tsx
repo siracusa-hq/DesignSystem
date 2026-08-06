@@ -73,6 +73,29 @@ describe('Page', () => {
     expect(mutedSlotOf(getByText('c'))).not.toBeNull();
   });
 
+  it('強調面（accent）の直前のセクションには muted を割り当てない（面差の確保）', () => {
+    const Accent = markPageSurface(
+      ({ label }: { label: string }) => <section>{label}</section>,
+      'accent',
+    );
+    const { getByText } = render(
+      <Page>
+        <Plain label="a" />
+        <Plain label="b" />
+        <Accent label="band" />
+        <Plain label="c" />
+        <Plain label="d" />
+      </Page>,
+    );
+    // b は交互割当なら muted だが、直後が accent（淡面）なので default に倒す。
+    // accent 後は default から再開し、d が muted
+    expect(mutedSlotOf(getByText('a'))).toBeNull();
+    expect(mutedSlotOf(getByText('b'))).toBeNull();
+    expect(mutedSlotOf(getByText('band'))).toBeNull();
+    expect(mutedSlotOf(getByText('c'))).toBeNull();
+    expect(mutedSlotOf(getByText('d'))).not.toBeNull();
+  });
+
   it('props 依存の pageSurface（関数形）を解決する', () => {
     const { getByText } = render(
       <Page>

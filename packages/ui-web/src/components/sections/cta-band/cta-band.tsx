@@ -21,15 +21,16 @@ export interface CTABandProps
 }
 
 /**
- * CTABand — セクション区切りに**繰り返し置く**コンバージョン帯。
+ * CTABand — ページ中間に置くコンバージョン帯。
  *
- * LP 実測の標準形は「同じ2種のプライマリ CTA ラベルをセクション区切りごとに
- * 4〜6回反復する」（composition-redesign.md §3-3）。CTABand はそのための部品で、
- * 「ページに2つしか置けない特別なコンポーネント」ではない。
+ * 実測では**面を持つ CTA 帯の反復は中間1〜2回 + 末尾**が上限で、
+ * それ以上の高頻度反復（4〜6回）は面を持たない裸の CTA が担っている
+ * （docs/research/research-cta-band.md §3-1。面なし反復用の部品は別途検討）。
+ * CTABand は前者のための部品で、Page 配下に3つ以上置くと dev 警告が出る。
  * ページ末尾の締めには従来どおり CTASection（暗面・kicker あり）を使う。
  *
- * ラベルの種類だけは規範がある: プライマリ CTA のラベルは2種類まで
- * （Page 配下では3種類目で dev 警告）。
+ * ラベルの規範: プライマリ CTA のラベルは2種類まで
+ * （Page 配下では3種類目で dev 警告。反復自体は自由）。
  */
 export const CTABand = React.forwardRef<HTMLElement, CTABandProps>(
   ({ title, actions, note, ...props }, ref) => (
@@ -48,10 +49,12 @@ export const CTABand = React.forwardRef<HTMLElement, CTABandProps>(
           </div>
           <div className={styles.actions}>
             {actions.slice(0, 2).map((action, i) => (
+              // lg: 淡面に線を引かない代わりに、中身の濃さで面を立たせる
+              // （freee人事労務の実測パターン）
               <MarketingButton
                 key={i}
                 variant={i === 0 ? 'cta' : 'secondary'}
-                size="md"
+                size="lg"
                 href={action.href}
               >
                 {action.label}

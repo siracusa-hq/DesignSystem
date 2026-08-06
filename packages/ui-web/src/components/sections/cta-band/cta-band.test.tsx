@@ -54,17 +54,28 @@ describe('CTABand', () => {
     expect(resolvePageSurface(CTABand, {})).toBe('accent');
   });
 
-  it('同じ2種のラベルなら Page 配下で何度反復しても警告しない', () => {
+  it('同じ2種のラベルの反復（実測上限の2回）では警告しない', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    render(
+      <Page>
+        {band}
+        {band}
+      </Page>,
+    );
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it('Page 配下に3つ以上置くと dev 警告を出す（面を持つ帯の反復上限）', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     render(
       <Page>
         {band}
         {band}
         {band}
-        {band}
       </Page>,
     );
-    expect(warn).not.toHaveBeenCalled();
+    expect(warn).toHaveBeenCalledOnce();
+    expect(warn.mock.calls[0][0]).toContain('強調面');
   });
 
   it('Page 配下でプライマリ CTA のラベルが3種類になると dev 警告を出す', () => {
@@ -76,8 +87,9 @@ describe('CTABand', () => {
         <CTABand title="t" actions={[{ label: 'デモを予約', href: '#' }]} />
       </Page>,
     );
-    expect(warn).toHaveBeenCalledOnce();
-    expect(warn.mock.calls[0][0]).toContain('3種類');
+    // 帯3つなので反復警告も同時に出る。ここで検証するのはラベル警告のほう
+    const labelWarnings = warn.mock.calls.filter((c) => String(c[0]).includes('3種類'));
+    expect(labelWarnings).toHaveLength(1);
   });
 
   it('secondary（2つ目のオファー）はラベル種類の検査対象外', () => {

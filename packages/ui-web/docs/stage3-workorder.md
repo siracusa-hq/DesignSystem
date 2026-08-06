@@ -79,7 +79,7 @@ AI の品質事故はコンポーネント単体ではなく**構成**で起き�
       ServicePortfolio / SecurityBadges の自己 muted を default に正規化。
       dev 警告は lib/dev.ts（`process.env.NODE_ENV` をリテラルで残し消費側バンドラの DCE に乗せる。
       tsup の dts ビルドは node types を持たないため型はローカル宣言）
-- [x] Slice 1 — 2026-08-05 完了。CTA ラベル2種ルール（lib/cta-registry.ts、Page が dev のみ
+- [x] Slice 1 — 2026-08-05 完了、2026-08-06 デザイン改訂。CTA ラベル2種ルール（lib/cta-registry.ts、Page が dev のみ
       context を張り、MarketingButton variant="cta" がマウント時に textContent を登録。
       3種類目で警告・回数は数えない）+ CTABand（淡いブランド面の反復用コンバージョン帯。
       タイトルは h タグでなく強調段落 = 反復してもアウトラインを汚さない）。
@@ -90,4 +90,11 @@ AI の品質事故はコンポーネント単体ではなく**構成**で起き�
 
 ## 7. 実装で判明した事項
 
-（Stage 2 の §7 と同じく、あとから効く発見をここに記録する）
+1. **セクション面を上下の線で区切る国内 BtoB SaaS は存在しない**（11サイトの CSS 機械走査で0件。
+   docs/research/research-cta-band.md §3-2）。CTABand 初版の border-block はブランドオーナーの
+   違和感の指摘を受けて撤去した。境界の語彙は「面の色差」1種類に統一すること。
+   淡い面を線なしで成立させる手段は 余白の確保（56px）+ 中身の濃さ（lg ボタン）+
+   隣接面に muted を割り当てない（freee人事労務の実測パターン）
+2. **面を持つ CTA 帯の反復は中間1〜2回 + 末尾が実測上限**（同 §3-1）。4〜6回の高頻度反復は
+   面を持たない裸 CTA の領分。CTABand は3つ目で dev 警告を出す。
+   面なし反復用の部品（InlineCTA 相当）は未実装 — Slice 2 以降で必要になった時点で追加を判断

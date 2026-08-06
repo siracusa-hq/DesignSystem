@@ -45,14 +45,22 @@ export const Page = React.forwardRef<HTMLDivElement, PageProps>(
       [],
     );
 
+    /* 1パス目: 全子要素の面を解決する（隣接判定に先読みが要るため2パス構成） */
+    const surfaces = items.map((child) =>
+      React.isValidElement(child) ? resolvePageSurface(child.type, child.props) : null,
+    );
+
     let alternation = 0;
     let darkRun = 0;
     let darkRunWarned = false;
+    let accentCount = 0;
+    let accentWarned = false;
 
+    /* 2パス目: リズム割当 */
     const assigned = items.map((child, i) => {
       if (!React.isValidElement(child)) return child;
 
-      const surface = resolvePageSurface(child.type, child.props);
+      const surface = surfaces[i];
       if (surface === 'dark') {
         darkRun += 1;
         alternation = 0;
@@ -70,12 +78,24 @@ export const Page = React.forwardRef<HTMLDivElement, PageProps>(
         // 自前の強調面（CTABand 等）。リズムから除外し、直後は default から再開
         alternation = 0;
         darkRun = 0;
+        accentCount += 1;
+        if (isDev && accentCount >= 3 && !accentWarned) {
+          accentWarned = true;
+          console.warn(
+            '[Page] 強調面（CTABand 等）が3つ以上あります。実測では面を持つ CTA 帯の反復は' +
+              '中間1〜2回 + 末尾が上限です。それ以上の反復は面を持たない CTA で行ってください' +
+              '（docs/research/research-cta-band.md §3-1）。',
+          );
+        }
         return child;
       }
 
       darkRun = 0;
-      const muted = alternation % 2 === 1;
-      alternation += 1;
+      /* 強調面（淡いブランド面）は muted との対比が 1.11:1 しかなく、隣接すると
+         面差が消える（research-cta-band.md §0）。直後が accent なら muted にしない */
+      const nextIsAccent = surfaces[i + 1] === 'accent';
+      const muted = alternation % 2 === 1 && !nextIsAccent;
+      alternation = nextIsAccent ? 0 : alternation + 1;
       if (!muted) return child;
       return (
         <div key={`page-slot-${i}`} className={styles.slotMuted}>
