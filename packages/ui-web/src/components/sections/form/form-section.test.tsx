@@ -185,3 +185,38 @@ describe('onResult（AJAX 送信）', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 });
+
+describe('送信ボタンラベルの規範（Stage 4 Slice 2）', () => {
+  it('ContactForm の既定ラベルはオファー動詞（汎用の Send Message を廃止）', () => {
+    // jsdom は lang 未設定 = 英語既定。日本語側の既定「問い合わせる」は同じ分岐
+    render(<ContactForm title="お問い合わせ" ichisanEnabled={false} />);
+    expect(screen.getByRole('button', { name: 'Contact Us' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Send Message' })).toBeNull();
+  });
+
+  it('submitLabel でオファー名に合わせられる', () => {
+    render(
+      <ResourceRequestForm
+        title="資料請求"
+        ichisanEnabled={false}
+        submitLabel="ホワイトペーパーを受け取る"
+      />,
+    );
+    expect(screen.getByRole('button', { name: 'ホワイトペーパーを受け取る' })).toBeInTheDocument();
+  });
+
+  it('汎用ラベル（送信する 等）を渡すと dev 警告が出る', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    render(<ContactForm title="お問い合わせ" ichisanEnabled={false} submitLabel="送信する" />);
+    expect(warn).toHaveBeenCalledOnce();
+    expect(warn.mock.calls[0][0]).toContain('汎用語');
+    warn.mockRestore();
+  });
+
+  it('既定ラベル（オファー動詞）では警告しない', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    render(<DemoRequestForm title="デモ" ichisanEnabled={false} />);
+    expect(warn).not.toHaveBeenCalled();
+    warn.mockRestore();
+  });
+});

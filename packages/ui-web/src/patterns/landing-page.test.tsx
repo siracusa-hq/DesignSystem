@@ -3,10 +3,10 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'vitest-axe';
-import { defineLandingPage, LandingPage } from './index';
+import { defineLandingPage, LandingPage, type OfferPair } from './index';
 import { ResourceRequestForm } from '@/components/sections/form';
 
-const offers = [
+const offers: OfferPair = [
   { label: '資料をダウンロード', href: '#dl' },
   { label: '料金を見る', href: '#price' },
 ];
@@ -261,7 +261,7 @@ describe('data-cta の自動割当', () => {
         {...defineLandingPage({
           pattern: 'product',
           brand: 'corporate',
-          hero: { title: 't', offers: [] },
+          hero: { title: 't', offers: [{ label: 'x', href: '#x' }] },
           features: { features: [] },
           pricing: {
             plans: [
@@ -269,11 +269,11 @@ describe('data-cta の自動割当', () => {
               { name: 'B', price: '¥2', features: [], action: { label: 'x', href: '#b' } },
             ],
           },
-          closing: { title: '締め', actions: [] },
+          closing: { title: '締め' },
         })}
       />,
     );
-    expect(ctaIdsOf(container)).toEqual(['pricing-0', 'pricing-1']);
+    expect(ctaIdsOf(container)).toEqual(['hero-0', 'pricing-0', 'pricing-1', 'closing-0']);
   });
 
   it('lead-gen: フォームの送信ボタンは form-submit（form-name で区別できるため一律）', () => {

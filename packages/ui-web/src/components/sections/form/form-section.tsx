@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Section } from '@/components/primitives/section';
 import { Container } from '@/components/primitives/container';
 import { SectionHeader } from '@/components/sections/section-header';
+import { isDev } from '@/lib/dev';
 import { FormInput, FormTextarea, FormSelect, FormButton } from './form-primitives';
 import styles from './form-section.module.css';
 
@@ -77,6 +78,28 @@ interface BaseFormSectionProps
    * `onSubmit` を渡した場合 `onResult` は呼ばれない（送信は呼び出し側の責任になる）。
    */
   onResult?: (result: FormSubmitResult) => void;
+  /**
+   * 送信ボタンのラベル。**オファー名と一致させること**（stage4-workorder.md §4 Slice 2）。
+   * 「送信」のような汎用語はコンバージョンを下げるため、dev では警告が出る。
+   * 既定はフォームごとのオファー動詞（問い合わせる / 資料をダウンロード / デモを予約する）。
+   */
+  submitLabel?: string;
+}
+
+/* 汎用の送信ラベル（dev 検査の対象）。実測の規範は「ラベル = オファー名」 */
+const GENERIC_SUBMIT_LABELS = new Set(['送信', '送信する', 'submit', 'send', 'send message']);
+
+function useSubmitLabelCheck(label: string) {
+  React.useEffect(() => {
+    if (!isDev) return;
+    if (GENERIC_SUBMIT_LABELS.has(label.trim().toLowerCase()) || GENERIC_SUBMIT_LABELS.has(label.trim())) {
+      console.warn(
+        `[FormSection] 送信ボタンのラベル「${label}」は汎用語です。` +
+          'オファー名と一致させてください（例: 「資料をダウンロード」「デモを予約する」。' +
+          'composition-redesign.md §4-4）。',
+      );
+    }
+  }, [label]);
 }
 
 function NetlifyForm({
@@ -212,6 +235,7 @@ export const ContactForm = React.forwardRef<HTMLElement, ContactFormProps>(
       action,
       onSubmit,
       onResult,
+      submitLabel,
       ichisanEnabled = true,
       ...props
     },
@@ -219,6 +243,7 @@ export const ContactForm = React.forwardRef<HTMLElement, ContactFormProps>(
   ) => {
     useIchisanForm(ichisanEnabled);
     const isJa = useIsJa();
+    useSubmitLabelCheck(submitLabel ?? (isJa ? '問い合わせる' : 'Contact Us'));
 
     return (
       <Section ref={ref} background="default" spacing="lg" {...props}>
@@ -244,7 +269,7 @@ export const ContactForm = React.forwardRef<HTMLElement, ContactFormProps>(
               rows={5}
               required
             />
-            <FormButton ctaId="form-submit">{isJa ? '送信する' : 'Send Message'}</FormButton>
+            <FormButton ctaId="form-submit">{submitLabel ?? (isJa ? '問い合わせる' : 'Contact Us')}</FormButton>
           </NetlifyForm>
         </Container>
       </Section>
@@ -273,6 +298,7 @@ export const ResourceRequestForm = React.forwardRef<HTMLElement, ResourceRequest
       action,
       onSubmit,
       onResult,
+      submitLabel,
       ichisanEnabled = true,
       resourceName,
       ...props
@@ -281,6 +307,7 @@ export const ResourceRequestForm = React.forwardRef<HTMLElement, ResourceRequest
   ) => {
     useIchisanForm(ichisanEnabled);
     const isJa = useIsJa();
+    useSubmitLabelCheck(submitLabel ?? (isJa ? '資料をダウンロード' : 'Download Resource'));
 
     return (
       <Section ref={ref} background="default" spacing="lg" {...props}>
@@ -309,7 +336,7 @@ export const ResourceRequestForm = React.forwardRef<HTMLElement, ResourceRequest
               }
             />
             <FormButton ctaId="form-submit">
-              {isJa ? '資料をダウンロード' : 'Download Resource'}
+              {submitLabel ?? (isJa ? '資料をダウンロード' : 'Download Resource')}
             </FormButton>
           </NetlifyForm>
         </Container>
@@ -339,6 +366,7 @@ export const DemoRequestForm = React.forwardRef<HTMLElement, DemoRequestFormProp
       action,
       onSubmit,
       onResult,
+      submitLabel,
       ichisanEnabled = true,
       timeSlots,
       ...props
@@ -347,6 +375,7 @@ export const DemoRequestForm = React.forwardRef<HTMLElement, DemoRequestFormProp
   ) => {
     useIchisanForm(ichisanEnabled);
     const isJa = useIsJa();
+    useSubmitLabelCheck(submitLabel ?? (isJa ? 'デモを予約する' : 'Book a Demo'));
 
     const defaultTimeSlots = timeSlots ?? [
       { value: 'morning', label: isJa ? '午前（10:00-12:00）' : 'Morning (10:00-12:00)' },
@@ -393,7 +422,7 @@ export const DemoRequestForm = React.forwardRef<HTMLElement, DemoRequestFormProp
               }
               rows={3}
             />
-            <FormButton ctaId="form-submit">{isJa ? 'デモを予約する' : 'Book a Demo'}</FormButton>
+            <FormButton ctaId="form-submit">{submitLabel ?? (isJa ? 'デモを予約する' : 'Book a Demo')}</FormButton>
           </NetlifyForm>
         </Container>
       </Section>

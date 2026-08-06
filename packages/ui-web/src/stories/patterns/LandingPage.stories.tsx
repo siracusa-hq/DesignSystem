@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { defineLandingPage, LandingPage } from '../../patterns';
+import { defineLandingPage, LandingPage, type OfferPair } from '../../patterns';
 import { ResourceRequestForm } from '../../components/sections/form';
 
 /**
@@ -19,7 +19,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const offers = [
+const offers: OfferPair = [
   { label: '資料をダウンロード', href: '#dl' },
   { label: '料金を見る', href: '#pricing' },
 ];

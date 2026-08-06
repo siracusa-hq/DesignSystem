@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { axe } from 'vitest-axe';
 import { HeroSection } from './hero-section';
@@ -73,5 +73,39 @@ describe('backdrop（背景演出層）', () => {
       <HeroSection title="見出し" backdrop={<div />} backdropTone="dark" />,
     );
     expect(container.querySelector('section')).toHaveClass('bgDark');
+  });
+});
+
+describe('FV の CTA 本数検査（Stage 4 Slice 2）', () => {
+  it('2本では警告しない', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    render(
+      <HeroSection
+        title="t"
+        actions={[
+          { label: 'a', href: '#' },
+          { label: 'b', href: '#' },
+        ]}
+      />,
+    );
+    expect(warn).not.toHaveBeenCalled();
+    warn.mockRestore();
+  });
+
+  it('3本以上で dev 警告を出す（実測: 2本が 13/17）', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    render(
+      <HeroSection
+        title="t"
+        actions={[
+          { label: 'a', href: '#' },
+          { label: 'b', href: '#' },
+          { label: 'c', href: '#' },
+        ]}
+      />,
+    );
+    expect(warn).toHaveBeenCalledOnce();
+    expect(warn.mock.calls[0][0]).toContain('ファーストビュー');
+    warn.mockRestore();
   });
 });

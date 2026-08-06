@@ -33,12 +33,15 @@ export interface OfferAction {
 /** セクション Props からページ層が管理する項目を除いたもの */
 type Slot<P> = Omit<P, 'children'>;
 
+/** オファーは最大2本（FV の CTA 2本が実測 13/17。3本目は型エラーで落とす） */
+export type OfferPair = [OfferAction] | [OfferAction, OfferAction];
+
 export interface LandingHero extends Pick<
   HeroSectionProps,
   'badge' | 'title' | 'subtitle' | 'image' | 'imagePlacement' | 'backdrop' | 'backdropTone'
 > {
   /** 1〜2オファー。midCta / closing にも同じラベルが再利用される（ラベル2種ルール） */
-  offers: OfferAction[];
+  offers: OfferPair;
 }
 
 /** 社会的証明帯（ヒーロー直下、実測 9/12）。ロゴか数値のどちらか */
@@ -52,7 +55,7 @@ export interface LandingMidCta {
 
 /** 最終 CTA 面。actions 省略時は hero のオファーを再利用する */
 export interface LandingClosing extends Omit<Slot<CTASectionProps>, 'actions'> {
-  actions?: OfferAction[];
+  actions?: OfferPair;
 }
 
 interface LandingPageCommon {
@@ -96,7 +99,7 @@ export interface LeadGenInput extends Omit<LandingPageCommon, 'header'> {
   pattern: 'lead-gen';
   hero: Omit<LandingHero, 'offers'> & {
     /** フォームへ誘導する1オファーのみ（例: ページ内アンカー） */
-    offers?: OfferAction[];
+    offers?: [OfferAction];
   };
   /** 資料の中身の箇条書き */
   contents: Slot<FeatureGridProps>;
@@ -110,7 +113,7 @@ export interface CorporateTopInput extends LandingPageCommon {
   pattern: 'corporate-top';
   hero: Omit<LandingHero, 'offers'> & {
     /** 採用・会社案内など。コンバージョン用途に使わないこと */
-    offers?: OfferAction[];
+    offers?: OfferPair;
   };
   services: Slot<ServicePortfolioProps>;
   stats?: Slot<StatsSectionProps>;
