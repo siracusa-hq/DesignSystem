@@ -84,7 +84,14 @@ AI の品質事故はコンポーネント単体ではなく**構成**で起き�
       3種類目で警告・回数は数えない）+ CTABand（淡いブランド面の反復用コンバージョン帯。
       タイトルは h タグでなく強調段落 = 反復してもアウトラインを汚さない）。
       pageSurface に `accent` を追加（自前の強調面。リズム除外・カウンタリセット・暗面扱いしない）
-- [ ] Slice 2
+- [x] Slice 2 — 2026-08-06 完了。defineLandingPage()（純粋な正規化。tone 既定: product 系=product /
+      lead-gen=campaign / corporate-top=trust）+ <LandingPage>（順序の実装を一元化）+ パターン4種。
+      スロット型は既存セクション Props を再利用。midCta / closing のオファーは hero から自動再利用
+      （ラベル2種ルールの構造的担保）。lead-gen はナビ無し・締めはフォーム。corporate-top は
+      closing 省略可（コンバージョン CTA を持たない型）。章立て余白は attached スコープ
+      （証明帯はヒーローの章 = セクション余白の物差しを縮めた div で包む）。
+      「サポート・導入の流れ」「コンテンツ回遊」のスロットは対応部品が無いため未実装
+      （必要になった時点で部品ごと追加。推測で型だけ作らない）
 - [ ] Slice 3
 - [ ] Slice 4
 

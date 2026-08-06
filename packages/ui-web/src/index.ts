@@ -202,3 +202,6 @@ export {
   type PageTone,
 } from './components/layout/page';
 export { markPageSurface, type PageSurface } from './lib/page-surface';
+
+// パターン層（Stage 3）: LP 量産のデータ駆動 API
+export * from './patterns';
