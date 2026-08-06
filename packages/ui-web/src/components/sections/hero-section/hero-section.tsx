@@ -9,6 +9,7 @@ import type { MediaFrameProps } from '@/components/primitives/media-frame';
 import type { ProductShotProps } from '@/components/primitives/product-shot';
 import styles from './hero-section.module.css';
 import { cn } from '@/lib/cn';
+import { isDev } from '@/lib/dev';
 import { markPageSurface } from '@/lib/page-surface';
 
 export interface HeroAction {
@@ -58,6 +59,14 @@ export const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
   ) => {
     const isSide = image != null && imagePlacement === 'side';
     const isStart = isSide || backdrop != null;
+    if (isDev && actions && actions.length >= 3) {
+      console.warn(
+        `[HeroSection] ファーストビューの CTA が ${actions.length} 本あります。` +
+          '実測では2本が標準です（13/17。3本以上のページは判断が割れて CVR を下げます。' +
+          'composition-redesign.md §4-3）。',
+      );
+    }
+
     const content = (
       <div className={cn(styles.inner, !isStart && styles.centered)}>
         {badge && (

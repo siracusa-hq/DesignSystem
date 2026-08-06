@@ -89,9 +89,21 @@ Stage 3 までは「崩れないページが速く出る」まで。LP は**成�
   - `pnpm build` / `smoke` / `codegen`（新規 d.ts 2件をコミット）/ `lint:css` /
     `typecheck`（src + stories）/ `test`（371件。うち新規26件）/
     `size`（バレル 49.27kB / 上限 55kB、styles.css 9.48kB / 上限 10kB）すべて緑
-- [ ] Slice 2
+- [x] Slice 2 — 2026-08-06 完了。
+  - FV の CTA 本数検査: HeroSection が actions 3本以上で dev 警告（実測: 2本が 13/17）。
+    defineLandingPage 側は型で締めた（`OfferPair` = 最大2本のタプル。3本目はコンパイルエラー。
+    lead-gen は1本固定）。**警告より型エラーのほうが強い防壁**なので、量産ルートは型で守る
+  - 送信ボタンラベルの規範: 3フォームに `submitLabel` を追加（オファー名に合わせる用）。
+    ContactForm の既定を汎用の「送信する / Send Message」から「問い合わせる / Contact Us」に変更。
+    汎用語（送信・送信する・Submit・Send 等）を渡すと dev 警告
+  - process.env.NODE_ENV を直接書くと DTS ビルドが落ちる（Stage 3 Slice 0 と同じ罠）。
+    dev 検査は必ず `@/lib/dev` の `isDev` を使うこと（§7 に再掲）
 
 ## 7. 実装で判明した事項
+
+0. **dev 検査で `process.env.NODE_ENV` を直接参照しない。** tsup の DTS ビルドは
+   @types/node を持たず TS2580 で落ちる。必ず `@/lib/dev` の `isDev` を使う
+   （Stage 3 Slice 0 に続き Slice 2 でも踏んだ。二度目なのでここに昇格して記録）
 
 - **`LandingPage` の CTA 委譲は `Page` ではなく `PageLayout` に張る必要があった。**
   `MarketingHeader` は `PageLayout` の直下・`<Page>` の**外**に描画されるため、

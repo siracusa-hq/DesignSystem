@@ -15,4 +15,5 @@ export {
   type LandingMidCta,
   type LandingClosing,
   type OfferAction,
+  type OfferPair,
 } from './define-landing-page';
