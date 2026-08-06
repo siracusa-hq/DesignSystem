@@ -1,5 +1,18 @@
 # @polastack/gtm-design-system
 
+## 0.6.0
+
+### Minor Changes
+
+- bc21562: `<Page brand tone>` を追加（Stage 3 Slice 0）。ページが面リズム（default ↔ muted の交互割当・暗面3連続の dev 警告）とトーン軸（trust / product / campaign の余白スケール）を割り当てる。セクションは面を選ばない設計へ正規化（ServicePortfolio / SecurityBadges の自己 muted を廃止）。
+- ff65393: CTA 規範と CTABand を追加（Stage 3 Slice 1）。CTABand はセクション区切りに繰り返し置くコンバージョン帯（淡いブランド面）。Page 配下ではプライマリ CTA（variant="cta"）のラベルが3種類以上になると dev 警告を出す（ラベルは2種類まで・反復は自由、LP 実測に基づく規範）。
+- 1659f97: defineLandingPage() と LandingPage を追加（Stage 3 Slice 2）。LP 量産のデータ駆動 API。パターン4種（product / product-portfolio-top / lead-gen / corporate-top）が実測に基づく構成（順序・リズム・CTA 配置・トーン既定）を決め、呼び出し側は内容だけを渡す。必須スロットの欠落は型エラーで落ちる。
+- 069ceb3: `CaseStudyListSection` と `case-study-list` パターンを追加（Stage 3 Slice 3）。事例一覧ページの実測形（SmartHR `/case/`・バクラク `/case/` の 2/2）をそのまま部品にした: 短いページタイトル + ピックアップ + 多軸フィルタ（サービス / 業種 / 従業員規模 / 課題。軸間 AND、選択肢はデータから自動生成）+ カードグリッド + ページネーション。UI 語彙は `labels` で差し替えできる。状態は内部 useState のみで URL とは同期しないため、静的サイトに置く場合はクライアントでの hydration が必要。
+
+### Patch Changes
+
+- 6085fb1: README を Stage 3 完了時点の実態に同期（削除済み BentoGrid の記載を除去、defineLandingPage / Page の使い方を追加、コンポーネント一覧と技術スタックを現状に更新）。
+
 ## 0.5.0
 
 ### Minor Changes
