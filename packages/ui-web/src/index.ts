@@ -207,6 +207,18 @@ export {
   type SocialLink,
 } from './components/layout/marketing-footer';
 export { PageLayout, type PageLayoutProps } from './components/layout/page-layout';
+// 追従 CTA（Stage 4 Slice 1）。実測で確認できた2形態のみ
+export {
+  StickyHeaderCTA,
+  type StickyHeaderCTAProps,
+  type StickyHeaderCTAAction,
+} from './components/layout/sticky-header-cta';
+export {
+  FloatingCornerCTA,
+  type FloatingCornerCTAProps,
+  type FloatingCornerCTAAction,
+  type FloatingCornerCTALabels,
+} from './components/layout/floating-corner-cta';
 export {
   Page,
   PAGE_BRANDS,
@@ -217,6 +229,10 @@ export {
   type PageCTA,
   type PageCTAClickHandler,
 } from './components/layout/page';
+/* Page の外に出る追従 CTA を任意の祖先で受けるための委譲ヘルパー。
+   StickyHeaderCTA / FloatingCornerCTA は Page の外に置かれるため、
+   Page.onCTAClick では拾えない（stage4-workorder.md §7） */
+export { createCTAClickCapture } from './lib/cta-click';
 export { markPageSurface, type PageSurface } from './lib/page-surface';
 
 // パターン層（Stage 3）: LP 量産のデータ駆動 API

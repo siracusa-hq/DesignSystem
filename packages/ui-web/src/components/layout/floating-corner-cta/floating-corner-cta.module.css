@@ -1,0 +1,92 @@
+/* FloatingCornerCTA — 右下フローティングカード。
+   実測（カミナシ、composition-redesign.md §4-2）:
+     position: fixed; bottom: 30px; right: 30px; width: 380px
+     モバイルは内部ボタン width: 90%
+
+   実測の height: 240px は「その内容での結果」なので固定しない。
+   和文コピーは長さが暴れるため、高さを固定すると文字が溢れる。 */
+
+.card {
+  position: fixed;
+  /* 固定ヘッダー（--z-header: 100）より下、本文より上 */
+  z-index: var(--z-floating);
+  bottom: var(--spacing-4);
+  left: var(--spacing-4);
+  right: var(--spacing-4);
+  box-sizing: border-box;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  padding: var(--spacing-5);
+  box-shadow: var(--shadow-overlay);
+}
+@media (min-width: 48rem) {
+  .card {
+    /* 実測 30px / 380px */
+    bottom: 1.875rem;
+    right: 1.875rem;
+    left: auto;
+    width: 23.75rem;
+  }
+}
+
+.close {
+  position: absolute;
+  top: var(--spacing-2);
+  right: var(--spacing-2);
+  display: inline-flex;
+  height: 2rem;
+  width: 2rem;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--radius-full);
+  background: none;
+  color: var(--color-on-surface-muted);
+  cursor: pointer;
+  transition:
+    background var(--duration-fast) var(--ease-default),
+    color var(--duration-fast) var(--ease-default);
+}
+.close:hover {
+  background: var(--color-surface-sunken);
+  color: var(--color-on-surface);
+}
+.close:focus-visible {
+  outline: 2px solid var(--color-ring-brand);
+  outline-offset: 2px;
+}
+
+.title {
+  margin: 0;
+  /* × ボタンに文字が潜り込まないよう逃がす */
+  padding-right: var(--spacing-8);
+  font-size: var(--text-heading-sm);
+  line-height: var(--text-heading-sm--line-height);
+  font-weight: 700;
+  color: var(--color-on-surface);
+}
+
+.description {
+  margin-top: var(--spacing-2);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-2);
+  margin-top: var(--spacing-4);
+}
+.actions > * {
+  /* 実測: モバイルは内部ボタン 90% */
+  width: 90%;
+}
+@media (min-width: 48rem) {
+  .actions {
+    align-items: stretch;
+  }
+  .actions > * {
+    width: 100%;
+  }
+}

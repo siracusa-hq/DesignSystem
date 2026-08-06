@@ -1,0 +1,92 @@
+/* StickyHeaderCTA — 固定ヘッダー内に CTA を2本内包する追従形態。
+   実測（カミナシ、composition-redesign.md §4-2）:
+     position: fixed; top: 0; width: 100%
+     ヘッダー行 60px / モバイルは CTA 2本が各 45vw・高さ 40px で横並び
+
+   Container を使っていないのは 45vw を通すため。
+   Container のモバイル padding は 1rem（両側で 2rem）で、
+   45vw × 2 + gap がそこに収まるのは画面幅 400px 以上。
+   375px 端末で横スクロールが出るため、この部品だけ自前の padding（0.5rem）を持つ。 */
+
+.header,
+.spacer {
+  /* 実測 60px。デスクトップは MarketingHeader の bar（4rem）に合わせる
+     （デスクトップ行高の実測が無いため、パッケージ内の既存値に揃えた） */
+  --sticky-header-row: 3.75rem;
+}
+@media (min-width: 48rem) {
+  .header,
+  .spacer {
+    --sticky-header-row: 4rem;
+  }
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--z-header);
+  width: 100%;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
+}
+
+/* 固定要素は本文を覆う。同じ高さの block を直後に出して押し下げる */
+.spacer {
+  height: var(--sticky-header-row);
+}
+
+.bar {
+  display: flex;
+  height: var(--sticky-header-row);
+  max-width: var(--container-xl);
+  margin-inline: auto;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  padding-inline: var(--spacing-2);
+}
+@media (min-width: 48rem) {
+  .bar {
+    justify-content: space-between;
+    gap: var(--spacing-6);
+    padding-inline: var(--spacing-6);
+  }
+}
+@media (min-width: 64rem) {
+  .bar {
+    padding-inline: var(--spacing-8);
+  }
+}
+
+/* モバイルは CTA 2本で 90vw を使い切るためロゴを出さない（実測どおり） */
+.logoBox {
+  display: none;
+}
+@media (min-width: 48rem) {
+  .logoBox {
+    display: block;
+    flex-shrink: 0;
+  }
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+.actions > * {
+  /* 実測: 各 45vw / 高さ 40px */
+  flex: 0 0 45vw;
+  height: 2.5rem;
+}
+@media (min-width: 48rem) {
+  .actions {
+    gap: var(--spacing-3);
+  }
+  .actions > * {
+    flex: 0 0 auto;
+    height: auto;
+  }
+}
