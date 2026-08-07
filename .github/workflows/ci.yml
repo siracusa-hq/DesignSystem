@@ -57,6 +57,62 @@ jobs:
       - name: Size check
         run: pnpm size
 
+  # ページ単位のビジュアル回帰テスト（stage5-workorder.md Slice 0）。
+  # check job とは独立に並列で走る。Storybook のビルドと Chromium の取得が要るため
+  # check より重く、check の結果を待たせる理由もない。
+  vrt:
+    name: Visual regression (pages)
+    # 基準 PNG は devcontainer（Debian 13 / arm64）で生成してコミットしている。
+    # 同じ PNG が Ubuntu 24.04 の arm64 / amd64 コンテナでも 1px の差もなく通ることを
+    # マージ前に実測済み（stage5-workorder.md §7-2）。フォントを Google Fonts の
+    # webfont で固定し、ヒンティングと LCD 描画を切っているため OS・CPU 差を受けない。
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # `...` は「依存パッケージも含める」の意味（tokens → ui-web）。
+      # ui-app は VRT に無関係なのでビルドしない。
+      # Storybook の vite は @siracusahq/tokens を dist 経由で解決するため必須。
+      - name: Build (tokens → ui-web)
+        run: pnpm --filter "@siracusahq/gtm-design-system..." build
+
+      - name: Install Chromium
+        run: pnpm --filter @siracusahq/gtm-design-system exec playwright install chromium --with-deps
+
+      # 和文の webfont（Noto Sans JP）は Google Fonts から取得するのが本線で、
+      # これはその取得が欠けたときに豆腐（□）ではなく和文が出るための保険。
+      # ※ webfont が読めていない場合は vrt/pages.spec.ts が明示的に落とす
+      - name: Install Japanese fonts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fonts-noto-cjk
+
+      # Storybook（web のみ）のビルドを含む。app 側は VRT の対象外
+      - name: VRT
+        run: pnpm --filter @siracusahq/gtm-design-system vrt
+
+      # 差分が目視できないと VRT の運用は回らない。
+      # test-results/ に actual / expected / diff の3枚が、report/ に HTML レポートが入る。
+      - name: Upload diff artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vrt-diff
+          path: |
+            packages/ui-web/vrt/test-results
+            packages/ui-web/vrt/report
+          retention-days: 14
+          if-no-files-found: warn
+
   changeset:
     name: Changeset present
     runs-on: ubuntu-latest
