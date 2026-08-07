@@ -62,6 +62,21 @@ pnpm --filter @siracusahq/gtm-design-system test     # Vitest
 
 このディレクトリで直接実行する場合は `pnpm build` / `pnpm test` / `pnpm typecheck`。
 
+### ページ単位 VRT（ビジュアル回帰）
+
+```bash
+pnpm --filter @siracusahq/gtm-design-system vrt         # 基準 PNG と比較（CI と同じ）
+pnpm --filter @siracusahq/gtm-design-system vrt:update  # 基準 PNG を更新
+```
+
+対象は**ページ単位ストーリーだけ**（Patterns/LandingPage・Patterns/WorstCase・
+Examples/CorporateTop）。コンポーネント単体は対象にしない。基準 PNG は
+`vrt/__screenshots__/{desktop,mobile}/` にコミットしてあり、**その更新は
+「意図した見た目の変更」の PR にだけ含めること**。設計と実測は
+[docs/stage5-workorder.md](./docs/stage5-workorder.md) §3 / §7。
+
+初回は Chromium の取得が要る: `pnpm exec playwright install chromium --with-deps`。
+
 ## パッケージングルール
 
 作成したシステムはGitHubおよびnpmパッケージとして展開する。

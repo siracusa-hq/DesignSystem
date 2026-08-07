@@ -1,6 +1,11 @@
 node_modules/
 dist/
 storybook-static/
+
+# VRT の実行成果物。基準 PNG（packages/ui-web/vrt/__screenshots__/）はコミットする
+packages/ui-web/vrt/test-results/
+packages/ui-web/vrt/report/
+
 .turbo/
 *.tsbuildinfo
 .pnpm-store/
