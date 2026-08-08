@@ -19,6 +19,21 @@ export interface AnimatedCounterProps
   decimals?: number;
 }
 
+/**
+ * OS の「視差効果を減らす」設定を見る。
+ *
+ * このコンポーネントのカウントアップは `requestAnimationFrame` による **JS 実装**なので、
+ * `theme.css` の `@media (prefers-reduced-motion: reduce)`（CSS の duration を 1ms に落とす）は
+ * 届かない。JS 側で自分で判定する必要がある（stage5-workorder.md §7-1）。
+ *
+ * SSR では `window` が無いため false（= 通常のアニメーション経路）を返し、
+ * 判定はクライアントの effect 内でだけ行う。
+ */
+function prefersReducedMotion(): boolean {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return false;
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
 export const AnimatedCounter = React.forwardRef<HTMLSpanElement, AnimatedCounterProps>(
   (
     { value, duration = 2000, locale = 'ja-JP', prefix = '', suffix = '', decimals = 0, ...props },
@@ -40,6 +55,15 @@ export const AnimatedCounter = React.forwardRef<HTMLSpanElement, AnimatedCounter
     React.useEffect(() => {
       const el = elementRef.current;
       if (!el || hasAnimated) return;
+
+      /* 動きを減らす設定では数え上げを行わず、最初から最終値を出す。
+         初期値は SSR と同じ 0 のままにして effect で確定させるので、
+         ハイドレーションの不一致は起きない */
+      if (prefersReducedMotion()) {
+        setHasAnimated(true);
+        setDisplayValue(value);
+        return;
+      }
 
       const observer = new IntersectionObserver(
         ([entry]) => {

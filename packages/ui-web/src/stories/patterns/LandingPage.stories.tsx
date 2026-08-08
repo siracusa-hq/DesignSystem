@@ -52,6 +52,8 @@ export const 製品LP_タックスピア: Story = {
           { value: '92', suffix: '%', label: '期限内回収率', numericValue: 92 },
           { value: '3', suffix: '日', label: '平均導入期間', numericValue: 3 },
         ],
+        /* 実績数値には基準時点が要る（景表法。未指定だと dev 警告） */
+        asOf: '※2026年7月末時点',
       },
     },
     features: {
@@ -162,6 +164,7 @@ export const ポートフォリオトップ_ピアデスク: Story = {
           { value: '1,200', suffix: '社', label: '導入企業', numericValue: 1200 },
           { value: '98', suffix: '%', label: '継続率', numericValue: 98 },
         ],
+        asOf: '※2026年7月末時点',
       },
     },
     products: {
@@ -224,6 +227,7 @@ export const 獲得LP_資料ダウンロード: Story = {
         { value: '1,200', suffix: '社', label: '導入企業', numericValue: 1200 },
         { value: '3', suffix: '日', label: '平均導入期間', numericValue: 3 },
       ],
+      asOf: '※2026年7月末時点',
     },
     form: <ResourceRequestForm eyebrow="Download" title="資料請求フォーム" />,
   }),
@@ -263,6 +267,7 @@ export const コーポレートトップ: Story = {
         { value: '2', suffix: '事業', label: 'プロダクトライン', numericValue: 2 },
         { value: '1,200', suffix: '社', label: '取引社数', numericValue: 1200 },
       ],
+      asOf: '※2026年7月末時点',
     },
   }),
 };
@@ -408,6 +413,18 @@ export const English_Product_Polastack: Story = {
         { label: 'Book a demo', href: '#demo' },
         { label: 'Read the docs', href: '#docs' },
       ],
+    },
+    /* 社会的証明スロットは product / product-portfolio-top で必須（実測 19/19）。
+       ロゴ帯か数値訴求のどちらか。ここは数値訴求 */
+    proof: {
+      stats: {
+        stats: [
+          { value: '4,200', suffix: '+', label: 'Agents in production', numericValue: 4200 },
+          { value: '99.99', suffix: '%', label: 'Control plane uptime', numericValue: 99.99 },
+          { value: '40', suffix: 'ms', label: 'Median policy overhead', numericValue: 40 },
+        ],
+        asOf: 'As of July 2026',
+      },
     },
     features: {
       eyebrow: 'Platform',

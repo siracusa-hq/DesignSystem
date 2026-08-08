@@ -129,6 +129,59 @@ describe('Page', () => {
     expect(warn.mock.calls[0][0]).toContain('暗い面');
   });
 
+  it('h1 が2つ以上あると dev 警告を出す（1つなら出さない）', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    render(
+      <Page>
+        <section>
+          <h1>ページタイトル</h1>
+        </section>
+        <section>
+          <h2>セクション見出し</h2>
+        </section>
+      </Page>,
+    );
+    expect(warn).not.toHaveBeenCalled();
+
+    render(
+      <Page>
+        <section>
+          <h1>ページタイトル</h1>
+        </section>
+        <section>
+          <h1>もう1つの h1</h1>
+        </section>
+      </Page>,
+    );
+    expect(warn).toHaveBeenCalledOnce();
+    expect(warn.mock.calls[0][0]).toContain('h1 が 2 個');
+  });
+
+  it('h1 が無くても警告しない（ページの型によっては Page の外に出る）', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    render(
+      <Page>
+        <Plain label="a" />
+      </Page>,
+    );
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it('Page の外の h1 は数えない（自ルート配下だけを見る）', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    render(
+      <div>
+        <h1>ヘッダーの外側</h1>
+        <Page>
+          <section>
+            <h1>ページタイトル</h1>
+          </section>
+        </Page>
+      </div>,
+    );
+    expect(warn).not.toHaveBeenCalled();
+  });
+
   it('要素以外の子（文字列・null）を壊さない', () => {
     const { container } = render(
       <Page>
@@ -138,6 +191,16 @@ describe('Page', () => {
       </Page>,
     );
     expect(container.textContent).toBe('a');
+  });
+
+  it('ref をルート要素に転送する（h1 検査の内部 ref と両立する）', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const { container } = render(
+      <Page ref={ref}>
+        <Plain label="a" />
+      </Page>,
+    );
+    expect(ref.current).toBe(container.firstElementChild);
   });
 
   it('className を受け付けない（迂回路を持たない）', () => {

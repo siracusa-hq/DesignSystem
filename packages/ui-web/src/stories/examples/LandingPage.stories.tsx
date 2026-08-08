@@ -525,6 +525,7 @@ export const TopPage: Story = {
                     },
                   ]
             }
+            asOf={isJa ? '※2026年7月末時点' : 'As of July 2026'}
           />
         </AnimateOnScroll>
 

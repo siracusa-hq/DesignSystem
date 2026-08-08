@@ -38,12 +38,37 @@ export interface PageProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'c
 }
 
 /**
+ * h1 重複の dev 検査（Stage 5 Slice 1）。
+ *
+ * 「ページの見出しは1つ」は構造の問題なので、DOM ができてから数えるしかない
+ * （children を静的に走査しても、セクションが内部で h1 を出すかは分からない）。
+ * SSR では effect が走らないため何もしない。1マウントにつき1回だけ数える。
+ */
+function useDuplicateH1Check(rootRef: React.RefObject<HTMLElement | null>) {
+  React.useEffect(() => {
+    if (!isDev) return;
+    const root = rootRef.current;
+    if (!root) return;
+    const count = root.querySelectorAll('h1').length;
+    if (count < 2) return;
+    console.warn(
+      `[Page] ページ内に h1 が ${count} 個あります。h1 はページタイトルを担うセクションだけが出します` +
+        '（HeroSection、またはヒーローを持たない事例一覧の SectionHeader as="h1"）。' +
+        '他のセクション見出しは h2 のままにしてください（composition-redesign.md §Stage 5）。',
+    );
+    // ページ（=このコンポーネントのライフサイクル）につき1回
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+}
+
+/**
  * Page — ページのリズムを割り当てるコンテナ（composition-redesign.md §3-3）。
  *
  * - 面: 自分で暗面を塗るセクション（pageSurface 申告）を除き、
  *   default ↔ muted を交互に割り当てる。暗面で交互カウンタをリセットする
  *   （暗面直後は必ず default から再開）
  * - 暗面の3連続は禁止（dev 警告）。可読性の問題であり、確定規則
+ * - h1 の重複を dev 警告（マウント後に自ルート配下を数える）
  * - トーン/ブランドは data 属性で配下に伝播する
  * - 計測: `onCTAClick` で配下の `data-cta` 付き CTA のクリックを一括で受け取れる
  */
@@ -53,6 +78,17 @@ export const Page = React.forwardRef<HTMLDivElement, PageProps>(
     ref,
   ) => {
     const items = React.Children.toArray(children);
+
+    const rootRef = React.useRef<HTMLDivElement | null>(null);
+    const setRootRef = React.useCallback(
+      (node: HTMLDivElement | null) => {
+        rootRef.current = node;
+        if (typeof ref === 'function') ref(node);
+        else if (ref) (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+      },
+      [ref],
+    );
+    useDuplicateH1Check(rootRef);
 
     const handleClickCapture = createCTAClickCapture<HTMLDivElement>(onCTAClick, onClickCapture);
 
@@ -126,7 +162,7 @@ export const Page = React.forwardRef<HTMLDivElement, PageProps>(
     return (
       <CTARegistryContext.Provider value={ctaRegistry}>
         <div
-          ref={ref}
+          ref={setRootRef}
           data-brand={brand}
           data-tone={tone}
           className={cn(styles.page)}

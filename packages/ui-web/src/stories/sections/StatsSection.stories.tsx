@@ -1,6 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { StatsSection } from '../../components/sections/stats-section';
 
+/**
+ * StatsSection — 数値訴求（実測 19/19 のページが保有）。
+ *
+ * **`asOf`（基準時点）は実質必須。** 景品表示法上、いつの数字か分からない実績表示は
+ * 不当表示になりえるため、`asOf` も `note` も無いと dev 警告が出る
+ * （コンソールで確かめたい場合は Patterns/規範ガード を見ること）。
+ */
 const meta: Meta<typeof StatsSection> = {
   title: 'Sections/StatsSection',
   component: StatsSection,
@@ -40,6 +47,7 @@ export const Default: Story = {
                 { value: '3-5 wks', label: 'To production', description: 'Down from 13-26 weeks' },
               ]
         }
+        asOf={isJa ? '※2026年7月末時点' : 'As of July 2026'}
       />
     );
   },
@@ -113,6 +121,7 @@ export const Animated: Story = {
                 },
               ]
         }
+        asOf={isJa ? '※2026年7月末時点' : 'As of July 2026'}
       />
     );
   },
@@ -137,6 +146,7 @@ export const DarkBackground: Story = {
                 { value: '0 lines', label: 'Auth code needed' },
               ]
         }
+        asOf={isJa ? '※2026年7月末時点' : 'As of July 2026'}
       />
     );
   },
