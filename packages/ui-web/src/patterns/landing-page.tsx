@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Page } from '@/components/layout/page';
 import { PageLayout } from '@/components/layout/page-layout';
 import { createCTAClickCapture } from '@/lib/cta-click';
+import { isDev } from '@/lib/dev';
 import { HeroSection } from '@/components/sections/hero-section';
 import { LogoCloud } from '@/components/sections/logo-cloud';
 import { StatsSection } from '@/components/sections/stats-section';
@@ -51,9 +52,36 @@ const midCta = (m: LandingMidCta | undefined, offers: OfferAction[]) =>
 const closing = (c: LandingClosing | undefined, offers: OfferAction[]) =>
   c ? <CTASection key="closing" {...c} actions={c.actions ?? offers} /> : null;
 
+/** proof スロットを持つパターン（ヒーロー直下の社会的証明帯を置ける型） */
+const PATTERNS_WITH_PROOF = ['product', 'product-portfolio-top'] as const;
+
+/**
+ * 社会的証明スロットの空検査（Stage 5 Slice 1）。
+ *
+ * 実測（[LP] 19社）では **19/19 が数値訴求を持っていた**。
+ * ロゴ帯と数値バッジは代替関係なので「どちらか」でよいが、
+ * **どちらも無いページは1件も無かった**。
+ * 1マウントにつき1回だけ警告する（effect なので SSR では何もしない）。
+ */
+function useSocialProofCheck(pattern: string, hasProof: boolean) {
+  React.useEffect(() => {
+    if (!isDev) return;
+    if (hasProof) return;
+    if (!(PATTERNS_WITH_PROOF as readonly string[]).includes(pattern)) return;
+    console.warn(
+      `[LandingPage] 社会的証明スロット（proof）が空です（pattern="${pattern}"）。` +
+        '実測では 19/19 のページが数値訴求を持っており、ロゴ帯も数値も無いページは0件でした。' +
+        'proof.stats（数値訴求）か proof.logos（ロゴ帯・6社以上）のどちらかを必ず置いてください' +
+        '（composition-redesign.md §Stage 5）。',
+    );
+  }, [pattern, hasProof]);
+}
+
 export const LandingPage: React.FC<LandingPageProps> = (props) => {
   const { brand, tone, footer, onCTAClick } = props;
   const header = props.pattern === 'lead-gen' ? undefined : props.header;
+
+  useSocialProofCheck(props.pattern, 'proof' in props && props.proof != null);
 
   /* CTA クリックの委譲は Page ではなく PageLayout に張る。
      ヘッダー（header-${i}）は Page の外・PageLayout の直下に描画されるため、

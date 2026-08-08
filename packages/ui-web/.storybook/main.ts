@@ -22,6 +22,13 @@ const config: StorybookConfig = {
     if (process.env.STORYBOOK_BASE) {
       config.base = process.env.STORYBOOK_BASE;
     }
+    /* Storybook のビルド版でも dev 検査（Patterns/規範ガード）を残す。
+       `storybook build` は production ビルドなので、既定だと
+       `src/lib/dev.ts` の isDev が false に畳まれ、規範ガードの警告が
+       コードごと消える（= デプロイ版の Storybook では何も出ない）。
+       Storybook は配布物ではなくカタログなので、ここだけ development 扱いにする。
+       npm パッケージ本体（tsup ビルド）はこの define の影響を受けない。 */
+    config.define = { ...config.define, 'process.env.NODE_ENV': JSON.stringify('development') };
     return config;
   },
 };

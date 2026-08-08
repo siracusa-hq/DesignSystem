@@ -19,7 +19,9 @@ const productInput = defineLandingPage({
     subtitle: 'タックスピアは税理士事務所と顧問先をつなぐ書類収集ツールです。',
     offers,
   },
-  proof: { stats: { stats: [{ value: '800事務所', label: '導入' }] } },
+  proof: {
+    stats: { stats: [{ value: '800事務所', label: '導入' }], asOf: '2026年7月時点' },
+  },
   features: {
     title: '主要機能',
     features: [
@@ -226,6 +228,78 @@ describe('LandingPage', () => {
   }, 15000);
 });
 
+describe('社会的証明スロットの空検査（Stage 5 Slice 1）', () => {
+  /** proof だけを外した product 入力 */
+  const withoutProof = (() => {
+    const { proof: _proof, ...rest } = productInput;
+    return rest as typeof productInput;
+  })();
+
+  it('product で proof が無いと dev 警告を出す（実測 19/19 が数値訴求を持つ）', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    render(<LandingPage {...withoutProof} />);
+    const messages = warn.mock.calls.map((c) => String(c[0]));
+    const proofWarnings = messages.filter((m) => m.includes('社会的証明スロット'));
+    expect(proofWarnings).toHaveLength(1);
+    expect(proofWarnings[0]).toContain('19/19');
+  });
+
+  it('product-portfolio-top でも同じ検査が効く', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    render(
+      <LandingPage
+        {...defineLandingPage({
+          pattern: 'product-portfolio-top',
+          brand: 'peerdesk',
+          hero: { title: 'シリーズでなくす。', offers },
+          products: { services: [] },
+          closing: { title: '締め' },
+        })}
+      />,
+    );
+    expect(warn.mock.calls.map((c) => String(c[0])).join('\n')).toContain('社会的証明スロット');
+  });
+
+  it('proof.stats があれば警告しない', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    render(<LandingPage {...productInput} />);
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it('proof.logos（6社以上）でも警告しない（ロゴと数値は代替関係）', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    render(
+      <LandingPage
+        {...defineLandingPage({
+          ...productInput,
+          proof: {
+            logos: {
+              logos: Array.from({ length: 6 }, (_, i) => ({ name: `Company ${i}` })),
+            },
+          },
+        })}
+      />,
+    );
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it('proof スロットを持たないパターン（lead-gen / corporate-top / case-study-list）では出さない', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    render(<LandingPage {...caseListInput} />);
+    render(
+      <LandingPage
+        {...defineLandingPage({
+          pattern: 'corporate-top',
+          brand: 'corporate',
+          hero: { title: '事業の裏側を、まっすぐに。' },
+          services: { title: '事業内容', services: [] },
+        })}
+      />,
+    );
+    expect(warn.mock.calls.map((c) => String(c[0])).join('\n')).not.toContain('社会的証明スロット');
+  });
+});
+
 /* ============================================================
    計測フック（Stage 4 Slice 0）
    ============================================================ */
@@ -262,6 +336,7 @@ describe('data-cta の自動割当', () => {
           pattern: 'product',
           brand: 'corporate',
           hero: { title: 't', offers: [{ label: 'x', href: '#x' }] },
+          proof: { stats: { stats: [{ value: '1', label: 'n' }], asOf: '2026年7月時点' } },
           features: { features: [] },
           pricing: {
             plans: [

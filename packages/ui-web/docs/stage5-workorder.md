@@ -51,7 +51,7 @@ Stage 5 はそれを**壊れないまま保つ**仕組み。特に AI が書く�
 ## 6. 進捗
 
 - [x] Slice 0 — ページ単位 VRT 基盤 + 和文最悪ケース
-- [ ] Slice 1
+- [x] Slice 1 — dev 警告拡充 + 規範ガードのデモ + AnimatedCounter の reduced-motion 対応
 - [ ] Slice 2
 
 ### Slice 0 の要点
@@ -79,11 +79,30 @@ Stage 5 はそれを**壊れないまま保つ**仕組み。特に AI が書く�
    `--force-color-profile=srgb` / `--disable-skia-runtime-opts`）
 6. **`locale: 'ja-JP'` / `timezoneId: 'Asia/Tokyo'` の固定**（`Intl.NumberFormat` の桁区切り）
 
+### Slice 1 の要点
+
+| 項目           | 実績                                                                                                                            |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| 追加した警告   | 4種（h1 重複 / 社会的証明スロット空 / StatsSection の時点表記 / ロゴ1〜5社）。既存5種と合わせて **9種**                        |
+| 新しい公開 API | `StatsSectionProps.asOf`（minor）。時点は利用側が文字列で渡す（パッケージは文言を持たない）                                     |
+| a11y 修正      | AnimatedCounter が `prefers-reduced-motion: reduce` で rAF を回さず最終値を即出しするように（§7-1 の宿題を消化）               |
+| デモ           | `Patterns/規範ガード` に10ストーリー（警告9種 + 「出ない例」1種）。各1件だけ鳴ることを実測で確認                               |
+| VRT 基準更新   | **16 枚**（8ストーリー × 2 ビューポート）。asOf の caption 追加と、English LP への proof 追加が理由                            |
+| 副産物         | **dev 警告は Stage 3〜4 を通じて一度も出ていなかった**（§7-6）。Slice 1 の本体はこの発見と修正                                 |
+
 ## 7. 実装で判明した事項
 
 （あとから効く発見をここに記録する。dev 検査は process.env でなく `@/lib/dev` の isDev を使うこと — Stage 4 §7-0）
 
-### 7-1. AnimatedCounter は `prefers-reduced-motion` を見ていない
+### 7-1. AnimatedCounter は `prefers-reduced-motion` を見ていない（Slice 1 で解消）
+
+> **解消済み（Slice 1）**: `animated-counter.tsx` が `matchMedia('(prefers-reduced-motion: reduce)')`
+> を見て、reduce のときは IntersectionObserver も rAF も回さず最終値を即座に出すようにした。
+> 初期値は SSR と同じ 0 のまま effect で確定させるので、ハイドレーションの不一致は起きない。
+> VRT 側の `completeTimeBasedAnimations`（rAF の時刻を進める処置）は、
+> `matchMedia` を持たない環境や将来の JS 演出に対する保険として残している。
+> 以下は当時の記録。
+
 
 `stats-section.tsx` のコメントは「reduced-motion はトークン層が処理」と書いているが、
 これが成り立つのは **CSS アニメーションだけ**。`AnimatedCounter` は
@@ -138,3 +157,81 @@ Slice 0 では**コンポーネントに手を入れず** VRT 側で rAF の時�
 **年が変わると基準 PNG が自動で壊れる**。ページ単位ストーリーではあるが、
 Slice 0 の対象は「Patterns 全部 + CorporateTop + 最悪ケース」なので今回は対象外。
 将来 VRT に入れるなら、年を固定値の props にするか `clock` API で時刻を固定すること。
+
+### 7-5. dev 警告の文字列は production バンドルにも残る（実行はされない）
+
+Slice 1 で `scripts/consumer-smoke.mjs` に DCE 検証を足したところ、
+**警告の日本語文字列は production バンドルから消えない**ことが分かった。
+実測（バレル import・esbuild minify）は **5,269 B / brotli 1,238 B**。
+
+原因は `@/lib/dev` という**モジュール境界**にある。tsup（esbuild）は
+`export const isDev = ...` を必ず `var isDev = ...` として出力するため
+（バンドル時の束縛の平坦化。`splitting` や `treeshake` の設定とは無関係で、
+両方を切っても `var` のまま）、消費側の esbuild も Rollup も
+「モジュールをまたいだ定数伝播」ができず、`if (isDev && …)` を畳めない。
+実測で Vite（Rollup）の production ビルドでも 8/8 の警告文が残った。
+
+- **実行はされない。** `isDev` 自体は `false` に評価されるので、
+  利用者のコンソールに警告が出ることはない（smoke がこの向きを検証している）
+- 検証として `isDev` を手で `const` に書き換えると 8 件中 6 件が消えた。
+  残る2件は `useEffect` のクロージャ内にある検査（h1 重複 / CTA ラベル）
+
+**消し切るには `process.env.NODE_ENV !== 'production'` を各検査の直上に
+インライン展開する**しかない（React / Redux が採っている形）。
+これは Stage 4 §7-0 で決めた「`@/lib/dev` の isDev を使う」を覆すことになるので、
+Slice 1 では**実測の記録にとどめ、手を入れていない**。
+バレルの size 枠（55 kB / 実測 50.44 kB）に対して brotli 1.2 kB なので、
+費用対効果の判断は別途行うこと。
+
+### 7-6. dev 警告は Stage 3〜4 を通じて一度も出ていなかった
+
+Slice 1 で規範ガードのデモを作った際、**警告がブラウザで1件も出ない**ことが判明した。
+原因は `src/lib/dev.ts` の書き方:
+
+```ts
+// 誤り（Stage 2〜4 のあいだずっとこれだった）
+export const isDev = typeof process !== 'undefined' && process.env?.NODE_ENV !== 'production';
+```
+
+2つの罠が重なっていた。
+
+1. **`typeof process !== 'undefined'` のガード。**
+   ブラウザに `process` グローバルは無く、バンドラはこの `typeof` を畳まない。
+   `process.env.NODE_ENV` が `"development"` に置換されていても、
+   式全体が実行時に `false` になる。**Storybook でも消費側の Vite アプリでも
+   警告が出ていなかった**（Netlify の Storybook でも、ローカルの dev サーバでも）
+2. **`process.env?.NODE_ENV` のオプショナルチェーン。**
+   esbuild の define は `process.env.NODE_ENV` の**ドット表記の完全一致**しか置換しない。
+   `?.` を挟むと置換されず、「文字列は残るのに実行はされない」状態になる
+   （Vite は置換してくれるので、この罠は esbuild 単体でしか露見しない）
+
+修正後は `process.env.NODE_ENV !== 'production'` の一行に統一した。
+`scripts/consumer-smoke.mjs` が **development で警告文が残ること**と
+**production で `process.env.NODE_ENV` が置換されること**を双方向で検証しており、
+同じ事故が再発したら CI で落ちる。
+
+**教訓: 「警告を実装した」と「警告が出る」は別。** 検査を足したら、
+実際にブラウザで鳴ることを一度は確かめること。
+
+### 7-7. Storybook のビルド版でも dev 検査を残す設定にした
+
+`storybook build` は production ビルドなので、既定では `isDev` が `false` に畳まれ、
+**Netlify にデプロイされた Storybook では規範ガードのデモが何も出せない**。
+Storybook は npm の配布物ではなくカタログなので、
+`packages/ui-web/.storybook/main.ts` の `viteFinal` で
+`process.env.NODE_ENV` を `"development"` に固定している。
+
+- npm パッケージ本体（tsup ビルド）はこの define の影響を受けない
+- React も dev ビルドで載る（Storybook のバンドルは増えるが、
+  カタログとしては React 自身の警告も見えたほうがよい）
+- **VRT には影響しなかった**（この変更の前後で 20 枚とも 1px の差もなく通る）
+
+### 7-8. `asOf` は `note` があるときは警告しない
+
+`StatsSection` には既に自由文の `note`（「※2026年6月末時点。当社調べ…」）があり、
+時点をそこに書いているページが実在した。`asOf` 未指定だけを条件に警告すると
+**規範を守っているページに警告が出る**（誤発火は警告そのものへの信頼を壊す）。
+
+そこで `asOf` と `note` の**両方が無いときだけ**警告する。
+役割は分けてある: `asOf` = 基準時点（構造化スロット）/ `note` = 出典・調査方法（自由文）。
+両方渡すと caption の枠に2行で並ぶ。

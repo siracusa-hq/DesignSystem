@@ -48,6 +48,7 @@ const sections = (
         { value: '98%', label: '継続率' },
         { value: '3日', label: '平均導入期間' },
       ]}
+      asOf="※2026年7月末時点"
     />
     <FeatureGrid
       eyebrow="Features"
@@ -136,6 +137,7 @@ export const English_Polastack: Story = {
           { value: '99.9%', label: 'Uptime SLA' },
           { value: '12+', label: 'Framework integrations' },
         ]}
+        asOf="As of July 2026"
       />
       <FeatureGrid
         eyebrow="Platform"

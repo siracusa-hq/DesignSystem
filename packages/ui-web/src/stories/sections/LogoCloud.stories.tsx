@@ -42,7 +42,13 @@ const names = [
 const toLogos = (count: number) =>
   names.slice(0, count).map((name) => ({ name, node: <PlaceholderLogo name={name} /> }));
 
-/** 6件。静的な帯で並ぶ（6社未満なら StatsSection の数値バッジを使うこと） */
+/**
+ * 6件。静的な帯で並ぶ。
+ *
+ * **これがロゴ帯の下限。** 1〜5社のロゴ帯は日本語ページに実例が0件で、dev 警告が出る。
+ * 少数しか出せない場合はロゴ帯にせず事例カードに紐付けるか、
+ * StatsSection の数値訴求に振り切ること（実測 6/19 がその選択）。
+ */
 export const Static: Story = {
   render: (_, { globals }) => {
     const isJa = globals.locale === 'ja';

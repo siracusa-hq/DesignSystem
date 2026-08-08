@@ -83,7 +83,9 @@ export const 最悪ケース_長文和文: Story = {
             numericValue: 3,
           },
         ],
-        note: '※2026年6月末時点。当社調べ（導入事務所へのアンケート回答 412 件の集計による）。',
+        /* 時点（asOf）と出典（note）は別スロット。両方入れた最長級のケース */
+        asOf: '※2026年6月末時点',
+        note: '当社調べ（導入事務所へのアンケート回答 412 件の集計による。回答率 34.6%）。',
       },
     },
     features: {
@@ -221,6 +223,8 @@ export const 最悪ケース_極短: Story = {
           { value: '92', suffix: '%', label: '回収率', numericValue: 92 },
           { value: '3', suffix: '日', label: '導入', numericValue: 3 },
         ],
+        /* 極短側の時点表記 */
+        asOf: '26年7月時点',
       },
     },
     features: {
