@@ -100,6 +100,7 @@ export const English: Story = {
       eyebrow="CONTACT"
       title="Talk to our team"
       subtitle="We will get back to you within one business day."
+      lang="en"
     />
   ),
 };

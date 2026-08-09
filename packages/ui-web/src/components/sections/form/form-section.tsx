@@ -84,6 +84,8 @@ interface BaseFormSectionProps
    * 既定はフォームごとのオファー動詞（問い合わせる / 資料をダウンロード / デモを予約する）。
    */
   submitLabel?: string;
+  /** フォーム内蔵文言の言語。既定 'ja'（SSG でも決定的） */
+  lang?: FormLang;
 }
 
 /* 汎用の送信ラベル（dev 検査の対象）。実測の規範は「ラベル = オファー名」 */
@@ -169,7 +171,15 @@ function NetlifyForm({
   );
 }
 
-const useIsJa = () => typeof document !== 'undefined' && document.documentElement.lang === 'ja';
+/**
+ * フォームの言語。**既定は日本語**で、実行環境に依存しない。
+ *
+ * 旧実装は document.documentElement.lang をブラウザで覗いていたが、
+ * Astro の静的生成（Netlify Forms の標準経路）ではサーバーに document が無く、
+ * **和文ページでもフォームだけ英語で公開される**事故が起きた（stage5-workorder §7-10）。
+ * 「書いたとおりに出る」決定的な挙動に変更: 未指定 = ja / lang="en" で英語。
+ */
+export type FormLang = 'ja' | 'en';
 
 /** 氏名+メールの定型行（autocomplete で入力摩擦を減らす） */
 function NameEmailRow({ isJa }: { isJa: boolean }) {
@@ -236,13 +246,14 @@ export const ContactForm = React.forwardRef<HTMLElement, ContactFormProps>(
       onSubmit,
       onResult,
       submitLabel,
+      lang = 'ja',
       ichisanEnabled = true,
       ...props
     },
     ref,
   ) => {
     useIchisanForm(ichisanEnabled);
-    const isJa = useIsJa();
+    const isJa = lang !== 'en';
     useSubmitLabelCheck(submitLabel ?? (isJa ? '問い合わせる' : 'Contact Us'));
 
     return (
@@ -299,6 +310,7 @@ export const ResourceRequestForm = React.forwardRef<HTMLElement, ResourceRequest
       onSubmit,
       onResult,
       submitLabel,
+      lang = 'ja',
       ichisanEnabled = true,
       resourceName,
       ...props
@@ -306,7 +318,7 @@ export const ResourceRequestForm = React.forwardRef<HTMLElement, ResourceRequest
     ref,
   ) => {
     useIchisanForm(ichisanEnabled);
-    const isJa = useIsJa();
+    const isJa = lang !== 'en';
     useSubmitLabelCheck(submitLabel ?? (isJa ? '資料をダウンロード' : 'Download Resource'));
 
     return (
@@ -367,6 +379,7 @@ export const DemoRequestForm = React.forwardRef<HTMLElement, DemoRequestFormProp
       onSubmit,
       onResult,
       submitLabel,
+      lang = 'ja',
       ichisanEnabled = true,
       timeSlots,
       ...props
@@ -374,7 +387,7 @@ export const DemoRequestForm = React.forwardRef<HTMLElement, DemoRequestFormProp
     ref,
   ) => {
     useIchisanForm(ichisanEnabled);
-    const isJa = useIsJa();
+    const isJa = lang !== 'en';
     useSubmitLabelCheck(submitLabel ?? (isJa ? 'デモを予約する' : 'Book a Demo'));
 
     const defaultTimeSlots = timeSlots ?? [

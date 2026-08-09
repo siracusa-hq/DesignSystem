@@ -315,6 +315,10 @@ API の選択（`lang` prop を足す / `Page` の context から取る / 既定
 - 検出できなかった理由: vitest（jsdom）には `document` があるので常に日本語で通る。
   **サーバ側だけが違う挙動をするコードは、ブラウザ環境のテストでは原理的に見えない**
 
+**解消（2026-08-09 / fix/form-lang-default-ja）**: ブランドオーナー承認のもと
+「既定 ja・`lang="en"` で英語」の決定的挙動に変更した。`useIsJa`（document 覗き見）は廃止。
+astro-consumer の verify に「contact が日本語で静的出力される」検査を常設。
+
 ### 7-11. `.astro` で直接セクションを並べると面リズムエンジンが効かない
 
 Stage 3 の核である `Page` の面リズム（default ↔ muted の交互割当）は、

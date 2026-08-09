@@ -142,6 +142,10 @@ const checks = [
     'contact: honeypot（data-netlify-honeypot）が静的 HTML に出る',
     contactHtml.includes('data-netlify-honeypot="bot-field"'),
   ],
+  [
+    'contact: フォーム文言が既定の日本語で静的出力される（SSG 言語事故の再発防止。stage5-workorder §7-10）',
+    contactHtml.includes('お名前') && !contactHtml.includes('Download Resource'),
+  ],
 
   /* --- HTML: interactive 経路 ------------------------------------------- */
   [

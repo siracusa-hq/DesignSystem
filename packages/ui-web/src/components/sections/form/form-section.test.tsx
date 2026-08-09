@@ -45,7 +45,7 @@ describe('Netlify Forms 対応（Formspree 廃止・2026-08-04 決定）', () =>
   it('デモ予約に時間帯セレクトがある', () => {
     // jsdom の documentElement.lang は未設定のため英語ラベルになる
     render(<DemoRequestForm title="デモ" ichisanEnabled={false} />);
-    expect(screen.getByLabelText('Preferred Time')).toBeInTheDocument();
+    expect(screen.getByLabelText('ご希望の時間帯')).toBeInTheDocument();
   });
 
   it('a11y違反がない', async () => {
@@ -187,11 +187,20 @@ describe('onResult（AJAX 送信）', () => {
 });
 
 describe('送信ボタンラベルの規範（Stage 4 Slice 2）', () => {
-  it('ContactForm の既定ラベルはオファー動詞（汎用の Send Message を廃止）', () => {
-    // jsdom は lang 未設定 = 英語既定。日本語側の既定「問い合わせる」は同じ分岐
+  it('ContactForm の既定ラベルはオファー動詞（汎用の「送信する」を廃止）', () => {
     render(<ContactForm title="お問い合わせ" ichisanEnabled={false} />);
+    expect(screen.getByRole('button', { name: '問い合わせる' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '送信する' })).toBeNull();
+  });
+
+  it('言語は既定 ja・lang="en" で英語（実行環境に依存しない）', () => {
+    const { unmount } = render(<ContactForm title="Contact" ichisanEnabled={false} lang="en" />);
     expect(screen.getByRole('button', { name: 'Contact Us' })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Send Message' })).toBeNull();
+    expect(screen.getByLabelText(/Name/)).toBeInTheDocument();
+    unmount();
+    // 既定（未指定）は document.lang に関係なく日本語
+    render(<ContactForm title="お問い合わせ" ichisanEnabled={false} />);
+    expect(screen.getByLabelText(/お名前/)).toBeInTheDocument();
   });
 
   it('submitLabel でオファー名に合わせられる', () => {
