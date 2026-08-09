@@ -10,5 +10,12 @@ packages:
 # ※ キー名は pnpm 11 で `onlyBuiltDependencies`（配列）から
 #   `allowBuilds`（マップ）に変わった。旧キーは設定として認識はされるが
 #   ビルド許可の判定には使われず、ERR_PNPM_IGNORED_BUILDS で install が落ちる。
+#
+# sharp は astro の依存（画像最適化サービス）として入ってくるが、
+# astro-consumer-test は画像を1枚も扱わないので実行されない。
+# install スクリプトはプリビルドバイナリ（@img/sharp-*）の存在確認であり、
+# 走らせなくても解決に支障が無いため **明示的に拒否**（false）する。
+# 未宣言のままだと install が ERR_PNPM_IGNORED_BUILDS で落ちる。
 allowBuilds:
   esbuild: true
+  sharp: false

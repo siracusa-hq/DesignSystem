@@ -1,0 +1,36 @@
+---
+/**
+ * 資料請求ページ。**本命は Netlify Forms の静的検出**。
+ *
+ * Netlify はデプロイ時に「静的 HTML を解析して」フォームを登録する。
+ * つまり `data-netlify="true"` と hidden の `form-name` が
+ * **ビルド生成物の HTML に載っていなければ、フォームは永久に受信されない**。
+ * React 側の SSR 出力に載っていることは consumer-smoke が見ているが、
+ * Astro のビルド経路（React → astro のレンダラ → HTML 出力）で
+ * 属性が落ちないことは、実際にビルドしてみないと分からない。
+ *
+ * したがってこのページは **hydrate しない**（client ディレクティブを付けない）。
+ * 素の POST を Netlify が受ける形が実運用の既定であり、検証したいのもその形。
+ */
+import '@siracusahq/gtm-design-system/styles.css';
+import { Page, ResourceRequestForm } from '@siracusahq/gtm-design-system';
+---
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>資料請求 | Astro 消費側結合テスト</title>
+  </head>
+  <body>
+    <Page brand="peerdesk-taxpeer" tone="campaign">
+      <ResourceRequestForm
+        eyebrow="Download"
+        title="タックスピアの資料をお送りします"
+        subtitle="機能・料金・導入の流れを1つの PDF にまとめています。"
+        resourceName="taxpeer-overview"
+        action="/thanks"
+      />
+    </Page>
+  </body>
+</html>

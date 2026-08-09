@@ -9,7 +9,7 @@
     "url": "https://github.com/siracusa-hq/DesignSystem.git"
   },
   "scripts": {
-    "build": "pnpm -r build",
+    "build": "pnpm -r --filter=!astro-consumer-test build",
     "dev": "pnpm -r --parallel dev",
     "test": "pnpm -r test",
     "typecheck": "pnpm -r typecheck",

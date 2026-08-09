@@ -1,0 +1,26 @@
+{
+  "name": "astro-consumer-test",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "内部検査用の最小 Astro アプリ。@siracusahq/gtm-design-system を実運用と同じ形で消費し、astro build の生成物に期待どおりの HTML/CSS が載ることを CI で検証する（npm には公開しない）",
+  "scripts": {
+    "build": "ASTRO_TELEMETRY_DISABLED=1 astro build",
+    "verify": "node verify.mjs",
+    "clean": "rm -rf dist .astro"
+  },
+  "dependencies": {
+    "@astrojs/react": "^4.4.2",
+    "@siracusahq/gtm-design-system": "workspace:*",
+    "astro": "^5.18.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

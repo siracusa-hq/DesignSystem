@@ -52,7 +52,7 @@ Stage 5 はそれを**壊れないまま保つ**仕組み。特に AI が書く�
 
 - [x] Slice 0 — ページ単位 VRT 基盤 + 和文最悪ケース
 - [x] Slice 1 — dev 警告拡充 + 規範ガードのデモ + AnimatedCounter の reduced-motion 対応
-- [ ] Slice 2
+- [x] Slice 2 — Astro 消費側結合テスト
 
 ### Slice 0 の要点
 
@@ -89,6 +89,33 @@ Stage 5 はそれを**壊れないまま保つ**仕組み。特に AI が書く�
 | デモ           | `Patterns/規範ガード` に10ストーリー（警告9種 + 「出ない例」1種）。各1件だけ鳴ることを実測で確認                               |
 | VRT 基準更新   | **16 枚**（8ストーリー × 2 ビューポート）。asOf の caption 追加と、English LP への proof 追加が理由                            |
 | 副産物         | **dev 警告は Stage 3〜4 を通じて一度も出ていなかった**（§7-6）。Slice 1 の本体はこの発見と修正                                 |
+
+### Slice 2 の要点
+
+| 項目               | 実績                                                                                                                            |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| 場所               | `packages/astro-consumer-test/`（`private: true` の workspace パッケージ。npm には出ない）                                      |
+| ページ             | 3枚。`index`（`defineLandingPage` の製品LP・静的）/ `contact`（`ResourceRequestForm`・静的）/ `cases`（`client:visible`）       |
+| 検証項目           | **17件**（HTML 7 / Netlify 3 / アイランド 3 / CSS 4）。1つでも欠けたら exit 1 で何が欠けたか出す                                |
+| 実行時間           | `astro build` 6〜7 秒（クリーンから）+ `verify` 1 秒未満。3回連続で緑                                                           |
+| CI                 | `astro-consumer` job（check / vrt と並列）。install + `pnpm build` + astro build + verify で **3〜4 分**の見込み                |
+| 見つかった不具合   | **2件**。`offers` の DOM 属性漏れ（修正済み・patch）と、SSG のフォームが英語になる問題（§7-10。未修正）                        |
+| 見つかった落とし穴 | **1件**。`.astro` で直接セクションを並べると面リズムエンジンが効かない（§7-11）                                                |
+
+**「1行導入」の根拠がこれになった。** `packages/ui-web/README.md` の Setup は
+`import '@siracusahq/gtm-design-system/styles.css';` の1行だけで済むと謳っているが、
+これまでその主張を裏づけるのは renderToString の smoke だけで、
+実際のフレームワークのビルドを通した証拠は無かった。
+`src/pages/index.astro` はその1行しか書いていない（PostCSS 設定も Tailwind も無い）ので、
+このジョブが緑であること自体が README の主張の実測になっている。
+
+ローカルでの再現:
+
+```bash
+pnpm build   # tokens → ui-app → ui-web（astro-consumer-test は含まない。§7-12）
+pnpm --filter astro-consumer-test build
+pnpm --filter astro-consumer-test verify
+```
 
 ## 7. 実装で判明した事項
 
@@ -240,3 +267,98 @@ Storybook は npm の配布物ではなくカタログなので、
 そこで `asOf` と `note` の**両方が無いときだけ**警告する。
 役割は分けてある: `asOf` = 基準時点（構造化スロット）/ `note` = 出典・調査方法（自由文）。
 両方渡すと caption の枠に2行で並ぶ。
+
+### 7-9. `LandingPage` が `hero.offers` を DOM 属性として出力していた（Slice 2 で修正）
+
+生成 HTML のヒーロー `<section>` に、こう焼き付いていた。
+
+```html
+<section class="section_section … hero_section_hero" offers="[object Object],[object Object]">
+```
+
+原因は `landing-page.tsx` の `hero()` が `{...h}` をそのまま `HeroSection` に渡していたこと。
+`offers` は `HeroSectionProps` に無いため `Section` 経由で DOM まで素通りし、
+**React は未知の props を属性としてそのまま出す**（警告も出ない）。
+
+見た目は1pxも変わらないので VRT でも axe でも Storybook の目視でも検出できない。
+**生成物を文字列として読む検査でしか見つからない類の事故**であり、
+Slice 2 を作った価値がここに出た。修正は `offers` を分割代入で取り除く1行。
+`verify.mjs` に「データ props が DOM 属性へ漏れていない」検査を常設した。
+
+### 7-10. SSG で出したフォームは和文ページでも英語になる（未修正・要判断）
+
+`form-section.tsx` の言語判定はこれ1行。
+
+```ts
+const useIsJa = () => typeof document !== 'undefined' && document.documentElement.lang === 'ja';
+```
+
+サーバ側には `document` が無いので **SSR/SSG では必ず `false`**。
+`<html lang="ja">` のページに置いた `ResourceRequestForm` が、実際にこう出た。
+
+```html
+<label for="input-name" class="form_primitives_label">Name</label>
+…<button …>Download Resource</button>
+```
+
+hydrate すればブラウザ側で `ja` に切り替わるが、**フォームのページは hydrate しないのが
+Netlify Forms の標準形**（素の POST で受ける）。つまり和文 LP の資料請求フォームが
+英語のまま公開される。hydrate する場合はする場合で、SSR 出力（英語）と
+クライアント初回描画（日本語）が食い違い、**ハイドレーションの不一致**になる。
+
+日本市場向けの GTM デザインシステムとして、これは無視できない。ただし直し方は
+API の選択（`lang` prop を足す / `Page` の context から取る / 既定を `ja` にする）を
+含む設計判断なので、Slice 2 の範囲では**触らずに記録だけ**にした。
+現状の回避策は `submitLabel` などを明示的に渡すこと。
+
+- 影響: `ContactForm` / `ResourceRequestForm` / `DemoRequestForm` の3つ
+- 検出できなかった理由: vitest（jsdom）には `document` があるので常に日本語で通る。
+  **サーバ側だけが違う挙動をするコードは、ブラウザ環境のテストでは原理的に見えない**
+
+### 7-11. `.astro` で直接セクションを並べると面リズムエンジンが効かない
+
+Stage 3 の核である `Page` の面リズム（default ↔ muted の交互割当）は、
+`React.Children.toArray(children)` で子を1件ずつ見て種別を判定する実装になっている。
+つまり **children が React 要素として渡っていること**が前提。
+
+Astro の `.astro` テンプレートで `<Page>` の中にセクションを並べると、
+Astro は子を**先にレンダリングした HTML の塊**として React に渡すため、
+`Page` から見た子は不透明な1件になる。実測（5セクションを `.astro` で直接並べた検証ページ）:
+
+| コンポーズの場所                            | `page_slotMuted` の出現 |
+| ------------------------------------------- | ----------------------- |
+| `defineLandingPage` + `<LandingPage>`       | 1件（**効いている**）   |
+| `.astro` テンプレートで直接 5 セクション    | **0件**                 |
+
+同じ理由で、暗面3連続の警告・h1 重複の警告・CTA ラベル2種の登録も、
+`.astro` で組んだページでは働かない可能性が高い（いずれも Page 配下の React 構造に乗っている）。
+
+**したがって Astro での推奨形は2つに限られる。**
+
+1. `defineLandingPage` + `<LandingPage>`（データ駆動。LP 量産の本線）
+2. セクションの並びを `.tsx` のコンポーネントにまとめ、`.astro` からはそれを1つ置くだけにする
+
+「`.astro` に `<Section>` を並べる」は一見自然だが、**リズムも規範ガードも外れた
+ただの部品置き場**になる。README にこの制約を書くかどうかは Stage 6 で判断する。
+`verify.mjs` には「index（`LandingPage` 経由）で `page_slotMuted` が出ていること」を
+常設し、支持されている経路のほうが壊れたら落ちるようにした。
+
+### 7-12. astro-consumer-test をルートの `pnpm build` から除外している
+
+`package.json` のルート `build` は `pnpm -r --filter=!astro-consumer-test build`。
+理由は**リリース経路に消費側テストのビルドを挟まないため**で、
+`release.yml` は `pnpm build` と `pnpm release`（= `pnpm build && changeset publish`）を
+実行する。ここに astro build が入ると、消費側テストの都合（Astro のバージョン差、
+ネットワーク、キャッシュ）で **npm への publish が止まる**。
+
+検証は CI の `astro-consumer` job が `pnpm build` の後に明示的に呼ぶ形にした。
+
+派生して2点。
+
+- **pnpm**: `sharp` が astro の依存として入ってくる。postinstall（プリビルドバイナリの
+  存在確認）は不要なので `pnpm-workspace.yaml` の `allowBuilds` に **`sharp: false`** と
+  明示的に書いた。未宣言だと `ERR_PNPM_IGNORED_BUILDS` で install ごと落ちる
+- **changesets**: `private: true` でも**バージョンとタグは付く**（publish だけが除外される）。
+  実際 `changeset status` が `astro-consumer-test` を patch 対象に挙げていた。
+  `.changeset/config.json` に `"privatePackages": { "version": false, "tag": false }` を
+  足して、リリースの成果物から完全に外した

@@ -31,8 +31,17 @@ import styles from './landing-page.module.css';
  * 順序の根拠は製品系 12 ページの最大公約数（§3-2。料金 → 事例、FAQ は任意）。
  */
 
-const hero = (h: LandingHero | (Omit<LandingHero, 'offers'> & { offers?: OfferAction[] })) => (
-  <HeroSection key="hero" {...h} actions={h.offers} />
+/*
+ * offers は **必ず分割代入で取り除いてから** HeroSection へ渡すこと。
+ * HeroSection は未知の props を Section 経由で DOM に素通しするため、
+ * `{...h}` のまま渡すと生成 HTML に `offers="[object Object],[object Object]"` という
+ * 無効な属性が焼き付く（Stage 5 Slice 2 の Astro 結合テストで発覚。§7-9）。
+ */
+const hero = ({
+  offers,
+  ...h
+}: LandingHero | (Omit<LandingHero, 'offers'> & { offers?: OfferAction[] })) => (
+  <HeroSection key="hero" {...h} actions={offers} />
 );
 
 const proof = (p: LandingProof | undefined) => {
