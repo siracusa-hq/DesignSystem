@@ -1,0 +1,2 @@
+# Astro のビルドキャッシュ / 型生成（dist/ はルートの .gitignore で無視される）
+.astro/

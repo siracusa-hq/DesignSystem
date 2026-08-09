@@ -1,0 +1,63 @@
+---
+/**
+ * 事例一覧。**interactive 経路（アイランド）の検証用**。
+ *
+ * CaseStudyListSection は多軸フィルタとページネーションを持つ唯一の
+ * ステートフルなセクションで、消費側で hydrate されて初めて機能する。
+ * ここで見たいのは「ビルドが通り、astro-island が生成物に出る」ことまで。
+ * 実際の操作は Storybook / vitest の担当で、二重に検証しない。
+ *
+ * client:visible の props は JSON にシリアライズされてから
+ * ブラウザへ渡るため、React 要素を渡せない（companyLogo を使っていないのはそのため）。
+ */
+import '@siracusahq/gtm-design-system/styles.css';
+import { Page, CaseStudyListSection } from '@siracusahq/gtm-design-system';
+
+const cases = [
+  {
+    companyName: 'サンプル会計事務所',
+    summary: '1月の繁忙期でも書類の回収率が9割を超え、電話での催促がほぼゼロになった。',
+    service: 'タックスピア',
+    industry: '士業',
+    employeeRange: '11〜50名',
+    challenges: ['書類回収'],
+    metrics: [{ label: '回収率', value: '92%' }],
+  },
+  {
+    companyName: '株式会社サンプル製作所',
+    summary: '紙の領収書の山がなくなり、月次決算が3営業日早まった。',
+    service: 'ピアデスク 経費',
+    industry: '製造業',
+    employeeRange: '51〜300名',
+    challenges: ['月次決算', '経費精算'],
+  },
+  {
+    companyName: 'サンプル商事株式会社',
+    summary: '拠点をまたぐ申請の差し戻しが減り、承認までの時間が半分になった。',
+    service: 'ピアデスク 経費',
+    industry: '卸売',
+    employeeRange: '301名以上',
+    challenges: ['経費精算'],
+  },
+];
+---
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>導入事例 | Astro 消費側結合テスト</title>
+  </head>
+  <body>
+    <Page brand="peerdesk" tone="product">
+      <CaseStudyListSection
+        client:visible
+        eyebrow="Case Study"
+        title="導入事例"
+        subtitle="業種・規模・課題から絞り込めます。"
+        cases={cases}
+        pageSize={2}
+      />
+    </Page>
+  </body>
+</html>

@@ -113,6 +113,50 @@ jobs:
           retention-days: 14
           if-no-files-found: warn
 
+  # Astro 消費側結合テスト（stage5-workorder.md Slice 2）。
+  # check / vrt と並列。consumer smoke（renderToString）では見えない
+  # 「Astro のビルドを1枚挟んだときの生成物」を検証する。
+  #
+  # LP の本番リポジトリはプライベートで、そこに検査を足すと運用が二重になる。
+  # 工場（この DS）側で毎回証明しておけば、LP 側は import して書くだけでよい。
+  astro-consumer:
+    name: Astro consumer build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # ルートの `pnpm build` は astro-consumer-test を**含まない**
+      # （リリースの経路に消費側テストのビルドを挟まないため。package.json で除外）。
+      # ここで作るのは tokens → ui-web の dist で、消費側はそれを workspace 越しに読む。
+      - name: Build (tokens → ui-app → ui-web)
+        run: pnpm build
+
+      - name: Build Astro app
+        run: pnpm --filter astro-consumer-test build
+
+      - name: Verify build output
+        run: pnpm --filter astro-consumer-test verify
+
+      # 落ちたときに「生成物のどこが違うのか」を手元で見られるようにする。
+      # HTML/CSS はテキストなので diff が取れる（VRT の PNG と違って目視が要らない）
+      - name: Upload build output
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: astro-consumer-dist
+          path: packages/astro-consumer-test/dist
+          retention-days: 14
+          if-no-files-found: warn
+
   changeset:
     name: Changeset present
     runs-on: ubuntu-latest
