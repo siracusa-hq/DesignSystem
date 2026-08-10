@@ -156,6 +156,17 @@ const DEFAULT_TONES: Record<LandingPagePattern, PageTone> = {
 };
 
 /**
+ * ページ型の一覧（実行時に列挙できる形）。
+ *
+ * 実体は `DEFAULT_TONES` のキーで、`Record<LandingPagePattern, …>` により
+ * **型が網羅を保証する**（型を増やして書き忘れるとコンパイルが落ちる）。
+ * 値を2箇所に書かないため、配列リテラルとしては持たない。
+ * 規範ファイル（AGENTS.md / GUIDELINES.md）との突き合わせに使う
+ * （`src/test/guidelines-sync.test.ts`）。
+ */
+export const LANDING_PAGE_PATTERNS = Object.keys(DEFAULT_TONES) as readonly LandingPagePattern[];
+
+/**
  * defineLandingPage が扱う「内容」とは別に、描画時に渡すイベント（計測フック）。
  * データ記述に混ぜないため、入力型ではなく LandingPage の props 側に足す。
  */

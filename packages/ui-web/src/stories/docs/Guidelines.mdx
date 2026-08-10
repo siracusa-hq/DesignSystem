@@ -1,0 +1,14 @@
+import { Meta, Markdown } from '@storybook/blocks';
+
+{/*
+  配布物の GUIDELINES.md をそのまま表示する。**内容をここに書き写さないこと。**
+  正本は packages/ui-web/GUIDELINES.md の1箇所で、AGENTS.md からも npm 配布物からも
+  同じファイルを読む（Stage 6 Slice 0）。`?raw` は Vite の機能で、
+  ビルド時にファイルの中身を文字列として取り込む。
+*/}
+
+import guidelines from '../../../GUIDELINES.md?raw';
+
+<Meta title="ガイドライン" />
+
+<Markdown>{guidelines}</Markdown>

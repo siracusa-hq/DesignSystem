@@ -33,7 +33,9 @@
     "./styles.css": "./dist/styles.css"
   },
   "files": [
-    "dist"
+    "dist",
+    "AGENTS.md",
+    "GUIDELINES.md"
   ],
   "scripts": {
     "build": "tsup && node scripts/build-styles.mjs",
@@ -79,6 +81,7 @@
     "@size-limit/preset-small-lib": "^12.0.1",
     "@storybook/addon-a11y": "^8.6.0",
     "@storybook/addon-essentials": "^8.6.0",
+    "@storybook/blocks": "^8.6.14",
     "@storybook/react": "^8.6.0",
     "@storybook/react-vite": "^8.6.0",
     "@tailwindcss/vite": "^4.1.0",

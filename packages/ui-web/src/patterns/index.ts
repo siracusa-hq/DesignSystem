@@ -1,6 +1,7 @@
 export { LandingPage } from './landing-page';
 export {
   defineLandingPage,
+  LANDING_PAGE_PATTERNS,
   type LandingPageInput,
   type LandingPageProps,
   type LandingPageEvents,

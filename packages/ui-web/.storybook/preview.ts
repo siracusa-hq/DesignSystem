@@ -58,6 +58,11 @@ const preview: Preview = {
   },
   decorators: [withTheme, withLocale],
   parameters: {
+    // 規範ファイル（GUIDELINES.md）をサイドバーの先頭に置く。
+    // 読まれない位置にある規範は無いのと同じ（Stage 6 Slice 0）。
+    options: {
+      storySort: { order: ['ガイドライン', 'Patterns', 'Examples', '*'] },
+    },
     controls: {
       matchers: {
         color: /(background|color)$/i,

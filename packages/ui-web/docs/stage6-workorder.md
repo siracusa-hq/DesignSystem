@@ -58,8 +58,74 @@ AI エージェントに規範を届けるため、配布物（files）に機械
 
 ## 6. 進捗
 
-- [ ] Slice 0
+- [x] Slice 0 — 2026-08-09 完了。`AGENTS.md`（70行）+ `GUIDELINES.md`（266行・6節）+
+      `files` への同梱 + README 日英「AI エージェントと使う / Using with AI agents」+
+      Storybook ドキュメントページ「ガイドライン」（`?raw` で GUIDELINES.md をそのまま表示）+
+      同期テスト（`src/test/guidelines-sync.test.ts` 10件）+ pack 検証（consumer-smoke に2件追加）。
 
 ## 7. 実装で判明した事項
 
-（記録欄）
+### 7-1. 文書の同期は「語彙」と「警告の数」に絞るのが持続する
+
+文書と実装の突き合わせは、細かくやるほど文書の書き方を縛って読みにくくなる。
+今回は検査対象を2つだけにした。
+
+- **語彙**（ブランド4 / トーン3 / ページ型5）— 双方向の完全一致。
+  AGENTS.md は語彙表の該当行のセル、GUIDELINES.md は冒頭の「語彙」行と §2 の節見出しから抽出する
+- **dev 警告の数** — GUIDELINES.md §6 の表の行数と、`src` 配下（test / stories を除く）の
+  `console.warn(` の出現数が一致すること。**どの警告かまでは突き合わせない**
+  （文書側の文言は短く言い換えてあり、一致させようとすると文書が実装の写経になる）
+
+警告文言の一致は `scripts/consumer-smoke.mjs` の `DEV_WARNING_MARKERS` が別途担保している
+（あちらは DCE 検証のためのマーカーで、目的が違う）。
+
+### 7-2. ページ型の一覧は `DEFAULT_TONES` のキーから起こした
+
+同期テストにはページ型を**実行時に列挙する手段**が要るが、`LandingPagePattern` は
+判別可能ユニオンから導出した型で実体を持たない。配列リテラルを別に置くと
+「値を2箇所に書かない」に反するため、`Object.keys(DEFAULT_TONES)` を
+`LANDING_PAGE_PATTERNS` として公開した。`DEFAULT_TONES` は
+`Record<LandingPagePattern, PageTone>` なので、**型が網羅を保証する**
+（ページ型を足して既定トーンを書き忘れればコンパイルが落ちる）。
+バレル枠への影響は 50.44 kB → 50.49 kB。
+
+### 7-3. Storybook で外部 Markdown を出すには `@storybook/blocks` の明示的な devDependency が要る
+
+`@storybook/blocks` は addon-essentials の推移的依存でしかなく、pnpm の strict な
+node_modules では ui-web から import できない（Stage 4 §7 の addon-actions と同じ罠）。
+`Markdown` ブロックを使うため devDependency に追加した。**配布物には影響しない。**
+
+併せて2点。
+
+- `<Unstyled>` で包むと Markdown が docs のタイポグラフィを失い、見出しが本文と同じ大きさになる。
+  包まないほうが読める（実測: ヘッドレスで描画して確認）
+- `.storybook/preview.ts` に `options.storySort` を追加し「ガイドライン」を先頭に固定した。
+  読まれない位置にある規範は無いのと同じ
+
+### 7-4. 同期テストで `import.meta.url` は使えない
+
+vitest の環境は jsdom なので `import.meta.url` が `http://localhost:3000/…` になり、
+`fileURLToPath` が `The URL must be of scheme file` で落ちる。
+`process.cwd()`（vitest の root = パッケージディレクトリ）を使い、
+取り違え防止に `package.json` の `name` を検査している。
+
+### 7-5. 同梱の検証は `files` の宣言ではなく `npm pack` の実内容で見る
+
+`package.json` の `files` を書き換えても、`.npmignore` や publish 設定で落ちる余地が残る。
+`npm pack --dry-run --json` の `files` に AGENTS.md / GUIDELINES.md が入ることを
+`scripts/consumer-smoke.mjs` で検査する（pack は約4秒。ユニットテストには置かず、
+もともと dist を要求するスモークに同居させた）。宣言側（`files` の内容）は
+同期テストが軽く見ている。
+
+### 7-6. 根拠が引けずに落としたルール
+
+執筆時に書きたくなったが、原典から数値を引けないため**書かなかった**もの。
+
+| 書かなかったこと                             | 理由                                                                     |
+| -------------------------------------------- | ------------------------------------------------------------------------ |
+| ヒーロー画像の要否・種類の指針               | `[VL]` は8社とも非技術者向け水平 SaaS で、開発者向けは1社も調査していない |
+| 追従 CTA を既定で付けるページ型              | どの型に付けるべきかの実測が無い（Stage 4 §7 で判断を保留した論点）      |
+| フォームの項目数の上限                       | 項目数を数えられたのは freee会計の1件のみ                                |
+| 中間 CTA 帯の「置くべき位置」               | 位置は HTML ソースのバイト位置の近似で、視覚位置ではない                 |
+| ロゴのグレースケール化の是非                 | 画像の CSS filter を確認できておらず判定不能                             |
+| 背景の明暗リズムの「他社はこうしている」     | スクリーンショット未取得。§3 では「自分たちの決定」と明示して書いた      |
