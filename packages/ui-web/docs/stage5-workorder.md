@@ -366,3 +366,11 @@ Astro は子を**先にレンダリングした HTML の塊**として React に
   実際 `changeset status` が `astro-consumer-test` を patch 対象に挙げていた。
   `.changeset/config.json` に `"privatePackages": { "version": false, "tag": false }` を
   足して、リリースの成果物から完全に外した
+
+### 7-13. VRT は「知覚しにくい全面的な色差」に盲目（2026-08-10 の実測）
+
+muted 面を #fafafa → #f4f4f5 に変えた際、パターン各ページの基準は**更新不要のまま通った**。
+pixelmatch の per-pixel threshold 0.1 に対し、この色差（ΔRGB ≈ 6/255）は閾値未満で
+「同じピクセル」と判定されるため。つまり **VRT が守るのはレイアウト・構造・
+中〜大の色変化**であり、微妙なトーンシフトは人間の目視（プレビュー確認）が引き続き担う。
+しきい値を下げれば拾えるが、アンチエイリアス誤差で偽陽性が増える取引になるため現状維持。

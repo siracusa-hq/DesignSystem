@@ -10,5 +10,8 @@
    塗り（var(--color-surface)）を沈んだ面に振り替える。
    セクション側は無改修（Section .bgDark と同じ技法）。 */
 .slotMuted {
-  --color-surface: var(--color-surface-sunken);
+  /* sunken(#fafafa) は白との対比 1.044:1 で国内実測の最薄側（9サイト中央値 1.07。
+     research-eyebrow.md §B）。知覚できない交互リズムは無いのと同じなので、
+     一段濃い muted スロット（#f4f4f5 = 1.099:1・実測レンジ内）を使う */
+  --color-surface: var(--color-surface-muted);
 }
