@@ -391,13 +391,6 @@ export const 事例一覧_タックスピア: Story = {
  *
  * 下の CTA を押して、Storybook 下部の **Actions** パネルを見ること。
  */
-export const 計測_onCTAClick: Story = {
-  /* args では渡さない。actions アドオンに onCTAClick を差し込ませ、
-     受け取った { id, label, href } をそのまま Actions パネルに出す */
-  argTypes: { onCTAClick: { action: 'onCTAClick' } },
-  args: 製品LP_タックスピア.args,
-};
-
 /** English example (product pattern, Polastack) */
 export const English_Product_Polastack: Story = {
   args: defineLandingPage({

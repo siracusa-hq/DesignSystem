@@ -24,12 +24,8 @@ const PAGE_STORY_PREFIXES = [
   'examples-corporatetop',
 ];
 
-/**
- * 対象から外すストーリー。
- * - 計測_onCTAClick: Actions パネルのログ用で、見た目は 製品LP_タックスピア と同一。
- *   同じ絵を2枚撮っても検知力は増えず、撮影時間と基準 PNG だけが増える。
- */
-const EXCLUDED_STORY_IDS = ['patterns-landingpage--計測-on-cta-click'];
+/** 対象から外すストーリー（現在なし。除外するときは理由をここに書く） */
+const EXCLUDED_STORY_IDS: string[] = [];
 
 function listPageStories(): { id: string; label: string }[] {
   const index = JSON.parse(
