@@ -38,7 +38,7 @@ export type OfferPair = [OfferAction] | [OfferAction, OfferAction];
 
 export interface LandingHero extends Pick<
   HeroSectionProps,
-  'badge' | 'title' | 'subtitle' | 'image' | 'imagePlacement' | 'backdrop' | 'backdropTone'
+  'title' | 'subtitle' | 'image' | 'imagePlacement' | 'backdrop' | 'backdropTone'
 > {
   /** 1〜2オファー。midCta / closing にも同じラベルが再利用される（ラベル2種ルール） */
   offers: OfferPair;

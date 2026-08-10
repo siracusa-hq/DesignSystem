@@ -153,7 +153,6 @@ export const TopPage: Story = {
            ============================================================ */}
         {/* title は HeroSection 側が h1（display-2xl）で包むため中身だけ渡す */}
         <HeroSection
-          badge={isJa ? 'Enterprise Agent Stack' : 'Enterprise Agent Stack'}
           title={
             isJa ? (
               <>

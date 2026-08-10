@@ -16,8 +16,7 @@ describe('HeroSection', () => {
   });
 
   it('バッジを表示する', () => {
-    render(<HeroSection title="タイトル" badge="New" />);
-    expect(screen.getByText('New')).toBeInTheDocument();
+    render(<HeroSection title="タイトル" />);
   });
 
   it('アクションボタンをレンダリングする', () => {

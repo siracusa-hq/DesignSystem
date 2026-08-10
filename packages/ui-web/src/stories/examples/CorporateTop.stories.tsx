@@ -69,7 +69,6 @@ const page = (
     }}
   >
     <HeroSection
-      badge="コーポレート"
       title={
         <>
           業務の現場に、

@@ -39,7 +39,6 @@ export const 製品LP_タックスピア: Story = {
       actions: [{ label: '資料をダウンロード', href: '#dl' }],
     },
     hero: {
-      badge: '税理士事務所 向け',
       title: '税務書類の収集を、追いかけずに終わらせる。',
       subtitle:
         'タックスピアは、税理士事務所と顧問先をつなぐ書類収集ツールです。未提出の催促も、進捗の確認も、自動で回ります。',
@@ -90,7 +89,6 @@ export const 製品LP_タックスピア: Story = {
           name: 'プロフェッショナル',
           price: '¥50,000',
           priceUnit: '/月',
-          badge: '人気',
           highlighted: true,
           features: [
             { text: '顧問先 無制限', included: true },

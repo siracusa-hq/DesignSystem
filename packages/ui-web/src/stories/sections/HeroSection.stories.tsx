@@ -13,7 +13,6 @@ type Story = StoryObj<typeof meta>;
 
 export const 日本語: Story = {
   args: {
-    badge: 'Enterprise Agent Stack',
     title: (
       <>
         AIがコードを書く時代。
@@ -32,7 +31,6 @@ export const 日本語: Story = {
 
 export const English: Story = {
   args: {
-    badge: 'Enterprise Agent Stack',
     title: (
       <>
         In the age of AI-generated code,
@@ -96,7 +94,6 @@ const AmbientBackdrop = () => (
 
 export const 背景演出_左寄せ: Story = {
   args: {
-    badge: 'コーポレート',
     title: '技術でレバレッジをかける。',
     subtitle:
       '最先端の技術で、人の能力を拡張する。私たちは、業務の現場に監査に耐えるソフトウェアを届けます。',

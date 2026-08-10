@@ -54,7 +54,6 @@ export const 最悪ケース_長文和文: Story = {
       actions: [{ label: '導入検討用の詳細資料をダウンロードする', href: '#dl' }],
     },
     hero: {
-      badge: '税理士事務所・会計事務所の経理部門向け クラウドサービス',
       title:
         '複数拠点にまたがる紙とExcelの申請業務を、監査に耐えられる形でひとつに束ね、月次決算の締めを最短化します。',
       subtitle:
@@ -133,7 +132,6 @@ export const 最悪ケース_長文和文: Story = {
           name: 'プロフェッショナルプラン（多拠点・大規模事務所向け）',
           price: '¥50,000',
           priceUnit: '/月（税抜）',
-          badge: 'いちばん選ばれています',
           highlighted: true,
           features: [
             { text: '顧問先の登録数は無制限。拠点をまたいだ権限設定にも対応', included: true },
@@ -211,7 +209,6 @@ export const 最悪ケース_極短: Story = {
       actions: [{ label: '資料請求', href: '#dl' }],
     },
     hero: {
-      badge: '税理士向',
       title: '書類、集まる。',
       subtitle: '追わない回収。',
       offers: shortOffers,
@@ -255,7 +252,6 @@ export const 最悪ケース_極短: Story = {
           name: '上位',
           price: '¥50,000',
           priceUnit: '/月',
-          badge: '人気',
           highlighted: true,
           features: [
             { text: '無制限', included: true },
