@@ -8,9 +8,11 @@
  *   - dist/styles.css が JS 側と同じハッシュ名を含み、Tailwind 構文が残っていない
  *   - Netlify Forms の属性が SSR 出力に含まれる
  *   - dev 警告が production バンドルから消える（DCE）／ development では残る
+ *   - 規範ファイル（AGENTS.md / GUIDELINES.md）が npm の tarball に入る
  */
 
 import { createRequire } from 'node:module';
+import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -107,6 +109,25 @@ const prodBundle = bundleFor('production');
 const devBundle = bundleFor('development');
 const missingInDev = DEV_WARNING_MARKERS.filter((m) => !devBundle.includes(m));
 
+/* ------------------------------------------------------------------
+   規範ファイルの同梱検証（Stage 6 Slice 0）
+
+   AGENTS.md / GUIDELINES.md は「利用側の AI エージェントに届くこと」が
+   すべてなので、`files` の宣言ではなく **実際に tarball へ入るか**を見る。
+   `package.json` の files を書き換えても、`.npmignore` や publish 設定で
+   落ちる余地が残るため。pack は約4秒かかるのでユニットテストには置かず、
+   もともと dist を必要とするこのスモークに同居させている。
+   ------------------------------------------------------------------ */
+
+const packedFiles = (() => {
+  const out = execFileSync('npm', ['pack', '--dry-run', '--json'], {
+    cwd: root,
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'ignore'],
+  });
+  return JSON.parse(out)[0].files.map((f) => f.path);
+})();
+
 const checks = [
   [
     `dev 警告が development バンドルに残る（＝isDev が畳まれていない）${
@@ -130,6 +151,8 @@ const checks = [
   ['CSS: 4ブランドのランプを含む', css.includes('--ramp-peerdesk-taxpeer-500')],
   ['CSS: フォント読み込みを含む', css.includes('fonts.googleapis.com')],
   ['CSS: Tailwind 構文が残っていない', !/^@theme \{/m.test(css) && !/^@custom-variant/m.test(css)],
+  ['pack: AGENTS.md が同梱される', packedFiles.includes('AGENTS.md')],
+  ['pack: GUIDELINES.md が同梱される', packedFiles.includes('GUIDELINES.md')],
 ];
 
 let failed = 0;

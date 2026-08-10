@@ -128,6 +128,27 @@ import { defineLandingPage, LandingPage } from '@siracusahq/gtm-design-system';
 `tone` はページの狙い（`trust` = 余白広め・信頼 / `product` = 基準 /
 `campaign` = 高密度・獲得）で、ブランドと直交します。
 
+### AI エージェントと使う
+
+規範ファイルを配布物に同梱しています。インストール後、`node_modules` 内の
+2ファイルをエージェントに読ませてください。
+
+| ファイル                                                        | 中身                                                             |
+| --------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `node_modules/@siracusahq/gtm-design-system/AGENTS.md`          | 入口。導入1行・語彙（ブランド4 / トーン3 / ページ型5）・組み方2択 |
+| `node_modules/@siracusahq/gtm-design-system/GUIDELINES.md`      | Do's & Don'ts の正本。すべてのルールに実測の根拠つき             |
+
+最小のプロンプト例:
+
+```text
+node_modules/@siracusahq/gtm-design-system/AGENTS.md を読んでから、
+@siracusahq/gtm-design-system で製品LPを1枚作って。
+判断に迷ったら同ディレクトリの GUIDELINES.md を参照すること。
+```
+
+構成の判断はパターンが持つため、エージェントの仕事はスロットを埋めることになります。
+逸脱は型エラーと dev 警告が止めます（一覧は GUIDELINES.md §6）。
+
 ### 計測フック
 
 **計測タグ（GA4 / GTM 等）は同梱しません。** ベンダーの選択は利用側の決定です。
@@ -398,6 +419,27 @@ CTA label.
 
 `tone` expresses the page's intent (`trust` = spacious / `product` = baseline /
 `campaign` = dense, acquisition-oriented) and is orthogonal to `brand`.
+
+### Using with AI agents
+
+The package ships its own guidance files. After installing, point your agent at
+the two files inside `node_modules`.
+
+| File                                                       | Contents                                                                     |
+| ---------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `node_modules/@siracusahq/gtm-design-system/AGENTS.md`     | Entry point: one-line setup, vocabulary (4 brands / 3 tones / 5 page types), the two ways to compose |
+| `node_modules/@siracusahq/gtm-design-system/GUIDELINES.md` | The Do's & Don'ts of record. Every rule carries its field-research basis (written in Japanese) |
+
+Minimal prompt:
+
+```text
+Read node_modules/@siracusahq/gtm-design-system/AGENTS.md first, then build a
+product landing page with @siracusahq/gtm-design-system.
+When in doubt, consult GUIDELINES.md in the same directory.
+```
+
+Composition is decided by the patterns, so the agent's job is filling slots.
+Deviations are stopped by type errors and dev-time warnings (see GUIDELINES.md §6).
 
 ### Analytics hooks
 
