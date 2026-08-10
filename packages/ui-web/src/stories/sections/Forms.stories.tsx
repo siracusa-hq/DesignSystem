@@ -1,5 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { ContactForm, ResourceRequestForm, DemoRequestForm } from '../../components/sections/form';
+import * as React from 'react';
+import {
+  ContactForm,
+  ResourceRequestForm,
+  DemoRequestForm,
+  type FormSubmitResult,
+} from '../../components/sections/form';
+import { Text } from '../../components/primitives/text';
 
 /**
  * フォーム3種 — Netlify Forms 標準（2026-08-04 決定・Formspree 廃止）。
@@ -72,22 +79,37 @@ export const 独自バックエンド_onSubmit: Story = {
  * 送信ボタンには `data-cta="form-submit"` が自動で付くので、
  * クリック自体は `Page.onCTAClick` でも拾える（どのフォームかは form-name で判別する）。
  */
+const AjaxResultExample = () => {
+  /* 実運用の型: 結果を state に受けて、その場に表示する（ページ遷移なし）。
+     Storybook には受け口（Netlify Forms）が無いため、送信すると失敗側の表示になる —
+     それ自体が「結果がプログラムに届く」ことの実演になっている */
+  const [result, setResult] = React.useState<FormSubmitResult | null>(null);
+  return (
+    <div>
+      <ResourceRequestForm
+        title="AJAX 送信の例"
+        subtitle="送信してもページは遷移しない。結果は onResult で受け取り、その場に表示する。"
+        resourceName="polastack-overview"
+        onResult={setResult}
+      />
+      {result && (
+        <div
+          role="status"
+          style={{ maxWidth: '36rem', margin: '0 auto', padding: '0 1.5rem 4rem' }}
+        >
+          <Text as="p" size="body-md" tone={result.ok ? 'brand' : 'muted'}>
+            {result.ok
+              ? '送信ありがとうございました。資料のダウンロードリンクをお送りしました。'
+              : `送信できませんでした（status=${result.status ?? '-'}）。時間をおいてもう一度お試しください。`}
+          </Text>
+        </div>
+      )}
+    </div>
+  );
+};
+
 export const AJAX送信_onResult: Story = {
-  render: () => (
-    <ResourceRequestForm
-      title="AJAX 送信の例"
-      subtitle="送信してもページは遷移しない。結果は onResult で受け取る。"
-      resourceName="polastack-overview"
-      onResult={(result) => {
-        // eslint-disable-next-line no-alert
-        alert(
-          result.ok
-            ? '送信に成功しました（onResult: ok=true）'
-            : `送信に失敗しました（status=${result.status ?? '-'} / error=${String(result.error ?? '-')}）`,
-        );
-      }}
-    />
-  ),
+  render: () => <AjaxResultExample />,
 };
 
 export const English: Story = {

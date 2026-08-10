@@ -41,7 +41,7 @@ export const radii = {
   media: '1rem',
   /** カード・テスティモニアル・事例 */
   card: '1.25rem',
-  /** 大面（Bento セル・料金カード・コードブロック） */
+  /** 大面（料金カード・コードブロック） */
   panel: '1.5rem',
   /** タグ・ロゴピル・eyebrow */
   pill: '9999px',

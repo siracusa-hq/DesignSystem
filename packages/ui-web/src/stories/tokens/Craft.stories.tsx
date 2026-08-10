@@ -133,7 +133,7 @@ function RadiiSection() {
     ['control', 'ボタン・入力', 'h-11 w-40'],
     ['media', '画像・スクショ', 'h-24 w-40'],
     ['card', 'カード', 'h-28 w-44'],
-    ['panel', '大面・Bento', 'h-32 w-48'],
+    ['panel', '大面（料金カード・コードブロック）', 'h-32 w-48'],
     ['pill', 'タグ・eyebrow', 'h-8 w-28'],
   ] as const;
   return (

@@ -98,7 +98,7 @@ const sections = (
  * CTA(自己暗面)。muted の割り当てはすべて Page が行っており、
  * セクション側は無指定。
  */
-export const リズム確認_ピアデスク: Story = {
+export const 面リズムの自動割当: Story = {
   args: { brand: 'peerdesk', tone: 'product' },
   render: (args) => <Page {...args}>{sections.props.children}</Page>,
 };
