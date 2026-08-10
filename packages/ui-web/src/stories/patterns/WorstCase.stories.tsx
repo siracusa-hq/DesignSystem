@@ -20,6 +20,8 @@ const meta = {
   title: 'Patterns/WorstCase',
   component: LandingPage,
   parameters: { layout: 'fullscreen' },
+  /* サイドバーには出さない（VRT の撮影対象としてのみ存在。採用判断の材料ではないため） */
+  tags: ['!dev'],
 } satisfies Meta<typeof LandingPage>;
 
 export default meta;

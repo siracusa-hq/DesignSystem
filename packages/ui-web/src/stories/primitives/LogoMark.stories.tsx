@@ -20,7 +20,8 @@ const DemoLogo = ({ w, label }: { w: number; label: string }) => (
   </svg>
 );
 
-export const 正規化の確認: Story = {
+/** 縦横比の異なるロゴが同じ高さ・彩度に揃うこと（LogoCloud / 事例カードの前提） */
+export const 高さの正規化: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
       <LogoMark>

@@ -7,7 +7,8 @@ import { SecurityBadges } from '../../components/sections/security-badges';
 import { CTASection } from '../../components/sections/cta-section';
 
 /**
- * 検証関門（stage2-workorder.md Slice 3）— コーポレートトップ（product-portfolio-top 型）。
+ * コーポレートトップの実例（product-portfolio-top 型）。
+ * 全セクションを実コンテンツで組んだ参照実装で、ページ単位 VRT の対象。
  *
  * ここで検証していること:
  * - ServicePortfolio のカードが data-brand だけで各ブランド色になる（React側に分岐なし）
@@ -157,4 +158,4 @@ const meta = {
 export default meta;
 type Story = StoryObj;
 
-export const 検証関門: Story = { render: () => page };
+export const コーポレートトップ: Story = { render: () => page };
