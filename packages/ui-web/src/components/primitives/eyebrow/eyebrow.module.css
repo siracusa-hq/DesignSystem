@@ -1,23 +1,23 @@
-/* Eyebrow — セクション見出しの上に置く小ラベル。
-   旧 Text overline 7種を1形（pill）に統合（workorder §2）。
-   トーン連動（trust/product/campaign での形の出し分け）は Stage 3。 */
+/* Eyebrow — セクション見出しの上に置く小ラベル（opt-in）。
+   区切りの既定は SectionHeader の飾り線であり、eyebrow は
+   「見出しから内容が読み取れないときだけ日本語で」置く（実測調査 2026-08-10:
+   ピル型 0/41・一律採用は 13ページ中3。docs/research/research-eyebrow.md §4 案B）。
+
+   書式は実測中央値（18px / 700 / letter-spacing 0.01em / 背景なし）。
+   色は 700 段（text-brand-strong）: 500 段は沈んだ面で 4.36:1 と AA 未達のため。
+   コントラスト検査は packages/tokens/src/tokens.test.ts が持つ。 */
 
 .eyebrow {
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-1);
-  border-radius: var(--radius-pill);
-  padding: var(--spacing-1) var(--spacing-3);
-  font-size: var(--text-body-sm);
-  line-height: var(--text-body-sm--line-height);
-  font-weight: 500;
-  /* ラベル類のウェイト補正字送り（workorder §5） */
-  letter-spacing: 0.04em;
-  color: var(--color-text-brand);
-  background: color-mix(in srgb, var(--color-text-brand) 10%, transparent);
+  font-size: var(--text-body-lg);
+  line-height: var(--text-body-lg--line-height);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--color-text-brand-strong);
 }
 
 :global(.dark) .eyebrow {
   color: var(--color-text-brand-on-dark);
-  background: color-mix(in srgb, var(--color-text-brand-on-dark) 10%, transparent);
 }

@@ -153,7 +153,6 @@ export const TopPage: Story = {
            ============================================================ */}
         {/* title は HeroSection 側が h1（display-2xl）で包むため中身だけ渡す */}
         <HeroSection
-          badge={isJa ? 'Enterprise Agent Stack' : 'Enterprise Agent Stack'}
           title={
             isJa ? (
               <>
@@ -875,7 +874,6 @@ export const TopPage: Story = {
            ============================================================ */}
         <AnimateOnScroll animation="fade-in">
           <FAQSection
-            eyebrow="FAQ"
             title={isJa ? 'よくある質問' : 'Frequently Asked Questions'}
             items={
               isJa

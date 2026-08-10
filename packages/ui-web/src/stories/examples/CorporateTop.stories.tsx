@@ -69,7 +69,6 @@ const page = (
     }}
   >
     <HeroSection
-      badge="コーポレート"
       title={
         <>
           業務の現場に、
@@ -84,7 +83,6 @@ const page = (
       ]}
     />
     <ServicePortfolio
-      eyebrow="サービス"
       title="2つのサービスライン"
       subtitle="技術者向けの基盤と、非技術者向けの業務シリーズ。色が違っても、同じ会社のトーンで。"
       services={[
@@ -115,7 +113,6 @@ const page = (
       ]}
     />
     <StatsSection
-      eyebrow="実績"
       title="数字で見る Siracusa"
       stats={[
         { value: '120社', numericValue: 120, suffix: '社', label: '導入企業数' },

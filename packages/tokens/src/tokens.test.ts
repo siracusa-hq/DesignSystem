@@ -20,6 +20,7 @@ import {
   easing,
   fontFamily,
   fontWeight,
+  resolveAllBrands,
 } from './index';
 
 /** sRGB 相対輝度（WCAG 2.x 定義） */
@@ -148,4 +149,19 @@ describe('brand.css（React非依存サイト向け CSS変数版）が TS 定数
       expect(fonts.get(`weight-${key}`), `--font-weight-${key}`).toBe(value);
     }
   });
+});
+
+describe('ブランドランプ 700 段は eyebrow 文字として WCAG AA を満たす', () => {
+  /* ui-web の Eyebrow（18px/700 = WCAG の通常文字扱い）は
+     --color-text-brand-strong（各ブランド 700 段）を文字色に使う。
+     500 段は沈んだ面 #fafafa で 4.36:1（corporate）と AA 未達のため 700 段にした
+     （docs/research/research-eyebrow.md の発見。jsdom の axe は色計算不能で
+     この種の欠陥を検出できないため、ここで実値検査する） */
+  const SUNKEN = '#fafafa';
+  it.each(resolveAllBrands().map((b) => [b.dataBrand, b.ramp[700]] as const))(
+    '%s の 700 段 × 沈んだ面が 4.5:1 以上',
+    (_brand, hex) => {
+      expect(contrastRatio(hex, SUNKEN)).toBeGreaterThanOrEqual(4.5);
+    },
+  );
 });

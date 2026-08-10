@@ -2,7 +2,6 @@
 declare const styles: {
   readonly "actions": string;
   readonly "backdrop": string;
-  readonly "badgeRow": string;
   readonly "centered": string;
   readonly "content": string;
   readonly "hero": string;

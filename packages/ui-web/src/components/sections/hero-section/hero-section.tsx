@@ -4,7 +4,6 @@ import { Container } from '@/components/primitives/container';
 import { Heading } from '@/components/primitives/heading';
 import { Text } from '@/components/primitives/text';
 import { MarketingButton } from '@/components/primitives/marketing-button';
-import { Badge } from '@/components/primitives/badge';
 import type { MediaFrameProps } from '@/components/primitives/media-frame';
 import type { ProductShotProps } from '@/components/primitives/product-shot';
 import styles from './hero-section.module.css';
@@ -19,7 +18,6 @@ export interface HeroAction {
 
 export interface HeroSectionProps
   extends Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'className'> {
-  badge?: string;
   title: React.ReactNode;
   subtitle?: string;
   /** variant は自動割当: 1つ目 = primary / 以降 = secondary */
@@ -45,7 +43,6 @@ export interface HeroSectionProps
 export const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
   (
     {
-      badge,
       title,
       subtitle,
       actions,
@@ -69,11 +66,6 @@ export const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
 
     const content = (
       <div className={cn(styles.inner, !isStart && styles.centered)}>
-        {badge && (
-          <div className={styles.badgeRow}>
-            <Badge variant="default">{badge}</Badge>
-          </div>
-        )}
         <div className={styles.titleBlock}>
           {/* 見出しサイズは構造から導出（propは持たない）:
               - 横並び: display-lg。6fr幅の16:9画像（高さ約330px）と塊の高さが揃う

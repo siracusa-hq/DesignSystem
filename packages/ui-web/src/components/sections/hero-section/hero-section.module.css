@@ -27,13 +27,7 @@
 .centered {
   text-align: center;
 }
-.badgeRow {
-  display: flex;
-}
-.centered .badgeRow {
-  justify-content: center;
-}
-.titleBlock {
+.centered .titleBlock {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-6);

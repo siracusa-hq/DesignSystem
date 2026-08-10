@@ -20,7 +20,6 @@ type Story = StoryObj;
 export const お問い合わせ: Story = {
   render: () => (
     <ContactForm
-      eyebrow="お問い合わせ"
       title="まずはお気軽にご相談ください"
       subtitle="内容を確認のうえ、担当者より1営業日以内にご連絡いたします。"
     />
@@ -30,7 +29,6 @@ export const お問い合わせ: Story = {
 export const 資料請求_サンクスページ指定: Story = {
   render: () => (
     <ResourceRequestForm
-      eyebrow="資料請求"
       title="製品資料をダウンロード"
       subtitle="機能の詳細、料金の考え方、導入の流れをまとめた資料をお送りします。"
       resourceName="polastack-overview"
@@ -42,7 +40,6 @@ export const 資料請求_サンクスページ指定: Story = {
 export const デモ予約: Story = {
   render: () => (
     <DemoRequestForm
-      eyebrow="デモ予約"
       title="30分のオンラインデモ"
       subtitle="実際の画面を見ながら、貴社のユースケースに沿ってご説明します。"
     />
@@ -78,7 +75,6 @@ export const 独自バックエンド_onSubmit: Story = {
 export const AJAX送信_onResult: Story = {
   render: () => (
     <ResourceRequestForm
-      eyebrow="資料請求"
       title="AJAX 送信の例"
       subtitle="送信してもページは遷移しない。結果は onResult で受け取る。"
       resourceName="polastack-overview"
@@ -97,7 +93,6 @@ export const AJAX送信_onResult: Story = {
 export const English: Story = {
   render: () => (
     <ContactForm
-      eyebrow="CONTACT"
       title="Talk to our team"
       subtitle="We will get back to you within one business day."
       lang="en"

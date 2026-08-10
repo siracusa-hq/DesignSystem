@@ -118,7 +118,7 @@ export const 実戦例_獲得LPに2形態とも載せる: Story = {
               { title: '料金と導入の流れ', description: '見積りの前に全体感がつかめます。' },
             ],
           },
-          form: <ResourceRequestForm eyebrow="Download" title="資料請求フォーム" />,
+          form: <ResourceRequestForm title="資料請求フォーム" />,
         })}
       />
       <FloatingCornerCTA
