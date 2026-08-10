@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { PageLayout } from '../../components/layout/page-layout';
+import { Page } from '../../components/layout/page';
 import { HeroSection } from '../../components/sections/hero-section';
 import { ServicePortfolio } from '../../components/sections/service-portfolio';
 import { StatsSection } from '../../components/sections/stats-section';
@@ -69,6 +70,7 @@ const page = (
       copyright: '© 2026 Siracusa Inc.',
     }}
   >
+    <Page brand="corporate" tone="trust">
     <HeroSection
       title={
         <>
@@ -147,6 +149,7 @@ const page = (
       socialProof="スタートアップから上場企業まで 120社が導入"
       note="※ ご入力いただいたメールアドレスに自動送付します。営業のお電話はいたしません。"
     />
+    </Page>
   </PageLayout>
 );
 
