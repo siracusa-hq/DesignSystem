@@ -229,7 +229,7 @@ export const 獲得LP_資料ダウンロード: Story = {
       ],
       asOf: '※2026年7月末時点',
     },
-    form: <ResourceRequestForm eyebrow="Download" title="資料請求フォーム" />,
+    form: <ResourceRequestForm title="資料請求フォーム" />,
   }),
 };
 

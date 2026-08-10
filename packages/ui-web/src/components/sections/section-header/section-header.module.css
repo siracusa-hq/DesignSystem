@@ -8,6 +8,17 @@
   justify-content: center;
   margin-bottom: var(--spacing-4);
 }
+/* 飾り線 — 区切りの既定（実測中央値: 幅 56〜100px の中央 72px / 高さ 4〜7px の中央 5px）。
+   図形の塗りなのでコントラスト要件の対象外。ブランド色は text-brand スロット経由で
+   data-brand と暗面反転（Section .bgDark）に自動追従する */
+.rule {
+  width: 4.5rem;
+  height: 0.3125rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-text-brand);
+  margin: var(--spacing-5) auto 0;
+}
+
 .subtitle {
   margin-top: var(--spacing-4);
   margin-inline: auto;

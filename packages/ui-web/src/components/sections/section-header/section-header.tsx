@@ -39,6 +39,10 @@ export function SectionHeader({
           {title}
         </Heading>
       )}
+      {/* 区切りの既定は飾り線（見出しの下・実測: Bill One / MF 型）。
+          文字を持たないため翻訳・語彙統一のコストがない。
+          docs/research/research-eyebrow.md §4 案B（2026-08-10 ブランド決定） */}
+      {title && <div className={styles.rule} aria-hidden="true" />}
       {/* 余白・読み幅はラッパーが持つ（Text は className を受け取らない） */}
       {subtitle && (
         <div className={styles.subtitle}>

@@ -51,7 +51,6 @@ const sections = (
       asOf="※2026年7月末時点"
     />
     <FeatureGrid
-      eyebrow="Features"
       title="管理部門の定型業務を、まとめて引き受ける"
       features={[
         { title: '請求書の自動読取', description: 'AI-OCRが紙の請求書を数秒でデータ化します。' },
@@ -60,7 +59,6 @@ const sections = (
       ]}
     />
     <ModuleOverview
-      eyebrow="Architecture"
       title="シリーズ構成"
       layers={[
         {
@@ -140,7 +138,6 @@ export const English_Polastack: Story = {
         asOf="As of July 2026"
       />
       <FeatureGrid
-        eyebrow="Platform"
         title="Everything between your agents and production"
         features={[
           { title: 'Policy engine', description: 'Declarative guardrails enforced at runtime.' },

@@ -2,6 +2,7 @@
 declare const styles: {
   readonly "eyebrowRow": string;
   readonly "header": string;
+  readonly "rule": string;
   readonly "subtitle": string;
 };
 export default styles;

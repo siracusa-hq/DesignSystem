@@ -320,7 +320,6 @@ export const ロゴ3社: Story = {
       />
       <Page brand="corporate">
         <LogoCloud
-          eyebrow="導入企業"
           title="3社しか出せないロゴ帯（ここで警告）"
           logos={[
             { name: 'Company A', node: <span>Company A</span> },
@@ -354,7 +353,6 @@ export const 時点表記なし: Story = {
       />
       <Page brand="corporate">
         <StatsSection
-          eyebrow="実績"
           title="時点の無い実績数値（ここで警告）"
           stats={[
             { value: '1,200', numericValue: 1200, suffix: '社', label: '導入企業' },
@@ -383,7 +381,6 @@ export const 時点表記あり_警告なし: Story = {
       />
       <Page brand="corporate">
         <StatsSection
-          eyebrow="実績"
           title="時点表記のある実績数値"
           stats={[
             { value: '1,200', numericValue: 1200, suffix: '社', label: '導入企業' },

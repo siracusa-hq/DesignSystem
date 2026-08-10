@@ -875,7 +875,6 @@ export const TopPage: Story = {
            ============================================================ */}
         <AnimateOnScroll animation="fade-in">
           <FAQSection
-            eyebrow="FAQ"
             title={isJa ? 'よくある質問' : 'Frequently Asked Questions'}
             items={
               isJa

@@ -81,7 +81,6 @@ export const Default: Story = {
     const isJa = globals.locale === 'ja';
     return (
       <FAQSection
-        eyebrow="FAQ"
         title={isJa ? 'よくある質問' : 'Frequently Asked Questions'}
         subtitle={
           isJa
