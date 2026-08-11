@@ -8,11 +8,25 @@ import { Text } from '@/components/primitives/text';
 import { SectionHeader } from '@/components/sections/section-header';
 import styles from './air-pocket-feature.module.css';
 
+/** 証拠の数値。本文に埋めず、大きく表示して視線の錨にする */
+export interface AirPocketProof {
+  /** 例: '100万件 → ミリ秒' / 'SOC2 / ISMS' */
+  value: string;
+  /** 例: '全文検索の応答' / '要件を標準で充足' */
+  label: string;
+}
+
 export interface AirPocket {
   module: string;
+  /**
+   * 1文のキャッチ。**数値・仕様は入れない**（数値は proof、仕様は points へ）。
+   * 散文はここだけ — 説明の段落は受け付けない（ダラダラ感の温床。
+   * ブランド決定 2026-08-11）
+   */
   headline: string;
-  description: string;
-  proof: string;
+  /** 要点の箇条書き。名詞・動詞止めの短文で最大3点（4点目は型エラー） */
+  points: [string] | [string, string] | [string, string, string];
+  proof: AirPocketProof;
   competitors: { name: string; status: string }[];
   visual?: React.ReactNode;
 }
@@ -53,12 +67,19 @@ export const AirPocketFeature = React.forwardRef<HTMLElement, AirPocketFeaturePr
                 <Heading as="h3" size="display-sm">
                   {pocket.headline}
                 </Heading>
-                <Text size="body-lg" tone="secondary">
-                  {pocket.description}
-                </Text>
+                <ul className={styles.points}>
+                  {pocket.points.map((point, j) => (
+                    <li key={j} className={styles.point}>
+                      <Text as="span" size="body-md" tone="secondary">
+                        {point}
+                      </Text>
+                    </li>
+                  ))}
+                </ul>
                 <div className={styles.proof}>
-                  <Text as="div" size="body-sm" tone="brand">
-                    {pocket.proof}
+                  <span className={styles.proofValue}>{pocket.proof.value}</span>
+                  <Text as="span" size="caption" tone="muted">
+                    {pocket.proof.label}
                   </Text>
                 </div>
 

@@ -7,7 +7,10 @@ declare const styles: {
   readonly "items": string;
   readonly "media": string;
   readonly "ownRow": string;
+  readonly "point": string;
+  readonly "points": string;
   readonly "proof": string;
+  readonly "proofValue": string;
   readonly "reversed": string;
   readonly "row": string;
 };
