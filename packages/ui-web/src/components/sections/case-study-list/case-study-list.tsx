@@ -23,6 +23,11 @@ export interface CaseStudyListItem {
   companyName: string;
   /** LogoMark の要素のみ受け付ける（高さと彩度の正規化のため。CaseStudy と同じ制約） */
   companyLogo?: React.ReactElement<LogoMarkProps>;
+  /**
+   * インタビュー写真（任意）。カード上部に 16:9 固定・トリミング自動。
+   * alt 必須（人物と文脈を書く）。CaseStudySection の photo と同じ契約
+   */
+  photo?: { src: string; alt: string };
   /** 一覧カードは引用ではなく要約（詳細記事の導入文にあたる） */
   summary: string;
   href?: string;
@@ -124,6 +129,10 @@ function CaseCard({
   const meta = metaOf(item);
   return (
     <div className={cn(styles.card, featured && styles.cardFeatured)}>
+      {item.photo && (
+        <img className={styles.photo} src={item.photo.src} alt={item.photo.alt} loading="lazy" />
+      )}
+      <div className={styles.cardBody}>
       {item.companyLogo ? (
         <div className={styles.logo}>{item.companyLogo}</div>
       ) : (
@@ -169,6 +178,7 @@ function CaseCard({
           </Link>
         </div>
       )}
+      </div>
     </div>
   );
 }

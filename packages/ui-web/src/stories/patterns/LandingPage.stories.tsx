@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { defineLandingPage, LandingPage, type OfferPair } from '../../patterns';
 import { ResourceRequestForm } from '../../components/sections/form';
+import { photoPlaceholder } from '../support/photo-placeholder';
 
 /**
  * defineLandingPage — LP 量産のデータ駆動 API（Stage 3 Slice 2）。
@@ -104,6 +105,10 @@ export const 製品LP_タックスピア: Story = {
       cases: [
         {
           companyName: 'サンプル会計事務所',
+          photo: {
+            src: photoPlaceholder('インタビュー写真', 'green'),
+            alt: '所長が事務所で提出状況ボードを確認する様子（プレースホルダ）',
+          },
           quote:
             '1月の繁忙期でも、書類の回収率が9割を超えました。電話での催促がほぼゼロになっています。',
           metrics: [
@@ -191,6 +196,10 @@ export const ポートフォリオトップ_ピアデスク: Story = {
       cases: [
         {
           companyName: '株式会社サンプル製作所',
+          photo: {
+            src: photoPlaceholder('インタビュー写真', 'sand'),
+            alt: '経理担当者が工場事務所で作業する様子（プレースホルダ）',
+          },
           quote:
             '月末の残業がなくなりました。紙の山と格闘していた時間が、まるごと戻ってきた感覚です。',
         },
@@ -297,6 +306,10 @@ export const 事例一覧_タックスピア: Story = {
       pickup: [
         {
           companyName: 'あさひ製作所',
+          photo: {
+            src: photoPlaceholder('インタビュー写真', 'green'),
+            alt: '製造現場の担当者（プレースホルダ）',
+          },
           summary:
             '未提出の顧問先を追いかける仕事がなくなり、決算前の残業がゼロになりました。導入から3日で全顧問先が使い始めています。',
           service: 'タックスピア',
@@ -310,6 +323,10 @@ export const 事例一覧_タックスピア: Story = {
       cases: [
         {
           companyName: 'みなと商事',
+          photo: {
+            src: photoPlaceholder('インタビュー写真', 'blue'),
+            alt: '経理チームの打ち合わせ（プレースホルダ）',
+          },
           summary: '紙で回っていた経費精算をやめ、月次決算が5営業日早まりました。',
           service: 'タックスピア',
           industry: '卸売業',
@@ -319,6 +336,10 @@ export const 事例一覧_タックスピア: Story = {
         },
         {
           companyName: 'そらまめ工業',
+          photo: {
+            src: photoPlaceholder('インタビュー写真', 'sand'),
+            alt: '工場での検品作業（プレースホルダ）',
+          },
           summary: '書類の紛失と再依頼がなくなり、問い合わせ対応が半分になりました。',
           service: 'ピアデスク',
           industry: '製造業',

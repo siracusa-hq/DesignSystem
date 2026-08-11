@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { CaseStudySection } from '../../components/sections/case-study-card';
+import { photoPlaceholder } from '../support/photo-placeholder';
 
 const meta: Meta<typeof CaseStudySection> = {
   title: 'Sections/CaseStudySection',
@@ -27,6 +28,10 @@ export const Default: Story = {
             ? [
                 {
                   companyName: 'テックスタートアップ株式会社',
+                  photo: {
+                    src: photoPlaceholder('インタビュー写真', 'blue'),
+                    alt: 'CTOがオフィスで開発チームと話す様子（プレースホルダ）',
+                  },
                   quote: '認証基盤を3週間で構築できた。以前はSaaS連携だけで2ヶ月かかっていた。',
                   metrics: [
                     { label: '開発期間短縮', value: '80%' },
@@ -37,6 +42,10 @@ export const Default: Story = {
                 },
                 {
                   companyName: '人材サービス株式会社',
+                  photo: {
+                    src: photoPlaceholder('インタビュー写真', 'green'),
+                    alt: '情報システム部長が会議室でダッシュボードを確認する様子（プレースホルダ）',
+                  },
                   quote: '100万件超のレコードでもPolaFindなら検索がミリ秒。業務効率が劇的に改善した。',
                   metrics: [
                     { label: '検索速度', value: '<50ms' },
@@ -49,6 +58,10 @@ export const Default: Story = {
             : [
                 {
                   companyName: 'Tech Startup Inc.',
+                  photo: {
+                    src: photoPlaceholder('インタビュー写真', 'blue'),
+                    alt: 'CTO discussing with the engineering team（プレースホルダ）',
+                  },
                   quote: 'We built our auth infrastructure in 3 weeks. Previously, SaaS integration alone took 2 months.',
                   metrics: [
                     { label: 'Dev time reduced', value: '80%' },
@@ -59,6 +72,10 @@ export const Default: Story = {
                 },
                 {
                   companyName: 'HR Services Inc.',
+                  photo: {
+                    src: photoPlaceholder('インタビュー写真', 'green'),
+                    alt: 'IT lead reviewing dashboards in a meeting room（プレースホルダ）',
+                  },
                   quote: 'PolaFind delivers millisecond search even with 1M+ records. Dramatically improved operations.',
                   metrics: [
                     { label: 'Search speed', value: '<50ms' },

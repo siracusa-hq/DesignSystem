@@ -1,6 +1,7 @@
 // ⚠️ 自動生成 — 手で編集しないこと。再生成: pnpm codegen
 declare const styles: {
   readonly "card": string;
+  readonly "cardBody": string;
   readonly "cardFeatured": string;
   readonly "companyName": string;
   readonly "count": string;
@@ -17,6 +18,7 @@ declare const styles: {
   readonly "pageNumber": string;
   readonly "pageStep": string;
   readonly "pagination": string;
+  readonly "photo": string;
   readonly "pickup": string;
   readonly "summary": string;
 };

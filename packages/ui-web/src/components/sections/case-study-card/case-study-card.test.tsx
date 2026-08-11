@@ -64,3 +64,27 @@ describe('CaseStudySection', () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 });
+
+describe('インタビュー写真（2026-08-11 追加）', () => {
+  it('photo 指定時に img が alt 付きで描画される', () => {
+    render(
+      <CaseStudySection
+        cases={[
+          {
+            companyName: 'A社',
+            quote: '引用',
+            photo: { src: 'data:image/svg+xml;utf8,<svg/>', alt: '担当者が現場で作業する様子' },
+          },
+        ]}
+      />,
+    );
+    expect(screen.getByRole('img', { name: '担当者が現場で作業する様子' })).toBeInTheDocument();
+  });
+
+  it('photo 未指定なら img を描画しない（後方互換）', () => {
+    const { container } = render(
+      <CaseStudySection cases={[{ companyName: 'A社', quote: '引用' }]} />,
+    );
+    expect(container.querySelector('img')).toBeNull();
+  });
+});

@@ -3,11 +3,11 @@
 .card {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-4);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
   background: var(--color-surface);
-  padding: var(--spacing-6);
+  /* 写真をカード縁まで届かせるため padding は本文（.cardBody）が持つ */
+  overflow: hidden;
   box-shadow: var(--shadow-card);
   transition:
     box-shadow var(--duration-normal) var(--ease-default),
@@ -15,9 +15,25 @@
     border-color var(--duration-normal) var(--ease-default);
 }
 @media (min-width: 64rem) {
-  .card {
+  .cardBody {
     padding: var(--spacing-8);
   }
+}
+
+/* インタビュー写真 — 16:9 固定・トリミング自動（LogoMark と同じ正規化の思想） */
+.photo {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.cardBody {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  padding: var(--spacing-6);
 }
 .card:hover {
   box-shadow: var(--shadow-card-hover);

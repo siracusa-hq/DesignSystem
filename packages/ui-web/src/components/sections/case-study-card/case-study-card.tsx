@@ -12,6 +12,14 @@ export interface CaseStudy {
   companyName: string;
   /** LogoMark の要素のみ受け付ける（高さと彩度の正規化のため。workorder §4） */
   companyLogo?: React.ReactElement<LogoMarkProps>;
+  /**
+   * インタビュー写真（任意）。カード上部に 16:9 固定で表示し、
+   * トリミングはシステムが行う（縦横比の違う写真を渡しても崩れない）。
+   * **alt は必須** — 写真は装飾ではなく実在性の証拠なので、
+   * 人物と文脈を書く（例: 「経理部長の田中様が事務所で書類を確認している様子」）。
+   * 写真つきカードでは引用を1〜2文に絞ること（GUIDELINES §3。写真が語る分、文字を減らす）
+   */
+  photo?: { src: string; alt: string };
   quote: string;
   metrics?: { label: string; value: string }[];
   href?: string;
@@ -41,6 +49,10 @@ export const CaseStudySection = React.forwardRef<HTMLElement, CaseStudySectionPr
         <Grid columns={columnsFor(cases.length)} gap="lg">
           {cases.map((c, i) => (
             <div key={i} className={styles.card}>
+              {c.photo && (
+                <img className={styles.photo} src={c.photo.src} alt={c.photo.alt} loading="lazy" />
+              )}
+              <div className={styles.cardBody}>
               {c.companyLogo ? (
                 <div className={styles.logo}>{c.companyLogo}</div>
               ) : (
@@ -76,6 +88,7 @@ export const CaseStudySection = React.forwardRef<HTMLElement, CaseStudySectionPr
                   </Link>
                 </div>
               )}
+              </div>
             </div>
           ))}
         </Grid>
