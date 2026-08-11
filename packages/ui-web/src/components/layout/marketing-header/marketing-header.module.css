@@ -42,8 +42,9 @@
   transition: color var(--duration-fast) var(--ease-default);
   text-decoration: none;
 }
-.navLink:hover {
-  color: var(--color-on-surface);
+.navLink:hover,
+.navLink:focus-visible {
+  color: var(--color-text-brand-strong);
 }
 .dropdown {
   position: relative;
@@ -60,8 +61,9 @@
   cursor: pointer;
   transition: color var(--duration-fast) var(--ease-default);
 }
-.dropdownButton:hover {
-  color: var(--color-on-surface);
+.dropdownButton:hover,
+.dropdownButton:focus-visible {
+  color: var(--color-text-brand-strong);
 }
 .chevron {
   height: 0.75rem;
@@ -106,9 +108,10 @@
     background var(--duration-fast) var(--ease-default),
     color var(--duration-fast) var(--ease-default);
 }
-.dropdownItem:hover {
+.dropdownItem:hover,
+.dropdownItem:focus-visible {
   background: var(--color-surface-sunken);
-  color: var(--color-on-surface);
+  color: var(--color-text-brand-strong);
 }
 .actions {
   display: none;
@@ -131,8 +134,9 @@
   padding: var(--spacing-2);
   color: var(--color-on-surface-secondary);
 }
-.menuButton:hover {
-  color: var(--color-on-surface);
+.menuButton:hover,
+.menuButton:focus-visible {
+  color: var(--color-text-brand-strong);
 }
 @media (min-width: 48rem) {
   .menuButton {
@@ -163,9 +167,10 @@
   color: var(--color-on-surface-secondary);
   text-decoration: none;
 }
-.mobileLink:hover {
+.mobileLink:hover,
+.mobileLink:focus-visible {
   background: var(--color-surface-sunken);
-  color: var(--color-on-surface);
+  color: var(--color-text-brand-strong);
 }
 .mobileActions {
   display: flex;

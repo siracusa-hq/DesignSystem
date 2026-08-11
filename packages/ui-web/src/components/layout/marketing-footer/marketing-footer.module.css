@@ -46,8 +46,9 @@
   color: var(--color-on-surface-muted);
   transition: color var(--duration-fast) var(--ease-default);
 }
-.socialLink:hover {
-  color: var(--color-on-surface);
+.socialLink:hover,
+.socialLink:focus-visible {
+  color: var(--color-text-brand-strong);
 }
 .linkCols {
   display: grid;
@@ -82,8 +83,9 @@
   text-decoration: none;
   transition: color var(--duration-fast) var(--ease-default);
 }
-.footerLink:hover {
-  color: var(--color-on-surface);
+.footerLink:hover,
+.footerLink:focus-visible {
+  color: var(--color-text-brand-strong);
 }
 .bottomBar {
   display: flex;
@@ -109,6 +111,7 @@
   text-decoration: none;
   transition: color var(--duration-fast) var(--ease-default);
 }
-.legalLink:hover {
-  color: var(--color-on-surface);
+.legalLink:hover,
+.legalLink:focus-visible {
+  color: var(--color-text-brand-strong);
 }
