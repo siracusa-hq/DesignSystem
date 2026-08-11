@@ -32,7 +32,10 @@ export default defineConfig({
   fullyParallel: true,
   /* 落ちたら落ちたままにする。リトライは「たまに緑になる VRT」を作り、
      結果として誰も差分を見なくなる（workorder §3） */
-  retries: 0,
+  /* CI のみリトライ1回: Google Fonts 取得の偶発失敗（named failure「和文が
+     読み込まれていない」）を吸収する。ピクセル差分の flake を隠す意図ではない —
+     真の差分は2回とも失敗して従来どおり落ちる。ローカルは 0（開発中の flake を隠さない） */
+  retries: process.env.CI ? 1 : 0,
   /* 並列度を CPU 数に任せると撮影中の描画負荷が変動する。2 に固定して
      ローカルと CI で条件を揃える */
   workers: 2,
