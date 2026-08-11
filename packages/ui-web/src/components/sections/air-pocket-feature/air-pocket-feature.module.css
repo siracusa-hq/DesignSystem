@@ -66,18 +66,23 @@
   color: var(--color-text-brand-strong);
 }
 
-/* 競合ステータス表 */
+/* 競合ステータス表 — 行間に罫線（承認済みモックの形）。
+   セクション境界の「線を引かない」規範は面の区切りの話で、表の罫線は対象外 */
 .competitors {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-2);
   /* .copy の gap-4 に足して一段広く空ける */
   margin-top: var(--spacing-2);
+  border-top: 1px solid var(--color-border);
+  align-self: stretch;
 }
 .competitorRow {
   display: flex;
   align-items: center;
   gap: var(--spacing-3);
+  padding-block: var(--spacing-2);
+  /* 行の区切りは境界トークンから淡く導出（暗面でも自動追従） */
+  border-bottom: 1px solid color-mix(in srgb, var(--color-border) 55%, transparent);
 }
 .competitorName {
   width: 6rem;
