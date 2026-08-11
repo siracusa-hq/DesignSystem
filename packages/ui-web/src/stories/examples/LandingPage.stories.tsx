@@ -414,8 +414,11 @@ export const TopPage: Story = {
                     {
                       module: 'PolaFind',
                       headline: '打ち間違えても、見つかる。',
-                      description: '日本語typo tolerant全文検索を標準搭載。100万件でもミリ秒。',
-                      proof: '競合完全不在の差別化領域',
+                      points: [
+                        '「田中」「たなか」「Tanaka」を横断して検索',
+                        'タイプミスを許容する日本語全文検索を標準搭載',
+                      ] as [string, string],
+                      proof: { value: '100万件 → ミリ秒', label: '全文検索の応答' },
                       competitors: [
                         { name: 'kintone', status: '部分一致のみ' },
                         { name: 'Supabase', status: 'PGroonga必要' },
@@ -423,9 +426,12 @@ export const TopPage: Story = {
                     },
                     {
                       module: 'PolaStore',
-                      headline: '見せたい情報だけ見せる。',
-                      description: 'FLS + 監査ログをDB最下層で強制。SOC2/ISMS対応を標準充足。',
-                      proof: 'アプリコードに依存しないセキュリティ',
+                      headline: '見せたい情報だけ、見せる。',
+                      points: [
+                        '列単位のアクセス制御をデータベース最下層で強制',
+                        '閲覧・変更をすべて監査ログに記録',
+                      ] as [string, string],
+                      proof: { value: 'SOC2 / ISMS', label: '要件を標準で充足' },
                       competitors: [
                         { name: 'kintone', status: 'FLS部分対応' },
                         { name: 'Supabase', status: 'FLS未成熟' },
@@ -433,9 +439,12 @@ export const TopPage: Story = {
                     },
                     {
                       module: 'PolaLens',
-                      headline: 'SQLなしで分析できる。',
-                      description: 'セマンティックレイヤーで非エンジニアもメトリクス定義可能。',
-                      proof: '6競合いずれも標準提供なし',
+                      headline: 'SQLを書かなくても、分析できる。',
+                      points: [
+                        'ドラッグ操作でメトリクスを定義・集計',
+                        '事前集計により業務データベースに負荷をかけない',
+                      ] as [string, string],
+                      proof: { value: '数千万行 → ミリ秒', label: '集計クエリの応答' },
                       competitors: [
                         { name: 'kintone', status: '非対応' },
                         { name: 'Supabase', status: '非対応' },
@@ -445,10 +454,12 @@ export const TopPage: Story = {
                 : [
                     {
                       module: 'PolaFind',
-                      headline: 'Find it even with typos.',
-                      description:
-                        'Japanese typo-tolerant full-text search built-in. Milliseconds even with 1M records.',
-                      proof: 'Zero competitors in this space',
+                      headline: 'Find it, even with typos.',
+                      points: [
+                        'Cross-search "田中", "たなか" and "Tanaka"',
+                        'Typo-tolerant Japanese full-text search, built in',
+                      ] as [string, string],
+                      proof: { value: '1M rows → ms', label: 'Full-text search response' },
                       competitors: [
                         { name: 'kintone', status: 'Partial match only' },
                         { name: 'Supabase', status: 'Needs PGroonga' },
@@ -456,10 +467,12 @@ export const TopPage: Story = {
                     },
                     {
                       module: 'PolaStore',
-                      headline: 'Show only what you want.',
-                      description:
-                        'FLS + audit logs enforced at DB layer. SOC2/ISMS compliant out of the box.',
-                      proof: 'Security independent of app code',
+                      headline: 'Show only what you intend to show.',
+                      points: [
+                        'Column-level access control enforced at the database layer',
+                        'Every read and write recorded in the audit log',
+                      ] as [string, string],
+                      proof: { value: 'SOC2 / ISMS', label: 'Requirements met out of the box' },
                       competitors: [
                         { name: 'kintone', status: 'Partial FLS' },
                         { name: 'Supabase', status: 'FLS immature' },
@@ -467,9 +480,12 @@ export const TopPage: Story = {
                     },
                     {
                       module: 'PolaLens',
-                      headline: 'Analyze without SQL.',
-                      description: 'Semantic layer lets non-engineers define metrics.',
-                      proof: 'No competitor offers this as standard',
+                      headline: 'Analyze without writing SQL.',
+                      points: [
+                        'Define and aggregate metrics with drag and drop',
+                        'Pre-aggregation keeps load off the transaction DB',
+                      ] as [string, string],
+                      proof: { value: '10M rows → ms', label: 'Aggregation query response' },
                       competitors: [
                         { name: 'kintone', status: 'Not supported' },
                         { name: 'Supabase', status: 'Not supported' },

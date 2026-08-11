@@ -27,8 +27,43 @@
   align-items: flex-start;
   gap: var(--spacing-4);
 }
+/* 要点 — 散文段落の代替。ブランド色ドットの箇条書き（最大3点は型が保証） */
+.points {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+.point {
+  position: relative;
+  padding-left: var(--spacing-4);
+}
+.point::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.7em;
+  width: 0.45rem;
+  height: 0.28rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-text-brand);
+}
+
+/* 証拠の数値 — 視線の錨。飾り線・eyebrow と同じ 700 段（AA 検査済み） */
 .proof {
-  font-weight: 500;
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-3);
+}
+.proofValue {
+  font-size: var(--text-heading-lg);
+  line-height: var(--text-heading-lg--line-height);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-brand-strong);
 }
 
 /* 競合ステータス表 */
