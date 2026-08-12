@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { cn } from '@/lib/cn';
 import { Section } from '@/components/primitives/section';
 import { Container } from '@/components/primitives/container';
 import { Grid } from '@/components/primitives/grid';
@@ -48,7 +49,7 @@ export const CaseStudySection = React.forwardRef<HTMLElement, CaseStudySectionPr
         <SectionHeader eyebrow={eyebrow} title={title} subtitle={subtitle} />
         <Grid columns={columnsFor(cases.length)} gap="lg">
           {cases.map((c, i) => (
-            <div key={i} className={styles.card}>
+            <div key={i} className={cn(styles.card, cases.length === 1 && styles.single)}>
               {c.photo && (
                 <img className={styles.photo} src={c.photo.src} alt={c.photo.alt} loading="lazy" />
               )}

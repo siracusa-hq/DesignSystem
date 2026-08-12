@@ -29,6 +29,8 @@
   display: block;
   width: 100%;
   aspect-ratio: 16 / 9;
+  /* 幅広カード（ピックアップ1件 = 全幅）での際限ない伸びを防ぐ（実測 647px → 上限 240px） */
+  max-height: 15rem;
   object-fit: cover;
 }
 
@@ -40,7 +42,15 @@
   padding: var(--spacing-6);
 }
 
-.cardFeatured {
+/* ピックアップが1件のときは全幅にせず読み幅へ */
+.pickupSingle {
+  width: 100%;
+  max-width: 44rem;
+  margin-inline: auto;
+}
+
+/* padding は本文側へ（写真をカード縁まで届かせる。base カードと同じ構造） */
+.cardFeatured .cardBody {
   padding: var(--spacing-8);
 }
 

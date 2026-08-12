@@ -25,6 +25,9 @@
   display: block;
   width: 100%;
   aspect-ratio: 16 / 9;
+  /* 幅広カードで写真が際限なく伸びるのを防ぐ（1列時に 683px まで膨らんだ実測を受けて上限設置。
+     上限にかかったら 16:9 を諦めて横長トリミングになる） */
+  max-height: 15rem;
   object-fit: cover;
 }
 
@@ -35,6 +38,13 @@
   gap: var(--spacing-4);
   padding: var(--spacing-6);
 }
+/* 1件だけのときは全幅にせず、読み幅に収めて中央へ（写真つきで全幅は巨大化する） */
+.single {
+  width: 100%;
+  max-width: 40rem;
+  margin-inline: auto;
+}
+
 .card:hover {
   box-shadow: var(--shadow-card-hover);
   border-color: var(--color-border-brand);

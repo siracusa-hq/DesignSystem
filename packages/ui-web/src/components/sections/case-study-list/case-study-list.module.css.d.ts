@@ -20,6 +20,7 @@ declare const styles: {
   readonly "pagination": string;
   readonly "photo": string;
   readonly "pickup": string;
+  readonly "pickupSingle": string;
   readonly "summary": string;
 };
 export default styles;

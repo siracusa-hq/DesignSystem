@@ -10,5 +10,6 @@ declare const styles: {
   readonly "metrics": string;
   readonly "photo": string;
   readonly "quote": string;
+  readonly "single": string;
 };
 export default styles;
