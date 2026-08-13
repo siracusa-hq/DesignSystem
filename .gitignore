@@ -16,3 +16,4 @@ packages/ui-web/vrt/report/
 
 # Netlify CLI のローカル状態（サイトIDの紐付け）
 .netlify
+.sbx/
