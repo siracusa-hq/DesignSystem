@@ -107,10 +107,11 @@
 
 .carousel {
   position: relative;
+  /* 送りボタン分の溝（2.5rem のボタン + 余白）。カードに被せない */
+  padding-inline: calc(2.5rem + var(--spacing-3));
 }
 
-/* 送りボタン — カード列の左右・垂直中央（直感性の指摘を受けて右上から移動）。
-   カードに少し重ねて置き、面のあるボタンで下を隠す */
+/* 送りボタン — カード列の左右・垂直中央の溝に置く（カードには被せない） */
 .control {
   position: absolute;
   top: 50%;
@@ -132,10 +133,10 @@
     border-color var(--duration-fast) var(--ease-default);
 }
 .controlPrev {
-  left: calc(-1 * var(--spacing-2));
+  left: 0;
 }
 .controlNext {
-  right: calc(-1 * var(--spacing-2));
+  right: 0;
 }
 .control:hover:not(:disabled),
 .control:focus-visible {
