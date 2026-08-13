@@ -230,3 +230,7 @@ jsdom 上の axe-core は**色計算ができないためコントラスト違�
 `bg-*` と `text-*` の組み合わせを変えるときは、axe が通ったことを根拠にしないこと。
 `packages/tokens/src/tokens.test.ts` が WCAG のコントラスト比を実際に計算しているので、
 新しい色の組み合わせを導入する場合はそちらに期待値を追加する。
+
+## 開発プロセス (Git運用)
+
+Git運用・レビューのルールは @AGENTS.md を参照 (全エージェント共通)。main 上での commit / push は `.claude/hooks/guard-main.sh` で機械的にブロックされる。
