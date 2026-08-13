@@ -1,0 +1,93 @@
+/* CaseCard — 事例1件のカード（一覧ページと事例記事の「関連事例」で共有）。
+   意匠は case-study-card に揃える（同じ面・線・角丸・ホバー）。
+   case-study-list.module.css から切り出したもので、値は変えていない。 */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-raised);
+  /* 写真をカード縁まで届かせるため padding は本文（.cardBody）が持つ */
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition:
+    box-shadow var(--duration-normal) var(--ease-default),
+    transform var(--duration-normal) var(--ease-default),
+    border-color var(--duration-normal) var(--ease-default);
+}
+.card:hover {
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--color-border-brand);
+  transform: translateY(-2px);
+}
+
+/* インタビュー写真 — 16:9 固定・トリミング自動（CaseStudySection と同じ契約） */
+.photo {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  /* 幅広カード（ピックアップ1件 = 全幅）での際限ない伸びを防ぐ（実測 647px → 上限 240px） */
+  max-height: 12.5rem;
+  object-fit: cover;
+}
+
+.cardBody {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  padding: var(--spacing-4);
+}
+
+/* padding は本文側へ（写真をカード縁まで届かせる。base カードと同じ構造） */
+.cardFeatured .cardBody {
+  padding: var(--spacing-5);
+}
+
+.logo {
+  align-self: flex-start;
+}
+
+/* ロゴが無い事例は社名を文字で置く */
+.companyName {
+  font-weight: 600;
+  color: var(--color-text-brand);
+}
+
+.summary {
+  flex: 1;
+}
+
+/* フィルタ軸の値。押せると誤解させないため、チップではなく素の小さい文字にする */
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-1) var(--spacing-4);
+}
+
+.metrics {
+  display: flex;
+  gap: var(--spacing-6);
+  border-top: 1px solid var(--color-border);
+  /* .card の gap-4 に足して、区切り線の上下を広く取る */
+  margin-top: var(--spacing-2);
+  padding-top: var(--spacing-6);
+}
+.metricValue {
+  font-size: var(--text-heading-sm);
+  line-height: var(--text-heading-sm--line-height);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-brand);
+}
+:global(.dark) .metricValue {
+  color: var(--color-neutral-50);
+}
+
+.linkRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  font-size: var(--text-body-sm);
+}

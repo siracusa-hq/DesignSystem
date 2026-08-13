@@ -1,0 +1,36 @@
+// ⚠️ 自動生成 — 手で編集しないこと。再生成: pnpm codegen
+declare const styles: {
+  readonly "article": string;
+  readonly "bodyPhoto": string;
+  readonly "breadcrumb": string;
+  readonly "breadcrumbCurrent": string;
+  readonly "breadcrumbList": string;
+  readonly "breadcrumbSeparator": string;
+  readonly "caption": string;
+  readonly "chapter": string;
+  readonly "chapterHeading": string;
+  readonly "chapters": string;
+  readonly "figure": string;
+  readonly "heroFigure": string;
+  readonly "heroPhoto": string;
+  readonly "lead": string;
+  readonly "paragraph": string;
+  readonly "photo": string;
+  readonly "profile": string;
+  readonly "profileCompany": string;
+  readonly "profileHead": string;
+  readonly "profileLabel": string;
+  readonly "profileValue": string;
+  readonly "publishedAt": string;
+  readonly "qa": string;
+  readonly "question": string;
+  readonly "relatedFooter": string;
+  readonly "speakerName": string;
+  readonly "speakers": string;
+  readonly "summary": string;
+  readonly "summaryBody": string;
+  readonly "summaryLabel": string;
+  readonly "summaryRow": string;
+  readonly "title": string;
+};
+export default styles;

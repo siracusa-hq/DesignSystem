@@ -7,6 +7,14 @@ import type { FeatureGridProps } from '@/components/sections/feature-grid';
 import type { PricingTableProps } from '@/components/sections/pricing';
 import type { CaseStudySectionProps } from '@/components/sections/case-study-card';
 import type { CaseStudyListSectionProps } from '@/components/sections/case-study-list';
+import type { CaseStudyMeta, CaseStudyListItem } from '@/components/sections/case-card';
+import type {
+  CasePhoto,
+  CaseSpeakerList,
+  CaseSummary,
+  CaseChapter,
+  CaseStudyArticleLabels,
+} from '@/components/sections/case-study-article';
 import type { FAQSectionProps } from '@/components/sections/faq-section';
 import type { ServicePortfolioProps } from '@/components/sections/service-portfolio';
 import type { CTASectionProps } from '@/components/sections/cta-section';
@@ -141,8 +149,59 @@ export interface CaseStudyListInput extends LandingPageCommon {
   closing?: Slot<CTASectionProps>;
 }
 
+/**
+ * 個別の事例記事（実測 9 サイト × 3 記事 = 27 記事。
+ * docs/research/research-case-study-detail.md）。
+ *
+ * `case-study-list` の遷移先で、この型もヒーローを持たない。
+ * 記事タイトル → 会社プロフィール → 写真 → サマリー → 章 → 関連事例 → 締め、
+ * という順序はパターンが決める（実測 9/9 で一致）。
+ *
+ * 実測が示したのは「サイト内では構成が完全に固定（一致率 97.6%）、
+ * サイト間では割れる」という性質である。**選択肢はパターンのレベルで固定し、
+ * 記事ごとには選ばせない**のが実測に合う。記事ごとに変わるのは
+ * 章数・文字数・写真枚数という「量」だけ。
+ */
+export interface CaseStudyDetailInput extends LandingPageCommon {
+  pattern: 'case-study-detail';
+  article: {
+    /** 成果か課題を含む1文（実測 8/9 がこの型。会社名だけのタイトルは採らない） */
+    title: string;
+    /** 一覧への戻り導線。実測 9/9 が持つため必須 */
+    backTo: { label: string; href: string };
+    /** 冒頭写真（実測 8/9） */
+    photo?: CasePhoto;
+    /** 本文前のリード段落（実測 6/9） */
+    lead?: string;
+    /** 公開日・取材時点（実測 2/9。dev 警告は出さない） */
+    publishedAt?: string;
+  };
+  /** 会社プロフィール。実測 9/9 が持つため必須。一覧カードと同じ型を共有する */
+  profile: CaseStudyMeta;
+  /** 話者（実測 3/9 が明示ブロック、3/9 が写真キャプション）。最大4名 */
+  speakers?: CaseSpeakerList;
+  /** 冒頭サマリー（実測 5/9。課題と効果は対で現れる） */
+  summary?: CaseSummary;
+  /** 本文。最低2章（実測の最小が 2 章）。中央値 5 章 */
+  chapters: [CaseChapter, CaseChapter, ...CaseChapter[]];
+  /** 関連事例（実測 9/9・3 件が最頻）。一覧のカードをそのまま使う。2件以上 */
+  related: [CaseStudyListItem, CaseStudyListItem, ...CaseStudyListItem[]];
+  /** UI 語彙（パンくず・サマリー/プロフィールのラベル・関連事例の見出し）。既定は日本語 */
+  labels?: CaseStudyArticleLabels;
+  /**
+   * 末尾 CTA（実測 9/9）。hero が無く再利用できるオファーが存在しないため、
+   * actions は必須（case-study-list と同じ扱い）。
+   */
+  closing: Slot<CTASectionProps>;
+}
+
 export type LandingPageInput =
-  ProductPageInput | PortfolioTopInput | LeadGenInput | CorporateTopInput | CaseStudyListInput;
+  | ProductPageInput
+  | PortfolioTopInput
+  | LeadGenInput
+  | CorporateTopInput
+  | CaseStudyListInput
+  | CaseStudyDetailInput;
 
 export type LandingPagePattern = LandingPageInput['pattern'];
 
@@ -153,6 +212,8 @@ const DEFAULT_TONES: Record<LandingPagePattern, PageTone> = {
   'lead-gen': 'campaign',
   'corporate-top': 'trust',
   'case-study-list': 'product',
+  /* 記事は製品面の続きであり、campaign でも trust でもない（case-study-list と同じ） */
+  'case-study-detail': 'product',
 };
 
 /**

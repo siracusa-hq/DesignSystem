@@ -10,6 +10,10 @@ import { FeatureGrid } from '@/components/sections/feature-grid';
 import { PricingTable } from '@/components/sections/pricing';
 import { CaseStudySection } from '@/components/sections/case-study-card';
 import { CaseStudyListSection } from '@/components/sections/case-study-list';
+import {
+  CaseStudyArticleSection,
+  CaseStudyRelatedSection,
+} from '@/components/sections/case-study-article';
 import { FAQSection } from '@/components/sections/faq-section';
 import { ServicePortfolio } from '@/components/sections/service-portfolio';
 import { CTASection } from '@/components/sections/cta-section';
@@ -164,6 +168,36 @@ export const LandingPage: React.FC<LandingPageProps> = (props) => {
         />,
         /* オファーの再利用元（hero）が無いため、closing の actions は呼び出し側が必ず渡す */
         props.closing && <CTASection key="closing" {...props.closing} />,
+      ];
+      break;
+    }
+    case 'case-study-detail': {
+      /* 記事本体は「1セクション」として置く。実測 9/9 が本文を単一の面に置いており、
+         章のあいだに Page の面リズム（default ↔ muted）を入れてはいけない
+         （docs/research/research-case-study-detail.md §4-5）。
+         リズムの対象になるのは 記事本体 / 関連事例 / 締め の3スロットだけ。
+
+         末尾 CTA は CTASection（中央寄せ・暗面）を使う。実測の末尾は
+         「中央寄せの見出し + 1〜2本のオファー」（SmartHR の h2 26px/700・中央、
+         ANDPAD / HRBrain / Chatwork の2本併置）で、左に文・右にボタンを置く
+         CTABand の行レイアウトより CTASection の centered が実測の型に近い。 */
+      sections = [
+        <CaseStudyArticleSection
+          key="article"
+          {...props.article}
+          profile={props.profile}
+          speakers={props.speakers}
+          summary={props.summary}
+          chapters={props.chapters}
+          labels={props.labels}
+        />,
+        <CaseStudyRelatedSection
+          key="related"
+          cases={props.related}
+          backTo={props.article.backTo}
+          labels={props.labels}
+        />,
+        <CTASection key="closing" {...props.closing} />,
       ];
       break;
     }

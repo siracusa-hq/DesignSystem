@@ -5,4 +5,5 @@ export {
   type CaseStudyListItem,
   type CaseStudyListLabels,
   type CaseStudyFilterAxis,
+  type CaseStudyMeta,
 } from './case-study-list';

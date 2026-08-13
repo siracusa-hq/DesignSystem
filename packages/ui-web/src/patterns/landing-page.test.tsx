@@ -3,7 +3,12 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'vitest-axe';
-import { defineLandingPage, LandingPage, type OfferPair } from './index';
+import {
+  defineLandingPage,
+  LandingPage,
+  type OfferPair,
+  type CaseStudyDetailInput,
+} from './index';
 import { ResourceRequestForm } from '@/components/sections/form';
 
 const offers: OfferPair = [
@@ -73,6 +78,38 @@ const caseListInput = defineLandingPage({
   },
 });
 
+const caseDetailInput = defineLandingPage({
+  pattern: 'case-study-detail',
+  brand: 'peerdesk-taxpeer',
+  article: {
+    title: '書類回収の催促がゼロに。決算前の残業が消えた',
+    backTo: { label: '導入事例', href: '/case' },
+    photo: { src: '/hero.jpg', alt: '工場の事務所で打ち合わせをする様子' },
+    lead: '同社は3年前から月次決算の早期化に取り組んでいる。',
+    publishedAt: '2026.07.31',
+  },
+  profile: {
+    companyName: 'あさひ製作所',
+    industry: '製造業',
+    employeeRange: '51〜300名',
+    service: 'タックスピア',
+    challenges: ['書類回収'],
+  },
+  summary: { challenge: ['催促に時間がかかる'], effect: ['残業がゼロに'] },
+  chapters: [
+    { heading: '導入前は電話をかけ続けていた', paragraphs: ['期日の3日前から電話をかけていました。'] },
+    { heading: '催促そのものが消えた', paragraphs: ['催促は自動で回るようになりました。'] },
+  ],
+  related: [
+    { companyName: 'みなと商事', summary: '月次決算が5営業日早まりました。', href: '/case/minato' },
+    { companyName: 'そらまめ工業', summary: '書類の紛失がなくなりました。', href: '/case/soramame' },
+  ],
+  closing: {
+    title: '自社に近い事例をお探しですか',
+    actions: [{ label: '資料をダウンロード', href: '#dl' }],
+  },
+});
+
 afterEach(() => vi.restoreAllMocks());
 
 describe('defineLandingPage', () => {
@@ -103,6 +140,7 @@ describe('defineLandingPage', () => {
         list: { cases: [] },
       }).tone,
     ).toBe('product');
+    expect(caseDetailInput.tone).toBe('product');
   });
 
   it('明示した tone は上書きしない', () => {
@@ -216,6 +254,54 @@ describe('LandingPage', () => {
     expect(screen.queryByText('自社の事例を見つけてください')).toBeNull();
     expect(screen.getByRole('heading', { level: 1, name: '導入事例' })).toBeInTheDocument();
   });
+
+  it('case-study-detail: 記事（h1）→ 関連事例 → 締めの順。ヒーローは持たない', () => {
+    const { container } = render(<LandingPage {...caseDetailInput} />);
+    expect(
+      screen.getByRole('heading', { level: 1, name: '書類回収の催促がゼロに。決算前の残業が消えた' }),
+    ).toBeInTheDocument();
+    const texts = [
+      '導入前は電話をかけ続けていた', // 章（記事本体）
+      '関連事例',
+      'みなと商事',
+      '事例一覧をみる',
+      '自社に近い事例をお探しですか', // 締め
+    ];
+    const positions = texts.map((t) => {
+      const el = screen.getAllByText(
+        (content, node) => node?.textContent === t || content === t,
+      )[0];
+      return Array.prototype.indexOf.call(container.querySelectorAll('*'), el);
+    });
+    expect(positions).toEqual([...positions].sort((a, b) => a - b));
+  });
+
+  it('case-study-detail: 記事本体は単一の面（章のあいだに面リズムが入らない）', () => {
+    const { container } = render(<LandingPage {...caseDetailInput} />);
+    const articles = container.querySelectorAll('article');
+    expect(articles).toHaveLength(1);
+    // 章はすべて同じ記事（= 同じ面）の中にある。面リズムは章のあいだに入らない（実測 9/9）
+    const chapterHeadings = within(articles[0] as HTMLElement).getAllByRole('heading', {
+      level: 2,
+    });
+    expect(chapterHeadings).toHaveLength(2);
+    // リズムの対象は 記事本体 / 関連事例 / 締め の3スロットだけ
+    expect(container.querySelectorAll('section').length).toBeGreaterThanOrEqual(3);
+  });
+
+  it('case-study-detail: related は2件以上（型で落とす）', () => {
+    const oneRelated: CaseStudyDetailInput = {
+      ...caseDetailInput,
+      // @ts-expect-error -- related は2件以上のタプル
+      related: [{ companyName: 'みなと商事', summary: '月次決算が早まりました。' }],
+    };
+    expect(oneRelated).toBeTruthy();
+  });
+
+  it('a11y 違反なし（case-study-detail パターン全体）', async () => {
+    const { container } = render(<LandingPage {...caseDetailInput} />);
+    expect(await axe(container)).toHaveNoViolations();
+  }, 15000);
 
   it('a11y 違反なし（case-study-list パターン全体）', async () => {
     const { container } = render(<LandingPage {...caseListInput} />);

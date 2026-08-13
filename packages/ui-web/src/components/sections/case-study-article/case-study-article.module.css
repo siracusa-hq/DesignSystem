@@ -1,0 +1,257 @@
+/* CaseStudyArticleSection — 個別事例記事の本体（case-study-detail 型）。
+
+   寸法はすべて実測の中央値（docs/research/research-case-study-detail.md §3-7、
+   9サイト×3記事 = 27記事）。2026-08-13 ブランド決定でモック確定形に一致させている。
+
+   - 読み幅 46.5rem（実測中央値 742px。Container md の内寸 44rem では実測より狭い）
+   - 本文 16px / 行間 1.80（実測 1.75〜2.00 の中央値）
+   - h1 32px / 700（実測中央値。範囲 24〜36px）
+   - 章 h2 26px / 700（実測中央値。範囲 21〜28px）
+   - ヒーロー写真 1.9:1（実測中央値 1.90）・本文写真 3:2（実測最頻 1.50）
+
+   記事本文は **単一の面**に置く（実測 9/9）。Page の面リズムを章のあいだに
+   入れてはならないため、記事全体で1セクションとして描画している（§4-5）。 */
+
+/* 読み幅。Container の内寸ではなく記事自身が持つ（実測レンジ 626〜890px の中央） */
+.article {
+  max-width: 46.5rem;
+  margin-inline: auto;
+}
+
+/* ---- パンくず（実測 6/9。一覧への戻り導線は 9/9） ---- */
+.breadcrumb {
+  margin-bottom: var(--spacing-6);
+}
+.breadcrumbList {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+}
+.breadcrumbSeparator {
+  color: var(--color-on-surface-muted);
+}
+/* 現在地。リンクにしない */
+.breadcrumbCurrent {
+  color: var(--color-on-surface-muted);
+}
+
+/* ---- 記事タイトル（実測 9/9。中央値 32px/700・左寄せ） ---- */
+.title {
+  font-size: var(--text-display-sm);
+  line-height: 1.35;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  letter-spacing: -0.02em;
+}
+@media (min-width: 48rem) {
+  .title {
+    /* 実測中央値 32px。スケールに 2rem の段が無いため記事のローカル値として持つ */
+    font-size: 2rem;
+  }
+}
+.title:lang(ja) {
+  letter-spacing: 0;
+  line-height: 1.45;
+}
+
+/* 公開日・導入日（実測 2/9）。dev 警告は出さない（必須化の根拠が無い） */
+.publishedAt {
+  margin-top: var(--spacing-3);
+}
+
+/* ---- 会社プロフィール（実測 9/9） ---- */
+.profileHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-8);
+}
+.profileCompany {
+  font-size: var(--text-body-md);
+  line-height: var(--text-body-md--line-height);
+  font-weight: 700;
+  color: var(--color-on-surface);
+}
+.profile {
+  display: grid;
+  gap: var(--spacing-2) var(--spacing-6);
+  margin: var(--spacing-4) 0 0;
+}
+@media (min-width: 48rem) {
+  .profile {
+    grid-template-columns: max-content 1fr;
+  }
+}
+/* ラベル列（業種 / 従業員規模 / 利用サービス / 課題）は
+   ブランド強色（2026-08-13 ブランド決定） */
+.profileLabel {
+  margin: 0;
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  font-weight: 700;
+  color: var(--color-text-brand-strong);
+}
+.profileValue {
+  margin: 0;
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  color: var(--color-on-surface-secondary);
+}
+
+/* ---- 写真（figure + figcaption。キャプションは話者名と肩書き・実測 2/9） ---- */
+.figure {
+  margin: var(--spacing-10) 0 0;
+}
+.heroFigure {
+  margin-top: var(--spacing-8);
+}
+.photo {
+  display: block;
+  width: 100%;
+  border-radius: var(--radius-card);
+  object-fit: cover;
+}
+/* ヒーロー写真: 実測中央値 1.90。高さ上限は必須（#145 の巨大化事故の教訓） */
+.heroPhoto {
+  aspect-ratio: 1.9 / 1;
+  max-height: 24rem;
+}
+/* 本文写真: 実測最頻 1.50（= 3:2）。
+   高さ上限（20rem）は読み幅いっぱいのとき先に効くため、デスクトップでは
+   実効比が 2.3:1 前後になる（object-fit: cover で上下がトリミングされる）。
+   比率より高さの制御を優先するのは意図的（2026-08-13 ブランド決定）。
+   狭い画面では上限に達しないので 3:2 がそのまま出る。 */
+.bodyPhoto {
+  aspect-ratio: 3 / 2;
+  max-height: 20rem;
+}
+.caption {
+  margin-top: var(--spacing-2);
+}
+
+/* ---- 話者ブロック（実測 3/9・最大4名） ---- */
+.speakers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-4) var(--spacing-8);
+  margin-top: var(--spacing-8);
+}
+.speakerName {
+  font-size: var(--text-body-md);
+  line-height: var(--text-body-md--line-height);
+  font-weight: 700;
+  color: var(--color-on-surface);
+}
+
+/* ---- 冒頭サマリー（実測 5/9）: ブランド淡面パネル ---- */
+.summary {
+  margin-top: var(--spacing-10);
+  border-radius: var(--radius-card);
+  background: var(--color-bg-brand-subtle);
+  padding: var(--spacing-6);
+}
+@media (min-width: 48rem) {
+  .summary {
+    padding: var(--spacing-8);
+  }
+}
+.summaryRow {
+  display: grid;
+  gap: var(--spacing-1) var(--spacing-6);
+  padding: var(--spacing-4) 0;
+}
+@media (min-width: 48rem) {
+  .summaryRow {
+    grid-template-columns: 7rem 1fr;
+  }
+}
+.summaryRow:first-child {
+  padding-top: 0;
+}
+.summaryRow:last-child {
+  padding-bottom: 0;
+}
+/* 行間の淡い横罫。面の上に線を1本だけ引く（ブランド色から導出） */
+.summaryRow + .summaryRow {
+  border-top: 1px solid color-mix(in oklab, var(--color-text-brand) 24%, transparent);
+}
+.summaryLabel {
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  font-weight: 700;
+  color: var(--color-text-brand-strong);
+}
+/* 数値をコピー側で強調しない（実測 0/27。構造はラベル + 本文の行組みのみ） */
+.summaryBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+  font-size: var(--text-body-md);
+  line-height: 1.8;
+  color: var(--color-on-surface);
+}
+
+/* ---- リード文・本文（16px / 行間 1.80） ---- */
+.lead {
+  margin-top: var(--spacing-10);
+}
+.paragraph {
+  margin: 0;
+  font-size: var(--text-body-md);
+  line-height: 1.8;
+  color: var(--color-on-surface);
+}
+.paragraph + .paragraph {
+  margin-top: var(--spacing-6);
+}
+
+.chapters {
+  margin-top: var(--spacing-4);
+}
+.chapter {
+  margin-top: var(--spacing-14);
+}
+/* 章見出し（実測中央値 26px/700） */
+.chapterHeading {
+  margin: 0 0 var(--spacing-6);
+  font-size: var(--text-heading-lg);
+  line-height: 1.45;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  letter-spacing: -0.02em;
+}
+@media (min-width: 48rem) {
+  .chapterHeading {
+    /* 実測中央値 26px。スケールに 1.625rem の段が無いため記事のローカル値として持つ */
+    font-size: 1.625rem;
+  }
+}
+.chapterHeading:lang(ja) {
+  letter-spacing: 0;
+}
+
+/* 問答（実測 4/9。h3 = 質問 / 段落 = 回答。引用の飾り枠は作らない — 実測 0/27） */
+.qa + .qa {
+  margin-top: var(--spacing-8);
+}
+.question {
+  margin: 0 0 var(--spacing-3);
+  font-size: var(--text-heading-sm);
+  line-height: 1.6;
+  font-weight: 700;
+  color: var(--color-text-brand-strong);
+}
+
+/* ---- 関連事例（実測 9/9・3件が最頻） ---- */
+.relatedFooter {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--spacing-10);
+}
