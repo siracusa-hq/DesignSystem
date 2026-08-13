@@ -65,11 +65,16 @@
 .fallback code {
   color: var(--color-neutral-300);
 }
-/* shiki が返す <pre> の既定余白と背景を打ち消す（枠は .frame が持つ） */
+/* shiki が返す <pre> の既定余白と背景を打ち消す（枠は .frame が持つ）。
+   背景の正本はウィンドウ枠の --color-neutral-950 の1色。
+   shiki はテーマの背景（github-dark = #24292e）を**インライン style**で
+   焼き込むため、クラス指定では負ける — インラインの非 important には
+   スタイルシートの !important が勝つ仕様を使って確実に打ち消す
+   （ウィンドウ枠とコード面の色が割れていた不具合の修正。2026-08-13） */
 .code pre {
   margin: 0;
   padding: 0;
-  background: transparent;
+  background: transparent !important;
 }
 
 /* 行番号。counter は shiki の .line に付ける */
