@@ -1,5 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { axe } from 'vitest-axe';
 import { CaseStudySection } from './case-study-card';
 import { LogoMark } from '@/components/primitives/logo-mark';
@@ -48,15 +49,43 @@ describe('CaseStudySection', () => {
     expect(screen.getByRole('link', { name: /詳しく見る/ })).toHaveAttribute('href', '/cases/a');
   });
 
-  it('列数を件数から導出する（1→1 / 2→2 / 3件以上→3）', () => {
-    const make = (n: number) =>
-      Array.from({ length: n }, (_, i) => ({ companyName: `c${i}`, quote: `q${i}` }));
+  const make = (n: number) =>
+    Array.from({ length: n }, (_, i) => ({ companyName: `c${i}`, quote: `q${i}` }));
+
+  it('列数を件数から導出する（1→1 / 2→2 / 3→3。見た目の選択肢は持たない）', () => {
     const grid = (n: number) =>
       render(<CaseStudySection cases={make(n)} />).container.querySelector('.grid');
 
     expect(grid(1)).toHaveClass('cols1');
     expect(grid(2)).toHaveClass('cols2');
-    expect(grid(4)).toHaveClass('cols3');
+    expect(grid(3)).toHaveClass('cols3');
+  });
+
+  it('4件以上はカルーセルになる（送りボタン・グリッド不使用。2026-08-13 決定）', async () => {
+    const user = userEvent.setup();
+    const { container } = render(<CaseStudySection cases={make(5)} />);
+    expect(container.querySelector('.grid')).toBeNull();
+    const prev = screen.getByRole('button', { name: '前の事例' });
+    const next = screen.getByRole('button', { name: '次の事例' });
+    // 先頭では「前へ」が無効
+    expect(prev).toBeDisabled();
+    // 「次へ」でトラックが1枚ぶんスクロールされる。
+    // jsdom はレイアウト寸法が全て 0 で「末尾到達」と判定されボタンが無効化されるため、
+    // 寸法を与えて scroll イベントで再判定させてから押す
+    const track = container.querySelector('[class*="track"]') as HTMLElement;
+    Object.defineProperty(track, 'scrollWidth', { configurable: true, value: 1200 });
+    Object.defineProperty(track, 'clientWidth', { configurable: true, value: 600 });
+    const scrollBy = vi.fn();
+    track.scrollBy = scrollBy as never;
+    fireEvent.scroll(track);
+    expect(next).toBeEnabled();
+    await user.click(next);
+    expect(scrollBy).toHaveBeenCalledOnce();
+  });
+
+  it('3件以下では送りボタンを出さない', () => {
+    render(<CaseStudySection cases={make(3)} />);
+    expect(screen.queryByRole('button', { name: '次の事例' })).toBeNull();
   });
 
   it('a11y違反がない', async () => {

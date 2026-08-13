@@ -30,7 +30,7 @@
   width: 100%;
   aspect-ratio: 16 / 9;
   /* 幅広カード（ピックアップ1件 = 全幅）での際限ない伸びを防ぐ（実測 647px → 上限 240px） */
-  max-height: 15rem;
+  max-height: 12.5rem;
   object-fit: cover;
 }
 
@@ -38,8 +38,8 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: var(--spacing-4);
-  padding: var(--spacing-6);
+  gap: var(--spacing-3);
+  padding: var(--spacing-5);
 }
 
 /* ピックアップが1件のときは全幅にせず読み幅へ */

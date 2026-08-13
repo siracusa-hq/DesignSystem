@@ -27,7 +27,7 @@
   aspect-ratio: 16 / 9;
   /* 幅広カードで写真が際限なく伸びるのを防ぐ（1列時に 683px まで膨らんだ実測を受けて上限設置。
      上限にかかったら 16:9 を諦めて横長トリミングになる） */
-  max-height: 15rem;
+  max-height: 12.5rem;
   object-fit: cover;
 }
 
@@ -35,8 +35,8 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: var(--spacing-4);
-  padding: var(--spacing-6);
+  gap: var(--spacing-3);
+  padding: var(--spacing-5);
 }
 /* 1件だけのときは全幅にせず、読み幅に収めて中央へ（写真つきで全幅は巨大化する） */
 .single {
@@ -89,4 +89,64 @@
   align-items: center;
   gap: var(--spacing-1);
   font-size: var(--text-body-sm);
+}
+
+/* ============ カルーセル（4件以上）— 3枚見せ・1枚ずつ送り ============ */
+
+/* 送りボタン列（トラックの上・右寄せ） */
+.controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-4);
+}
+.control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-on-surface-secondary);
+  cursor: pointer;
+  transition:
+    color var(--duration-fast) var(--ease-default),
+    border-color var(--duration-fast) var(--ease-default);
+}
+.control:hover:not(:disabled),
+.control:focus-visible {
+  color: var(--color-text-brand-strong);
+  border-color: var(--color-border-brand-strong);
+}
+.control:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* トラック: scroll-snap の横スクロール。3枚見せ（モバイル 85% の1枚見せ）。
+   タッチのスワイプはネイティブスクロールがそのまま担う */
+.track {
+  display: grid;
+  grid-auto-flow: column;
+  /* gap は Carousel.step() の定数 24px と一致させること（--spacing-6） */
+  gap: var(--spacing-6);
+  grid-auto-columns: 85%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  /* カードの hover 影が切れないように上下へ逃がす */
+  padding-block: var(--spacing-2);
+}
+.track::-webkit-scrollbar {
+  display: none;
+}
+.track > * {
+  scroll-snap-align: start;
+}
+@media (min-width: 64rem) {
+  .track {
+    grid-auto-columns: calc((100% - 2 * var(--spacing-6)) / 3);
+  }
 }

@@ -138,3 +138,32 @@ export const DarkBackground: Story = {
     );
   },
 };
+
+/**
+ * 4件以上でカルーセル（3枚見せ・1枚ずつ送り）。
+ * 送りボタンは端で無効化。モバイルはスワイプでも送れる。
+ */
+export const カルーセル_6件: Story = {
+  render: () => (
+    <CaseStudySection
+      title="導入事例"
+      cases={[
+        ['あさひ製作所', '回収率が9割を超えました。', 'green'],
+        ['みなと商事', '月次決算が3日早くなりました。', 'blue'],
+        ['そらまめ工業', '監査対応が半日で終わります。', 'sand'],
+        ['つばき会計事務所', '繁忙期の残業がなくなりました。', 'green'],
+        ['さくら不動産', '拠点間の提出フローが1本になりました。', 'blue'],
+        ['ひまわり調剤', '紙の保管棚が不要になりました。', 'sand'],
+      ].map(([name, quote, tint]) => ({
+        companyName: name,
+        quote,
+        photo: {
+          src: photoPlaceholder('インタビュー写真', tint as 'green' | 'blue' | 'sand'),
+          alt: `${name}の担当者（プレースホルダ）`,
+        },
+        metrics: [{ label: '導入効果', value: '実測値' }],
+        href: '#',
+      }))}
+    />
+  ),
+};

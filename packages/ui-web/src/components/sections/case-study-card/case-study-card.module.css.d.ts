@@ -3,6 +3,8 @@ declare const styles: {
   readonly "card": string;
   readonly "cardBody": string;
   readonly "companyName": string;
+  readonly "control": string;
+  readonly "controls": string;
   readonly "dark": string;
   readonly "linkRow": string;
   readonly "logo": string;
@@ -11,5 +13,6 @@ declare const styles: {
   readonly "photo": string;
   readonly "quote": string;
   readonly "single": string;
+  readonly "track": string;
 };
 export default styles;
