@@ -4,7 +4,6 @@ import * as React from 'react';
 import { cn } from '@/lib/cn';
 import { Section } from '@/components/primitives/section';
 import { Container } from '@/components/primitives/container';
-import { Grid } from '@/components/primitives/grid';
 import { Text } from '@/components/primitives/text';
 import { Link } from '@/components/primitives/link';
 import type { LogoMarkProps } from '@/components/primitives/logo-mark';
@@ -44,12 +43,6 @@ export interface CaseStudySectionProps
   cases: CaseStudy[];
   /** 4件以上でカルーセルになったときの送りボタンの語彙 */
   labels?: CaseStudyCarouselLabels;
-}
-
-function columnsFor(count: number): 1 | 2 | 3 {
-  if (count <= 1) return 1;
-  if (count === 2) return 2;
-  return 3;
 }
 
 const DEFAULT_CAROUSEL_LABELS: Required<CaseStudyCarouselLabels> = {
@@ -110,30 +103,28 @@ function Carousel({
   );
 
   return (
-    <div>
-      <div className={styles.controls}>
-        <button
-          type="button"
-          className={styles.control}
-          aria-label={labels.previous}
-          disabled={atStart}
-          onClick={() => step(-1)}
-        >
-          {chevron(-1)}
-        </button>
-        <button
-          type="button"
-          className={styles.control}
-          aria-label={labels.next}
-          disabled={atEnd}
-          onClick={() => step(1)}
-        >
-          {chevron(1)}
-        </button>
-      </div>
+    <div className={styles.carousel}>
+      <button
+        type="button"
+        className={cn(styles.control, styles.controlPrev)}
+        aria-label={labels.previous}
+        disabled={atStart}
+        onClick={() => step(-1)}
+      >
+        {chevron(-1)}
+      </button>
       <div className={styles.track} ref={trackRef} onScroll={updateEnds}>
         {children}
       </div>
+      <button
+        type="button"
+        className={cn(styles.control, styles.controlNext)}
+        aria-label={labels.next}
+        disabled={atEnd}
+        onClick={() => step(1)}
+      >
+        {chevron(1)}
+      </button>
     </div>
   );
 }
@@ -142,7 +133,7 @@ export const CaseStudySection = React.forwardRef<HTMLElement, CaseStudySectionPr
   ({ eyebrow, title, subtitle, cases, labels, ...props }, ref) => {
     const l = { ...DEFAULT_CAROUSEL_LABELS, ...labels };
     const cards = cases.map((c, i) => (
-      <div key={i} className={cn(styles.card, cases.length === 1 && styles.single)}>
+      <div key={i} className={styles.card}>
         {c.photo && (
                 <img className={styles.photo} src={c.photo.src} alt={c.photo.alt} loading="lazy" />
               )}
@@ -158,7 +149,7 @@ export const CaseStudySection = React.forwardRef<HTMLElement, CaseStudySectionPr
               )}
 
               <div className={styles.quote}>
-                <Text size="body-md">&ldquo;{c.quote}&rdquo;</Text>
+                <Text size="body-sm">&ldquo;{c.quote}&rdquo;</Text>
               </div>
 
               {c.metrics && c.metrics.length > 0 && (
@@ -195,9 +186,9 @@ export const CaseStudySection = React.forwardRef<HTMLElement, CaseStudySectionPr
                ロゴ帯の「多数はカルーセル」と同じ語彙。事例での自社実測は未取得） */
             <Carousel labels={l}>{cards}</Carousel>
           ) : (
-            <Grid columns={columnsFor(cases.length)} gap="lg">
-              {cards}
-            </Grid>
+            /* 3件以下: カード幅は常に3列ぶんで固定し、少ないときは中央寄せ
+               （少数時にカードが横に伸びる問題への対処。2026-08-13 ブランド決定） */
+            <div className={styles.staticRow}>{cards}</div>
           )}
         </Container>
       </Section>

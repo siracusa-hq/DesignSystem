@@ -38,20 +38,31 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: var(--spacing-3);
-  padding: var(--spacing-5);
+  gap: var(--spacing-2);
+  padding: var(--spacing-4);
 }
 
-/* ピックアップが1件のときは全幅にせず読み幅へ */
-.pickupSingle {
-  width: 100%;
-  max-width: 44rem;
-  margin-inline: auto;
+/* ピックアップもカード幅は通常の3列ぶんに固定し、少ないときは中央寄せ
+   （「カードのサイズは3枚のときと同じに」2026-08-13 ブランド決定） */
+.pickupRow {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--spacing-6);
+}
+@media (min-width: 64rem) {
+  .pickupRow {
+    flex-direction: row;
+  }
+  .pickupRow > * {
+    width: calc((100% - 2 * var(--spacing-6)) / 3);
+    flex-shrink: 0;
+  }
 }
 
 /* padding は本文側へ（写真をカード縁まで届かせる。base カードと同じ構造） */
 .cardFeatured .cardBody {
-  padding: var(--spacing-8);
+  padding: var(--spacing-5);
 }
 
 .logo {

@@ -120,18 +120,15 @@ function metaOf(c: CaseStudyListItem): string[] {
 function CaseCard({
   item,
   featured,
-  single,
   readMore,
 }: {
   item: CaseStudyListItem;
   featured?: boolean;
-  /** ピックアップ1件のとき: 全幅化を避けて読み幅に収める */
-  single?: boolean;
   readMore: string;
 }) {
   const meta = metaOf(item);
   return (
-    <div className={cn(styles.card, featured && styles.cardFeatured, single && styles.pickupSingle)}>
+    <div className={cn(styles.card, featured && styles.cardFeatured)}>
       {item.photo && (
         <img className={styles.photo} src={item.photo.src} alt={item.photo.alt} loading="lazy" />
       )}
@@ -147,7 +144,7 @@ function CaseCard({
       )}
 
       <div className={styles.summary}>
-        <Text size={featured ? 'body-lg' : 'body-md'}>{item.summary}</Text>
+        <Text size={featured ? 'body-md' : 'body-sm'}>{item.summary}</Text>
       </div>
 
       {meta.length > 0 && (
@@ -260,11 +257,11 @@ export const CaseStudyListSection = React.forwardRef<HTMLElement, CaseStudyListS
 
           {pickup && pickup.length > 0 && (
             <div className={styles.pickup}>
-              <Grid columns={pickup.length === 1 ? 1 : 2} gap="lg">
+              <div className={styles.pickupRow}>
                 {pickup.map((c, i) => (
-                  <CaseCard key={i} item={c} featured single={pickup.length === 1} readMore={l.readMore} />
+                  <CaseCard key={i} item={c} featured readMore={l.readMore} />
                 ))}
-              </Grid>
+              </div>
             </div>
           )}
 

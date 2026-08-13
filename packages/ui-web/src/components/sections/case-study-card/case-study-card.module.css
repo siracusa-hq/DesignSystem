@@ -16,7 +16,7 @@
 }
 @media (min-width: 64rem) {
   .cardBody {
-    padding: var(--spacing-8);
+    padding: var(--spacing-5);
   }
 }
 
@@ -35,14 +35,26 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: var(--spacing-3);
-  padding: var(--spacing-5);
+  gap: var(--spacing-2);
+  padding: var(--spacing-4);
 }
-/* 1件だけのときは全幅にせず、読み幅に収めて中央へ（写真つきで全幅は巨大化する） */
-.single {
-  width: 100%;
-  max-width: 40rem;
-  margin-inline: auto;
+/* 3件以下の静的表示: カード幅は常に「3列のときの1枚ぶん」で固定し、中央寄せ。
+   少数時にカードが横に伸びて巨大化するのを防ぐ（2026-08-13 ブランド決定） */
+.staticRow {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: var(--spacing-6);
+}
+@media (min-width: 64rem) {
+  .staticRow {
+    flex-direction: row;
+  }
+  .staticRow > * {
+    width: calc((100% - 2 * var(--spacing-6)) / 3);
+    flex-shrink: 0;
+  }
 }
 
 .card:hover {
@@ -93,14 +105,18 @@
 
 /* ============ カルーセル（4件以上）— 3枚見せ・1枚ずつ送り ============ */
 
-/* 送りボタン列（トラックの上・右寄せ） */
-.controls {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--spacing-2);
-  margin-bottom: var(--spacing-4);
+.carousel {
+  position: relative;
 }
+
+/* 送りボタン — カード列の左右・垂直中央（直感性の指摘を受けて右上から移動）。
+   カードに少し重ねて置き、面のあるボタンで下を隠す */
 .control {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  box-shadow: var(--shadow-raised);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -114,6 +130,12 @@
   transition:
     color var(--duration-fast) var(--ease-default),
     border-color var(--duration-fast) var(--ease-default);
+}
+.controlPrev {
+  left: calc(-1 * var(--spacing-2));
+}
+.controlNext {
+  right: calc(-1 * var(--spacing-2));
 }
 .control:hover:not(:disabled),
 .control:focus-visible {

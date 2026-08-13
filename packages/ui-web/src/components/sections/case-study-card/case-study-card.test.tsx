@@ -52,13 +52,15 @@ describe('CaseStudySection', () => {
   const make = (n: number) =>
     Array.from({ length: n }, (_, i) => ({ companyName: `c${i}`, quote: `q${i}` }));
 
-  it('列数を件数から導出する（1→1 / 2→2 / 3→3。見た目の選択肢は持たない）', () => {
-    const grid = (n: number) =>
-      render(<CaseStudySection cases={make(n)} />).container.querySelector('.grid');
-
-    expect(grid(1)).toHaveClass('cols1');
-    expect(grid(2)).toHaveClass('cols2');
-    expect(grid(3)).toHaveClass('cols3');
+  it('3件以下はカード幅固定の静的表示（少数でもカードが横に伸びない。2026-08-13 決定）', () => {
+    const row = (n: number) =>
+      render(<CaseStudySection cases={make(n)} />).container.querySelector(
+        '[class*="staticRow"]',
+      );
+    // 1〜3件とも同じ staticRow（幅は CSS が「3列のときの1枚ぶん」に固定する）
+    expect(row(1)).not.toBeNull();
+    expect(row(2)).not.toBeNull();
+    expect(row(3)).not.toBeNull();
   });
 
   it('4件以上はカルーセルになる（送りボタン・グリッド不使用。2026-08-13 決定）', async () => {
