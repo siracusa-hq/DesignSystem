@@ -6,11 +6,11 @@
 .card {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-4);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
   background: var(--color-surface-raised);
-  padding: var(--spacing-6);
+  /* 写真をカード縁まで届かせるため padding は本文（.cardBody）が持つ */
+  overflow: hidden;
   box-shadow: var(--shadow-card);
   transition:
     box-shadow var(--duration-normal) var(--ease-default),
@@ -24,8 +24,45 @@
 }
 
 /* ピックアップ: 件数を絞って大きく出す枠。列数はカード数から自動で決まる */
-.cardFeatured {
-  padding: var(--spacing-8);
+/* インタビュー写真 — 16:9 固定・トリミング自動（CaseStudySection と同じ契約） */
+.photo {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  /* 幅広カード（ピックアップ1件 = 全幅）での際限ない伸びを防ぐ（実測 647px → 上限 240px） */
+  max-height: 12.5rem;
+  object-fit: cover;
+}
+
+.cardBody {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  padding: var(--spacing-4);
+}
+
+/* ピックアップもカード幅は通常の3列ぶんに固定し、少ないときは中央寄せ
+   （「カードのサイズは3枚のときと同じに」2026-08-13 ブランド決定） */
+.pickupRow {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--spacing-6);
+}
+@media (min-width: 64rem) {
+  .pickupRow {
+    flex-direction: row;
+  }
+  .pickupRow > * {
+    width: calc((100% - 2 * var(--spacing-6)) / 3);
+    flex-shrink: 0;
+  }
+}
+
+/* padding は本文側へ（写真をカード縁まで届かせる。base カードと同じ構造） */
+.cardFeatured .cardBody {
+  padding: var(--spacing-5);
 }
 
 .logo {

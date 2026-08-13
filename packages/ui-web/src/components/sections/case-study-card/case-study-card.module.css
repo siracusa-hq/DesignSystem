@@ -3,11 +3,11 @@
 .card {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-4);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
   background: var(--color-surface);
-  padding: var(--spacing-6);
+  /* 写真をカード縁まで届かせるため padding は本文（.cardBody）が持つ */
+  overflow: hidden;
   box-shadow: var(--shadow-card);
   transition:
     box-shadow var(--duration-normal) var(--ease-default),
@@ -15,10 +15,48 @@
     border-color var(--duration-normal) var(--ease-default);
 }
 @media (min-width: 64rem) {
-  .card {
-    padding: var(--spacing-8);
+  .cardBody {
+    padding: var(--spacing-5);
   }
 }
+
+/* インタビュー写真 — 16:9 固定・トリミング自動（LogoMark と同じ正規化の思想） */
+.photo {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  /* 幅広カードで写真が際限なく伸びるのを防ぐ（1列時に 683px まで膨らんだ実測を受けて上限設置。
+     上限にかかったら 16:9 を諦めて横長トリミングになる） */
+  max-height: 12.5rem;
+  object-fit: cover;
+}
+
+.cardBody {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  padding: var(--spacing-4);
+}
+/* 3件以下の静的表示: カード幅は常に「3列のときの1枚ぶん」で固定し、中央寄せ。
+   少数時にカードが横に伸びて巨大化するのを防ぐ（2026-08-13 ブランド決定） */
+.staticRow {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: var(--spacing-6);
+}
+@media (min-width: 64rem) {
+  .staticRow {
+    flex-direction: row;
+  }
+  .staticRow > * {
+    width: calc((100% - 2 * var(--spacing-6)) / 3);
+    flex-shrink: 0;
+  }
+}
+
 .card:hover {
   box-shadow: var(--shadow-card-hover);
   border-color: var(--color-border-brand);
@@ -63,4 +101,75 @@
   align-items: center;
   gap: var(--spacing-1);
   font-size: var(--text-body-sm);
+}
+
+/* ============ カルーセル（4件以上）— 3枚見せ・1枚ずつ送り ============ */
+
+.carousel {
+  position: relative;
+  /* 送りボタン分の溝（2.5rem のボタン + 余白）。カードに被せない */
+  padding-inline: calc(2.5rem + var(--spacing-3));
+}
+
+/* 送りボタン — カード列の左右・垂直中央の溝に置く（カードには被せない） */
+.control {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  box-shadow: var(--shadow-raised);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-on-surface-secondary);
+  cursor: pointer;
+  transition:
+    color var(--duration-fast) var(--ease-default),
+    border-color var(--duration-fast) var(--ease-default);
+}
+.controlPrev {
+  left: 0;
+}
+.controlNext {
+  right: 0;
+}
+.control:hover:not(:disabled),
+.control:focus-visible {
+  color: var(--color-text-brand-strong);
+  border-color: var(--color-border-brand-strong);
+}
+.control:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* トラック: scroll-snap の横スクロール。3枚見せ（モバイル 85% の1枚見せ）。
+   タッチのスワイプはネイティブスクロールがそのまま担う */
+.track {
+  display: grid;
+  grid-auto-flow: column;
+  /* gap は Carousel.step() の定数 24px と一致させること（--spacing-6） */
+  gap: var(--spacing-6);
+  grid-auto-columns: 85%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  /* カードの hover 影が切れないように上下へ逃がす */
+  padding-block: var(--spacing-2);
+}
+.track::-webkit-scrollbar {
+  display: none;
+}
+.track > * {
+  scroll-snap-align: start;
+}
+@media (min-width: 64rem) {
+  .track {
+    grid-auto-columns: calc((100% - 2 * var(--spacing-6)) / 3);
+  }
 }

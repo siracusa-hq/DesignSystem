@@ -3,6 +3,7 @@ import {
   CaseStudyListSection,
   type CaseStudyListItem,
 } from '../../components/sections/case-study-list';
+import { photoPlaceholder } from '../support/photo-placeholder';
 
 /**
  * CaseStudyListSection — 事例一覧ページの本体（case-study-list 型）。
@@ -24,6 +25,10 @@ type Story = StoryObj<typeof CaseStudyListSection>;
 const jaCases: CaseStudyListItem[] = [
   {
     companyName: 'あさひ製作所',
+    photo: {
+      src: photoPlaceholder('インタビュー写真', 'green'),
+      alt: 'あさひ製作所の担当者が現場で作業する様子（プレースホルダ）',
+    },
     summary: '未提出の顧問先を追いかける仕事がなくなり、決算前の残業がゼロになりました。',
     service: 'タックスピア',
     industry: '製造業',
@@ -34,6 +39,10 @@ const jaCases: CaseStudyListItem[] = [
   },
   {
     companyName: 'みなと商事',
+    photo: {
+      src: photoPlaceholder('インタビュー写真', 'blue'),
+      alt: 'みなと商事の担当者が現場で作業する様子（プレースホルダ）',
+    },
     summary: '紙で回っていた経費精算をやめ、月次決算が5営業日早まりました。',
     service: 'タックスピア',
     industry: '卸売業',
@@ -44,6 +53,10 @@ const jaCases: CaseStudyListItem[] = [
   },
   {
     companyName: 'そらまめ工業',
+    photo: {
+      src: photoPlaceholder('インタビュー写真', 'sand'),
+      alt: 'そらまめ工業の担当者が現場で作業する様子（プレースホルダ）',
+    },
     summary: '書類の紛失と再依頼がなくなり、担当者の問い合わせ対応が半分になりました。',
     service: 'ピアデスク',
     industry: '製造業',
