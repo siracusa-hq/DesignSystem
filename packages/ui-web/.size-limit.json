@@ -23,8 +23,14 @@
     "limit": "38 kB"
   },
   {
+    "name": "CaseStudyArticle のみ（事例記事本体・記事は一覧より軽いことの番人）",
+    "path": "dist/index.js",
+    "import": "{ CaseStudyArticleSection }",
+    "limit": "12 kB"
+  },
+  {
     "name": "styles.css（配布スタイル全量・gzip）",
     "path": "dist/styles.css",
-    "limit": "10 kB"
+    "limit": "11.5 kB"
   }
 ]

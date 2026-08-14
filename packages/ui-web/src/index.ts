@@ -191,7 +191,21 @@ export {
   type CaseStudyListItem,
   type CaseStudyListLabels,
   type CaseStudyFilterAxis,
+  /** 一覧カードと事例記事のプロフィールが共有するメタ情報（値を2箇所に書かない） */
+  type CaseStudyMeta,
 } from './components/sections/case-study-list';
+export {
+  CaseStudyArticleSection,
+  type CaseStudyArticleSectionProps,
+  type CaseStudyArticleLabels,
+  type CasePhoto,
+  type CaseSpeaker,
+  type CaseSpeakerList,
+  type CaseQA,
+  type CaseChapter,
+  type CaseChapterBody,
+  type CaseSummary,
+} from './components/sections/case-study-article';
 
 // Layout
 export {

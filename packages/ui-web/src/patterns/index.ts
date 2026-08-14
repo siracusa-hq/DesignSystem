@@ -11,6 +11,7 @@ export {
   type LeadGenInput,
   type CorporateTopInput,
   type CaseStudyListInput,
+  type CaseStudyDetailInput,
   type LandingHero,
   type LandingProof,
   type LandingMidCta,

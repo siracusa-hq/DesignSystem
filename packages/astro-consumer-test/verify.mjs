@@ -157,8 +157,10 @@ const checks = [
     islandAssets.length === 2 && islandAssets.every((u) => u !== null && asset(u) !== null),
   ],
   [
+    // クラス名のハッシュ接頭辞はリファクタで変わりうる（実際に case_study_list_ →
+    // case_card_ で一度壊れた）ため、実コンテンツと部品由来クラスの両方で判定する
     'cases: アイランドの中身が SSR 済み（hydrate 前でも中身が見える）',
-    casesHtml.includes('case_study_list_card'),
+    /case[_-]?card|case_study_list/.test(casesHtml) && casesHtml.includes('サンプル会計事務所'),
   ],
 
   /* --- CSS -------------------------------------------------------------- */

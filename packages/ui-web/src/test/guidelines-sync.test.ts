@@ -66,7 +66,7 @@ describe('AGENTS.md の語彙表が型の実体と一致する', () => {
     expect(sorted(backticked(tableRow(AGENTS, 'トーン `tone`')[1]))).toEqual(sorted(PAGE_TONES));
   });
 
-  it('ページ型5', () => {
+  it('ページ型6', () => {
     expect(sorted(backticked(tableRow(AGENTS, 'ページ型 `pattern`')[1]))).toEqual(
       sorted(LANDING_PAGE_PATTERNS),
     );
