@@ -262,10 +262,10 @@ export const CaseStudyArticleSection = React.forwardRef<
             {profileRows.length > 0 && (
               <dl className={styles.profile}>
                 {profileRows.map((row) => (
-                  <React.Fragment key={row.label}>
+                  <div key={row.label} className={styles.profileItem}>
                     <dt className={styles.profileLabel}>{row.label}</dt>
                     <dd className={styles.profileValue}>{row.value}</dd>
-                  </React.Fragment>
+                  </div>
                 ))}
               </dl>
             )}

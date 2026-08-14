@@ -73,21 +73,32 @@
   gap: var(--spacing-4);
   margin-top: var(--spacing-8);
 }
+/* 会社名は目立たせる（ブランド決定 2026-08-14: 「小さすぎる」指摘への対応） */
 .profileCompany {
-  font-size: var(--text-body-md);
-  line-height: var(--text-body-md--line-height);
+  font-size: var(--text-heading-lg);
+  line-height: var(--text-heading-lg--line-height);
   font-weight: 700;
   color: var(--color-on-surface);
 }
+/* 項目は横並び・縦線区切り（モック確定形。狭幅では折り返し、折頭の縦線は消す） */
 .profile {
-  display: grid;
-  gap: var(--spacing-2) var(--spacing-6);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2) 0;
   margin: var(--spacing-4) 0 0;
+  border-block: 1px solid var(--color-border);
+  padding-block: var(--spacing-3);
 }
-@media (min-width: 48rem) {
-  .profile {
-    grid-template-columns: max-content 1fr;
-  }
+.profileItem {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-2);
+  padding-inline: var(--spacing-4);
+  border-left: 1px solid var(--color-border);
+}
+.profileItem:first-child {
+  padding-left: 0;
+  border-left: none;
 }
 /* ラベル列（業種 / 従業員規模 / 利用サービス / 課題）は
    ブランド強色（2026-08-13 ブランド決定） */
@@ -123,14 +134,13 @@
   aspect-ratio: 1.9 / 1;
   max-height: 24rem;
 }
-/* 本文写真: 実測最頻 1.50（= 3:2）。
-   高さ上限（20rem）は読み幅いっぱいのとき先に効くため、デスクトップでは
-   実効比が 2.3:1 前後になる（object-fit: cover で上下がトリミングされる）。
-   比率より高さの制御を優先するのは意図的（2026-08-13 ブランド決定）。
-   狭い画面では上限に達しないので 3:2 がそのまま出る。 */
+/* 本文写真: 実測最頻 1.50（= 3:2）を常に尊重する。
+   当初の高さ上限 20rem は 3:2 を押し潰して「見切れ」に見えた
+   （ブランドオーナー指摘 2026-08-14）ため撤回。読み幅 46.5rem が
+   事実上の上限を兼ねる（最大でも 496px 高 = 実測サイトと同水準で、
+   #145 型の全幅巨大化はこの文脈では起こらない） */
 .bodyPhoto {
   aspect-ratio: 3 / 2;
-  max-height: 20rem;
 }
 .caption {
   margin-top: var(--spacing-2);

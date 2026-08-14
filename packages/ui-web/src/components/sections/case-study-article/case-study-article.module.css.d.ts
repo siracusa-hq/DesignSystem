@@ -19,6 +19,7 @@ declare const styles: {
   readonly "profile": string;
   readonly "profileCompany": string;
   readonly "profileHead": string;
+  readonly "profileItem": string;
   readonly "profileLabel": string;
   readonly "profileValue": string;
   readonly "publishedAt": string;
