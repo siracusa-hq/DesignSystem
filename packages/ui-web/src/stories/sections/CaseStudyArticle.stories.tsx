@@ -28,7 +28,7 @@ export const 事例記事_タックスピア: Story = {
     backTo: { label: '導入事例', href: '/case' },
     publishedAt: '2026.07.31',
     photo: {
-      src: photoPlaceholder('インタビュー写真', 'green'),
+      src: photoPlaceholder('インタビュー写真', 'green', '1.9:1'),
       alt: 'あさひ製作所の経理部と経営企画室の担当者が事務所で話している様子（プレースホルダ）',
       caption: '左から、経理部 部長 山田 太郎さん、経営企画室 鈴木 花子さん',
     },
@@ -60,7 +60,7 @@ export const 事例記事_タックスピア: Story = {
       {
         heading: '導入の決め手は「顧問先に何も求めない」ことだった',
         photo: {
-          src: photoPlaceholder('提出状況ボード', 'blue'),
+          src: photoPlaceholder('提出状況ボード', 'blue', '3:2'),
           alt: '拠点ごとの提出状況が一覧になったボードを画面で確認している様子（プレースホルダ）',
         },
         paragraphs: [
@@ -144,7 +144,7 @@ export const English_CaseStudyArticle: Story = {
     backTo: { label: 'Case studies', href: '/en/case' },
     publishedAt: 'July 31, 2026',
     photo: {
-      src: photoPlaceholder('Interview photo', 'sand'),
+      src: photoPlaceholder('Interview photo', 'sand', '1.9:1'),
       alt: 'Finance team members reviewing submission status in their office (placeholder)',
       caption: 'Taro Yamada, Head of Finance (left), and Hanako Suzuki, Corporate Planning',
     },
@@ -183,7 +183,7 @@ export const English_CaseStudyArticle: Story = {
       {
         heading: 'Reminders now run on their own',
         photo: {
-          src: photoPlaceholder('Status board', 'green'),
+          src: photoPlaceholder('Status board', 'green', '3:2'),
           alt: 'A board showing submission status for each site (placeholder)',
         },
         paragraphs: [

@@ -423,7 +423,7 @@ export const 事例記事_タックスピア: Story = {
       backTo: { label: '導入事例', href: '/case' },
       publishedAt: '2026.07.31',
       photo: {
-        src: photoPlaceholder('インタビュー写真', 'green'),
+        src: photoPlaceholder('インタビュー写真', 'green', '1.9:1'),
         alt: 'あさひ製作所の経理部と経営企画室の担当者が事務所で話している様子（プレースホルダ）',
         caption: '左から、経理部 部長 山田 太郎さん、経営企画室 鈴木 花子さん',
       },
@@ -459,7 +459,7 @@ export const 事例記事_タックスピア: Story = {
       {
         heading: '導入の決め手は「顧問先に何も求めない」ことだった',
         photo: {
-          src: photoPlaceholder('提出状況ボード', 'blue'),
+          src: photoPlaceholder('提出状況ボード', 'blue', '3:2'),
           alt: '拠点ごとの提出状況が一覧になったボードを画面で確認している様子（プレースホルダ）',
         },
         /* 問答形式の実例（「―― 」はシステムが自動付与する） */
