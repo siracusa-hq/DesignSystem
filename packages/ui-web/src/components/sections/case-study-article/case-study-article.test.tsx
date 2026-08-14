@@ -108,7 +108,10 @@ describe('CaseStudyArticleSection', () => {
         ],
       }),
     );
-    expect(screen.getByRole('heading', { level: 3, name: '導入前の課題は何でしたか?' })).toBeInTheDocument();
+    // 「―― 」はシステムが自動付与する（書き手は書かない。2026-08-14 決定）
+    expect(
+      screen.getByRole('heading', { level: 3, name: '―― 導入前の課題は何でしたか?' }),
+    ).toBeInTheDocument();
     expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(2);
     expect(screen.getByText('書類の回収に時間がかかっていました。')).toBeInTheDocument();
   });

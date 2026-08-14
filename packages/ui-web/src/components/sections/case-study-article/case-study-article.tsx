@@ -313,7 +313,9 @@ export const CaseStudyArticleSection = React.forwardRef<
                   {'qa' in chapter ? (
                     chapter.qa.map((qa, qi) => (
                       <div key={qi} className={styles.qa}>
-                        <h3 className={styles.question}>{qa.question}</h3>
+                        {/* 「―― 」はインタビュー問答の定型として システムが付与する
+                            （書き手に覚えさせない。モック確定形 2026-08-14） */}
+                        <h3 className={styles.question}>&#8213;&#8213; {qa.question}</h3>
                         <Paragraphs items={qa.answer} />
                       </div>
                     ))
