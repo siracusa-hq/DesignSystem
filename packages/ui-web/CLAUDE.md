@@ -67,6 +67,9 @@ pnpm --filter @siracusahq/gtm-design-system test     # Vitest
 ```bash
 pnpm --filter @siracusahq/gtm-design-system vrt         # 基準 PNG と比較（CI と同じ）
 pnpm --filter @siracusahq/gtm-design-system vrt:update  # 基準 PNG を更新
+  **更新後は `git status -- vrt/` で「意図した変更のページだけが差分か」を必ず確認してからコミットする。**
+  ローカルのフォント揺れで無関係な基準が再撮影されることがあり、`git add -A` で
+  そのまま混ぜると CI が決定的に落ちる（2026-08-14 に実際に発生）。
 ```
 
 対象は**ページ単位ストーリーだけ**（Patterns/LandingPage・Patterns/WorstCase・
