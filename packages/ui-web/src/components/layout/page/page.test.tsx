@@ -22,6 +22,10 @@ const Conditional = markPageSurface(
 );
 
 const mutedSlotOf = (el: HTMLElement) => el.closest(`.${styles.slotMuted}`);
+const tintedSlotOf = (el: HTMLElement) => el.closest(`.${styles.slotTinted}`);
+/** そのセクションに実際に割り当てられた面（スロットの有無から読む） */
+const surfaceOf = (el: HTMLElement) =>
+  mutedSlotOf(el) ? 'muted' : tintedSlotOf(el) ? 'tinted' : 'default';
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -216,6 +220,104 @@ describe('Page', () => {
       </Page>,
     );
     expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe('Page.surfaces（面の明示割当・2026-08）', () => {
+  const Accent = markPageSurface(
+    ({ label }: { label: string }) => <section>{label}</section>,
+    'accent',
+  );
+
+  it('tinted / default / muted を添字どおりに割り当てる', () => {
+    const { getByText } = render(
+      <Page surfaces={['default', 'tinted', 'default', 'muted']}>
+        <Plain label="a" />
+        <Plain label="b" />
+        <Plain label="c" />
+        <Plain label="d" />
+      </Page>,
+    );
+    // 自動ゼブラなら a=default / b=muted / c=default / d=muted になるところを上書きする
+    expect(surfaceOf(getByText('a'))).toBe('default');
+    expect(surfaceOf(getByText('b'))).toBe('tinted');
+    expect(surfaceOf(getByText('c'))).toBe('default');
+    expect(surfaceOf(getByText('d'))).toBe('muted');
+  });
+
+  it("'auto' と配列の不足分は自動ゼブラが処理する（既定挙動の維持）", () => {
+    const { getByText } = render(
+      <Page surfaces={['auto', 'tinted']}>
+        <Plain label="a" />
+        <Plain label="b" />
+        <Plain label="c" />
+        <Plain label="d" />
+      </Page>,
+    );
+    // a は auto → 交互の1番目で default。b は明示の tinted。
+    // c / d は配列の外なので自動ゼブラ（明示面でカウンタが 0 に戻り default → muted）
+    expect(surfaceOf(getByText('a'))).toBe('default');
+    expect(surfaceOf(getByText('b'))).toBe('tinted');
+    expect(surfaceOf(getByText('c'))).toBe('default');
+    expect(surfaceOf(getByText('d'))).toBe('muted');
+  });
+
+  it('明示面の直後の auto は白から再開する（暗面・強調面のリセットと同じ）', () => {
+    const { getByText } = render(
+      <Page surfaces={['auto', 'auto', 'tinted']}>
+        <Plain label="a" />
+        <Plain label="b" />
+        <Plain label="tint" />
+        <Plain label="c" />
+        <Plain label="d" />
+      </Page>,
+    );
+    // a=default → b=muted（交互） → tint=明示 → c は default から再開 → d=muted
+    expect(surfaceOf(getByText('a'))).toBe('default');
+    expect(surfaceOf(getByText('b'))).toBe('muted');
+    expect(surfaceOf(getByText('tint'))).toBe('tinted');
+    expect(surfaceOf(getByText('c'))).toBe('default');
+    expect(surfaceOf(getByText('d'))).toBe('muted');
+  });
+
+  it('dark / accent の自己申告が配列より優先される（dev 警告つき）', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const { getByText } = render(
+      <Page surfaces={['tinted', 'muted', 'tinted']}>
+        <Dark label="dark" />
+        <Accent label="band" />
+        <Plain label="c" />
+      </Page>,
+    );
+    // 塗る/塗らないの判断はセクションの内部事情。外からは上書きできない
+    expect(surfaceOf(getByText('dark'))).toBe('default');
+    expect(surfaceOf(getByText('band'))).toBe('default');
+    expect(surfaceOf(getByText('c'))).toBe('tinted');
+    const messages = warn.mock.calls.map((c) => String(c[0]));
+    expect(messages.filter((m) => m.includes('を無視しました'))).toHaveLength(1);
+  });
+
+  it("直後が accent の 'muted' は dev 警告（面差 1.053:1 で知覚できない）", () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    render(
+      <Page surfaces={['muted']}>
+        <Plain label="a" />
+        <Accent label="band" />
+      </Page>,
+    );
+    expect(warn.mock.calls.map((c) => String(c[0])).join('\n')).toContain('1.053:1');
+  });
+
+  it("直後が accent でも 'tinted' なら警告しない（面差を確保できる）", () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const { getByText } = render(
+      <Page surfaces={['tinted']}>
+        <Plain label="a" />
+        <Accent label="band" />
+      </Page>,
+    );
+    expect(surfaceOf(getByText('a'))).toBe('tinted');
+    expect(warn).not.toHaveBeenCalled();
   });
 });
 

@@ -179,6 +179,54 @@ describe('ブランド濃色面の上でブランド色をアクセントに使�
   );
 });
 
+describe('LP のティント面（白 50% + ramp-50）は実測レンジに収まる', () => {
+  /* ui-web の Page が LP パターンで使う面（--color-surface-tinted =
+     color-mix(in srgb, #ffffff 50%, var(--color-bg-brand-subtle))）の検証。
+
+     根拠: 国内 BtoB SaaS 8 サイトの面交替は対比 1.04〜1.12:1、中央値 1.07:1
+     （SmartHR #f4f8f9 = 1.069、マネーフォワード #f2f5ff = 1.089、
+     Chatwork #f7f1e7 = 1.124、ANDPAD #f9f9f9 = 1.053。
+     docs/research/research-eyebrow.md §4-3）。
+     ramp-50 を素で使うと CTABand の面（--color-bg-brand-subtle = ramp-50）と
+     1.000:1 で完全に衝突するため、白で半分に薄めて 3 段の等間隔を作っている。
+
+     jsdom の axe は色計算ができずコントラスト違反を検出できないので、
+     面の値を変えるときはここが唯一の検査になる（ルート CLAUDE.md の規定）。 */
+
+  /** sRGB ガンマ空間での混合（CSS の color-mix(in srgb, …) と同じ） */
+  function mixSrgb(a: string, b: string, ratioA: number): string {
+    const channel = (hex: string, i: number) => parseInt(hex.slice(i, i + 2), 16);
+    return (
+      '#' +
+      [1, 3, 5]
+        .map((i) => Math.round(channel(a, i) * ratioA + channel(b, i) * (1 - ratioA)))
+        .map((v) => v.toString(16).padStart(2, '0'))
+        .join('')
+    );
+  }
+
+  const cases = resolveAllBrands().map(
+    (b) => [b.dataBrand, mixSrgb(WHITE, b.ramp[50], 0.5), b.ramp[50]] as const,
+  );
+
+  it.each(cases)('%s のティント面 %s は白との対比が実測レンジ内（1.04〜1.12:1）', (_b, tint) => {
+    const ratio = contrastRatio(tint, WHITE);
+    expect(ratio).toBeGreaterThanOrEqual(1.04);
+    expect(ratio).toBeLessThanOrEqual(1.12);
+  });
+
+  it.each(cases)(
+    '%s のティント面 %s は CTABand の面（ramp-50）とも 1.05:1 以上の差を持つ',
+    (_b, tint, subtle) => {
+      expect(contrastRatio(tint, subtle)).toBeGreaterThanOrEqual(1.05);
+    },
+  );
+
+  it.each(cases)('%s のティント面 %s の上で本文（neutral-900）が 4.5:1 以上', (_b, tint) => {
+    expect(contrastRatio(tint, colors.neutral[900])).toBeGreaterThanOrEqual(4.5);
+  });
+});
+
 describe('ブランドランプ 700 段は eyebrow 文字として WCAG AA を満たす', () => {
   /* ui-web の Eyebrow（18px/700 = WCAG の通常文字扱い）は
      --color-text-brand-strong（各ブランド 700 段）を文字色に使う。

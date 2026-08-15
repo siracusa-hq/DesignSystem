@@ -11,6 +11,7 @@ import {
   type CaseStudyDetailInput,
 } from './index';
 import { ResourceRequestForm } from '@/components/sections/form';
+import pageStyles from '@/components/layout/page/page.module.css';
 
 const offers: OfferPair = [
   { label: '資料をダウンロード', href: '#dl' },
@@ -384,6 +385,125 @@ describe('社会的証明スロットの空検査（Stage 5 Slice 1）', () => {
       />,
     );
     expect(warn.mock.calls.map((c) => String(c[0])).join('\n')).not.toContain('社会的証明スロット');
+  });
+});
+
+/* ============================================================
+   面の割当（2026-08）
+
+   LP 系のパターンは「白の連続の中に社会的証明だけがティントで浮かぶ」割当を持つ。
+   機械的な ABAB ゼブラの実サイトは実測で確認できておらず、面交替は 1〜3 回が主流
+   （docs/research/research-eyebrow.md §4-3）。どのスロットが浮くかは
+   パターンの設計判断そのものなので、ここで固定する。
+   ============================================================ */
+
+/** そのテキストを含むセクションに割り当てられた面（スロットの有無から読む） */
+const surfaceOfText = (text: string) => {
+  const el = screen.getAllByText(text)[0];
+  if (el.closest(`.${pageStyles.slotTinted}`)) return 'tinted';
+  if (el.closest(`.${pageStyles.slotMuted}`)) return 'muted';
+  return 'default';
+};
+
+describe('パターンごとの面シーケンス', () => {
+  it('product: 社会的証明（proof / 事例）だけがティント、他は白（交替2回）', () => {
+    render(<LandingPage {...productInput} />);
+    expect(surfaceOfText('税務書類の収集を、追いかけずに終わらせる。')).toBe('default'); // hero
+    expect(surfaceOfText('800事務所')).toBe('tinted'); // proof
+    expect(surfaceOfText('主要機能')).toBe('default'); // features
+    expect(surfaceOfText('料金')).toBe('default'); // pricing
+    expect(surfaceOfText('導入事例')).toBe('tinted'); // cases
+    expect(surfaceOfText('よくある質問')).toBe('default'); // faq
+    // ニュートラルの沈んだ面は LP 系パターンでは使わない
+    expect(document.querySelectorAll(`.${pageStyles.slotMuted}`)).toHaveLength(0);
+  });
+
+  it('product-portfolio-top: proof と事例がティント、製品カードは白', () => {
+    render(
+      <LandingPage
+        {...defineLandingPage({
+          pattern: 'product-portfolio-top',
+          brand: 'corporate',
+          hero: { title: 'シリーズで、まとめてなくす。', offers },
+          proof: {
+            stats: { stats: [{ value: '2,000社', label: '導入' }], asOf: '2026年7月時点' },
+          },
+          products: {
+            title: 'プロダクト',
+            services: [
+              { brand: 'polastack', name: 'Polastack', description: 'Agent 基盤', href: '#' },
+            ],
+          },
+          midCta: { title: 'まずは資料からご覧ください' },
+          cases: {
+            title: '導入事例',
+            cases: [{ companyName: 'あさひ製作所', quote: '書類回収が自動化されました。' }],
+          },
+          closing: { title: '締めの見出し' },
+        })}
+      />,
+    );
+    expect(surfaceOfText('2,000社')).toBe('tinted'); // proof
+    expect(surfaceOfText('プロダクト')).toBe('default'); // products
+    expect(surfaceOfText('導入事例')).toBe('tinted'); // cases
+    expect(document.querySelectorAll(`.${pageStyles.slotMuted}`)).toHaveLength(0);
+  });
+
+  it('lead-gen: 資料の中身とフォームがティント、数値は白', () => {
+    render(
+      <LandingPage
+        {...defineLandingPage({
+          pattern: 'lead-gen',
+          brand: 'peerdesk',
+          hero: { title: '5分でわかるピアデスク' },
+          contents: {
+            title: '資料の内容',
+            features: [{ title: '機能一覧', description: '全機能の概要を掲載。' }],
+          },
+          stats: { title: '数字で見るピアデスク', stats: [{ value: '98%', label: '継続率' }], asOf: '2026年7月時点' },
+          form: <ResourceRequestForm title="資料請求" ichisanEnabled={false} />,
+        })}
+      />,
+    );
+    expect(surfaceOfText('5分でわかるピアデスク')).toBe('default'); // hero
+    expect(surfaceOfText('資料の内容')).toBe('tinted'); // contents
+    expect(surfaceOfText('数字で見るピアデスク')).toBe('default'); // stats
+    expect(surfaceOfText('資料請求')).toBe('tinted'); // form
+  });
+
+  it('corporate-top: 従来どおりニュートラルの自動ゼブラ（ティントは使わない）', () => {
+    render(
+      <LandingPage
+        {...defineLandingPage({
+          pattern: 'corporate-top',
+          brand: 'corporate',
+          hero: { title: '事業の裏側を、まっすぐに。' },
+          services: {
+            title: '事業内容',
+            services: [
+              { brand: 'polastack', name: 'Polastack', description: 'Agent 基盤', href: '#' },
+            ],
+          },
+          stats: { title: '数字で見る', stats: [{ value: '3期', label: '連続黒字' }], asOf: '2026年7月時点' },
+        })}
+      />,
+    );
+    expect(surfaceOfText('事業の裏側を、まっすぐに。')).toBe('default');
+    // hero=default → services=muted → stats=default（about 省略なので stats が3番目）
+    expect(surfaceOfText('事業内容')).toBe('muted');
+    expect(surfaceOfText('数字で見る')).toBe('default');
+    expect(document.querySelectorAll(`.${pageStyles.slotTinted}`)).toHaveLength(0);
+  });
+
+  it('条件付きスロットを省いても面がズレない（pricing / reasons / faq なし）', () => {
+    const { pricing: _p, reasons: _r, faq: _f, ...withoutOptional } = productInput as typeof productInput & {
+      reasons?: unknown;
+    };
+    render(<LandingPage {...(withoutOptional as typeof productInput)} />);
+    // 落ちたスロットの surface も一緒に落ちるので、事例はティントのまま
+    expect(surfaceOfText('800事務所')).toBe('tinted');
+    expect(surfaceOfText('主要機能')).toBe('default');
+    expect(surfaceOfText('導入事例')).toBe('tinted');
   });
 });
 
