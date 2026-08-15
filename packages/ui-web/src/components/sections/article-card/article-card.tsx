@@ -6,8 +6,11 @@ import styles from './article-card.module.css';
 /**
  * 記事1件のカード語彙。
  *
- * **一覧・関連記事・ContentHub がこの1つの型を共有する**（article-pages-workorder.md §2。
- * `CaseStudyMeta` を一覧と記事で共有したのと同じ効き方を狙う）。
+ * 一覧・関連記事・ContentHub の記事枠がこの型を共有する。
+ *
+ * **ただし ContentHub の News 枠は表示形が違う**（サムネイル 0/7・日付 7/7 の行リスト）。
+ * 語彙はこの型のまま、表示だけを枠の `kind` で分けている
+ * （content-hub-workorder.md §9-1）。
  */
 export interface ArticleListItem {
   href: string;

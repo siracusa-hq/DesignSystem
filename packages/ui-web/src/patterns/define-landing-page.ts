@@ -14,6 +14,7 @@ import type { ArticleBodySectionProps } from '@/components/sections/article-body
 import type { ResourceListSectionProps } from '@/components/sections/resource-list';
 import type { SeminarListSectionProps } from '@/components/sections/seminar-list';
 import type { SeminarDetailSectionProps } from '@/components/sections/seminar-detail';
+import type { ContentHubSectionProps } from '@/components/sections/content-hub';
 import type {
   CasePhoto,
   CaseSpeakerList,
@@ -93,6 +94,12 @@ export interface ProductPageInput extends LandingPageCommon {
   cases?: Slot<CaseStudySectionProps>;
   /** FAQ は任意（実測 5/12。必須セクションではない） */
   faq?: Slot<FAQSectionProps>;
+  /**
+   * コンテンツ回遊（実測 9/13）。FAQ の後・締めの前に描画される。
+   * **任意。** 9/13（69%）は必須化の水準ではなく、持たない4ページは
+   * フッターに逃がす構成で成立している（content-hub-workorder.md §9）。
+   */
+  contentHub?: Slot<ContentHubSectionProps>;
   closing: LandingClosing;
 }
 
@@ -105,6 +112,8 @@ export interface PortfolioTopInput extends LandingPageCommon {
   midCta?: LandingMidCta;
   features?: Slot<FeatureGridProps>;
   cases?: Slot<CaseStudySectionProps>;
+  /** コンテンツ回遊（任意）。事例の後・締めの前に描画される */
+  contentHub?: Slot<ContentHubSectionProps>;
   closing: LandingClosing;
 }
 

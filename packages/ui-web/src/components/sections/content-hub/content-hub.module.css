@@ -1,0 +1,173 @@
+/* ContentHubSection — LP 末尾のコンテンツ回遊セクション。
+
+   実測（2026-08-15 実ブラウザ 16ページ。docs/content-hub-workorder.md §9）:
+   - 回遊を持つ 11/16（`[LP]` 製品系は 9/13。従来 9/12 とされていた分母の訂正）
+   - **複数系統を1グリッドに混ぜて種別ラベルで区別する例は 0/11。**
+     系統ごとに塊を作るのが 11/11 で、種別ラベル自体も 0/17
+   - カード件数の中央値 3（最頻 3 = 9/17）。News のみ中央値 4
+   - **サムネイルは 資料/セミナー/コラム 9/10 が保有、News は 0/7。** この分割は例外なし
+   - 位置は 11/11 が最終CTAの前
+   - タブ・フィルタ 0/11 ページ・0/17 枠
+
+   面はページのリズムに任せる（このセクション自身は塗らない）。実測の濃色3枠は
+   「ティールグラデの大型カード」「青グラデの帯」= **入口タイルそのものの色**であり、
+   ページ面ではない。したがって濃色は .tileBrand としてタイル側が持つ。 */
+
+.group + .group {
+  margin-top: var(--spacing-16);
+}
+
+/* 見出し行。導線は下部が主（実測）だが、見出し行の右端に置く例も2件ある。
+   位置の選択肢は作らず、下部に統一する */
+.groupHead {
+  margin-bottom: var(--spacing-6);
+}
+
+.more {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--spacing-8);
+}
+
+/* ---- News（サムネを持たない行リスト。実測 サムネ 0/7・日付 7/7） ---- */
+.newsList {
+  display: grid;
+}
+.newsRow {
+  display: grid;
+  gap: var(--spacing-1) var(--spacing-6);
+  padding: var(--spacing-4) 0;
+  border-bottom: 1px solid var(--color-border);
+  text-decoration: none;
+  color: inherit;
+}
+.newsRow:first-child {
+  border-top: 1px solid var(--color-border);
+}
+@media (min-width: 40rem) {
+  .newsRow {
+    grid-template-columns: 11rem minmax(0, 1fr);
+    align-items: baseline;
+  }
+}
+.newsRow:focus-visible {
+  outline: 2px solid var(--color-ring-brand);
+  outline-offset: 2px;
+}
+.newsMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--spacing-1) var(--spacing-4);
+}
+.newsDate {
+  font-variant-numeric: tabular-nums;
+}
+.newsCategory {
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  font-weight: 700;
+  color: var(--color-text-brand-strong);
+}
+.newsTitle {
+  font-size: var(--text-body-md);
+  line-height: var(--text-body-md--line-height);
+  font-weight: 700;
+  color: var(--color-on-surface);
+}
+.newsRow:hover .newsTitle {
+  color: var(--color-text-brand-strong);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ---- 入口タイル（一覧ページへ飛ぶ大型カード。実測 n=6 / 5社・2枚が最頻） ---- */
+.tiles {
+  display: grid;
+  gap: var(--spacing-6);
+}
+@media (min-width: 48rem) {
+  .tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-raised);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  text-decoration: none;
+  color: inherit;
+  transition:
+    box-shadow var(--duration-normal) var(--ease-default),
+    transform var(--duration-normal) var(--ease-default),
+    border-color var(--duration-normal) var(--ease-default);
+}
+.tile:hover {
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--color-border-brand);
+  transform: translateY(-2px);
+}
+.tile:focus-visible {
+  outline: 2px solid var(--color-ring-brand);
+  outline-offset: 2px;
+}
+
+.tileImage {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 12.5rem;
+  object-fit: cover;
+}
+.tileBody {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  padding: var(--spacing-5);
+}
+.tileLabel {
+  font-size: var(--text-heading-sm);
+  line-height: var(--text-heading-sm--line-height);
+  font-weight: 700;
+  color: var(--color-on-surface);
+}
+.tileDescription {
+  flex: 1;
+}
+.tileAction {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  font-size: var(--text-body-sm);
+  font-weight: 700;
+  color: var(--color-text-brand-strong);
+}
+.tileAction::after {
+  content: '→';
+}
+.tile:hover .tileAction {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ブランド濃色のタイル。実測で濃色が使われていたのは入口タイルの枠だけ
+   （アイテムカードを濃色に置いた例は 0）。Section の bgBrand と同じ塗り替えを行う */
+.tileBrand {
+  background: var(--color-bg-brand-strong);
+  border-color: transparent;
+  color: var(--color-neutral-50);
+  --color-on-surface: var(--color-neutral-50);
+  --color-on-surface-secondary: var(--color-neutral-200);
+  --color-on-surface-muted: var(--color-neutral-300);
+  --color-text-brand-strong: var(--color-text-brand-on-dark);
+}
+.tileBrand:hover {
+  border-color: transparent;
+}
