@@ -590,3 +590,212 @@ export const English_Product_Polastack: Story = {
     },
   }),
 };
+
+/**
+ * お知らせ一覧（`article-list` 型）。
+ *
+ * 事例一覧と同じくヒーローを持たず、短いページタイトルから始まる。
+ * 末尾 CTA は**任意**（実測 News 7/12・ブログ 11/15。事例一覧の必須とは違う）。
+ */
+export const お知らせ一覧_Polastack: Story = {
+  args: defineLandingPage({
+    pattern: 'article-list',
+    brand: 'polastack',
+    header: {
+      logo: <strong>Polastack</strong>,
+      navItems: [
+        { label: '機能', href: '#features' },
+        { label: '導入事例', href: '#cases' },
+        { label: 'お知らせ', href: '#news' },
+      ],
+      actions: [{ label: 'お問い合わせ', href: '#contact' }],
+    },
+    page: {
+      title: 'お知らせ',
+      description: '製品のリリース、プレスリリース、イベント出展などをお知らせします。',
+    },
+    list: {
+      articles: [
+        {
+          href: '#soc2',
+          title: 'Polastack が SOC 2 Type II 報告書を取得しました',
+          publishedAt: '2026-07-30',
+          category: 'プレスリリース',
+          excerpt: 'セキュリティ・可用性・機密保持の3原則を対象に第三者評価を受けました。',
+        },
+        {
+          href: '#audit-log',
+          title: 'エージェントの実行ログを監査証跡として書き出せるようになりました',
+          publishedAt: '2026-07-14',
+          category: '製品アップデート',
+          excerpt: '誰の依頼で、どのデータを参照し、何を出力したかを CSV / JSON で取得できます。',
+        },
+        {
+          href: '#expo',
+          title: 'Japan IT Week 2026 に出展します（小間番号 E-42）',
+          publishedAt: '2026-06-26',
+          category: 'イベント',
+        },
+        {
+          href: '#scim',
+          title: 'ピアデスクが Microsoft Entra ID の SCIM プロビジョニングに対応しました',
+          publishedAt: '2025-12-02',
+          category: '製品アップデート',
+        },
+        {
+          href: '#seed',
+          title: 'シードラウンドで 2.5億円の資金調達を実施しました',
+          publishedAt: '2025-11-11',
+          category: 'プレスリリース',
+        },
+        {
+          href: '#launch',
+          title: 'エンタープライズ向けエージェント基盤「Polastack」を正式提供開始しました',
+          publishedAt: '2025-05-20',
+          category: 'プレスリリース',
+        },
+      ],
+    },
+  }),
+};
+
+/**
+ * ブログ記事（`article-detail` 型・`kind: 'blog'`）。
+ *
+ * 著者・監修者・目次・更新日を持つのはブログだけ（News は型として持たない。実測 0/12）。
+ * 読み幅・本文寸法は事例記事と共有する（article-pages-workorder.md §9-1）。
+ */
+export const ブログ記事_Polastack: Story = {
+  args: defineLandingPage({
+    pattern: 'article-detail',
+    brand: 'polastack',
+    header: {
+      logo: <strong>Polastack</strong>,
+      navItems: [
+        { label: '機能', href: '#features' },
+        { label: 'ブログ', href: '#blog' },
+      ],
+      actions: [{ label: 'お問い合わせ', href: '#contact' }],
+    },
+    article: {
+      kind: 'blog',
+      title: 'エージェントに社内データを渡すとき、最初に決める3つのこと',
+      publishedAt: '2026-07-14',
+      updatedAt: '2026-08-01',
+      category: '導入の実務',
+      backTo: { label: 'ブログ一覧', href: '#blog' },
+      photo: {
+        src: photoPlaceholder('記事のヒーロー写真', 'blue', '1.9:1'),
+        alt: '情報システム部の担当者が権限設計を確認している様子',
+        caption: '権限設計は導入初日に決めておくと後戻りが少ない',
+      },
+      author: {
+        name: '立花 直人',
+        role: '取締役 CTO',
+        bio: 'Polastack のアーキテクチャ全般を担当。',
+        photo: { src: photoPlaceholder('Author', 'blue', '1:1'), alt: '執筆者 立花 直人のポートレート' },
+      },
+      supervisor: { name: '田中 花子', role: '公認情報システム監査人' },
+      lead: [
+        'エージェントを社内に入れるとき、最初につまずくのは「どのデータをどこまで見せるか」です。技術の話に入る前に決めておくべきことを3つに絞って書きます。',
+      ],
+      chapters: [
+        {
+          heading: '1. 参照範囲を人と同じ単位で決める',
+          paragraphs: [
+            'エージェント専用の権限体系を新しく作ると、退職や異動のたびに二重管理になります。既存のグループやロールをそのまま使い、「その人が見られるものだけをエージェントも見られる」に揃えるのが結局いちばん壊れません。',
+            '例外を作りたくなったときは、例外そのものではなく「なぜ既存の権限では足りないのか」を先に確かめてください。',
+          ],
+        },
+        {
+          heading: '2. 出力の保存先を先に決める',
+          paragraphs: [
+            '調べた結果をどこに残すかを決めないまま始めると、成果が個人のチャット履歴に散ります。共有ドライブでも社内 Wiki でも構いませんが、最初に1つ決めてください。',
+          ],
+          photo: {
+            src: photoPlaceholder('運用の様子', 'green', '3:2'),
+            alt: '共有ドライブに保存されたエージェントの出力を確認する様子',
+          },
+        },
+        {
+          heading: '3. 監査証跡の粒度を合意する',
+          paragraphs: [
+            '「誰の依頼で・どのデータを参照し・何を出力したか」の3点が残っていれば、後から説明できます。逆にこれが無いと、便利さの割に稟議が通りません。',
+          ],
+        },
+      ],
+      share: { url: 'https://example.com/blog/agent-data' },
+    },
+    related: {
+      title: '関連記事',
+      articles: [
+        {
+          href: '#a',
+          title: '監査証跡を CSV で書き出す',
+          publishedAt: '2026-07-01',
+          category: '導入の実務',
+        },
+        {
+          href: '#b',
+          title: '情報システム部が最初に聞かれる10の質問',
+          publishedAt: '2026-06-10',
+          category: '導入の実務',
+        },
+        {
+          href: '#c',
+          title: 'SSO と SCIM の設定手順',
+          publishedAt: '2026-05-20',
+          category: '設定ガイド',
+        },
+      ],
+    },
+    closing: {
+      title: '導入の相談をする',
+      description: '権限設計や監査要件のご相談も承ります。',
+      actions: [{ label: 'お問い合わせ', href: '#contact' }],
+    },
+  }),
+};
+
+/**
+ * News 記事（`article-detail` 型・`kind: 'news'`）。
+ *
+ * 著者も目次も持たない（実測 0/12）。末尾 CTA も持たない構成（SmartHR ニュースは 0/3）。
+ */
+export const お知らせ記事_Polastack: Story = {
+  args: defineLandingPage({
+    pattern: 'article-detail',
+    brand: 'polastack',
+    header: {
+      logo: <strong>Polastack</strong>,
+      navItems: [{ label: 'お知らせ', href: '#news' }],
+      actions: [{ label: 'お問い合わせ', href: '#contact' }],
+    },
+    article: {
+      kind: 'news',
+      title: 'Polastack が SOC 2 Type II 報告書を取得しました',
+      publishedAt: '2026-07-30',
+      category: 'プレスリリース',
+      backTo: { label: 'お知らせ一覧', href: '#news' },
+      lead: [
+        '2026年7月30日付で、Polastack の運用体制について SOC 2 Type II の報告書を取得しました。監査対象期間・対象範囲・お客様への影響をお知らせします。',
+      ],
+      chapters: [
+        {
+          heading: '取得の概要',
+          paragraphs: [
+            '今回取得したのは、セキュリティ・可用性・機密保持の3原則を対象とした Type II 報告書です。Type I が「ある時点で統制が設計されているか」を見るのに対し、Type II は一定期間にわたって統制が実際に機能していたかを検証します。',
+            '監査対象期間は2025年8月1日から2026年6月30日までの11か月間です。',
+          ],
+        },
+        {
+          heading: 'お客様への影響',
+          paragraphs: [
+            '既存のご契約内容および料金に変更はありません。セキュリティチェックシートへの回答時に、報告書をもって代替いただけるようになります。',
+          ],
+        },
+      ],
+      share: { url: 'https://example.com/news/soc2' },
+    },
+  }),
+};

@@ -14,6 +14,11 @@ import {
   CaseStudyArticleSection,
   CaseStudyRelatedSection,
 } from '@/components/sections/case-study-article';
+import { ArticleListSection } from '@/components/sections/article-list';
+import {
+  ArticleBodySection,
+  ArticleRelatedSection,
+} from '@/components/sections/article-body';
 import { FAQSection } from '@/components/sections/faq-section';
 import { ServicePortfolio } from '@/components/sections/service-portfolio';
 import { CTASection } from '@/components/sections/cta-section';
@@ -198,6 +203,39 @@ export const LandingPage: React.FC<LandingPageProps> = (props) => {
           labels={props.labels}
         />,
         <CTASection key="closing" {...props.closing} />,
+      ];
+      break;
+    }
+    case 'article-list': {
+      /* case-study-list と同じくヒーローを持たない。ページタイトルは一覧セクションが兼ねる。
+         末尾 CTA は任意（実測 News 7/12・ブログ 11/15。事例の 27/27 とは違う） */
+      sections = [
+        <ArticleListSection
+          key="list"
+          {...props.list}
+          eyebrow={props.page.eyebrow}
+          title={props.page.title}
+          subtitle={props.page.description}
+        />,
+        props.closing && <CTASection key="closing" {...props.closing} />,
+      ];
+      break;
+    }
+    case 'article-detail': {
+      /* 記事本体は「1セクション」として置く。章のあいだに Page の面リズムを
+         入れてはならない（case-study-detail と同じ。実測で本文は単一の面）。
+         リズムの対象は 記事本体 / 関連記事 / 締め の3スロットだけ。 */
+      sections = [
+        <ArticleBodySection key="article" {...props.article} />,
+        props.related && (
+          <ArticleRelatedSection
+            key="related"
+            title={props.related.title}
+            articles={props.related.articles}
+            backTo={props.article.backTo}
+          />
+        ),
+        props.closing && <CTASection key="closing" {...props.closing} />,
       ];
       break;
     }

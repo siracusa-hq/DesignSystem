@@ -29,6 +29,18 @@
     "limit": "12 kB"
   },
   {
+    "name": "ArticleList のみ（Radix Select 込み・記事一覧の重い経路）",
+    "path": "dist/index.js",
+    "import": "{ ArticleListSection }",
+    "limit": "40 kB"
+  },
+  {
+    "name": "ArticleBody のみ（記事は一覧より軽いことの番人）",
+    "path": "dist/index.js",
+    "import": "{ ArticleBodySection }",
+    "limit": "14 kB"
+  },
+  {
     "name": "DocumentArticle のみ（組版だけなので最軽量であることの番人）",
     "path": "dist/index.js",
     "import": "{ DocumentArticle }",

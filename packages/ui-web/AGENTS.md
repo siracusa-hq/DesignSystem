@@ -18,7 +18,7 @@ import '@siracusahq/gtm-design-system/styles.css';
 | ----------------- | ------------------------------------------------------------------------------------ | ------------------------------------------ |
 | ブランド `brand`  | `corporate` / `polastack` / `peerdesk` / `peerdesk-taxpeer`                          | 誰の顔か。色相と視覚デバイスを決める       |
 | トーン `tone`     | `trust` / `product` / `campaign`                                                     | 何を狙うページか。余白量・装飾量を決める   |
-| ページ型 `pattern` | `product` / `product-portfolio-top` / `lead-gen` / `case-study-list` / `case-study-detail` / `corporate-top` | 構成。セクションの順序と面のリズムを決める |
+| ページ型 `pattern` | `product` / `product-portfolio-top` / `lead-gen` / `case-study-list` / `case-study-detail` / `corporate-top` / `article-list` / `article-detail` | 構成。セクションの順序と面のリズムを決める |
 
 ブランドとトーンは直交する。`brand="peerdesk" tone="campaign"` も `brand="corporate" tone="trust"` も成立し、組み合わせに禁止はない。
 

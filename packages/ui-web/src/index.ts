@@ -234,6 +234,37 @@ export {
   type HistoryEvent,
 } from './components/sections/history';
 
+/* 記事系（article-list / article-detail）。News とブログを1組の部品で賄う。
+   カード語彙 ArticleListItem は一覧・関連記事・ContentHub が共有する */
+export { ArticleCard, type ArticleCardProps, type ArticleListItem } from './components/sections/article-card';
+export {
+  ArticleListSection,
+  ARTICLE_FILTER_AXES,
+  type ArticleListSectionProps,
+  type ArticleListLabels,
+  type ArticleFilterAxis,
+} from './components/sections/article-list';
+export {
+  ArticleBodySection,
+  ArticleRelatedSection,
+  type ArticleBodySectionProps,
+  type ArticleRelatedSectionProps,
+  /** News は著者・目次・更新日・監修者を型として持たない（実測 0/12） */
+  type NewsBodyProps,
+  type BlogBodyProps,
+  type ArticleChapter,
+  type ArticlePhoto,
+  type ArticlePerson,
+  type ArticleBodyLabels,
+} from './components/sections/article-body';
+export {
+  ShareButtons,
+  SHARE_SERVICES,
+  type ShareButtonsProps,
+  type ShareButtonsLabels,
+  type ShareService,
+} from './components/sections/share-buttons';
+
 export {
   CaseStudyArticleSection,
   type CaseStudyArticleSectionProps,
