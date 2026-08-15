@@ -1,6 +1,6 @@
 {
   "name": "@siracusahq/gtm-design-system",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "description": "Siracusa GTM Design System - Marketing components and design tokens for websites, landing pages, and sales materials",
   "type": "module",
   "license": "MIT",
