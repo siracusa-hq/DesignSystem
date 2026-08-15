@@ -210,7 +210,13 @@ ProseSection（散文 = ミッション・代表挨拶）, DocumentArticle（法
 
 `DocumentArticle` は **Markdown → HTML の変換を同梱しない**。変換済みの内容を `children` に渡すと、組版（見出し階層・表・リスト・引用）だけを DS が担う。
 
-**お知らせ・ブログの一覧と記事はこれらの担当ではない。** `article-list` / `article-detail` ページ型が担う（[article-pages-workorder.md](./docs/article-pages-workorder.md)）。
+**お知らせ・ブログの一覧と記事はこれらの担当ではない。** `article-list` / `article-detail` ページ型が担う（下記）。
+
+#### 記事系（お知らせ / ブログ・4）
+
+ArticleListSection（一覧）, ArticleCard（記事カード）, ArticleBodySection（記事本体）, ArticleRelatedSection（関連記事）, ShareButtons
+
+`ArticleBodySection` は `kind: 'news' | 'blog'` の判別ユニオン。**News には著者・監修者・目次・更新日が型として存在しない**（実測 0/12）。日付は ISO（`YYYY-MM-DD`）で渡し、表示書式はシステムが決める。
 
 #### フォーム（Netlify Forms 対応）
 
@@ -517,7 +523,13 @@ ProseSection (prose: mission, CEO message), DocumentArticle (legal document and 
 
 `DocumentArticle` **does not bundle a Markdown parser**. Pass already-converted HTML as `children`; the design system owns only the typesetting (heading hierarchy, tables, lists, quotes).
 
-**News and blog listings/articles are not covered here** — they belong to the `article-list` / `article-detail` page types (see `docs/article-pages-workorder.md`).
+**News and blog listings/articles are not covered here** — they belong to the `article-list` / `article-detail` page types (below).
+
+#### Articles (news / blog, 4)
+
+ArticleListSection, ArticleCard, ArticleBodySection, ArticleRelatedSection, ShareButtons
+
+`ArticleBodySection` is a discriminated union on `kind: 'news' | 'blog'`. **News has no author, supervisor, table of contents or updated date — they do not exist in the type** (measured 0/12). Dates are passed as ISO (`YYYY-MM-DD`); the display format is decided by the system.
 
 #### Forms (Netlify Forms ready)
 

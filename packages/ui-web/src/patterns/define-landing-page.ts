@@ -8,6 +8,9 @@ import type { PricingTableProps } from '@/components/sections/pricing';
 import type { CaseStudySectionProps } from '@/components/sections/case-study-card';
 import type { CaseStudyListSectionProps } from '@/components/sections/case-study-list';
 import type { CaseStudyMeta, CaseStudyListItem } from '@/components/sections/case-card';
+import type { ArticleListSectionProps } from '@/components/sections/article-list';
+import type { ArticleListItem } from '@/components/sections/article-card';
+import type { ArticleBodySectionProps } from '@/components/sections/article-body';
 import type {
   CasePhoto,
   CaseSpeakerList,
@@ -195,13 +198,49 @@ export interface CaseStudyDetailInput extends LandingPageCommon {
   closing: Slot<CTASectionProps>;
 }
 
+/**
+ * お知らせ / ブログの一覧（実測 7 サイト。docs/research/research-news-blog.md）。
+ *
+ * `case-study-list` と同じくヒーローを持たず、短いページタイトルから始まる。
+ * **News とブログで同じ型を使う。** 一覧の構造差は実測でサムネイルの有無だけで
+ * （News 3/6・ブログ 5/7）、多数派のカードグリッドに寄せた（§9-1）。
+ */
+export interface ArticleListInput extends LandingPageCommon {
+  pattern: 'article-list';
+  page: { eyebrow?: string; title: React.ReactNode; description?: string };
+  list: Slot<ArticleListSectionProps>;
+  /** 末尾 CTA（任意。実測 News 7/12・ブログ 11/15 で必須ではない） */
+  closing?: Slot<CTASectionProps>;
+}
+
+/**
+ * 個別の記事（News n=12 / ブログ n=15）。
+ *
+ * **`kind` で News とブログを分ける判別ユニオン。** 両方 optional の1型にすると
+ * 「著者と目次を持つ News」という実測に無い構成が型で許される（実測 0/12）。
+ * News に存在しないのは 著者 / 監修者 / 目次 / 更新日 の4つ。
+ *
+ * 末尾 CTA と一覧への戻り導線は**必須にしない**（事例記事は 27/27 だったが、
+ * News 7/12・ブログ 11/15。SmartHR ニュースは 0/3）。
+ */
+export interface ArticleDetailInput extends LandingPageCommon {
+  pattern: 'article-detail';
+  article: ArticleBodySectionProps;
+  /** 関連記事（実測 ブログ 15/15）。一覧のカードをそのまま渡す */
+  related?: { title: React.ReactNode; articles: ArticleListItem[] };
+  /** 末尾 CTA（任意） */
+  closing?: Slot<CTASectionProps>;
+}
+
 export type LandingPageInput =
   | ProductPageInput
   | PortfolioTopInput
   | LeadGenInput
   | CorporateTopInput
   | CaseStudyListInput
-  | CaseStudyDetailInput;
+  | CaseStudyDetailInput
+  | ArticleListInput
+  | ArticleDetailInput;
 
 export type LandingPagePattern = LandingPageInput['pattern'];
 
@@ -214,6 +253,10 @@ const DEFAULT_TONES: Record<LandingPagePattern, PageTone> = {
   'case-study-list': 'product',
   /* 記事は製品面の続きであり、campaign でも trust でもない（case-study-list と同じ） */
   'case-study-detail': 'product',
+  /* News / ブログは読み手が買い手とは限らない（投資家・採用候補・情報収集）ため trust。
+     **これは実測ではなく判断**（research-news-blog.md §6-1）。実装後に見直す余地がある */
+  'article-list': 'trust',
+  'article-detail': 'trust',
 };
 
 /**
