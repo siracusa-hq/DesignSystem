@@ -147,7 +147,7 @@ CEO のブリーフにある「同一 URL が終了後にどう変わるか」�
 **j) 満席（`SOLD OUT`）の実例を 1 件も採取できなかった。**
 一覧・詳細を通じて「満席」「定員に達しました」の表示は **0 件**。
 存在しないのか、たまたま調査時点で満席の回が無かったのかは**切り分けられていない**。
-**「0 件だった」ことは記録するが、「存在しない」とは結論しない**（§7-3）。
+**「0 件だった」ことは記録するが、「存在しない」とは結論しない**（§8-3）。
 
 **k) 資料の中身（PDF 本体）は 1 つも開いていない。** 測ったのはランディング面の構造だけ。
 
@@ -474,7 +474,7 @@ h1（セミナー名 + サブタイトル）
 **「Bill One 型（詳細ページを持たずフォーム直行）」は、本調査の 7 サイトに 1 件も存在しなかった。**
 CEO のブリーフにあった前例は、少なくともこの母集団では**多数派ではない**。
 ただし Sansan（Bill One の提供元）は §1-3d で本文に到達できておらず、
-**「Bill One 型は存在しない」とは結論できない**（§7-2）。
+**「Bill One 型は存在しない」とは結論できない**（§8-2）。
 
 ### 3-2. 資料個票（n=6）— **`LeadGenInput` との照合**
 
@@ -874,7 +874,8 @@ export interface LeadGenInput extends Omit<LandingPageCommon, 'header'> {
 | **セミナー詳細の関連セミナー**                     | **1/21**                                                              |
 | **セミナー詳細の SNS シェア**                      | **0/21**                                                              |
 | **セミナー詳細の末尾 CTA**                         | **0/21**。フォームが CTA                                              |
-| **「満席」の状態**                                 | **0/29 ページ**。ただし**存在しないとは結論していない**（§1-3j・§7-3） |
+| **「満席」の状態**                                 | **0/29 ページ**。ただし**存在しないとは結論していない**（§1-3j・§8-3） |
+| **「常設セミナー」の状態**                         | **1/21**（kintone。ANDPAD もタブを持つ）。日時・登壇者・アジェンダ・フォームのいずれも持たない「シリーズ紹介ページ」で、`upcoming` / `closed` / `archive` のどれとも構造が違う。**実測 1 本では専用の状態を配る根拠が無い**（`[NB]` が連載 1/15 で専用型を作らなかったのと同じ判断）。**必要になったら `SeminarStatus` に非破壊で足せる**（§8-11） |
 | **ハイブリッド開催**                               | **0/21**。オンライン 17 / 会場 1                                      |
 | **有料セミナー**                                   | **0/21**。参加費は全件「無料」                                        |
 | **無限スクロール**                                 | 5 調査で **0/31 ページ**                                              |
@@ -960,7 +961,7 @@ export interface LeadGenInput extends Omit<LandingPageCommon, 'header'> {
 ① CSS の実測値を 1 つも持っていない（§1-1）。
 ② **「満席」の実例を 1 件も採れていない**（§1-3j）。
 セミナーで満席表示が必要になるのは実運用が始まってからで、
-**型に入れるかどうかは実ブラウザ計測が可能になった時点で判断すること**（§7-3）。
+**型に入れるかどうかは実ブラウザ計測が可能になった時点で判断すること**（§8-3）。
 
 ---
 
@@ -1018,7 +1019,13 @@ export interface LeadGenInput extends Omit<LandingPageCommon, 'header'> {
 > - **開催状態は二値ではない。** 実測の語彙は **14 通り**あり、
 >   ANDPAD は「ライブ / アーカイブ版 / ダイジェスト版 / 常設」の **4 段階**を持つ。
 >   ただしページ型として区別が必要なのは「日時を持つか / 視聴期限を持つか」の 2 つで、
->   `status: 'upcoming' | 'archive'` の判別ユニオンで足りる
+>   `status: 'upcoming' | 'closed' | 'archive'` の判別ユニオンで足りる。
+>   **`sold-out`（満席・実測 0/29）と `permanent`（常設・実測 1/21）は型に含めない**
+>   （末尾の未決着リスト #13・#14）
+> - **型の接頭辞に `Offer*` を使わないこと。** `OfferAction` / `OfferPair` は
+>   §4-3 の「2オファー」= FV の CTA を指す既存の概念であり、
+>   資料・セミナーの分類や画像に同じ語を使うと **API を読む AI 利用者が取り違える**。
+>   共有語彙は `ContentTaxonomy` / `ContentImage` / `ContentPagination` 系で命名する
 > - **作らないもの**が再確認された: 冒頭の数値タイルは
 >   事例 0/27 + News 0/12 + ブログ 0/15 + 資料 0/6 + セミナー 0/21 = **0/81**、
 >   無限スクロール **0/31 ページ**、キャッチコピー型ヒーロー **0/31 ページ**、
@@ -1081,21 +1088,46 @@ export interface LeadGenInput extends Omit<LandingPageCommon, 'header'> {
 
 ### 6-4. 末尾の未決着リストへの追記
 
+**既存の #10（資料ライブラリ）と #11（セミナー）は本調査で決着したので、
+`case-study-detail` が #5 を閉じたときと同じ形で取り消し線にする。**
+
 ```markdown
-10. **セミナーの「満席」表示** — `[RS]` は一覧 8 ページ・詳細 21 本を通じて
-    満席・定員に達しましたの表示を **1 件も採取できなかった**。
+10. ~~**資料ライブラリ（資料DL一覧）の構成** — 実測0~~
+    → **決着（2026-08-14）。** `[RS]` で資料一覧7ページ・個票6本を実測し、
+    **個票は既存 `lead-gen` で足りる**（ずれは `header` 1点のみ）ことを確認したうえで、
+    一覧を `resources-library` として新設する判断に至った（§3-1 の追記②を参照）
+11. ~~**セミナー / イベントの一覧・詳細の構成** — 実測0~~
+    → **決着（2026-08-14）。** `[RS]` でセミナー一覧8ページ・詳細21本を実測し、
+    `seminar-list` / `seminar-detail` を新設する判断に至った（§3-1 の追記②を参照）。
+    **`article-list` の `kind` に足さなかったのは正しかった** — 獲得系は記事系の中核
+    （章 `h2`・公開日・著者・目次・SNS シェア）を **0/27** で1つも持たない
+12. **「Bill One 型」（資料詳細ページを持たずフォーム直行）の未検証** — `[RS]` の7サイトは
+    **7/7 が資料詳細ページを経由**しており、フォーム直行は **0/7** だった。
+    だが**その前例の提供元である Sansan の本文に到達できていない**（JS描画待ちの限界）。
+    **「フォーム直行型は存在しない」とは結論していない。**
+    `resources-library` のカード遷移先を1本化する前に、実ブラウザ計測で確認すること
+13. **セミナーの「満席」表示** — `[RS]` は一覧8ページ・詳細21本を通じて
+    満席・定員に達しましたの表示を **1件も採取できなかった**（0/29）。
     存在しないのか、調査時点でたまたま満席の回が無かったのかは切り分けられていない。
-    型に入れるかは実測が採れてから判断する
-11. **登壇者の型を `CaseSpeakerList` と共有できるか** — 語彙（氏名 + 所属 + 肩書き +
-    顔写真 + 経歴）が一致しており、実測の最大 3 名は上限 4 名の制約に収まる。
-    実装前に定義を突き合わせること
-12. **Sansan は 3 調査連続で本文に到達できていない** — News（`[NB]`）・資料・セミナー
-    （`[RS]`）のすべてで JS 描画後の DOM に届かなかった。
-    「Bill One 型 = 資料詳細ページを持たずフォーム直行」の検証がこのために未了
-13. **Chatwork（kubell）の資料・セミナー** — `go.chatwork.com/ja/download/` は
-    アプリのダウンロードページで、資料ライブラリではなかった
-14. **獲得系ページの読み幅** — `[RS]` は CSS 実値を持たない。
+    `SeminarStatus` に `sold-out` を入れるかは実測が採れてから判断する（**非破壊で追加できる**）
+14. **「常設セミナー」を型で表現していない** — 実測 1/21（kintone `/seminar/beginner/`。
+    ANDPAD も一覧に「常設セミナー」タブを持つ）。**個別の回ではなく
+    「シリーズの紹介ページ」**で、日時・登壇者・アジェンダ・フォームのいずれも持たず、
+    `upcoming` / `closed` / `archive` のどれとも構造が違う。
+    実測1本では専用の状態を配る根拠が無いため型から外したが、**状態としては実在する。**
+    当面は `product` 系ページか `seminar-list` の入口として扱い、
+    実測が増えたら `SeminarStatus` に非破壊で足すこと
+15. **同一URLの「開催前 → 終了後」の時系列比較をしていない** — §3-1 追記②の
+    「終了後の同一URLの姿」は、**終了済みのページと開催前のページを別々に取得して並べたもの**で、
+    同じURLを時間差で2回取得したわけではない。結論（録画視聴への切替 0/9・資料DLへの切替 0/9）は
+    複数サイトで一貫しているが、**同一ページの前後比較による裏付けは無い**
+16. **獲得系ページの読み幅** — `[RS]` は CSS 実値を持たない（#7 と同じ理由）。
     資料個票は `lead-gen` の実装値を流用する前提で進める
+17. **Sansan は3調査連続で本文に到達できていない** — News（`[NB]`）・資料・セミナー（`[RS]`）の
+    すべてで JS 描画後の DOM に届かなかった。#12 が未了なのはこれが原因である
+18. **登壇者の型を `CaseSpeakerList` と共有できるか** — 語彙（氏名 + 所属 + 肩書き +
+    顔写真 + 経歴）が一致しており、`[RS]` の実測最大3名は上限4名の制約に収まる。
+    `CaseStudyMeta` を一覧と記事で共有したのと同じ効き方をする可能性が高い。実装前に突き合わせること
 ```
 
 ---
@@ -1113,6 +1145,12 @@ export interface LeadGenInput extends Omit<LandingPageCommon, 'header'> {
  * 共有の語彙
  * 実測 [RS]: 資料一覧 7 / 資料個票 6 / セミナー一覧 8 / セミナー詳細 21。
  * docs/research/research-resources-seminar.md
+ *
+ * **命名について**: 接頭辞は `Content*` を使い、`Offer*` は使わない。
+ * define-landing-page.ts には既に `OfferAction` / `OfferPair` があり、
+ * これは **FV の CTA（「2オファー」= 軽いオファーと重いオファー）**を指す別概念である。
+ * 同じ語で「資料・セミナーの分類や画像」を指すと、この API を読む AI 利用者が
+ * 確実に取り違える。**衝突しない接頭辞を選ぶこと**（CEO レビュー 2026-08-14 の指摘）。
  * ========================================================================== */
 
 /**
@@ -1123,9 +1161,9 @@ export interface LeadGenInput extends Omit<LandingPageCommon, 'header'> {
  * セミナーは「テーマ・課題別」6/8。**年別アーカイブは資料 0/7・セミナー 0/8 で存在しない**
  * （News 一覧の 6/7 と正反対）。
  *
- * ArticleTaxonomy と統合するかは ContentHub の実測と合わせて判断すること（§7 残課題）。
+ * ArticleTaxonomy と統合するかは ContentHub の実測と合わせて判断すること（§8 残課題）。
  */
-export interface OfferTaxonomy {
+export interface ContentTaxonomy {
   label: string;
   /** 一覧のフィルタへのリンク。MF は軸がそのままパンくずになる（実測 1/6） */
   href?: string;
@@ -1139,9 +1177,9 @@ export interface OfferTaxonomy {
  * 軸の中身がサイトごとに違う（資料 = 種別/業界/製品/課題/対象者、
  * セミナー = テーマ/製品/業界/開催場所）ため、**名前は固定せず**呼び出し側が渡す。
  */
-export interface OfferFilterAxis {
+export interface ContentFilterAxis {
   label: string;
-  options: OfferTaxonomy[];
+  options: ContentTaxonomy[];
 }
 
 /**
@@ -1150,7 +1188,7 @@ export interface OfferFilterAxis {
  * 実測: 資料一覧 7/7・資料個票 6/6・セミナー一覧 8/8 が持つ。
  * **記事一覧（News 3/6・ブログ 5/7）より強く、事実上の必須要素。**
  */
-export interface OfferImage {
+export interface ContentImage {
   src: string;
   alt: string;
 }
@@ -1165,7 +1203,7 @@ export interface OfferImage {
  *
  * ArticlePagination（[NB]）と完全に同じ形。**統合してよい**（実装時に判断）。
  */
-export type OfferPagination =
+export type ContentPagination =
   | { type: 'pages'; current: number; total: number; hrefFor: (page: number) => string }
   | { type: 'load-more'; onLoadMore: () => void; hasMore: boolean };
 
@@ -1193,9 +1231,9 @@ export interface ResourceListItem {
    */
   href: string;
   /** 表紙画像（実測 7/7）。**全件が持つため必須** */
-  cover: OfferImage;
+  cover: ContentImage;
   /** カテゴリ（実測 5/7。カミナシ・freee は出さない） */
-  category?: OfferTaxonomy;
+  category?: ContentTaxonomy;
   /** 説明文（実測 4/7: ANDPAD・MF・freee・バクラク） */
   excerpt?: string;
   /**
@@ -1225,7 +1263,7 @@ export interface ResourcesLibraryInput extends LandingPageCommon {
    * 最頻の軸は「資料タイプ / 種別」6/7。**年別アーカイブは 0/7 なので、
    * 呼び出し側が年の軸を渡すことは想定していない。**
    */
-  filters?: OfferFilterAxis[];
+  filters?: ContentFilterAxis[];
   /** 一覧本体。1 件以上 */
   items: [ResourceListItem, ...ResourceListItem[]];
   /**
@@ -1238,7 +1276,7 @@ export interface ResourcesLibraryInput extends LandingPageCommon {
    * ページネーション（実測 3/7。番号ページャ 1 / もっと見る 2）。
    * **4/7 はページネーション無しの全件表示**なので任意。
    */
-  pagination?: OfferPagination;
+  pagination?: ContentPagination;
   /** UI 語彙。既定は日本語 */
   labels?: ResourcesLibraryLabels;
   /**
@@ -1268,8 +1306,17 @@ export interface ResourcesLibraryInput extends LandingPageCommon {
  * - `closed`: 開催予定だったが受付を締め切った。**同一 URL に残る**（実測 3/9）
  * - `archive`: 録画を視聴できる。視聴期限を持ちうる（実測 6/9 が別 URL）
  *
- * **`sold-out`（満席）は含めない。** 一覧 8 ページ・詳細 21 本を通じて実測 0 件
- * （§1-3j。ただし「存在しない」とは結論していない）。
+ * **含めなかった状態が 2 つある。どちらも非破壊で後から足せる。**
+ *
+ * - **`sold-out`（満席）: 実測 0/29 ページ**（§1-3j）。
+ *   存在しないのか調査時点でたまたま無かったのか切り分けられていないため、
+ *   「実測に無いものは作らない」に従って外した。実運用で必要になる可能性は高い（§8-3）
+ * - **`permanent`（常設）: 実測 1/21**（kintone `/seminar/beginner/`。
+ *   ANDPAD も「常設セミナー」タブを持つ）。**個別の回ではなく
+ *   「シリーズの紹介ページ」**で、日時・登壇者・アジェンダ・フォーム・参加費の
+ *   いずれも持たない。上記 3 状態のどれとも構造が違うが、実測 1 本では
+ *   専用の状態を配る根拠が無い（`[NB]` が連載 1/15 で専用型を作らなかったのと同じ判断）。
+ *   **当面は `product` 系ページか `seminar-list` の入口として扱う**（§5-4・§8-11）
  */
 export type SeminarStatus = 'upcoming' | 'closed' | 'archive';
 
@@ -1299,7 +1346,7 @@ export interface SeminarListItem {
   /** 状態（実測: カードにステータスバッジを出すのは 5/8） */
   status: SeminarStatus;
   /** サムネイル（実測 8/8）。**全件が持つため必須** */
-  thumbnail: OfferImage;
+  thumbnail: ContentImage;
   /**
    * 開催日時（実測 5/8 のカードが出す。カミナシ・freee・kintone は出さない）。
    * ISO 文字列で受け取り、表示書式はパターンが決める
@@ -1308,7 +1355,7 @@ export interface SeminarListItem {
   heldAt?: string;
   /** 開催形式（実測 4/8 のカードが出す） */
   venue?: SeminarVenue;
-  category?: OfferTaxonomy;
+  category?: ContentTaxonomy;
 }
 
 /**
@@ -1335,7 +1382,7 @@ export interface SeminarListInput extends LandingPageCommon {
    * 最頻の軸は「テーマ・課題別」6/8。**年別アーカイブは 0/8。**
    * 開催状態は filters ではなく items[].status が担う（型で持つ）。
    */
-  filters?: OfferFilterAxis[];
+  filters?: ContentFilterAxis[];
   /** 一覧本体。1 件以上。status によるグルーピングはパターンが行う */
   items: [SeminarListItem, ...SeminarListItem[]];
   /**
@@ -1344,7 +1391,7 @@ export interface SeminarListInput extends LandingPageCommon {
    */
   featured?: SeminarListItem[];
   /** ページネーション（実測 4/8） */
-  pagination?: OfferPagination;
+  pagination?: ContentPagination;
   labels?: SeminarListLabels;
   closing?: Slot<CTASectionProps>;
 }
@@ -1372,7 +1419,7 @@ export interface SeminarSpeaker {
   /** 肩書き（実測 15/16） */
   title?: string;
   /** 顔写真（実測 6/21）。alt は必須 */
-  photo?: OfferImage;
+  photo?: ContentImage;
   /** 経歴・プロフィール文（実測 13/16） */
   bio?: string;
 }
@@ -1477,7 +1524,7 @@ export type SeminarDetailInput = LandingPageCommon & {
     /** リード文・概要（実測 21/21。必須） */
     lead: string;
     /** アイキャッチ（実測: 一覧のサムネイルと同一のことが多い） */
-    hero?: OfferImage;
+    hero?: ContentImage;
     /**
      * 一覧への戻り導線（実測 8/21。カミナシ 6/6 が「セミナー一覧に戻る」を持つ）。
      * 事例記事（27/27 で必須）と違い、必須にしない。
@@ -1697,26 +1744,37 @@ const DEFAULT_TONES: Record<LandingPagePattern, PageTone> = {
    **`CaseStudyMeta` を `case-study-list` と `case-study-detail` で共有したのと
    同じ効き方をする可能性が高い。**
 
-10. **`OfferTaxonomy` / `OfferPagination` を `[NB]` の `ArticleTaxonomy` /
+10. **`ContentTaxonomy` / `ContentPagination` を `[NB]` の `ArticleTaxonomy` /
     `ArticlePagination` と統合すべきか未決。**
     構造は完全に同じだが、意味する軸が違う（記事は年別 6/7、資料・セミナーは年別 0/15）。
     **ContentHub（LP 末尾の回遊セクション）の実測と合わせて、
     3 系統のカードとタクソノミーをまとめて設計し直すのが正しい**可能性がある。
     `[NB]` §7-8 と同じ残課題。
 
-11. **HRBrain の「見逃し配信の集約ページ」を型で扱っていない。**
+11. **「常設セミナー」を型で表現していない（実測 1/21）。**
+    kintone の `/seminar/beginner/` は**個別の回ではなく「シリーズの紹介ページ」**で、
+    日時・登壇者・アジェンダ・フォーム・参加費のいずれも持たない。
+    ANDPAD も一覧に「常設セミナー」タブを持っており、**状態としては実在する。**
+    `SeminarStatus` の `upcoming` / `closed` / `archive` のどれとも構造が違うが、
+    **実測 1 本では専用の状態を配る根拠が無い**と判断して型から外した
+    （`[NB]` が連載 1/15 で専用のレイアウトを作らなかったのと同じ判断）。
+    **`sold-out` と同じ扱いで、実測が増えたら `SeminarStatus` に非破壊で足せる。**
+    当面は `product` 系ページか `seminar-list` の入口として扱うこと。
+    **「観測したが型に無い」状態を黙って落とさないため、ここに明示的に残す。**
+
+12. **HRBrain の「見逃し配信の集約ページ」を型で扱っていない。**
     実測 2/9 で、**複数の過去セミナーを 1 ページにまとめて再公開する**形式がある。
     これは `seminar-detail` でも `seminar-list` でもない中間物で、
     本ドラフトでは `seminar-list`（status が全件 archive）で表現できると判断したが、
     実測はそれを支持していない（登壇者もアジェンダも持たない別物だった）。
 
-12. **英語ページでの構成は未調査。** `case-study-detail` §5-9・`[NB]` §7-9 と同じ。
+13. **英語ページでの構成は未調査。** `case-study-detail` §5-9・`[NB]` §7-9 と同じ。
 
-13. **SP / PC の区別が無い（§1-3m）。**
+14. **SP / PC の区別が無い（§1-3m）。**
     とくに**セミナー詳細の「開催要項」の定義リストと登壇者ブロックが SP でどう畳まれるか**は
     実装判断に直接効く。実測が無い。
 
-14. **`ResourceCard` / `SeminarCard` / `ArticleCard` / `CaseCard` の 4 種を
+15. **`ResourceCard` / `SeminarCard` / `ArticleCard` / `CaseCard` の 4 種を
     本当に別部品にすべきか。** §4-2 のとおり語彙は全部違うが、
     「表紙 + ラベル + タイトル + 任意のメタ」という骨格は共通している。
     **1 つの `ContentCard` に slot を切る設計もありうる**が、
