@@ -359,9 +359,11 @@ export {
   Page,
   PAGE_BRANDS,
   PAGE_TONES,
+  PAGE_SLOT_SURFACES,
   type PageProps,
   type PageBrand,
   type PageTone,
+  type PageSlotSurface,
   type PageCTA,
   type PageCTAClickHandler,
 } from './components/layout/page';

@@ -17,6 +17,22 @@ export type PageBrand = (typeof PAGE_BRANDS)[number];
 export const PAGE_TONES = ['trust', 'product', 'campaign'] as const;
 export type PageTone = (typeof PAGE_TONES)[number];
 
+/**
+ * スロットの面。パターン／ページ側が「どのセクションをどの面に置くか」を
+ * 明示的に割り当てるための語彙（2026-08）。
+ *
+ * - `auto`:    Page の自動ゼブラに任せる（既定。配列を渡さないときと同じ）
+ * - `default`: 白（面を塗らない）
+ * - `muted`:   ニュートラルの沈んだ面（#f4f4f5）
+ * - `tinted`:  ブランドのティント淡色面（白 50% + ramp-50。LP 用）
+ *
+ * `dark` / `accent` はここに無い。**面を自分で塗るかどうかはセクションの内部事情**
+ * であり、外から指定させると Stage 2 で消した background props に戻る。
+ * 自分で塗るセクションは今までどおり pageSurface で自己申告する。
+ */
+export const PAGE_SLOT_SURFACES = ['auto', 'default', 'muted', 'tinted'] as const;
+export type PageSlotSurface = (typeof PAGE_SLOT_SURFACES)[number];
+
 export interface PageProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'className'> {
   /** 誰の顔か。色相・視覚デバイスを決める（既定: corporate） */
   brand?: PageBrand;
@@ -34,6 +50,23 @@ export interface PageProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'c
    * ここで受けたイベントを利用側が自分の計測基盤へ送る。
    */
   onCTAClick?: PageCTAClickHandler;
+  /**
+   * スロットごとの面の明示割当（2026-08）。子の添字と 1:1 で対応する。
+   *
+   * 渡さない・`'auto'`・配列が子より短いときの余りは、**従来どおり自動ゼブラ**
+   * （default ↔ muted の交互割当）で処理される。既定の見た目は変わらない。
+   *
+   * 明示値を置いたスロットは交互カウンタをリセットするため、その直後の `'auto'` は
+   * 必ず白から再開する（暗面・強調面のリセットと同じ考え方）。
+   * セクションが `pageSurface` で `dark` / `accent` を自己申告している場合は
+   * そちらが優先され、配列の値は無視される（dev 警告）。
+   *
+   * 機械的な ABAB ゼブラは実サイトでは確認できておらず（交替回数は 1〜3 回が主流。
+   * docs/research/research-eyebrow.md §4-3）、LP では「白の連続の中に社会的証明だけが
+   * ティントの塊で浮かぶ」といった配置のほうが実測に近い。その割当はページの意味を
+   * 知っているパターン側にしか決められないため、この口を開けている。
+   */
+  surfaces?: PageSlotSurface[];
   children?: React.ReactNode;
 }
 
@@ -67,6 +100,8 @@ function useDuplicateH1Check(rootRef: React.RefObject<HTMLElement | null>) {
  * - 面: 自分で暗面を塗るセクション（pageSurface 申告）を除き、
  *   default ↔ muted を交互に割り当てる。暗面で交互カウンタをリセットする
  *   （暗面直後は必ず default から再開）
+ * - 面の明示割当: `surfaces` を渡すと、そのスロットだけ自動ゼブラの代わりに
+ *   指定の面（default / muted / tinted）を使う。未指定は従来どおり自動
  * - 暗面の3連続は禁止（dev 警告）。可読性の問題であり、確定規則
  * - h1 の重複を dev 警告（マウント後に自ルート配下を数える）
  * - トーン/ブランドは data 属性で配下に伝播する
@@ -74,7 +109,15 @@ function useDuplicateH1Check(rootRef: React.RefObject<HTMLElement | null>) {
  */
 export const Page = React.forwardRef<HTMLDivElement, PageProps>(
   (
-    { brand = 'corporate', tone = 'product', children, onCTAClick, onClickCapture, ...props },
+    {
+      brand = 'corporate',
+      tone = 'product',
+      children,
+      surfaces: requested,
+      onCTAClick,
+      onClickCapture,
+      ...props
+    },
     ref,
   ) => {
     const items = React.Children.toArray(children);
@@ -100,8 +143,8 @@ export const Page = React.forwardRef<HTMLDivElement, PageProps>(
       [],
     );
 
-    /* 1パス目: 全子要素の面を解決する（隣接判定に先読みが要るため2パス構成） */
-    const surfaces = items.map((child) =>
+    /* 1パス目: 全子要素の自己申告面を解決する（隣接判定に先読みが要るため2パス構成） */
+    const declared = items.map((child) =>
       React.isValidElement(child) ? resolvePageSurface(child.type, child.props) : null,
     );
 
@@ -110,12 +153,30 @@ export const Page = React.forwardRef<HTMLDivElement, PageProps>(
     let darkRunWarned = false;
     let accentCount = 0;
     let accentWarned = false;
+    let overriddenWarned = false;
+    let mutedBeforeAccentWarned = false;
 
     /* 2パス目: リズム割当 */
     const assigned = items.map((child, i) => {
       if (!React.isValidElement(child)) return child;
 
-      const surface = surfaces[i];
+      const surface = declared[i];
+      /* 配列が短い・未指定なら auto（＝従来の自動ゼブラ） */
+      const explicit = requested?.[i] ?? 'auto';
+
+      if (surface === 'dark' || surface === 'accent') {
+        /* 自己申告が最優先。塗る/塗らないの判断はセクションの内部に閉じており、
+           外からの指定で上書きしてよいものではない（page-surface.ts の契約） */
+        if (isDev && explicit !== 'auto' && !overriddenWarned) {
+          overriddenWarned = true;
+          console.warn(
+            `[Page] surfaces[${i}] の指定（"${explicit}"）を無視しました。` +
+              `このセクションは pageSurface で "${surface}" を自己申告しています。` +
+              '自分で面を塗るセクションの面は外から変えられません（lib/page-surface.ts）。',
+          );
+        }
+      }
+
       if (surface === 'dark') {
         darkRun += 1;
         alternation = 0;
@@ -146,9 +207,34 @@ export const Page = React.forwardRef<HTMLDivElement, PageProps>(
       }
 
       darkRun = 0;
-      /* 強調面（淡いブランド面）は muted との対比が 1.11:1 しかなく、隣接すると
+      const nextIsAccent = declared[i + 1] === 'accent';
+
+      /* 明示割当。自動エンジンの交互カウンタはリセットする（暗面・強調面と同じ扱い。
+         明示面の直後の auto は必ず白から再開する） */
+      if (explicit !== 'auto') {
+        alternation = 0;
+        if (isDev && explicit === 'muted' && nextIsAccent && !mutedBeforeAccentWarned) {
+          mutedBeforeAccentWarned = true;
+          console.warn(
+            `[Page] surfaces[${i}] の "muted" の直後が強調面（CTABand 等）です。` +
+              'ニュートラルの沈んだ面（#f4f4f5）と淡いブランド面の対比は 1.053:1 しかなく、' +
+              '面差が知覚できません。"tinted"（白 / ティント / 強調面が 1.06:1 以上の等間隔）' +
+              'か "default" にしてください（docs/research/research-eyebrow.md §4-3）。',
+          );
+        }
+        if (explicit === 'default') return child;
+        return (
+          <div
+            key={`page-slot-${i}`}
+            className={explicit === 'tinted' ? styles.slotTinted : styles.slotMuted}
+          >
+            {child}
+          </div>
+        );
+      }
+
+      /* 強調面（淡いブランド面）は muted との対比が 1.053:1 しかなく、隣接すると
          面差が消える（research-cta-band.md §0）。直後が accent なら muted にしない */
-      const nextIsAccent = surfaces[i + 1] === 'accent';
       const muted = alternation % 2 === 1 && !nextIsAccent;
       alternation = nextIsAccent ? 0 : alternation + 1;
       if (!muted) return child;
