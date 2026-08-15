@@ -799,3 +799,238 @@ export const お知らせ記事_Polastack: Story = {
     },
   }),
 };
+
+/**
+ * 資料ライブラリ（`resources-library` 型）。
+ *
+ * **日付もページャも持たない**（実測 日付 0/7・無限スクロール 0/31）。
+ * 末尾 CTA も持たない — 資料そのものがオファーであり、
+ * フォームの手前で他ページへ逃がさないのが獲得系の設計。
+ */
+export const 資料ライブラリ_Polastack: Story = {
+  args: defineLandingPage({
+    pattern: 'resources-library',
+    brand: 'polastack',
+    header: {
+      logo: <strong>Polastack</strong>,
+      navItems: [
+        { label: '機能', href: '#features' },
+        { label: '資料', href: '#resources' },
+      ],
+      actions: [{ label: 'お問い合わせ', href: '#contact' }],
+    },
+    page: {
+      title: 'お役立ち資料',
+      description: '導入の検討から運用まで、実務で使える資料を配布しています。',
+    },
+    list: {
+      resources: [
+        {
+          href: '#dl1',
+          title: 'エージェント導入チェックリスト（全24項目）',
+          category: '導入の実務',
+          description: '権限設計・監査証跡・保存先の3点を、稟議前に確認できる形にまとめました。',
+          cover: { src: photoPlaceholder('導入チェックリスト', 'blue', '3:2'), alt: '導入チェックリストの表紙' },
+          badge: '新着',
+        },
+        {
+          href: '#dl2',
+          title: 'Polastack 導入事例集 2026',
+          category: '事例',
+          description: '製造・小売・金融の6社の導入前後を掲載。',
+          cover: { src: photoPlaceholder('導入事例集', 'green', '3:2'), alt: '導入事例集の表紙' },
+        },
+        {
+          href: '#dl3',
+          title: 'セキュリティホワイトペーパー',
+          category: 'セキュリティ',
+          description: 'SOC 2 Type II の対象範囲と、データの取り扱いを説明します。',
+          cover: { src: photoPlaceholder('セキュリティ', 'sand', '3:2'), alt: 'セキュリティ資料の表紙' },
+        },
+        {
+          href: '#dl4',
+          title: '投資対効果の考え方',
+          category: '導入の実務',
+          cover: { src: photoPlaceholder('投資対効果', 'blue', '3:2'), alt: '投資対効果資料の表紙' },
+        },
+        {
+          href: '#dl5',
+          title: '情報システム部が最初に聞かれる10の質問',
+          category: '導入の実務',
+          cover: { src: photoPlaceholder('よくある質問', 'green', '3:2'), alt: 'よくある質問資料の表紙' },
+        },
+        {
+          href: '#dl6',
+          title: 'エージェント基盤の選び方',
+          category: '比較検討',
+          cover: { src: photoPlaceholder('選び方', 'sand', '3:2'), alt: '選び方資料の表紙' },
+        },
+      ],
+    },
+  }),
+};
+
+/**
+ * 資料個票（`lead-gen` 型 + `header`）。
+ *
+ * **資料個票のページ型は新設していない。** `lead-gen` との差分がグローバルナビ 1点だけで、
+ * 実測は資料個票 6/6 がナビを持つ。`header` を渡せるようにして兼ねている。
+ */
+export const 資料個票_Polastack: Story = {
+  args: defineLandingPage({
+    pattern: 'lead-gen',
+    brand: 'polastack',
+    header: {
+      logo: <strong>Polastack</strong>,
+      navItems: [
+        { label: '機能', href: '#features' },
+        { label: '資料', href: '#resources' },
+      ],
+      actions: [{ label: 'お問い合わせ', href: '#contact' }],
+    },
+    hero: {
+      title: 'エージェント導入チェックリスト（全24項目）',
+      subtitle: '権限設計・監査証跡・保存先の3点を、稟議前に確認できる形にまとめました。',
+    },
+    contents: {
+      title: 'この資料でわかること',
+      features: [
+        { title: '権限設計の決め方', description: '既存のロールに揃えるべき理由と、例外を作る前の確認事項。' },
+        { title: '監査証跡の粒度', description: '「誰の依頼で・どのデータを・何を出力したか」の残し方。' },
+        { title: '出力の保存先', description: '成果が個人のチャット履歴に散らないための運用。' },
+      ],
+    },
+    form: (
+      <ResourceRequestForm
+        title="資料をダウンロード"
+        resourceName="agent-checklist-2026"
+        submitLabel="資料をダウンロード"
+        consent={{ href: '#privacy' }}
+        ichisanEnabled={false}
+      />
+    ),
+  }),
+};
+
+/** セミナー一覧（`seminar-list` 型）。開催予定 → アーカイブ → 終了 の順に積む */
+export const セミナー一覧_Polastack: Story = {
+  args: defineLandingPage({
+    pattern: 'seminar-list',
+    brand: 'polastack',
+    header: {
+      logo: <strong>Polastack</strong>,
+      navItems: [{ label: 'セミナー', href: '#seminar' }],
+      actions: [{ label: 'お問い合わせ', href: '#contact' }],
+    },
+    page: {
+      title: 'セミナー',
+      description: '現場の実務に落とせる内容だけを扱います。参加費は無料です。',
+    },
+    list: {
+      seminars: [
+        {
+          status: 'upcoming',
+          href: '#s1',
+          title: '現場の紙運用を、どこから置き換えるか',
+          startAt: '2026-09-10T14:00',
+          format: 'online',
+          thumbnail: { src: photoPlaceholder('セミナー告知', 'blue'), alt: '現場DXセミナーの告知画像' },
+        },
+        {
+          status: 'upcoming',
+          href: '#s2',
+          title: '監査対応の勘所 — エージェントの実行ログをどう残すか',
+          startAt: '2026-09-24T15:00',
+          format: 'venue',
+          thumbnail: { src: photoPlaceholder('セミナー告知', 'green'), alt: '監査対応セミナーの告知画像' },
+        },
+        {
+          status: 'archive',
+          href: '#s3',
+          title: '権限設計の実務（アーカイブ配信）',
+          viewableUntil: '2026-12-31',
+          format: 'online',
+          thumbnail: { src: photoPlaceholder('アーカイブ', 'sand'), alt: '権限設計セミナーの告知画像' },
+        },
+        {
+          status: 'closed',
+          href: '#s4',
+          title: '生成AI導入の落とし穴',
+          startAt: '2026-07-02T13:00',
+          format: 'online',
+          thumbnail: { src: photoPlaceholder('終了', 'blue'), alt: '生成AIセミナーの告知画像' },
+        },
+      ],
+    },
+  }),
+};
+
+/**
+ * セミナー詳細（`seminar-detail` 型・`status: 'upcoming'`）。
+ *
+ * 1セクションで完結し、**フォーム自体が締めになる**（末尾 CTA・関連コンテンツ・
+ * SNS シェアはいずれも持たない。実測 0/21）。
+ */
+export const セミナー詳細_Polastack: Story = {
+  args: defineLandingPage({
+    pattern: 'seminar-detail',
+    brand: 'polastack',
+    header: {
+      logo: <strong>Polastack</strong>,
+      navItems: [{ label: 'セミナー', href: '#seminar' }],
+      actions: [{ label: 'お問い合わせ', href: '#contact' }],
+    },
+    seminar: {
+      status: 'upcoming',
+      startAt: '2026-09-10T14:00',
+      format: 'online',
+      title: '現場の紙運用を、どこから置き換えるか',
+      photo: {
+        src: photoPlaceholder('セミナー告知', 'blue', '1.9:1'),
+        alt: '工場の現場で点検表を確認している様子',
+      },
+      overview: [
+        '紙の点検表をそのままデジタル化しても、現場の手間は減りません。どの帳票から着手するとよいかを、3社の実例をもとに解説します。',
+      ],
+      recommended: [
+        '製造業・食品業の情報システム部の方',
+        '現場に紙の点検表・日報が残っている方',
+        '過去にデジタル化を試して定着しなかった方',
+      ],
+      agenda: [
+        { time: '14:00-14:05', title: 'オープニング' },
+        {
+          time: '14:05-14:40',
+          title: '着手する帳票の選び方',
+          description: '「頻度 × 転記の手間」で優先順位を付ける方法を解説します。',
+        },
+        { time: '14:40-14:55', title: '3社の実例' },
+        { time: '14:55-15:00', title: '質疑応答' },
+      ],
+      eventMeta: [
+        { label: '開催日時', value: '2026年9月10日（木）14:00-15:00' },
+        { label: '申込締切', value: '2026年9月9日（水）17:00' },
+        { label: '開催形式', value: 'オンライン（Zoom）' },
+        { label: '参加費', value: '無料' },
+        { label: '定員', value: '100名' },
+      ],
+      speakers: [
+        {
+          name: '立花 直人',
+          organization: 'シラクサ株式会社',
+          role: '取締役 CTO',
+          bio: 'Polastack のアーキテクチャ全般を担当。',
+          photo: { src: photoPlaceholder('Speaker', 'blue', '1:1'), alt: '登壇者 立花 直人のポートレート' },
+        },
+      ],
+      form: (
+        <ResourceRequestForm
+          title="お申し込み"
+          submitLabel="セミナーに申し込む"
+          consent={{ href: '#privacy' }}
+          ichisanEnabled={false}
+        />
+      ),
+    },
+  }),
+};

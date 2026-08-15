@@ -1,0 +1,79 @@
+/* ResourceCard — 資料1件のカード。
+
+   意匠は CaseCard / ArticleCard に揃える（同じ面・線・角丸・影・ホバー）。
+   **語彙が違う点が2つある**（docs/research/research-resources-seminar.md）:
+   - **日付を持たない**（実測 0/7。記事一覧は 14/14 が持つ）
+   - **形式表記（PDF / ページ数）を持たない**（一覧 0/7 + 個票 0/6 = 0/13）
+
+   表紙画像は資料の顔なので、記事のサムネイル（16:9）より縦長の 4:3 で置く
+   （実測 514〜600px 幅・縦 144〜501px と割れているため、比率はシステムが正規化する）。 */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-raised);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  text-decoration: none;
+  color: inherit;
+  transition:
+    box-shadow var(--duration-normal) var(--ease-default),
+    transform var(--duration-normal) var(--ease-default),
+    border-color var(--duration-normal) var(--ease-default);
+}
+.card:hover {
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--color-border-brand);
+  transform: translateY(-2px);
+}
+.card:focus-visible {
+  outline: 2px solid var(--color-ring-brand);
+  outline-offset: 2px;
+}
+
+/* 表紙。資料は「表紙が見えること」自体が訴求なので、面に沈ませず薄い枠を敷く */
+.cover {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: var(--color-surface-sunken);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  padding: var(--spacing-4);
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-1) var(--spacing-3);
+}
+.category {
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  font-weight: 700;
+  color: var(--color-text-brand-strong);
+}
+
+.title {
+  font-size: var(--text-body-md);
+  line-height: var(--text-body-md--line-height);
+  font-weight: 700;
+  color: var(--color-on-surface);
+}
+.card:hover .title {
+  color: var(--color-text-brand-strong);
+}
+
+.description {
+  flex: 1;
+}

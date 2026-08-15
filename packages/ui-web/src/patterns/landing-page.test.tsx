@@ -495,3 +495,91 @@ describe('LandingPage.onCTAClick', () => {
     expect(onCTAClick).not.toHaveBeenCalled();
   });
 });
+
+/* ============================================================
+   獲得系ページ型（2026-08-15。acquisition-pages-workorder.md）
+   ============================================================ */
+
+describe('lead-gen の header? 緩和が非破壊であること', () => {
+  /** 資料個票は 6/6 がグローバルナビを持つため header を渡せるようにした。
+      ただし**省略時に剥がす既定は据え置き**で、既存の呼び出しは変わらない */
+  it('header を渡さなければグローバルナビは出ない（既存の挙動）', () => {
+    const { container } = render(
+      <LandingPage
+        {...defineLandingPage({
+          pattern: 'lead-gen',
+          brand: 'peerdesk',
+          hero: { title: '5分でわかるピアデスク' },
+          contents: { features: [{ title: '機能一覧', description: '全機能の概要を掲載。' }] },
+          form: <ResourceRequestForm title="資料請求" ichisanEnabled={false} />,
+        })}
+      />,
+    );
+    expect(container.querySelector('header')).toBeNull();
+  });
+
+  it('header を渡すとグローバルナビが出る（資料個票）', () => {
+    render(
+      <LandingPage
+        {...defineLandingPage({
+          pattern: 'lead-gen',
+          brand: 'peerdesk',
+          header: { navItems: [{ label: '機能', href: '#f' }] },
+          hero: { title: '5分でわかるピアデスク' },
+          contents: { features: [{ title: '機能一覧', description: '全機能の概要を掲載。' }] },
+          form: <ResourceRequestForm title="資料請求" ichisanEnabled={false} />,
+        })}
+      />,
+    );
+    expect(screen.getByRole('link', { name: '機能' })).toBeInTheDocument();
+  });
+});
+
+describe('獲得系3型の tone は campaign', () => {
+  it.each(['resources-library', 'seminar-list', 'seminar-detail'] as const)('%s', (pattern) => {
+    const input =
+      pattern === 'seminar-detail'
+        ? { pattern, brand: 'corporate' as const, seminar: { status: 'upcoming' as const, title: 't', startAt: '2026-09-10' } }
+        : pattern === 'seminar-list'
+          ? { pattern, brand: 'corporate' as const, page: { title: 't' }, list: { seminars: [] } }
+          : { pattern, brand: 'corporate' as const, page: { title: 't' }, list: { resources: [] } };
+    expect(defineLandingPage(input).tone).toBe('campaign');
+  });
+});
+
+describe('resources-library / seminar-* の描画', () => {
+  it('資料ライブラリは末尾 CTA を持たない（資料そのものがオファー）', () => {
+    const { container } = render(
+      <LandingPage
+        {...defineLandingPage({
+          pattern: 'resources-library',
+          brand: 'corporate',
+          page: { title: 'お役立ち資料' },
+          list: { resources: [{ href: '/dl/1', title: '導入事例集' }] },
+        })}
+      />,
+    );
+    expect(screen.getByRole('heading', { level: 1, name: 'お役立ち資料' })).toBeInTheDocument();
+    // CTASection は中央寄せの見出し + オファーを持つ。ここには無い
+    expect(container.querySelectorAll('section')).toHaveLength(1);
+  });
+
+  it('セミナー詳細は1セクションで完結し、フォームが締めになる', () => {
+    const { container } = render(
+      <LandingPage
+        {...defineLandingPage({
+          pattern: 'seminar-detail',
+          brand: 'corporate',
+          seminar: {
+            status: 'upcoming',
+            title: '現場DXの始め方',
+            startAt: '2026-09-10T14:00',
+            form: <ResourceRequestForm title="お申し込み" ichisanEnabled={false} />,
+          },
+        })}
+      />,
+    );
+    expect(screen.getByRole('heading', { level: 1, name: '現場DXの始め方' })).toBeInTheDocument();
+    expect(container.querySelector('form')).toBeInTheDocument();
+  });
+});

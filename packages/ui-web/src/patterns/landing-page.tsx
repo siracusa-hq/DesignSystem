@@ -19,6 +19,9 @@ import {
   ArticleBodySection,
   ArticleRelatedSection,
 } from '@/components/sections/article-body';
+import { ResourceListSection } from '@/components/sections/resource-list';
+import { SeminarListSection } from '@/components/sections/seminar-list';
+import { SeminarDetailSection } from '@/components/sections/seminar-detail';
 import { FAQSection } from '@/components/sections/faq-section';
 import { ServicePortfolio } from '@/components/sections/service-portfolio';
 import { CTASection } from '@/components/sections/cta-section';
@@ -97,7 +100,10 @@ function useSocialProofCheck(pattern: string, hasProof: boolean) {
 
 export const LandingPage: React.FC<LandingPageProps> = (props) => {
   const { brand, tone, footer, onCTAClick } = props;
-  const header = props.pattern === 'lead-gen' ? undefined : props.header;
+  /* lead-gen は既定でグローバルナビを剥がす（実測 2/2）。
+     ただし**資料個票は 6/6 が持つ**ため、明示的に header を渡したときだけ出す
+     （acquisition-pages-workorder.md §2。省略時に剥がす既定は据え置きなので非破壊） */
+  const header = props.header;
 
   useSocialProofCheck(props.pattern, 'proof' in props && props.proof != null);
 
@@ -237,6 +243,38 @@ export const LandingPage: React.FC<LandingPageProps> = (props) => {
         ),
         props.closing && <CTASection key="closing" {...props.closing} />,
       ];
+      break;
+    }
+    case 'resources-library': {
+      /* ヒーローを持たない。**末尾 CTA も持たない** — 資料そのものがオファーであり、
+         フォームの手前で他ページへ逃がさないのが獲得系の設計（実測 資料 0/6） */
+      sections = [
+        <ResourceListSection
+          key="list"
+          {...props.list}
+          eyebrow={props.page.eyebrow}
+          title={props.page.title}
+          subtitle={props.page.description}
+        />,
+      ];
+      break;
+    }
+    case 'seminar-list': {
+      sections = [
+        <SeminarListSection
+          key="list"
+          {...props.list}
+          eyebrow={props.page.eyebrow}
+          title={props.page.title}
+          subtitle={props.page.description}
+        />,
+      ];
+      break;
+    }
+    case 'seminar-detail': {
+      /* 1セクションで完結する。末尾 CTA も関連コンテンツも持たない（実測 0/21）。
+         フォーム自体が CTA なので、seminar.form に渡されたものが締めになる */
+      sections = [<SeminarDetailSection key="seminar" {...props.seminar} />];
       break;
     }
   }

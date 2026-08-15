@@ -218,6 +218,16 @@ ArticleListSection（一覧）, ArticleCard（記事カード）, ArticleBodySec
 
 `ArticleBodySection` は `kind: 'news' | 'blog'` の判別ユニオン。**News には著者・監修者・目次・更新日が型として存在しない**（実測 0/12）。日付は ISO（`YYYY-MM-DD`）で渡し、表示書式はシステムが決める。
 
+#### 獲得系（資料DL / セミナー・5）
+
+ResourceListSection（資料ライブラリ）, ResourceCard, SeminarListSection（セミナー一覧）, SeminarCard, SeminarDetailSection（セミナー詳細）
+
+**資料カードは日付を持たない**（実測 0/7）。記事カードとの最大の違いで、`ArticleListItem` に統合しなかった理由でもあります。カードの遷移先は詳細ページでもフォームでもよく、どちらも実測に存在します。
+
+`SeminarDetailSection` は `status: 'upcoming' | 'closed' | 'archive'` の判別ユニオン。**アーカイブに開催日時は、開催予定に視聴期限は型として存在しません。**
+
+**資料個票のページ型はありません。** `lead-gen` に `header` を渡して組みます（差分がグローバルナビ1点のみのため）。
+
 #### フォーム（Netlify Forms 対応）
 
 ContactForm, ResourceRequestForm, DemoRequestForm（+ FormInput / FormTextarea / FormSelect / FormCheckbox / FormButton）
@@ -530,6 +540,16 @@ ProseSection (prose: mission, CEO message), DocumentArticle (legal document and 
 ArticleListSection, ArticleCard, ArticleBodySection, ArticleRelatedSection, ShareButtons
 
 `ArticleBodySection` is a discriminated union on `kind: 'news' | 'blog'`. **News has no author, supervisor, table of contents or updated date — they do not exist in the type** (measured 0/12). Dates are passed as ISO (`YYYY-MM-DD`); the display format is decided by the system.
+
+#### Acquisition (resources / seminars, 5)
+
+ResourceListSection, ResourceCard, SeminarListSection, SeminarCard, SeminarDetailSection
+
+**Resource cards carry no date** (measured 0/7) — the main reason they were not merged into `ArticleListItem`. A card may link to a detail page or straight to a form; both exist in the field.
+
+`SeminarDetailSection` is a discriminated union on `status: 'upcoming' | 'closed' | 'archive'`. **An archive has no start time, and an upcoming session has no viewing deadline — in the type itself.**
+
+**There is no page type for a single resource.** Use `lead-gen` with a `header` (the only difference was the global nav).
 
 #### Forms (Netlify Forms ready)
 

@@ -1,0 +1,219 @@
+/* SeminarDetailSection — セミナー詳細（seminar-detail 型）。
+
+   寸法は実ブラウザ計測（7本 / 3サイト。acquisition-pages-workorder.md §9-2）:
+   - 本文幅の中央値 660px。`Container size="md"` の実効内寸（1440px 幅で 704px）と
+     6.7% 差で収まるため、**既存のコンテナ段をそのまま使い、新しい値を持たない**
+   - 本文 16px は 6/7 で一致
+   - ヒーロー画像は 1.78〜1.92 → 記事ヒーローの 1.9:1 を流用する
+
+   **末尾 CTA・関連コンテンツ・SNS シェアは持たない**（資料 0/6・セミナー 0/21）。
+   フォーム自体が CTA であり、フォームの手前で他ページへ逃がさないのが獲得系の設計。 */
+
+.article {
+  max-width: 46.5rem;
+  margin-inline: auto;
+}
+
+.head {
+  display: grid;
+  gap: var(--spacing-4);
+}
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-2) var(--spacing-3);
+}
+.format {
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  font-weight: 700;
+  color: var(--color-text-brand-strong);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--text-display-sm);
+  line-height: 1.35;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  letter-spacing: -0.02em;
+}
+@media (min-width: 48rem) {
+  .title {
+    font-size: 2rem;
+  }
+}
+.title:lang(ja) {
+  letter-spacing: 0;
+  line-height: 1.45;
+}
+
+.heroFigure {
+  margin: var(--spacing-8) 0 0;
+}
+.heroPhoto {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1.9 / 1;
+  max-height: 24rem;
+  border-radius: var(--radius-card);
+  object-fit: cover;
+}
+
+.block {
+  margin-top: var(--spacing-12);
+}
+.blockHeading {
+  margin: 0 0 var(--spacing-6);
+  font-size: var(--text-heading-lg);
+  line-height: 1.45;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  letter-spacing: -0.02em;
+}
+.blockHeading:lang(ja) {
+  letter-spacing: 0;
+}
+
+.paragraph {
+  margin: 0;
+  font-size: var(--text-body-md);
+  line-height: 1.8;
+  color: var(--color-on-surface);
+}
+.paragraph + .paragraph {
+  margin-top: var(--spacing-6);
+}
+
+/* ---- こんな方におすすめ ---- */
+.recommendedList {
+  margin: 0;
+  padding-left: var(--spacing-6);
+  display: grid;
+  gap: var(--spacing-3);
+  font-size: var(--text-body-md);
+  line-height: 1.8;
+  color: var(--color-on-surface);
+}
+.recommendedList li::marker {
+  color: var(--color-text-brand);
+}
+
+/* ---- アジェンダ（章立て型 / 時間割型の2形式） ---- */
+.agenda {
+  display: grid;
+}
+.agendaRow {
+  display: grid;
+  gap: var(--spacing-1) var(--spacing-6);
+  padding: var(--spacing-4) 0;
+}
+@media (min-width: 40rem) {
+  .agendaRow {
+    grid-template-columns: 8rem minmax(0, 1fr);
+  }
+}
+.agendaRow + .agendaRow {
+  border-top: 1px solid color-mix(in oklab, var(--color-text-brand) 18%, transparent);
+}
+/* 時間割型は時刻、章立て型は連番。どちらも同じ列に置く */
+.agendaMarker {
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  font-weight: 700;
+  color: var(--color-text-brand-strong);
+  font-variant-numeric: tabular-nums;
+}
+.agendaTitle {
+  font-size: var(--text-body-md);
+  line-height: var(--text-body-md--line-height);
+  font-weight: 700;
+  color: var(--color-on-surface);
+}
+.agendaDescription {
+  grid-column: 1 / -1;
+}
+@media (min-width: 40rem) {
+  .agendaDescription {
+    grid-column: 2;
+  }
+}
+
+/* ---- 開催要項（定義リスト） ----
+   実測で dl を使っていたのは MF 2/7 だけだが、ラベルと値の対応を支援技術へ
+   伝えられる形は dl しかない。会社概要表と同じ判断で dl を採る */
+.eventMeta {
+  border-top: 1px solid var(--color-border);
+}
+.eventMetaRow {
+  display: grid;
+  gap: var(--spacing-1) var(--spacing-8);
+  padding: var(--spacing-4) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+@media (min-width: 40rem) {
+  .eventMetaRow {
+    grid-template-columns: 9rem minmax(0, 1fr);
+  }
+}
+.eventMetaLabel {
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  font-weight: 700;
+  color: var(--color-text-brand-strong);
+}
+.eventMetaValue {
+  margin: 0;
+  font-size: var(--text-body-md);
+  line-height: 1.8;
+  color: var(--color-on-surface);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- 登壇者（実測 最大3名） ---- */
+.speakers {
+  display: grid;
+  gap: var(--spacing-6);
+}
+@media (min-width: 40rem) {
+  .speakers {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.speaker {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-4);
+}
+.speakerPhoto,
+.speakerInitial {
+  width: 4rem;
+  height: 4rem;
+  flex: none;
+  border-radius: var(--radius-pill);
+  object-fit: cover;
+}
+.speakerInitial {
+  display: grid;
+  place-items: center;
+  background: var(--color-bg-brand-subtle);
+  color: var(--color-text-brand-strong);
+  font-weight: 700;
+}
+.speakerOrg {
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  color: var(--color-on-surface-muted);
+}
+.speakerName {
+  font-size: var(--text-body-md);
+  line-height: var(--text-body-md--line-height);
+  font-weight: 700;
+  color: var(--color-on-surface);
+}
+
+/* ---- フォーム（獲得系の CTA そのもの） ---- */
+.form {
+  margin-top: var(--spacing-14);
+}
