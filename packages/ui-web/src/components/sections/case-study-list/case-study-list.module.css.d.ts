@@ -4,10 +4,6 @@ declare const styles: {
   readonly "empty": string;
   readonly "filter": string;
   readonly "filters": string;
-  readonly "pageCurrent": string;
-  readonly "pageNumber": string;
-  readonly "pageStep": string;
-  readonly "pagination": string;
   readonly "pickup": string;
   readonly "pickupRow": string;
 };

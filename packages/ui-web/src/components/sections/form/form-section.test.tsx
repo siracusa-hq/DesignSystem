@@ -229,3 +229,155 @@ describe('送信ボタンラベルの規範（Stage 4 Slice 2）', () => {
     warn.mockRestore();
   });
 });
+
+/* ============================================================
+   項目の拡張（2026-08-15）
+   拡張の口は「項目」にだけ開き、「見た目」には開かない
+   ============================================================ */
+
+describe('外部スクリプト（ichisanEnabled）の既定', () => {
+  afterEach(() => {
+    document.querySelectorAll('script[src*="ichisanForm"]').forEach((el) => el.remove());
+    document.querySelectorAll('link[href*="ichisanForm"]').forEach((el) => el.remove());
+  });
+
+  it('既定では外部スクリプトを読み込まない（0.12.0 で反転）', () => {
+    render(<ContactForm title="お問い合わせ" />);
+    expect(document.querySelector('script[src*="ichisanForm"]')).toBeNull();
+  });
+
+  it('明示的に有効化したときだけ読み込む', () => {
+    render(<ContactForm title="お問い合わせ" ichisanEnabled />);
+    expect(document.querySelector('script[src*="ichisanForm"]')).toBeInTheDocument();
+  });
+
+  it('資料請求・デモ予約も既定オフ', () => {
+    render(<ResourceRequestForm title="資料請求" />);
+    render(<DemoRequestForm title="デモ" />);
+    expect(document.querySelector('script[src*="ichisanForm"]')).toBeNull();
+  });
+});
+
+describe('名前付きの3項目（種別 / 電話 / 同意）', () => {
+  it('inquiryTypes を渡すと種別セレクトが出る', () => {
+    render(<ContactForm title="x" inquiryTypes={['製品について', '取材のご依頼']} />);
+    const select = screen.getByLabelText('お問い合わせ種別');
+    expect(select).toBeInTheDocument();
+    expect(select).toBeRequired();
+    expect(screen.getByRole('option', { name: '取材のご依頼' })).toBeInTheDocument();
+  });
+
+  it('inquiryTypes を渡さなければ種別セレクトは出ない', () => {
+    render(<ContactForm title="x" />);
+    expect(screen.queryByLabelText('お問い合わせ種別')).not.toBeInTheDocument();
+  });
+
+  it('phone は既定で出ない', () => {
+    render(<ContactForm title="x" />);
+    expect(screen.queryByLabelText(/電話番号/)).not.toBeInTheDocument();
+  });
+
+  it('phone="optional" は任意、"required" は必須で出る', () => {
+    const { unmount } = render(<ContactForm title="x" phone="optional" />);
+    expect(screen.getByLabelText('電話番号')).not.toBeRequired();
+    unmount();
+
+    render(<ContactForm title="x" phone="required" />);
+    expect(screen.getByLabelText('電話番号')).toBeRequired();
+  });
+
+  it('consent は未チェックで送信できない（同意は任意にできない）', () => {
+    render(<ContactForm title="x" consent={{ href: '/privacy' }} />);
+    const checkbox = screen.getByRole('checkbox');
+    expect(checkbox).toBeRequired();
+    expect(checkbox).toHaveAttribute('name', 'consent');
+  });
+
+  it('consent の既定文はリンクを含む（日本語）', () => {
+    render(<ContactForm title="x" consent={{ href: '/privacy' }} />);
+    expect(screen.getByRole('link', { name: '個人情報の取り扱い' })).toHaveAttribute(
+      'href',
+      '/privacy',
+    );
+  });
+
+  it('consent の文面は差し替えられる', () => {
+    render(
+      <ContactForm
+        title="x"
+        lang="en"
+        submitLabel="Contact Us"
+        consent={{ href: '/privacy', label: <span>Custom consent</span> }}
+      />,
+    );
+    expect(screen.getByText('Custom consent')).toBeInTheDocument();
+  });
+
+  it('3フォームすべてで phone と consent が使える', () => {
+    render(<ResourceRequestForm title="資料請求" phone="optional" consent={{ href: '/privacy' }} />);
+    expect(screen.getByLabelText('電話番号')).toBeInTheDocument();
+    expect(screen.getByRole('checkbox')).toBeRequired();
+  });
+});
+
+describe('extraFields（項目だけを足す口）', () => {
+  it('種類ごとに DS のフォーム部品で描画する', () => {
+    render(
+      <ContactForm
+        title="x"
+        extraFields={[
+          { kind: 'text', name: 'department', label: '部署名' },
+          { kind: 'select', name: 'budget', label: '予算感', options: ['〜100万', '100万〜'] },
+          { kind: 'textarea', name: 'background', label: '背景' },
+          { kind: 'checkbox', name: 'newsletter', label: 'メール配信を希望する' },
+        ]}
+      />,
+    );
+    expect(screen.getByLabelText('部署名')).toBeInTheDocument();
+    expect(screen.getByLabelText('予算感')).toBeInTheDocument();
+    expect(screen.getByLabelText('背景')).toBeInTheDocument();
+    expect(screen.getByLabelText('メール配信を希望する')).toBeInTheDocument();
+  });
+
+  it('required を型どおりに反映する', () => {
+    render(
+      <ContactForm
+        title="x"
+        extraFields={[{ kind: 'text', name: 'department', label: '部署名', required: true }]}
+      />,
+    );
+    expect(screen.getByLabelText('部署名')).toBeRequired();
+  });
+
+  it('組み込み項目と name が衝突すると dev 警告を出す', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    render(
+      <ContactForm title="x" extraFields={[{ kind: 'text', name: 'email', label: '別メール' }]} />,
+    );
+    expect(warn).toHaveBeenCalledOnce();
+    expect(warn.mock.calls[0][0]).toContain('衝突');
+    warn.mockRestore();
+  });
+
+  it('衝突しなければ警告しない', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    render(
+      <ContactForm title="x" extraFields={[{ kind: 'text', name: 'department', label: '部署名' }]} />,
+    );
+    expect(warn).not.toHaveBeenCalled();
+    warn.mockRestore();
+  });
+
+  it('拡張しても a11y 違反がない', async () => {
+    const { container } = render(
+      <ContactForm
+        title="お問い合わせ"
+        inquiryTypes={['製品について']}
+        phone="optional"
+        consent={{ href: '/privacy' }}
+        extraFields={[{ kind: 'text', name: 'department', label: '部署名' }]}
+      />,
+    );
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});

@@ -1,0 +1,55 @@
+/* ProseSection — 散文を読ませる唯一の汎用セクション。
+
+   段落の寸法は case-study-article の .paragraph と同じ（16px / 行間 1.80 /
+   段落間 spacing-6）。読み物の組版を2つ持たないため、値はそちらに合わせている。
+   読み幅は SectionHeader の subtitle と同じ 42rem（センター寄せの見出しに対して
+   本文だけ極端に広いと、視線の折り返し位置が合わない）。 */
+
+.body {
+  max-width: 42rem;
+  margin-inline: auto;
+}
+
+.paragraph {
+  margin: 0;
+  font-size: var(--text-body-md);
+  line-height: 1.8;
+  color: var(--color-on-surface);
+}
+.paragraph + .paragraph {
+  margin-top: var(--spacing-6);
+}
+
+/* ---- 署名（代表挨拶。無ければミッションとして成立する） ---- */
+.signature {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-10);
+}
+.photo {
+  display: block;
+  width: 4rem;
+  height: 4rem;
+  flex: none;
+  border-radius: var(--radius-pill);
+  object-fit: cover;
+}
+/* 役職は 700 段（text-brand-strong）を使う。500 段は沈んだ面で 4.36:1 と AA 未達で、
+   Page が面を muted に割り当てる可能性があるため（Eyebrow と同じ判断） */
+.role {
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  font-weight: 700;
+  color: var(--color-text-brand-strong);
+}
+.name {
+  font-size: var(--text-body-md);
+  line-height: var(--text-body-md--line-height);
+  font-weight: 700;
+  color: var(--color-on-surface);
+}
+
+.more {
+  margin-top: var(--spacing-8);
+}

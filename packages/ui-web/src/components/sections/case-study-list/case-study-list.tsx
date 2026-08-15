@@ -11,7 +11,7 @@ import {
   type CaseStudyFilterAxis,
   type CaseStudyListItem,
 } from '@/components/sections/case-card';
-import { cn } from '@/lib/cn';
+import { Pagination } from '@/components/sections/pagination';
 import styles from './case-study-list.module.css';
 
 /* メタ情報の型（CaseStudyMeta / CaseStudyListItem）と軸の定義、カードの実体は
@@ -209,37 +209,12 @@ export const CaseStudyListSection = React.forwardRef<HTMLElement, CaseStudyListS
             </div>
           )}
 
-          {totalPages > 1 && (
-            <nav className={styles.pagination} aria-label={l.pagination}>
-              <button
-                type="button"
-                className={styles.pageStep}
-                onClick={() => setPage(currentPage - 1)}
-                disabled={currentPage === 1}
-              >
-                {l.previous}
-              </button>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
-                <button
-                  key={n}
-                  type="button"
-                  className={cn(styles.pageNumber, n === currentPage && styles.pageCurrent)}
-                  aria-current={n === currentPage ? 'page' : undefined}
-                  onClick={() => setPage(n)}
-                >
-                  {n}
-                </button>
-              ))}
-              <button
-                type="button"
-                className={styles.pageStep}
-                onClick={() => setPage(currentPage + 1)}
-                disabled={currentPage === totalPages}
-              >
-                {l.next}
-              </button>
-            </nav>
-          )}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setPage}
+            labels={l}
+          />
         </Container>
       </Section>
     );

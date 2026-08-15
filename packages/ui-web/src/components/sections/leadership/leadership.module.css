@@ -1,0 +1,84 @@
+/* LeadershipSection — 経営陣。
+
+   カードの意匠は case-card.module.css と揃える（同じ面・線・角丸・影・ホバー）。
+   新しいカード意匠を作らない。写真をカード縁まで届かせる必要がないので
+   （事例カードと違い顔写真は円形）、padding はカード自身が持つ。
+
+   列数は件数から導出する（props では指定させない）。 */
+
+.grid {
+  display: grid;
+  gap: var(--spacing-6);
+}
+@media (min-width: 48rem) {
+  .cols2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .cols3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 64rem) {
+  .cols3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-raised);
+  padding: var(--spacing-5);
+  box-shadow: var(--shadow-card);
+  transition:
+    box-shadow var(--duration-normal) var(--ease-default),
+    transform var(--duration-normal) var(--ease-default),
+    border-color var(--duration-normal) var(--ease-default);
+}
+.card:hover {
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--color-border-brand);
+  transform: translateY(-2px);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+}
+.photo {
+  display: block;
+  width: 4.5rem;
+  height: 4.5rem;
+  flex: none;
+  border-radius: var(--radius-pill);
+  object-fit: cover;
+}
+/* 写真が無い場合の代替。イニシャルを置いて枠だけ保つ */
+.initial {
+  display: grid;
+  place-items: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  flex: none;
+  border-radius: var(--radius-pill);
+  background: var(--color-bg-brand-subtle);
+  color: var(--color-text-brand-strong);
+  font-size: var(--text-heading-sm);
+  font-weight: 700;
+}
+.role {
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  font-weight: 700;
+  color: var(--color-text-brand-strong);
+}
+.name {
+  font-size: var(--text-heading-sm);
+  line-height: var(--text-heading-sm--line-height);
+  font-weight: 700;
+  color: var(--color-on-surface);
+}
