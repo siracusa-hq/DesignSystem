@@ -164,6 +164,7 @@ export {
   FormInput,
   FormTextarea,
   FormSelect,
+  FormCheckbox,
   FormButton,
   ContactForm,
   ResourceRequestForm,
@@ -173,11 +174,16 @@ export type {
   FormInputProps,
   FormTextareaProps,
   FormSelectProps,
+  FormCheckboxProps,
   FormButtonProps,
   ContactFormProps,
   ResourceRequestFormProps,
   DemoRequestFormProps,
   FormSubmitResult,
+  /** フォームの追加項目（見た目ではなく項目だけを足す口） */
+  ExtraField,
+  ConsentOption,
+  PhoneOption,
 } from './components/sections/form';
 export {
   CaseStudySection,
@@ -194,6 +200,40 @@ export {
   /** 一覧カードと事例記事のプロフィールが共有するメタ情報（値を2箇所に書かない） */
   type CaseStudyMeta,
 } from './components/sections/case-study-list';
+/* コーポレートサイトの下層ページ用（2026-08-15 追加）。
+   LP のセクション群と違い、読み物・会社情報という別の面を担う。
+
+   **お知らせ・ブログの一覧と記事は、ここではなく `article-list` /
+   `article-detail` のページ型が担う**（article-pages-workorder.md）。
+   DocumentArticle は法務文書・静的文書・404 の器であって、記事の器ではない。 */
+export {
+  ProseSection,
+  type ProseSectionProps,
+  type ProseSignature,
+  type ProseMoreLink,
+} from './components/sections/prose-section';
+export {
+  DocumentArticle,
+  type DocumentArticleProps,
+  type DocumentArticleLabels,
+  type DocumentPanelItem,
+} from './components/sections/document-article';
+export {
+  CompanyProfileSection,
+  type CompanyProfileSectionProps,
+  type CompanyProfileItem,
+} from './components/sections/company-profile';
+export {
+  LeadershipSection,
+  type LeadershipSectionProps,
+  type LeadershipMember,
+} from './components/sections/leadership';
+export {
+  HistorySection,
+  type HistorySectionProps,
+  type HistoryEvent,
+} from './components/sections/history';
+
 export {
   CaseStudyArticleSection,
   type CaseStudyArticleSectionProps,

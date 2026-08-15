@@ -202,9 +202,23 @@ Container, Section, Grid, Heading, Text, Eyebrow, MarketingButton, SelectField, 
 
 HeroSection, FeatureGrid, FeatureShowcase, PricingTable, PricingCard, CTASection, CTABand, FAQSection, ComparisonTable, TestimonialSection, LogoCloud, StatsSection, CodeBlock, ServicePortfolio, CaseStudySection, CaseStudyListSection
 
+#### コーポレートサイトの下層ページ（5）
+
+散文・法務文書・会社情報。LP のセクション群とは別の面を担う。
+
+ProseSection（散文 = ミッション・代表挨拶）, DocumentArticle（法務文書・404 の器）, CompanyProfileSection（会社概要表）, LeadershipSection（経営陣）, HistorySection（沿革）
+
+`DocumentArticle` は **Markdown → HTML の変換を同梱しない**。変換済みの内容を `children` に渡すと、組版（見出し階層・表・リスト・引用）だけを DS が担う。
+
+**お知らせ・ブログの一覧と記事はこれらの担当ではない。** `article-list` / `article-detail` ページ型が担う（[article-pages-workorder.md](./docs/article-pages-workorder.md)）。
+
 #### フォーム（Netlify Forms 対応）
 
-ContactForm, ResourceRequestForm, DemoRequestForm（+ FormInput / FormTextarea / FormSelect / FormButton）
+ContactForm, ResourceRequestForm, DemoRequestForm（+ FormInput / FormTextarea / FormSelect / FormCheckbox / FormButton）
+
+項目は `inquiryTypes`（問い合わせ種別）/ `phone`（電話番号）/ `consent`（個人情報同意）と、任意の追加項目 `extraFields` で足せる。**開いているのは「項目」であって「見た目」ではない** — `extraFields` はデータだけを受け取り、描画は DS のフォーム部品に固定される。
+
+外部の入力補完サービス（`ichisanEnabled`）は **既定オフ**。有効にすると外部スクリプトを読み込む。
 
 #### プロダクト固有 + 日本市場向け（4）
 
@@ -495,9 +509,23 @@ Container, Section, Grid, Heading, Text, Eyebrow, MarketingButton, SelectField, 
 
 HeroSection, FeatureGrid, FeatureShowcase, PricingTable, PricingCard, CTASection, CTABand, FAQSection, ComparisonTable, TestimonialSection, LogoCloud, StatsSection, CodeBlock, ServicePortfolio, CaseStudySection, CaseStudyListSection
 
+#### Corporate site sub-pages (5)
+
+Prose, legal documents and company information — a different surface from the landing-page sections.
+
+ProseSection (prose: mission, CEO message), DocumentArticle (legal document and 404 shell), CompanyProfileSection, LeadershipSection, HistorySection
+
+`DocumentArticle` **does not bundle a Markdown parser**. Pass already-converted HTML as `children`; the design system owns only the typesetting (heading hierarchy, tables, lists, quotes).
+
+**News and blog listings/articles are not covered here** — they belong to the `article-list` / `article-detail` page types (see `docs/article-pages-workorder.md`).
+
 #### Forms (Netlify Forms ready)
 
-ContactForm, ResourceRequestForm, DemoRequestForm (+ FormInput / FormTextarea / FormSelect / FormButton)
+ContactForm, ResourceRequestForm, DemoRequestForm (+ FormInput / FormTextarea / FormSelect / FormCheckbox / FormButton)
+
+Fields can be extended with `inquiryTypes`, `phone`, `consent`, and arbitrary `extraFields`. **What is open is the set of fields, not the styling** — `extraFields` takes data only, and rendering is fixed to the design system's own form parts.
+
+The external autofill service (`ichisanEnabled`) is **off by default**; enabling it loads a third-party script.
 
 #### Product-specific + Japan market (4)
 

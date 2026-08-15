@@ -1,0 +1,53 @@
+/* Pagination — ページ送り（事例一覧と記事一覧で共有）。
+   case-study-list.module.css から切り出したもので、値は変えていない。
+   中央寄せ・線を持つコントロール（面の区切りとは別の話）。 */
+
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  margin-top: var(--spacing-10);
+}
+.pageStep,
+.pageNumber {
+  cursor: pointer;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  color: var(--color-on-surface);
+  font-size: var(--text-body-sm);
+  transition:
+    background var(--duration-fast) var(--ease-default),
+    border-color var(--duration-fast) var(--ease-default);
+}
+.pageStep {
+  padding: var(--spacing-2) var(--spacing-4);
+}
+.pageNumber {
+  min-width: 2.5rem;
+  padding: var(--spacing-2);
+  font-variant-numeric: tabular-nums;
+}
+.pageStep:hover:not(:disabled),
+.pageNumber:hover {
+  border-color: var(--color-border-brand);
+  background: var(--color-surface-muted);
+}
+.pageStep:focus-visible,
+.pageNumber:focus-visible {
+  outline: 2px solid var(--color-ring-brand);
+  outline-offset: 2px;
+}
+.pageStep:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.pageCurrent,
+.pageCurrent:hover {
+  border-color: transparent;
+  background: var(--color-bg-brand-primary);
+  color: var(--color-on-brand);
+  font-weight: 600;
+}

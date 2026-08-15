@@ -5,7 +5,13 @@ import { Section } from '@/components/primitives/section';
 import { Container } from '@/components/primitives/container';
 import { SectionHeader } from '@/components/sections/section-header';
 import { isDev } from '@/lib/dev';
-import { FormInput, FormTextarea, FormSelect, FormButton } from './form-primitives';
+import {
+  FormInput,
+  FormTextarea,
+  FormSelect,
+  FormCheckbox,
+  FormButton,
+} from './form-primitives';
 import styles from './form-section.module.css';
 
 /* ============================================================
@@ -227,12 +233,203 @@ function CompanyField({ isJa }: { isJa: boolean }) {
 }
 
 /* ============================================================
+   追加項目（extraFields）
+
+   **拡張の口は「項目の追加」にだけ開け、「見た目」には開けない。**
+   受け取るのはデータだけで、描画は DS の入力部品に固定する。
+   className / children / カスタムレンダラは開けない（GUIDELINES §4）。
+   ============================================================ */
+
+interface ExtraFieldBase {
+  /** 送信時のキー。組み込み項目と衝突させないこと（dev 警告で検出する） */
+  name: string;
+  label: string;
+  required?: boolean;
+}
+
+/** 追加できる項目。列挙で閉じてあり、任意のコンポーネントは差し込めない */
+export type ExtraField =
+  | (ExtraFieldBase & {
+      kind: 'text' | 'tel' | 'email' | 'url' | 'number';
+      placeholder?: string;
+      autoComplete?: string;
+    })
+  | (ExtraFieldBase & { kind: 'textarea'; placeholder?: string; rows?: number })
+  | (ExtraFieldBase & { kind: 'select'; options: string[]; placeholder?: string })
+  | (Omit<ExtraFieldBase, 'label'> & { kind: 'checkbox'; label: React.ReactNode });
+
+/** 組み込み項目の名前。ここと衝突すると送信内容が壊れる */
+const RESERVED_FIELD_NAMES = new Set([
+  'form-name',
+  'bot-field',
+  'name',
+  'email',
+  'company',
+  'message',
+  'inquiry_type',
+  'phone',
+  'consent',
+  'role',
+  'preferred_time',
+  'notes',
+  'resource',
+  'zipcode',
+  'address',
+  'corporate_number',
+  'employee_count',
+]);
+
+function useExtraFieldsCheck(fields: ExtraField[] | undefined) {
+  const names = fields?.map((f) => f.name).join(',');
+  React.useEffect(() => {
+    if (!isDev || !names) return;
+    const collisions = names.split(',').filter((n) => RESERVED_FIELD_NAMES.has(n));
+    if (collisions.length > 0) {
+      console.warn(
+        `[FormSection] extraFields の name が組み込み項目と衝突しています: ${collisions.join(', ')}。` +
+          '同じ name が2つ送られると受信側で値が壊れます。別の name を付けてください' +
+          `（予約語: ${[...RESERVED_FIELD_NAMES].join(' / ')}）。`,
+      );
+    }
+  }, [names]);
+}
+
+/** 追加項目を描画する。組み込み項目のあと・同意チェックの前に置く */
+function ExtraFields({ fields }: { fields?: ExtraField[] }) {
+  if (!fields || fields.length === 0) return null;
+  return (
+    <>
+      {fields.map((field) => {
+        switch (field.kind) {
+          case 'textarea':
+            return (
+              <FormTextarea
+                key={field.name}
+                name={field.name}
+                label={field.label}
+                placeholder={field.placeholder}
+                rows={field.rows ?? 5}
+                required={field.required}
+              />
+            );
+          case 'select':
+            return (
+              <FormSelect
+                key={field.name}
+                name={field.name}
+                label={field.label}
+                placeholder={field.placeholder}
+                options={field.options.map((o) => ({ value: o, label: o }))}
+                required={field.required}
+              />
+            );
+          case 'checkbox':
+            return (
+              <FormCheckbox
+                key={field.name}
+                name={field.name}
+                label={field.label}
+                required={field.required}
+              />
+            );
+          default:
+            return (
+              <FormInput
+                key={field.name}
+                name={field.name}
+                type={field.kind}
+                label={field.label}
+                placeholder={field.placeholder}
+                autoComplete={field.autoComplete}
+                required={field.required}
+              />
+            );
+        }
+      })}
+    </>
+  );
+}
+
+/* ============================================================
+   個人情報同意 / 電話番号（3フォーム共通の任意項目）
+   ============================================================ */
+
+/** 個人情報の取り扱いへの同意。href を渡したときだけ出る */
+export interface ConsentOption {
+  href: string;
+  /**
+   * 文面。省略時は言語に応じた既定文を出す
+   * （ja: 「個人情報の取り扱いに同意します」/ en: 「I agree to the Privacy Policy」）。
+   */
+  label?: React.ReactNode;
+}
+
+/** 電話番号欄の出し方。既定は出さない */
+export type PhoneOption = 'off' | 'optional' | 'required';
+
+function PhoneField({ mode, isJa }: { mode: PhoneOption; isJa: boolean }) {
+  if (mode === 'off') return null;
+  return (
+    <FormInput
+      name="phone"
+      type="tel"
+      label={isJa ? '電話番号' : 'Phone'}
+      placeholder={isJa ? '03-1234-5678' : '+81 3 1234 5678'}
+      autoComplete="tel"
+      inputMode="tel"
+      required={mode === 'required'}
+    />
+  );
+}
+
+function ConsentField({ consent, isJa }: { consent?: ConsentOption; isJa: boolean }) {
+  if (!consent) return null;
+  /* 未チェックでは送信できない（required はネイティブ検証で効く）。
+     同意は任意にできる性質のものではないため、必須固定にしている */
+  return (
+    <FormCheckbox
+      name="consent"
+      required
+      label={
+        consent.label ??
+        (isJa ? (
+          <>
+            <a href={consent.href}>個人情報の取り扱い</a>に同意します
+          </>
+        ) : (
+          <>
+            I agree to the <a href={consent.href}>Privacy Policy</a>
+          </>
+        ))
+      }
+    />
+  );
+}
+
+/* ============================================================
    ContactForm — お問い合わせ
    ============================================================ */
 
 export interface ContactFormProps extends BaseFormSectionProps {
-  /** イチサンフォームによる会社名自動補完を有効化 */
+  /**
+   * イチサンフォーム（会社名から住所・法人番号等を自動補完する外部サービス）を有効化。
+   *
+   * **既定は false。** 外部スクリプトを読み込む＝送信先が1つ増える判断なので、
+   * 利用側が明示的に有効化する（0.12.0 で既定を反転した。それ以前は true）。
+   */
   ichisanEnabled?: boolean;
+  /**
+   * 問い合わせ種別の選択肢。渡したときだけ先頭に select が出る。
+   * 用途ごとにフォームを分ける原則（GUIDELINES §3）は変わらない —
+   * これは1つの問い合わせ窓口の中での分類であって、資料請求やデモ申込の代わりではない。
+   */
+  inquiryTypes?: string[];
+  /** 電話番号欄。既定 'off' */
+  phone?: PhoneOption;
+  /** 個人情報の取り扱いへの同意チェック */
+  consent?: ConsentOption;
+  /** 組み込み項目では足りないときの追加項目。見た目は DS が決める */
+  extraFields?: ExtraField[];
 }
 
 export const ContactForm = React.forwardRef<HTMLElement, ContactFormProps>(
@@ -247,7 +444,11 @@ export const ContactForm = React.forwardRef<HTMLElement, ContactFormProps>(
       onResult,
       submitLabel,
       lang = 'ja',
-      ichisanEnabled = true,
+      ichisanEnabled = false,
+      inquiryTypes,
+      phone = 'off',
+      consent,
+      extraFields,
       ...props
     },
     ref,
@@ -255,6 +456,7 @@ export const ContactForm = React.forwardRef<HTMLElement, ContactFormProps>(
     useIchisanForm(ichisanEnabled);
     const isJa = lang !== 'en';
     useSubmitLabelCheck(submitLabel ?? (isJa ? '問い合わせる' : 'Contact Us'));
+    useExtraFieldsCheck(extraFields);
 
     return (
       <Section ref={ref} background="default" spacing="lg" {...props}>
@@ -271,8 +473,17 @@ export const ContactForm = React.forwardRef<HTMLElement, ContactFormProps>(
             onSubmit={onSubmit}
             onResult={onResult}
           >
+            {inquiryTypes && inquiryTypes.length > 0 && (
+              <FormSelect
+                name="inquiry_type"
+                label={isJa ? 'お問い合わせ種別' : 'Inquiry type'}
+                options={inquiryTypes.map((t) => ({ value: t, label: t }))}
+                required
+              />
+            )}
             <NameEmailRow isJa={isJa} />
             <CompanyField isJa={isJa} />
+            <PhoneField mode={phone} isJa={isJa} />
             <FormTextarea
               name="message"
               label={isJa ? 'お問い合わせ内容' : 'Message'}
@@ -280,6 +491,8 @@ export const ContactForm = React.forwardRef<HTMLElement, ContactFormProps>(
               rows={5}
               required
             />
+            <ExtraFields fields={extraFields} />
+            <ConsentField consent={consent} isJa={isJa} />
             <FormButton ctaId="form-submit">{submitLabel ?? (isJa ? '問い合わせる' : 'Contact Us')}</FormButton>
           </NetlifyForm>
         </Container>
@@ -294,9 +507,16 @@ ContactForm.displayName = 'ContactForm';
    ============================================================ */
 
 export interface ResourceRequestFormProps extends BaseFormSectionProps {
+  /** 既定 false（ContactForm と同じ。0.12.0 で反転） */
   ichisanEnabled?: boolean;
   /** 請求対象の資料名（hidden フィールドとして送信される） */
   resourceName?: string;
+  /** 電話番号欄。既定 'off' */
+  phone?: PhoneOption;
+  /** 個人情報の取り扱いへの同意チェック */
+  consent?: ConsentOption;
+  /** 組み込み項目では足りないときの追加項目 */
+  extraFields?: ExtraField[];
 }
 
 export const ResourceRequestForm = React.forwardRef<HTMLElement, ResourceRequestFormProps>(
@@ -311,8 +531,11 @@ export const ResourceRequestForm = React.forwardRef<HTMLElement, ResourceRequest
       onResult,
       submitLabel,
       lang = 'ja',
-      ichisanEnabled = true,
+      ichisanEnabled = false,
       resourceName,
+      phone = 'off',
+      consent,
+      extraFields,
       ...props
     },
     ref,
@@ -320,6 +543,7 @@ export const ResourceRequestForm = React.forwardRef<HTMLElement, ResourceRequest
     useIchisanForm(ichisanEnabled);
     const isJa = lang !== 'en';
     useSubmitLabelCheck(submitLabel ?? (isJa ? '資料をダウンロード' : 'Download Resource'));
+    useExtraFieldsCheck(extraFields);
 
     return (
       <Section ref={ref} background="default" spacing="lg" {...props}>
@@ -347,6 +571,9 @@ export const ResourceRequestForm = React.forwardRef<HTMLElement, ResourceRequest
                 isJa ? 'CTO / エンジニアリングマネージャー 等' : 'CTO / Engineering Manager etc.'
               }
             />
+            <PhoneField mode={phone} isJa={isJa} />
+            <ExtraFields fields={extraFields} />
+            <ConsentField consent={consent} isJa={isJa} />
             <FormButton ctaId="form-submit">
               {submitLabel ?? (isJa ? '資料をダウンロード' : 'Download Resource')}
             </FormButton>
@@ -363,9 +590,16 @@ ResourceRequestForm.displayName = 'ResourceRequestForm';
    ============================================================ */
 
 export interface DemoRequestFormProps extends BaseFormSectionProps {
+  /** 既定 false（ContactForm と同じ。0.12.0 で反転） */
   ichisanEnabled?: boolean;
   /** 希望時間帯の選択肢 */
   timeSlots?: { value: string; label: string }[];
+  /** 電話番号欄。既定 'off' */
+  phone?: PhoneOption;
+  /** 個人情報の取り扱いへの同意チェック */
+  consent?: ConsentOption;
+  /** 組み込み項目では足りないときの追加項目 */
+  extraFields?: ExtraField[];
 }
 
 export const DemoRequestForm = React.forwardRef<HTMLElement, DemoRequestFormProps>(
@@ -380,8 +614,11 @@ export const DemoRequestForm = React.forwardRef<HTMLElement, DemoRequestFormProp
       onResult,
       submitLabel,
       lang = 'ja',
-      ichisanEnabled = true,
+      ichisanEnabled = false,
       timeSlots,
+      phone = 'off',
+      consent,
+      extraFields,
       ...props
     },
     ref,
@@ -389,6 +626,7 @@ export const DemoRequestForm = React.forwardRef<HTMLElement, DemoRequestFormProp
     useIchisanForm(ichisanEnabled);
     const isJa = lang !== 'en';
     useSubmitLabelCheck(submitLabel ?? (isJa ? 'デモを予約する' : 'Book a Demo'));
+    useExtraFieldsCheck(extraFields);
 
     const defaultTimeSlots = timeSlots ?? [
       { value: 'morning', label: isJa ? '午前（10:00-12:00）' : 'Morning (10:00-12:00)' },
@@ -435,6 +673,9 @@ export const DemoRequestForm = React.forwardRef<HTMLElement, DemoRequestFormProp
               }
               rows={3}
             />
+            <PhoneField mode={phone} isJa={isJa} />
+            <ExtraFields fields={extraFields} />
+            <ConsentField consent={consent} isJa={isJa} />
             <FormButton ctaId="form-submit">{submitLabel ?? (isJa ? 'デモを予約する' : 'Book a Demo')}</FormButton>
           </NetlifyForm>
         </Container>

@@ -2,7 +2,7 @@
   {
     "name": "全エクスポート（バレル import）",
     "path": "dist/index.js",
-    "limit": "55 kB"
+    "limit": "62 kB"
   },
   {
     "name": "MarketingButton のみ（tree-shaking の番人）",
@@ -29,8 +29,20 @@
     "limit": "12 kB"
   },
   {
+    "name": "DocumentArticle のみ（組版だけなので最軽量であることの番人）",
+    "path": "dist/index.js",
+    "import": "{ DocumentArticle }",
+    "limit": "8 kB"
+  },
+  {
+    "name": "会社情報3点（CompanyProfile/Leadership/History）",
+    "path": "dist/index.js",
+    "import": "{ CompanyProfileSection, LeadershipSection, HistorySection }",
+    "limit": "12 kB"
+  },
+  {
     "name": "styles.css（配布スタイル全量・gzip）",
     "path": "dist/styles.css",
-    "limit": "11.5 kB"
+    "limit": "13 kB"
   }
 ]
