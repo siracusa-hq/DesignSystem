@@ -22,8 +22,11 @@ export default meta;
 
 type Story = StoryObj<typeof ResourceListSection>;
 
+/* プレースホルダの比率は**掲載枠に合わせる**こと。ずれた比率を渡すと
+   object-fit: cover のトリミングで端が刈られ「見切れ」に見える
+   （photo-placeholder.ts の注意書き）。資料カードの枠は 16:9 = 既定値 */
 const cover = (label: string, tint: 'green' | 'blue' | 'sand') => ({
-  src: photoPlaceholder(label, tint, '3:2'),
+  src: photoPlaceholder(label, tint),
   alt: `${label}の表紙`,
 });
 
