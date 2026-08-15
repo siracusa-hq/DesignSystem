@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { LeadershipSection } from '../../components/sections/leadership';
+import { photoPlaceholder } from '../support/photo-placeholder';
 
 /**
  * LeadershipSection — 経営陣。
@@ -17,7 +18,7 @@ export default meta;
 
 type Story = StoryObj<typeof LeadershipSection>;
 
-/** 2名 → 2列 */
+/** 2名 → 2列。顔写真つき */
 export const TwoMembers: Story = {
   render: (_, { globals }) => {
     const isJa = globals.locale === 'ja';
@@ -31,12 +32,20 @@ export const TwoMembers: Story = {
                   role: '代表取締役 CEO',
                   name: '金子 卓也',
                   nameEn: 'KANEKO Takuya',
+                  photo: {
+                    src: photoPlaceholder('CEO', 'green', '1:1'),
+                    alt: '代表取締役 CEO 金子 卓也のポートレート',
+                  },
                   bio: '大手 SIer で製造業向けの基幹システム導入に10年従事したのち、SaaS スタートアップで事業開発を担当。2024年にシラクサを共同創業し、GTM 戦略とパートナーシップを統括。',
                 },
                 {
                   role: '取締役 CTO',
                   name: '立花 直人',
                   nameEn: 'TACHIBANA Naoto',
+                  photo: {
+                    src: photoPlaceholder('CTO', 'blue', '1:1'),
+                    alt: '取締役 CTO 立花 直人のポートレート',
+                  },
                   bio: '検索基盤とデータ基盤の設計を専門とし、国内外のプラットフォーム企業でバックエンド基盤の開発をリード。Polastack のアーキテクチャ全般を担当。',
                 },
               ]
@@ -44,11 +53,19 @@ export const TwoMembers: Story = {
                 {
                   role: 'Co-founder & CEO',
                   name: 'Takuya Kaneko',
+                  photo: {
+                    src: photoPlaceholder('CEO', 'green', '1:1'),
+                    alt: 'Portrait of Takuya Kaneko, Co-founder and CEO',
+                  },
                   bio: 'Ten years delivering core systems for manufacturers at a large SI firm, then business development at a SaaS startup. Leads GTM and partnerships.',
                 },
                 {
                   role: 'Co-founder & CTO',
                   name: 'Naoto Tachibana',
+                  photo: {
+                    src: photoPlaceholder('CTO', 'blue', '1:1'),
+                    alt: 'Portrait of Naoto Tachibana, Co-founder and CTO',
+                  },
                   bio: 'Specialist in search and data infrastructure. Led backend platform work at platform companies in Japan and abroad. Owns the Polastack architecture.',
                 },
               ]
@@ -58,7 +75,7 @@ export const TwoMembers: Story = {
   },
 };
 
-/** 3名以上 → 3列。写真が無い場合はイニシャルで枠を保つ */
+/** 3名以上 → 3列。写真を渡さない場合はイニシャルで枠を保つ（カードの高さを揃えるため） */
 export const ThreeMembers: Story = {
   render: (_, { globals }) => {
     const isJa = globals.locale === 'ja';

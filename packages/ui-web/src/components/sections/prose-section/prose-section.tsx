@@ -11,7 +11,14 @@ export interface ProseSignature {
   /** 例: 「代表取締役 CEO」 */
   role?: string;
   name: string;
-  /** alt には人物と文脈を書く（GUIDELINES §3） */
+  /**
+   * 円形で表示する顔写真。**任意**で、無ければ役職と氏名だけの署名になる。
+   *
+   * LeadershipSection のようなイニシャルの代替枠は置かない。あちらはカード列の
+   * 高さを揃える必要があるが、署名は1行なので代替枠に意味がないため。
+   *
+   * alt には人物と文脈を書く（GUIDELINES §3）。
+   */
   photo?: { src: string; alt: string };
 }
 

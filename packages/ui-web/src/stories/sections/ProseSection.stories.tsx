@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { ProseSection } from '../../components/sections/prose-section';
+import { photoPlaceholder } from '../support/photo-placeholder';
 
 /**
  * ProseSection — 箇条書きに割れない文章を置くための唯一のセクション。
@@ -63,10 +64,49 @@ export const Message: Story = {
         signature={{
           role: isJa ? '代表取締役 CEO' : 'Co-founder & CEO',
           name: isJa ? '金子 卓也' : 'Takuya Kaneko',
+          photo: {
+            src: photoPlaceholder('CEO', 'green', '1:1'),
+            // alt には人物と文脈を書く（GUIDELINES §3）
+            alt: isJa
+              ? '代表取締役 CEO 金子 卓也のポートレート'
+              : 'Portrait of Takuya Kaneko, Co-founder and CEO',
+          },
         }}
         moreLink={{
           label: isJa ? '全文を読む' : 'Read the full message',
           href: '/company/message',
+        }}
+      />
+    );
+  },
+};
+
+/**
+ * 顔写真は任意。無い場合は役職と氏名だけの署名になる。
+ *
+ * カード列と違って高さを揃える必要が無いため、LeadershipSection のような
+ * イニシャルの代替枠は置かない（無いものは描かない）。
+ */
+export const MessageWithoutPhoto: Story = {
+  render: (_, { globals }) => {
+    const isJa = globals.locale === 'ja';
+    return (
+      <ProseSection
+        title={isJa ? '代表挨拶' : 'Message from the CEO'}
+        paragraphs={
+          isJa
+            ? [
+                '創業から2年、私たちは一貫して「人が判断に集中できる状態」をつくることに時間を使ってきました。',
+                '受託と自社プロダクトの両方を続けているのも同じ理由です。',
+              ]
+            : [
+                'For two years we have spent our time on one thing: leaving people with the decision itself.',
+                'That is also why we keep doing both client work and our own products.',
+              ]
+        }
+        signature={{
+          role: isJa ? '代表取締役 CEO' : 'Co-founder & CEO',
+          name: isJa ? '金子 卓也' : 'Takuya Kaneko',
         }}
       />
     );
