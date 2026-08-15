@@ -265,6 +265,47 @@ export {
   type ShareService,
 } from './components/sections/share-buttons';
 
+/* 獲得系（resources-library / seminar-list / seminar-detail）。
+   共有語彙の決定は docs/composition-redesign.md 末尾「共有語彙の決定」 */
+export type { ContentImage, ContentPerson } from './lib/content-vocabulary';
+export {
+  ResourceCard,
+  type ResourceCardProps,
+  type ResourceListItem,
+} from './components/sections/resource-card';
+export {
+  ResourceListSection,
+  type ResourceListSectionProps,
+  type ResourceListLabels,
+} from './components/sections/resource-list';
+export {
+  SeminarCard,
+  SEMINAR_STATUSES,
+  formatSeminarDateTime,
+  type SeminarCardProps,
+  type SeminarListItem,
+  type SeminarStatus,
+  type SeminarFormat,
+  type SeminarStatusLabels,
+  type SeminarFormatLabels,
+} from './components/sections/seminar-card';
+export {
+  SeminarListSection,
+  type SeminarListSectionProps,
+  type SeminarListLabels,
+} from './components/sections/seminar-list';
+export {
+  SeminarDetailSection,
+  type SeminarDetailSectionProps,
+  /** status ごとに持てる情報が変わる（アーカイブに開催日時は存在しない） */
+  type UpcomingSeminarProps,
+  type ClosedSeminarProps,
+  type ArchiveSeminarProps,
+  type SeminarAgendaItem,
+  type EventMetaItem,
+  type SeminarDetailLabels,
+} from './components/sections/seminar-detail';
+
 export {
   CaseStudyArticleSection,
   type CaseStudyArticleSectionProps,

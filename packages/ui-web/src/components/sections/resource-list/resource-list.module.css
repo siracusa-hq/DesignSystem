@@ -1,0 +1,43 @@
+/* ResourceListSection — 資料ライブラリ（resources-library 型）。
+
+   記事一覧との違いは2つ（docs/research/research-resources-seminar.md）:
+   - **日付を持たない**（実測 0/7）
+   - **ページャを持たない**（実測。無限スクロールも 0/31）
+
+   フィルタ行は帯にしない（境界の語彙は面の色差だけに統一する）。 */
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-4) var(--spacing-6);
+  margin-bottom: var(--spacing-6);
+}
+.count {
+  margin-bottom: var(--spacing-4);
+  font-variant-numeric: tabular-nums;
+}
+.empty {
+  padding: var(--spacing-12) 0;
+  text-align: center;
+}
+
+/* ピックアップ枠。カード幅は通常の3列ぶんに固定し、少ないときは中央寄せ
+   （事例一覧のピックアップと同じ扱い） */
+.pickup {
+  margin-bottom: var(--spacing-12);
+}
+.pickupRow {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--spacing-6);
+}
+@media (min-width: 64rem) {
+  .pickupRow {
+    flex-direction: row;
+  }
+  .pickupRow > * {
+    width: calc((100% - 2 * var(--spacing-6)) / 3);
+    flex-shrink: 0;
+  }
+}

@@ -11,6 +11,9 @@ import type { CaseStudyMeta, CaseStudyListItem } from '@/components/sections/cas
 import type { ArticleListSectionProps } from '@/components/sections/article-list';
 import type { ArticleListItem } from '@/components/sections/article-card';
 import type { ArticleBodySectionProps } from '@/components/sections/article-body';
+import type { ResourceListSectionProps } from '@/components/sections/resource-list';
+import type { SeminarListSectionProps } from '@/components/sections/seminar-list';
+import type { SeminarDetailSectionProps } from '@/components/sections/seminar-detail';
 import type {
   CasePhoto,
   CaseSpeakerList,
@@ -105,8 +108,16 @@ export interface PortfolioTopInput extends LandingPageCommon {
   closing: LandingClosing;
 }
 
-/** 獲得専用 LP。グローバルナビを剥がす（実測 2/2）。締めはフォーム */
-export interface LeadGenInput extends Omit<LandingPageCommon, 'header'> {
+/**
+ * 獲得専用 LP。**既定ではグローバルナビを剥がす**（実測 2/2）。締めはフォーム。
+ *
+ * ただし**資料の個票ページは 6/6 がグローバルナビを持つ**（`[RS]` §3-2）。
+ * 資料個票のためのページ型を新設せず、この型に `header?` を戻して兼ねる
+ * （`lead-gen` との差分が `header` 1点しか無いため。
+ * acquisition-pages-workorder.md §2）。**省略時に剥がす既定は据え置き**なので
+ * 既存の呼び出しは1つも変わらない。
+ */
+export interface LeadGenInput extends LandingPageCommon {
   pattern: 'lead-gen';
   hero: Omit<LandingHero, 'offers'> & {
     /** フォームへ誘導する1オファーのみ（例: ページ内アンカー） */
@@ -232,6 +243,42 @@ export interface ArticleDetailInput extends LandingPageCommon {
   closing?: Slot<CTASectionProps>;
 }
 
+/**
+ * 資料ライブラリ（実測 7サイト）。
+ *
+ * 記事一覧と違い**日付もページャも持たない**（日付 0/7・無限スクロール 0/31）。
+ * カードの遷移先は詳細ページでもフォームでもよい（両方が実測に存在する。§9-1）。
+ */
+export interface ResourcesLibraryInput extends LandingPageCommon {
+  pattern: 'resources-library';
+  page: { eyebrow?: string; title: React.ReactNode; description?: string };
+  list: Slot<ResourceListSectionProps>;
+}
+
+/**
+ * セミナー一覧（実測 8サイト）。
+ *
+ * **予定用と終了用でページを分けない**（実測 0/8）。呼び出し側は `status` 付きで
+ * 全件を渡し、グルーピングはパターンに任せる。
+ */
+export interface SeminarListInput extends LandingPageCommon {
+  pattern: 'seminar-list';
+  page: { eyebrow?: string; title: React.ReactNode; description?: string };
+  list: Slot<SeminarListSectionProps>;
+}
+
+/**
+ * セミナー詳細（実測 21本）。
+ *
+ * `status` の判別ユニオンで、アーカイブに開催日時が、開催予定に視聴期限が
+ * 型として存在しないようにしてある。**末尾 CTA は持たない** — フォームが CTA
+ * であり、フォームの手前で他ページへ逃がさないのが獲得系の設計（実測 0/21）。
+ */
+export interface SeminarDetailInput extends LandingPageCommon {
+  pattern: 'seminar-detail';
+  seminar: SeminarDetailSectionProps;
+}
+
 export type LandingPageInput =
   | ProductPageInput
   | PortfolioTopInput
@@ -240,7 +287,10 @@ export type LandingPageInput =
   | CaseStudyListInput
   | CaseStudyDetailInput
   | ArticleListInput
-  | ArticleDetailInput;
+  | ArticleDetailInput
+  | ResourcesLibraryInput
+  | SeminarListInput
+  | SeminarDetailInput;
 
 export type LandingPagePattern = LandingPageInput['pattern'];
 
@@ -257,6 +307,11 @@ const DEFAULT_TONES: Record<LandingPagePattern, PageTone> = {
      **これは実測ではなく判断**（research-news-blog.md §6-1）。実装後に見直す余地がある */
   'article-list': 'trust',
   'article-detail': 'trust',
+  /* 獲得系3型は campaign。**これは実測ではなく判断**（research-resources-seminar.md §7-1）。
+     実装後に見直す余地がある */
+  'resources-library': 'campaign',
+  'seminar-list': 'campaign',
+  'seminar-detail': 'campaign',
 };
 
 /**
