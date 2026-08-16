@@ -3,12 +3,16 @@
 .hero {
   position: relative;
   overflow: hidden;
-}
-/* 背景演出（backdrop）あり: コピーは左寄せ・ヒーローは背を高くして演出に場所を与える */
-.withBackdrop {
+  /* ファーストビューはヒーローが占有する。高さはコピー量ではなく視野で決める
+     （根拠と値は theme.css の --hero-min-height）。campaign トーンでは 0 になり、
+     この規則は無効化される */
+  min-height: var(--hero-min-height);
   display: flex;
   align-items: center;
-  min-height: min(38rem, 92vh);
+}
+/* 背景演出（backdrop）あり: 演出に場所を与えるため、視野が低いときでも 38rem は確保する */
+.withBackdrop {
+  min-height: max(var(--hero-min-height), 38rem);
 }
 .backdrop {
   position: absolute;
