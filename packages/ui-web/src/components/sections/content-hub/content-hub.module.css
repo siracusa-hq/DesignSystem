@@ -166,8 +166,18 @@
   --color-on-surface: var(--color-neutral-50);
   --color-on-surface-secondary: var(--color-neutral-200);
   --color-on-surface-muted: var(--color-neutral-300);
-  --color-text-brand-strong: var(--color-text-brand-on-dark);
 }
 .tileBrand:hover {
   border-color: transparent;
+}
+
+/* **ブランド面の上でブランド色をアクセントに使わない。**
+   面そのものがブランド色である以上、同系色のアクセントは前に出ない。
+   加えて実害があった: ブランド 300 段（#13c3a0）を 800 段の面（#004c43）に置くと
+   対比 4.42:1 で、14px/700 の文字は WCAG AA（4.5:1）に届かない
+   （大きな文字の例外は 18.66px/700 から。2026-08-16 の指摘で発覚）。
+   面の前景色（neutral-50）をそのまま使うと 9.51:1 になる。
+   この期待値は packages/tokens/src/tokens.test.ts が実計算で固定している。 */
+.tileBrand .tileAction {
+  color: var(--color-neutral-50);
 }
