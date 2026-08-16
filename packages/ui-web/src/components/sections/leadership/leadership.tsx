@@ -76,7 +76,7 @@ export const LeadershipSection = React.forwardRef<HTMLElement, LeadershipSection
                   /* 略歴の箇条書き（正本が箇条書きの経歴を「／」で1行に潰させない） */
                   <ul className={styles.bioList}>
                     {m.bio.map((line, j) => (
-                      <li key={j} className={styles.bioItem}>
+                      <li key={j}>
                         <Text as="span" size="body-sm" tone="secondary">
                           {line}
                         </Text>

@@ -35,6 +35,10 @@
   padding-left: var(--spacing-5);
   display: grid;
   gap: var(--spacing-1);
+  /* preflight が ul の list-style を none にするため、明示しないとマーカーが消えて
+     padding-left の字下げだけが残る（= 単一値の行と左端が揃わない「ズレ」に見える）。
+     2026-08-16 のレビュー指摘で発覚 */
+  list-style: disc;
 }
 .valueList li::marker {
   color: var(--color-text-brand);
