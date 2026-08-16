@@ -23,15 +23,18 @@ function SpacingStory() {
           Spacing / スペーシング
         </h2>
         <p className="mt-2 text-body-md text-[var(--color-on-surface-secondary)]">
-          Section spacing and container widths for marketing layouts.
+          Section spacing and container widths for marketing layouts. Section values are the
+          padding on <strong>one side</strong>; the gap a reader sees between two sections is
+          about twice the value.
           <br />
-          マーケティングレイアウト向けセクション間余白・コンテナ幅。
+          マーケティングレイアウト向けセクション余白・コンテナ幅。セクションの値は
+          <strong>片側</strong>のパディングで、読者が見る継ぎ目の余白はその約2倍になる。
         </p>
       </div>
 
       <div>
         <h3 className="mb-4 text-heading-md font-semibold text-[var(--color-on-surface)]">
-          Section Spacing / セクション間余白
+          Section Spacing / セクションの垂直パディング（片側）
         </h3>
         <div className="space-y-3">
           {Object.entries(sectionSpacing).map(([name, value]) => (

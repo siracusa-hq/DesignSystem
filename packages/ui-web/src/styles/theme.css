@@ -178,12 +178,18 @@
 
   /* --------------------------------------------------------
      Spacing: 4px Grid + マーケティング拡張
-     セクション間余白・コンテナ幅
+     セクションの垂直パディング（片側）・コンテナ幅
+
+     **これは片側の値。読者が見る余白はその2倍になる**
+     （前のセクションの padding-bottom + 次のセクションの padding-top）。
+     実測の「見出し上の実効余白」は国内中央値 96〜104px・最大 174px
+     （research-eyebrow.md §4-2）なので、lg 同士の継ぎ目 = 4rem × 2 = 128px。
+     正本は src/tokens/spacing.ts（tokens.test.ts が双方向で突き合わせる）。
      -------------------------------------------------------- */
-  --spacing-section-sm: 5rem;
-  --spacing-section-md: 6rem;
-  --spacing-section-lg: 8rem;
-  --spacing-section-xl: 10rem;
+  --spacing-section-sm: 2.5rem;
+  --spacing-section-md: 3rem;
+  --spacing-section-lg: 4rem;
+  --spacing-section-xl: 5rem;
 
   /* --------------------------------------------------------
      Spacing Scale（4px グリッド・正本は @siracusahq/tokens）
@@ -334,21 +340,23 @@
    --spacing-section-* を1段ずらしたもの。
    ============================================================ */
 
-/* trust: コーポレート・エンタープライズ向け。余白広め・装飾最小 */
+/* trust: コーポレート・エンタープライズ向け。余白広め・装飾最小。
+   lg 同士の継ぎ目 = 5rem × 2 = 160px（実測最大の LayerX 120〜174px 相当） */
 [data-tone='trust'] {
-  --spacing-section-sm: 6rem;
-  --spacing-section-md: 8rem;
-  --spacing-section-lg: 10rem;
-  --spacing-section-xl: 12rem;
+  --spacing-section-sm: 3rem;
+  --spacing-section-md: 4rem;
+  --spacing-section-lg: 5rem;
+  --spacing-section-xl: 6rem;
 }
 
 /* campaign: 獲得LP・広告着地。密度を上げてファーストビューに情報を寄せる。
+   lg 同士の継ぎ目 = 3rem × 2 = 96px（実測中央値 96〜104px）。
    コントラスト・CTA 強調の規則は Stage 3 Slice 1 以降で追加する */
 [data-tone='campaign'] {
-  --spacing-section-sm: 4rem;
-  --spacing-section-md: 5rem;
-  --spacing-section-lg: 6rem;
-  --spacing-section-xl: 8rem;
+  --spacing-section-sm: 2rem;
+  --spacing-section-md: 2.5rem;
+  --spacing-section-lg: 3rem;
+  --spacing-section-xl: 4rem;
 }
 
 /* ============================================================
