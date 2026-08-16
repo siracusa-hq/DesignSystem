@@ -20,7 +20,7 @@
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-control);
-  background: var(--color-surface);
+  background: var(--color-surface-raised);
   box-shadow: var(--shadow-raised);
   color: var(--color-text-brand);
 }
