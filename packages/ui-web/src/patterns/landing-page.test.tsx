@@ -6,6 +6,7 @@ import { axe } from 'vitest-axe';
 import {
   defineLandingPage,
   LandingPage,
+  LANDING_PAGE_PATTERNS,
   type OfferPair,
   type CaseStudyDetailInput,
 } from './index';
@@ -581,5 +582,77 @@ describe('resources-library / seminar-* の描画', () => {
     );
     expect(screen.getByRole('heading', { level: 1, name: '現場DXの始め方' })).toBeInTheDocument();
     expect(container.querySelector('form')).toBeInTheDocument();
+  });
+});
+
+/* ============================================================
+   ContentHub（2026-08-15。content-hub-workorder.md）
+   ============================================================ */
+
+describe('contentHub スロットの追加が非破壊であること', () => {
+  const productBase = {
+    pattern: 'product' as const,
+    brand: 'corporate' as const,
+    hero: { title: 't', offers: [{ label: '資料をダウンロード', href: '#dl' }] as OfferPair },
+    features: { features: [{ title: 'f', description: 'd' }] },
+    closing: { title: 'c' },
+  };
+
+  it('contentHub を渡さなければ描画されるセクション数が変わらない', () => {
+    const { container } = render(<LandingPage {...defineLandingPage(productBase)} />);
+    const before = container.querySelectorAll('section').length;
+
+    const { container: after } = render(
+      <LandingPage
+        {...defineLandingPage({
+          ...productBase,
+          contentHub: {
+            groups: [{ kind: 'resource', items: [{ href: '#dl1', title: '資料' }] }],
+          },
+        })}
+      />,
+    );
+    expect(after.querySelectorAll('section').length).toBeGreaterThan(before);
+  });
+
+  it('コンテンツ回遊は FAQ の後・締めの前に入る（実測 11/11 が最終CTAの前）', () => {
+    const { container } = render(
+      <LandingPage
+        {...defineLandingPage({
+          ...productBase,
+          faq: { title: 'よくある質問', items: [{ question: 'q', answer: 'a' }] },
+          contentHub: {
+            title: '関連コンテンツ',
+            groups: [{ kind: 'resource', title: 'お役立ち資料', items: [{ href: '#dl1', title: '資料' }] }],
+          },
+          closing: { title: '締めの見出し' },
+        })}
+      />,
+    );
+    const text = container.textContent ?? '';
+    expect(text.indexOf('よくある質問')).toBeLessThan(text.indexOf('関連コンテンツ'));
+    expect(text.indexOf('関連コンテンツ')).toBeLessThan(text.indexOf('締めの見出し'));
+  });
+
+  it('product-portfolio-top でも使える', () => {
+    render(
+      <LandingPage
+        {...defineLandingPage({
+          pattern: 'product-portfolio-top',
+          brand: 'corporate',
+          hero: { title: 't', offers: [{ label: '資料をダウンロード', href: '#dl' }] },
+          products: {
+            services: [{ brand: 'corporate', name: 'p', description: 'd', href: '#p' }],
+          },
+          contentHub: { groups: [{ kind: 'news', title: 'お知らせ', items: [{ href: '#n', title: 'n', publishedAt: '2026-07-30' }] }] },
+          closing: { title: 'c' },
+        })}
+      />,
+    );
+    expect(screen.getByRole('heading', { level: 3, name: 'お知らせ' })).toBeInTheDocument();
+  });
+
+  it('ページ型は 11 種のまま（ContentHub はセクションであってページ型ではない）', () => {
+    expect(LANDING_PAGE_PATTERNS).toHaveLength(11);
   });
 });

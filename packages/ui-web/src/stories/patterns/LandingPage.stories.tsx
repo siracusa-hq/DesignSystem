@@ -131,6 +131,48 @@ export const 製品LP_タックスピア: Story = {
         },
       ],
     },
+    /* コンテンツ回遊（実測 9/13）。FAQ の後・締めの前に入る。
+       系統ごとに塊を作り、News だけ日付つきの行リストになる */
+    contentHub: {
+      title: '導入前に読んでおきたいもの',
+      groups: [
+        {
+          kind: 'resource',
+          title: 'お役立ち資料',
+          more: { label: 'お役立ち資料を見る', href: '#resources' },
+          items: [
+            {
+              href: '#dl1',
+              title: '税理士事務所のためのDX入門',
+              category: '導入の実務',
+              cover: { src: photoPlaceholder('DX入門', 'green'), alt: 'DX入門資料の表紙' },
+            },
+            {
+              href: '#dl2',
+              title: '顧問先への案内テンプレート集',
+              category: 'すぐ使える',
+              cover: { src: photoPlaceholder('テンプレート集', 'sand'), alt: 'テンプレート集の表紙' },
+            },
+            {
+              href: '#dl3',
+              title: '導入事例集 2026',
+              category: '事例',
+              cover: { src: photoPlaceholder('導入事例集', 'blue'), alt: '導入事例集の表紙' },
+            },
+          ],
+        },
+        {
+          kind: 'news',
+          title: 'お知らせ',
+          more: { label: 'お知らせ一覧', href: '#news' },
+          items: [
+            { href: '#n1', title: '電子帳簿保存法の改正に対応しました', publishedAt: '2026-07-30', category: '製品アップデート' },
+            { href: '#n2', title: '確定申告期の受付体制についてのご案内', publishedAt: '2026-07-14', category: 'お知らせ' },
+            { href: '#n3', title: '税理士向けセミナーを開催します', publishedAt: '2026-06-26', category: 'イベント' },
+          ],
+        },
+      ],
+    },
     closing: {
       kicker: '＼5分でわかる資料をプレゼント／',
       title: 'まずは資料からご覧ください',

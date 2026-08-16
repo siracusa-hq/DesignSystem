@@ -22,6 +22,7 @@ import {
 import { ResourceListSection } from '@/components/sections/resource-list';
 import { SeminarListSection } from '@/components/sections/seminar-list';
 import { SeminarDetailSection } from '@/components/sections/seminar-detail';
+import { ContentHubSection } from '@/components/sections/content-hub';
 import { FAQSection } from '@/components/sections/faq-section';
 import { ServicePortfolio } from '@/components/sections/service-portfolio';
 import { CTASection } from '@/components/sections/cta-section';
@@ -126,6 +127,8 @@ export const LandingPage: React.FC<LandingPageProps> = (props) => {
         props.reasons && <FeatureGrid key="reasons" {...props.reasons} />,
         props.cases && <CaseStudySection key="cases" {...props.cases} />,
         props.faq && <FAQSection key="faq" {...props.faq} />,
+        /* コンテンツ回遊（実測 9/13）。FAQ の後・締めの前。11/11 が最終CTAの前に置く */
+        props.contentHub && <ContentHubSection key="content-hub" {...props.contentHub} />,
         closing(props.closing, offers),
       ];
       break;
@@ -139,6 +142,7 @@ export const LandingPage: React.FC<LandingPageProps> = (props) => {
         midCta(props.midCta, offers),
         props.features && <FeatureGrid key="features" {...props.features} />,
         props.cases && <CaseStudySection key="cases" {...props.cases} />,
+        props.contentHub && <ContentHubSection key="content-hub" {...props.contentHub} />,
         closing(props.closing, offers),
       ];
       break;

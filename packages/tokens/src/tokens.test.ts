@@ -151,6 +151,34 @@ describe('brand.css（React非依存サイト向け CSS変数版）が TS 定数
   });
 });
 
+describe('ブランド濃色面の上でブランド色をアクセントに使わない', () => {
+  /* ContentHub の入口タイル（tone="brand"）は 800 段の面を持つ。
+     そこへ 300 段（暗面用のブランドアクセント）を文字色に置く形は採らない。
+
+     理由は2つ。①面そのものがブランド色である以上、同系色のアクセントは前に出ない。
+     ②**ブランドによっては AA を割る** — corporate は 4.42:1 で 14px/700 の文字では
+     AA（4.5:1）に届かない（2026-08-16 の指摘で発覚）。全ブランドで安全ではない
+     組み合わせをシステムの既定にはできない。
+
+     代わりに面の前景色（neutral-50）を使う。こちらは全ブランドで AA を満たす。
+     jsdom の axe は色計算ができずこの種の欠陥を検出できないため、ここで実値検査する。 */
+  const FOREGROUND = '#fafafa';
+
+  it('800 段の面 × 300 段の文字は、少なくとも1ブランドで AA を割る（だから使わない）', () => {
+    const failing = resolveAllBrands().filter(
+      (b) => contrastRatio(b.ramp[300], b.ramp[800]) < 4.5,
+    );
+    expect(failing.length).toBeGreaterThan(0);
+  });
+
+  it.each(resolveAllBrands().map((b) => [b.dataBrand, b.ramp[800]] as const))(
+    '%s: 800 段の面 × 前景色（neutral-50）は AA を満たす',
+    (_brand, surface) => {
+      expect(contrastRatio(FOREGROUND, surface)).toBeGreaterThanOrEqual(4.5);
+    },
+  );
+});
+
 describe('ブランドランプ 700 段は eyebrow 文字として WCAG AA を満たす', () => {
   /* ui-web の Eyebrow（18px/700 = WCAG の通常文字扱い）は
      --color-text-brand-strong（各ブランド 700 段）を文字色に使う。

@@ -306,6 +306,16 @@ export {
   type SeminarDetailLabels,
 } from './components/sections/seminar-detail';
 
+/* ContentHub — LP 末尾のコンテンツ回遊（実測 9/13）。
+   系統ごとに塊を作る union で受け取る（混在1グリッドは実測 0/11） */
+export {
+  ContentHubSection,
+  type ContentHubSectionProps,
+  type ContentHubGroup,
+  type ContentHubGroups,
+  type ContentHubTile,
+} from './components/sections/content-hub';
+
 export {
   CaseStudyArticleSection,
   type CaseStudyArticleSectionProps,

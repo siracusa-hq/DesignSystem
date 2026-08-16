@@ -71,6 +71,12 @@
     "limit": "12 kB"
   },
   {
+    "name": "ContentHub のみ（カード4種込み・回遊セクション）",
+    "path": "dist/index.js",
+    "import": "{ ContentHubSection }",
+    "limit": "13 kB"
+  },
+  {
     "name": "styles.css（配布スタイル全量・gzip）",
     "path": "dist/styles.css",
     "limit": "15 kB"
