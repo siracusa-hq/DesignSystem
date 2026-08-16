@@ -1,5 +1,184 @@
 # @polastack/gtm-design-system
 
+## 0.17.0
+
+### Minor Changes
+
+- e64f5f6: コーポレートサイト申し送り（2026-08-16、実装 0.14.0 / 確認 0.15.0 時点）の P1〜P4 に対応
+
+  - **BusinessShowcase を新設（P1）**: 「事業内容」ひとまとまりの中に事業の小見出し（h3）がぶら下がり、その下にプロダクト（h4）が FeatureShowcase と同じ「文 + ビジュアル」の交互配置で並ぶ2階層セクション。プロダクトごとに CTA ボタン（必須）・対象1行・data-brand のブランドアクセントを持つ。ビジュアルは MediaFrame / ProductShot を型で限定し、未指定なら MediaFrame のプレースホルダで枠を保つ（素材が揃う前に構成を組める）。推奨素材は 16:9・1600×900px 以上
+  - **LeadershipSection に担当と略歴の箇条書きを追加（P2）**: `focus`（担当1行、ラベルは `focusLabel` で差し替え・既定「担当」）と `bio: string | string[]`（配列で箇条書き）。従来の文字列 bio はそのまま動く
+  - **CompanyProfileSection の値にリンクを追加（P3）**: 値1件を `{ text, href }` で渡すとリンクで組む（窓口一覧の mailto・公式サイト行）。配列の中で文字列と混在可
+  - **箇条書きマーカーの復元と統一（レビュー指摘）**: CompanyProfileSection の配列値は「ブランド操作色のマーカー付き箇条書き」の設計だったが、preflight の `list-style: none` でマーカーが消え、字下げ 20px だけが残っていた（単一値の行と左端が揃わない「ズレ」に見える）。`list-style: disc` を明示して復元。LeadershipSection の略歴の箇条書きも同じ意匠（`--color-text-brand` = `#008575` のマーカー）に統一し、装飾色 `--color-decor-brand` は使わない
+  - **ContactForm に `company` prop を追加（P4）**: 会社名欄を off / optional / required で切替（既定 required = 従来互換）。`company="off"` と `ichisanEnabled` の併用は dev 警告（14種目）。資料請求・デモ予約は BtoB リード獲得の器なので必須のまま
+
+  P5（CTASection への窓口一覧表）は申し送りどおり記録のみで対応せず。フッターに同じ3窓口が常設されており、窓口の対応表は CompanyProfileSection + P3 のリンク値でも組める。
+
+## 0.16.0
+
+### Minor Changes
+
+- c7a347f: 顔になるページの面をニュートラルグレーからブランドティント淡色（白 50% + ramp-50）へ変更し、`<Page>` に面の割当口を2つ追加した。
+
+  - `surfaces`: スロットごとの明示割当。LP 系（product / product-portfolio-top / lead-gen）は機械的な交互をやめ、白の連続の中に社会的証明の塊だけがティントで浮かぶ配置になる
+  - `autoSurface`: 自動割当が沈んだ面に使う色。`corporate-top` は交互リズムを保ったまま色だけティントになる（既定は従来どおり `muted`）
+
+  事例系・記事系・獲得系のページ型は従来のニュートラルの自動ゼブラのまま。既定の見た目は変わらない。
+
+  tokens 側はティント面のコントラスト期待値（全4ブランド × 白 / CTABand 面 / 本文）をテストに追加。
+
+### Patch Changes
+
+- c7a347f: 沈んだ面の上でカード・フォーム部品が背景と同じ色になる不具合を修正した。
+
+  `<Page>` の面スロットは `--color-surface` を再定義して面を塗るため、スロットの内側で自分の背景に `--color-surface` を使っていた部品（ServicePortfolio / FeatureGrid / PricingCard / CaseStudyCard / TestimonialSection / SecurityBadges / ComparisonTable / MigrationComparison / Pagination / ShareButtons / フォーム部品 / SelectField / ProductShot / MarketingButton の secondary）が面と同色になり、浮いて見えなかった。浮く面のための `--color-surface-raised` に統一した（`.bgDark` が両方を暗い値へ振り替えているため暗面でも正しく効く）。
+
+  ニュートラルの muted 面でも起きていた（カードが `#f4f4f5` になる）が、面がほぼ白のため目視で気づきにくかった。同じ誤りを二度作らないよう、`css-modules-contract.test.ts` に「スロット内の部品は `--color-surface` を背景に使わない」検査を追加した。
+
+- Updated dependencies [c7a347f]
+  - @siracusahq/tokens@0.3.1
+
+## 0.15.0
+
+### Minor Changes
+
+- 32256c2: ContentHub（LP 末尾のコンテンツ回遊セクション）を追加した
+
+  製品系 LP の **9/13** が末尾に資料・セミナー・コラム・News の回遊を持つ（実ブラウザ計測 16ページ。`packages/ui-web/docs/content-hub-workorder.md` §9）。遷移先のページ型は 0.13.0 / 0.14.0 で揃っていたが、入口が無かった。
+
+  **追加した部品**
+
+  - `ContentHubSection` — 系統ごとの枠を縦に積むセクション。枠は判別ユニオン（`resource` / `seminar` / `article` / `news` / `index`）
+  - `ContentHubTile`（型）— 入口タイル。個票ではなく**一覧ページへ**飛ぶ大型カード（実測 n=6 / 5社）
+
+  **ページ型への統合（非破壊）**
+
+  `product` / `product-portfolio-top` に任意スロット `contentHub` を追加した。FAQ（product）/ 事例（portfolio-top）の後・締めの前に入る（実測 11/11 が最終CTAの前）。**スロットを渡さない既存の呼び出しは出力が変わらない**（テストで固定）。ページ型は 11 種のまま増えていない。
+
+  **実測が事前イメージを覆した点**
+
+  - **複数系統を1グリッドに混ぜ、種別バッジで区別する形は実在しなかった**（0/11）。実測は「系統ごとに塊を作る」。種別ラベル自体も 0/17
+  - **News だけ表示形が構造的に違う**（サムネイル 0/7・日付 7/7）。語彙は `ArticleListItem` を共有し、表示だけ枠の `kind` で分けている
+  - **事例（`case`）はハブに現れない**（0/17）ため union から外した。`sold-out` 0/29 と同じ扱いで、union へのメンバー追加は非破壊なので実測が出れば足せる
+  - タブ・フィルタは作らない（0/11 ページ・0/17 枠）。絞り込みは一覧ページ型の仕事
+
+  **Slice 0 の決定を1点改めた**
+
+  「ContentHub は4系統のカードを union で受け取る」を「3系統 + News + 入口タイル」に改めた。Slice 0 はハブ未計測時の決定で、記録自身が欠測を留保していた。経緯は `docs/composition-redesign.md` 末尾と `docs/content-hub-workorder.md` §9-3 に記録。
+
+  **`[LP]` の分母を訂正**
+
+  「コンテンツ回遊 9/12」は分母を再現できず、正しくは **9/13**。設計判断への影響は無い（どちらも「多数が保有・ただし必須ではない」）。
+
+## 0.14.0
+
+### Minor Changes
+
+- af31066: 獲得系ページ型 `resources-library` / `seminar-list` / `seminar-detail` を追加した（ページ型 8種 → 11種）
+
+  資料ライブラリとセミナーの一覧・詳細。実測は `docs/research/research-resources-seminar.md`（資料 7ページ + 6個票 / セミナー 8ページ + 21本）と、実装前に通したゲート計測（`packages/ui-web/docs/acquisition-pages-workorder.md` §9）。
+
+  **追加した部品**
+
+  - `ResourceListSection` / `ResourceCard` — 資料ライブラリ。**日付もページャも持たない**（実測 日付 0/7・無限スクロール 0/31）
+  - `SeminarListSection` / `SeminarCard` — セミナー一覧。予定・終了・アーカイブを1つの一覧で扱う（実測 0/8 が分けていない）
+  - `SeminarDetailSection` — セミナー詳細。概要 / おすすめ / プログラム / 開催要項 / 登壇者 / 申込フォーム
+
+  **`status` で持てる情報が変わる**
+
+  `SeminarDetailSection` と `SeminarListItem` は `status: 'upcoming' | 'closed' | 'archive'` の判別ユニオン。**アーカイブに開催日時は、開催予定に視聴期限は型として存在しない。** 全部 optional の1型にすると「開催日時の無い開催予定」「視聴期限のある LIVE」が型で許されてしまうため。
+
+  `sold-out`（満席・実測 0/29）と `permanent`（常設・1/21）は型に含めていないが、判別ユニオンへの値追加は非破壊なので根拠が出れば後から足せる。
+
+  **`lead-gen` に `header?` を戻した（非破壊）**
+
+  資料個票のページ型は新設していない。`lead-gen` との差分がグローバルナビ1点だけで、実測は資料個票 6/6 がナビを持つため。**省略時に剥がす既定は据え置き**で、既存の呼び出しは1つも変わらない（テストで固定してある）。
+
+  **共有語彙の決定（Slice 0）**
+
+  `ContentImage` / `ContentPerson` を追加した。**カードは統合していない** — 事例 / 記事 / 資料 / セミナーは必須項目が違い、1型に寄せると全部 optional になって「日付の無い記事」「状態の無いセミナー」が型で通ってしまうため。詳細は `docs/composition-redesign.md` 末尾「共有語彙の決定」。
+
+  これに伴い `article-pages-workorder.md` §2 の「ContentHub のカード語彙を `ArticleListItem` に合わせる」は撤回した（獲得系のカードは日付を持たないため寄せられない）。ContentHub は4系統のカードを union で受け取る設計になる。
+
+  **状態を色だけで区別しない**
+
+  「受付中」と「受付終了」を色相だけで分けると色覚特性によっては判別できないため、状態バッジは文言を必ず併記する。
+
+  **規範の更新**
+
+  - GUIDELINES §2 に `resources-library` / `seminar-list` / `seminar-detail` の節を追加
+  - AGENTS.md / GUIDELINES.md の語彙をページ型11種に更新
+
+## 0.13.0
+
+### Minor Changes
+
+- d99167e: 記事系ページ型 `article-list` / `article-detail` を追加した（ページ型 6種 → 8種）
+
+  お知らせ（News）とブログの一覧・記事ページ。実測は `docs/research/research-news-blog.md`（7サイト / News 12記事 + ブログ 15記事）と、実装前に通したゲート計測（`packages/ui-web/docs/article-pages-workorder.md` §9-1）。
+
+  **追加した部品**
+
+  - `ArticleListSection` — フィルタ（カテゴリ / 年）+ カードグリッド + ページ送り。値が2種類以上ある軸だけ自動でフィルタを出す
+  - `ArticleCard` / `ArticleListItem` — 記事カード。意匠は `CaseCard` と揃え、語彙は分けている（会社名・数値バッジを持たない）。**一覧・関連記事・ContentHub がこの1つの型を共有する**
+  - `ArticleBodySection` / `ArticleRelatedSection` — 記事本体と関連記事
+  - `ShareButtons` — X / Facebook / はてブ / LINE / Pocket
+
+  **`kind` で News とブログを分ける**
+
+  `ArticleBodySection` は `kind: 'news' | 'blog'` の判別ユニオン。**News には著者・監修者・目次・更新日が型として存在しない**（実測 0/12）。両方 optional の1型にすると「著者と目次を持つ News」という実測に無い構成が型で許されてしまうため。
+
+  **日付は ISO で受ける**
+
+  `publishedAt` は `YYYY-MM-DD` で渡す。表示書式（`YYYY.MM.DD`）はシステムが決める — 実測が4通りに割れており、利用側に選ばせる根拠が無い。`Intl` を使わないのは意図的で、SSG でロケールに依存すると「書いたとおりに出る」性質が失われるため。
+
+  **必須にしていないもの**
+
+  末尾 CTA（News 7/12・ブログ 11/15）と一覧への戻り導線（News 10/12・ブログ 11/15）は任意。事例記事はどちらも 27/27 で必須だったが、記事系は実測が違う。
+
+  **読み幅は事例記事と共有する**
+
+  実ブラウザ計測（19本 / 7サイト）でブログ中央値 690px / News 780px / 全体 730px。現行 `46.5rem`（744px）との差は 1.9% で、種別ごとに割らず1つに保つ判断をした。ブログが実測レンジの狭い側にいる事実は作業指示書に記録してある。
+
+  **規範の更新**
+
+  - GUIDELINES §2 に `article-list` / `article-detail` の節を追加
+  - AGENTS.md / GUIDELINES.md の語彙をページ型8種に更新
+
+## 0.12.0
+
+### Minor Changes
+
+- 5021d7c: コーポレートサイトの下層ページ向けに5部品を追加し、フォームに項目拡張の口を開けた
+
+  **破壊的変更（0.x の minor に含む）**
+
+  - `ContactForm` / `ResourceRequestForm` / `DemoRequestForm` の `ichisanEnabled` の既定値を `true` → `false` に変更した。外部スクリプト（ichisan.jp）を読み込む＝送信先が1つ増える判断であり、利用側が明示的に行うべきものと整理したため。**これまで既定のまま使っていた場合、会社名からの住所・法人番号の自動補完が静かに停止する。** 継続したい場合は `ichisanEnabled` を明示的に渡すこと。
+
+  **追加した部品**
+
+  - `ProseSection` — 箇条書きに割れない文章（ミッション・代表挨拶）のためのセクション。段落の寸法は `CaseStudyArticleSection` と共有する
+  - `DocumentArticle` — **法務文書・404 の器**。Markdown 由来の本文を受け、読み幅 46.5rem / 本文 16px・行間 1.80 / 章見出し 26px という事例記事の実測値をそのまま使う。**Markdown → HTML の変換は同梱しない**（依存を増やさないため、変換は利用側の責務）。お知らせ・ブログの記事は `article-detail` ページ型の担当なので、記事固有の語彙は持たせていない
+  - `CompanyProfileSection` — 会社概要表
+  - `LeadershipSection` — 経営陣。カードの意匠は `CaseCard` と揃える
+  - `HistorySection` — 沿革。縦の導線は引かず、節点だけを置く
+  - `FormCheckbox` — 同意チェック等の真偽値入力。OS 標準の見た目を使わず、`FormInput` と同じ線・角丸・フォーカスリングで描く
+
+  **フォームの拡張**
+
+  - `inquiryTypes`（問い合わせ種別・`ContactForm` のみ）/ `phone`（電話番号）/ `consent`（個人情報同意）を props として追加した。`consent` は未チェックでは送信できない
+  - `extraFields` で任意の項目を追加できるようにした。**開いているのは「項目」であって「見た目」ではない** — 受け取るのはデータだけで、描画は DS のフォーム部品に固定される（`className`・`children`・カスタムレンダラは無い）。組み込み項目と `name` が衝突すると dev 警告が出る
+
+  **規範の更新**
+
+  - GUIDELINES §3 に、散文規則の適用範囲（説明セクションが対象で、読み物の面は対象外）を明記した
+  - GUIDELINES §4 に、「見た目を選べない」と「内容を足せない」は別であることを追記した
+  - dev 警告が 9 種 → 11 種になった
+
+  **内部の共通化**
+
+  - ページ送りを `sections/pagination/` に切り出した。描画結果は変えていない。`article-list` ページ型（article-pages-workorder.md Slice 1）が同じものを必要とするため、先に共有可能な形にしてある
+
 ## 0.11.0
 
 ### Minor Changes

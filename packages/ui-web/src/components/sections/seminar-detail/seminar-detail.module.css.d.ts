@@ -1,0 +1,31 @@
+// ⚠️ 自動生成 — 手で編集しないこと。再生成: pnpm codegen
+declare const styles: {
+  readonly "agenda": string;
+  readonly "agendaDescription": string;
+  readonly "agendaMarker": string;
+  readonly "agendaRow": string;
+  readonly "agendaTitle": string;
+  readonly "article": string;
+  readonly "badges": string;
+  readonly "block": string;
+  readonly "blockHeading": string;
+  readonly "eventMeta": string;
+  readonly "eventMetaLabel": string;
+  readonly "eventMetaRow": string;
+  readonly "eventMetaValue": string;
+  readonly "form": string;
+  readonly "format": string;
+  readonly "head": string;
+  readonly "heroFigure": string;
+  readonly "heroPhoto": string;
+  readonly "paragraph": string;
+  readonly "recommendedList": string;
+  readonly "speaker": string;
+  readonly "speakerInitial": string;
+  readonly "speakerName": string;
+  readonly "speakerOrg": string;
+  readonly "speakerPhoto": string;
+  readonly "speakers": string;
+  readonly "title": string;
+};
+export default styles;

@@ -2,7 +2,7 @@
   {
     "name": "全エクスポート（バレル import）",
     "path": "dist/index.js",
-    "limit": "55 kB"
+    "limit": "70 kB"
   },
   {
     "name": "MarketingButton のみ（tree-shaking の番人）",
@@ -29,8 +29,62 @@
     "limit": "12 kB"
   },
   {
+    "name": "ArticleList のみ（Radix Select 込み・記事一覧の重い経路）",
+    "path": "dist/index.js",
+    "import": "{ ArticleListSection }",
+    "limit": "40 kB"
+  },
+  {
+    "name": "ArticleBody のみ（記事は一覧より軽いことの番人）",
+    "path": "dist/index.js",
+    "import": "{ ArticleBodySection }",
+    "limit": "14 kB"
+  },
+  {
+    "name": "DocumentArticle のみ（組版だけなので最軽量であることの番人）",
+    "path": "dist/index.js",
+    "import": "{ DocumentArticle }",
+    "limit": "8 kB"
+  },
+  {
+    "name": "会社情報3点（CompanyProfile/Leadership/History）",
+    "path": "dist/index.js",
+    "import": "{ CompanyProfileSection, LeadershipSection, HistorySection }",
+    "limit": "12 kB"
+  },
+  {
+    "name": "ResourceList のみ（Radix Select 込み・資料一覧）",
+    "path": "dist/index.js",
+    "import": "{ ResourceListSection }",
+    "limit": "40 kB"
+  },
+  {
+    "name": "SeminarList のみ（状態グルーピング）",
+    "path": "dist/index.js",
+    "import": "{ SeminarListSection }",
+    "limit": "14 kB"
+  },
+  {
+    "name": "SeminarDetail のみ（1セクション完結・軽いことの番人）",
+    "path": "dist/index.js",
+    "import": "{ SeminarDetailSection }",
+    "limit": "12 kB"
+  },
+  {
+    "name": "ContentHub のみ（カード4種込み・回遊セクション）",
+    "path": "dist/index.js",
+    "import": "{ ContentHubSection }",
+    "limit": "13 kB"
+  },
+  {
+    "name": "BusinessShowcase のみ（事業紹介2階層・MarketingButton/MediaFrame 込み）",
+    "path": "dist/index.js",
+    "import": "{ BusinessShowcase }",
+    "limit": "12 kB"
+  },
+  {
     "name": "styles.css（配布スタイル全量・gzip）",
     "path": "dist/styles.css",
-    "limit": "11.5 kB"
+    "limit": "15 kB"
   }
 ]

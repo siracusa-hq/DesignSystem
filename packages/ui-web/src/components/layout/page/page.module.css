@@ -15,3 +15,14 @@
      一段濃い muted スロット（#f4f4f5 = 1.099:1・実測レンジ内）を使う */
   --color-surface: var(--color-surface-muted);
 }
+
+/* tinted スロット: ニュートラルではなくブランドのティント淡色で面を作る（LP 用）。
+   実測 8 サイト中 5 サイトが淡い有彩色面を使っており（SmartHR #f4f8f9 = 1.069:1、
+   マネーフォワード #f2f5ff = 1.089:1、Chatwork #f7f1e7 = 1.124:1 ほか。
+   research-eyebrow.md §4-3）、面交替の対比は 1.04〜1.12:1・中央値 1.07:1。
+   --color-surface-tinted は白 50% + ramp-50 50% で、白 / ティント / CTABand 面
+   （--color-bg-brand-subtle）の 3 段が 1.06〜1.08:1 の等間隔になる。
+   muted（#f4f4f5）と違い accent と隣接しても面差が残るのはこのため。 */
+.slotTinted {
+  --color-surface: var(--color-surface-tinted);
+}

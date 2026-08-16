@@ -1,0 +1,82 @@
+/* ArticleCard — 記事1件のカード（一覧ページと記事末尾の関連記事で共有）。
+
+   意匠は CaseCard に揃える（同じ面・線・角丸・影・ホバー）。カード意匠を2つ持たない。
+   ただし**語彙は違う**: 会社名も数値バッジも持たず、サムネ + カテゴリ + タイトル + 日付。
+   （docs/research/research-news-blog.md §3-1・article-pages-workorder.md §2）
+
+   サムネイルは任意。News は 3/6 が持たない一方、ブログは 5/7 が持つ。 */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-raised);
+  /* 写真をカード縁まで届かせるため padding は本文が持つ */
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  text-decoration: none;
+  color: inherit;
+  transition:
+    box-shadow var(--duration-normal) var(--ease-default),
+    transform var(--duration-normal) var(--ease-default),
+    border-color var(--duration-normal) var(--ease-default);
+}
+.card:hover {
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--color-border-brand);
+  transform: translateY(-2px);
+}
+.card:focus-visible {
+  outline: 2px solid var(--color-ring-brand);
+  outline-offset: 2px;
+}
+
+/* 16:9。CaseCard と同じ契約（トリミングはシステムが正規化する） */
+.thumbnail {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 12.5rem;
+  object-fit: cover;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  padding: var(--spacing-4);
+}
+
+/* 日付とカテゴリ。押せると誤解させないため、チップではなく素の小さい文字にする
+   （CaseCard .meta と同じ判断） */
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--spacing-1) var(--spacing-4);
+}
+.date {
+  font-variant-numeric: tabular-nums;
+}
+.category {
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  font-weight: 700;
+  color: var(--color-text-brand-strong);
+}
+
+.title {
+  font-size: var(--text-body-md);
+  line-height: var(--text-body-md--line-height);
+  font-weight: 700;
+  color: var(--color-on-surface);
+}
+.card:hover .title {
+  color: var(--color-text-brand-strong);
+}
+
+.excerpt {
+  flex: 1;
+}

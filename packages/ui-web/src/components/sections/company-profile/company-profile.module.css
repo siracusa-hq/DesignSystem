@@ -1,0 +1,45 @@
+/* CompanyProfileSection — 会社概要表（ラベル + 値の定義リスト）。
+
+   ラベル列は 700 段（text-brand-strong）、値は本文色。
+   case-study-article の会社プロフィールと同じ配色にしている（同じ「会社の属性を
+   ラベル付きで並べる」役割なので、色の語彙を分けない）。 */
+
+.list {
+  border-top: 1px solid var(--color-border);
+}
+.row {
+  display: grid;
+  gap: var(--spacing-1) var(--spacing-8);
+  padding: var(--spacing-4) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+@media (min-width: 40rem) {
+  .row {
+    grid-template-columns: 11rem minmax(0, 1fr);
+  }
+}
+.label {
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  font-weight: 700;
+  color: var(--color-text-brand-strong);
+}
+.value {
+  margin: 0;
+  font-size: var(--text-body-md);
+  line-height: 1.8;
+  color: var(--color-on-surface);
+}
+.valueList {
+  margin: 0;
+  padding-left: var(--spacing-5);
+  display: grid;
+  gap: var(--spacing-1);
+  /* preflight が ul の list-style を none にするため、明示しないとマーカーが消えて
+     padding-left の字下げだけが残る（= 単一値の行と左端が揃わない「ズレ」に見える）。
+     2026-08-16 のレビュー指摘で発覚 */
+  list-style: disc;
+}
+.valueList li::marker {
+  color: var(--color-text-brand);
+}

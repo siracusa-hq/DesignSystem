@@ -59,3 +59,31 @@ describe('CSS Modules の var() 参照は既知のトークンのみ', () => {
     });
   }
 });
+
+describe('セクション配下の部品は --color-surface を自分の背景に使わない', () => {
+  /* `<Page>` の面スロット（.slotMuted / .slotTinted）は **--color-surface を
+     再定義する**ことで面を塗る。そのため、スロットの内側にある部品が自分の背景に
+     --color-surface を使うと、面と同じ色になって沈む（カードが消える）。
+     実際 2026-08-16 に「コーポレートトップの事業内容カードが背景色になっている」
+     として発見された。ティント導入で色が付いて見えるようになったが、
+     ニュートラルの muted 面でも同じことが起きていた（カードが #f4f4f5 になる）。
+
+     浮いている面には --color-surface-raised を使うこと。**暗面でも正しく効く** —
+     Section の .bgDark は surface と raised の両方を暗い値へ振り替えている
+     （section.module.css の .bgDark）。
+
+     対象外はスロットの外側にあるものだけ:
+     - primitives/section: .bgDefault は「面そのもの」の定義
+     - layout/*: ヘッダー・フッター・固定オーバーレイは <Page> の外に出る */
+  const ALLOWED = ['components/primitives/section/section.module.css'];
+
+  const offenders = [...walk(srcRoot)]
+    .map((f) => f.slice(srcRoot.length + 1).replaceAll('\\', '/'))
+    .filter((short) => !short.startsWith('components/layout/'))
+    .filter((short) => !ALLOWED.includes(short))
+    .filter((short) => /background(-color)?:\s*var\(--color-surface\)\s*;/.test(readFileSync(join(srcRoot, short), 'utf8')));
+
+  it('スロット内の部品に --color-surface 背景は無い（浮く面は raised を使う）', () => {
+    expect(offenders).toEqual([]);
+  });
+});

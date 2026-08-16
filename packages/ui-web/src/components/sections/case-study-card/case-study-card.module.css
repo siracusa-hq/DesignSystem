@@ -5,7 +5,7 @@
   flex-direction: column;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
-  background: var(--color-surface);
+  background: var(--color-surface-raised);
   /* 写真をカード縁まで届かせるため padding は本文（.cardBody）が持つ */
   overflow: hidden;
   box-shadow: var(--shadow-card);
@@ -125,7 +125,7 @@
   height: 2.5rem;
   border-radius: var(--radius-pill);
   border: 1px solid var(--color-border);
-  background: var(--color-surface);
+  background: var(--color-surface-raised);
   color: var(--color-on-surface-secondary);
   cursor: pointer;
   transition:

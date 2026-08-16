@@ -321,6 +321,34 @@
   --color-ring: var(--color-primary-500);
 }
 
+/* ------------------------------------------------------------
+   ティント面（LP の面リズム用・2026-08）
+
+   国内 BtoB SaaS 実測 8 サイト中 5 サイトが「白 × 淡い有彩色」で面を交替させて
+   いた（SmartHR #f4f8f9 = 1.069:1 / マネーフォワード #f2f5ff = 1.089:1 /
+   Chatwork #f7f1e7 = 1.124:1 / kintone #fff5e1 / バクラク #f4f9ff。
+   加えて 2026-08 の確認でカミナシが #e8f2ff。出典 docs/research/research-eyebrow.md §4-3）。
+   実測の対比レンジは 1.04〜1.12:1、中央値 1.07:1。
+
+   値はブランドの ramp-50（= --color-bg-brand-subtle）を白で半分に薄めたもの。
+   ramp-50 素のままだと CTABand の面（--color-bg-brand-subtle）と 1.000:1 で
+   完全に衝突するため使えない。白 50% 混合なら
+   「白 / ティント / CTABand 面」の 3 段が全ブランドで 1.06〜1.08:1 の等間隔になる
+   （corporate #f0f8f8: 白 1.078 / subtle 1.074、polastack #f3f7ff: 1.074 / 1.075、
+   peerdesk #f9f7fa: 1.065 / 1.066、taxpeer #f4f9f6: 1.064 / 1.065。
+   neutral-900 の本文との対比はいずれも 16:1 超。期待値は
+   packages/tokens/src/tokens.test.ts が全 4 ブランドについて実計算する）。
+
+   セレクタが `:root, [data-brand]` なのは CSS の仕様上の要請であって冗長ではない。
+   カスタムプロパティ内の var() は「宣言された要素」で computed-value time に
+   解決されるため、:root だけに書くと data-brand を持つ子孫要素の
+   --color-bg-brand-subtle を拾えず、全ブランドが corporate のティントになる。
+   ------------------------------------------------------------ */
+:root,
+[data-brand] {
+  --color-surface-tinted: color-mix(in srgb, #ffffff 50%, var(--color-bg-brand-subtle));
+}
+
 .dark {
   --color-surface: #0a0a0c;
   --color-surface-raised: #141416;
@@ -332,6 +360,24 @@
   --color-border: #1f1f23;
   --color-ring: var(--color-primary-400);
   color-scheme: dark;
+}
+
+/* ダーク面のティント: ダーク面 #0a0a0c（= .dark の --color-surface）に
+   各ブランドの ramp-800（--color-bg-brand-strong）を 18% 混ぜる。
+
+   18% を採ったのは、ダーク面との対比が 1.067〜1.075:1 になり
+   ライト側のティント（1.064〜1.078:1）および実測中央値 1.07:1 と揃うため
+   （10% では 1.034〜1.037:1 で知覚できず、30% では 1.13〜1.14:1 で実測レンジを外れる）。
+   本文色 --color-on-surface（ダーク = neutral-50 #fafafa）との対比は
+   17.63〜17.76:1 で 4.5:1 を大きく上回る（corporate #081616 = 17.70、
+   polastack #10141d = 17.65、peerdesk #141416 = 17.63、taxpeer #0d1512 = 17.76）。
+
+   --color-surface ではなく実値を書いているのは、入れ子の [data-brand] が
+   面スロット（.slotMuted 等）の内側に来たときに --color-surface が
+   すでに振り替わっている可能性があるため。 */
+.dark,
+.dark [data-brand] {
+  --color-surface-tinted: color-mix(in srgb, #0a0a0c 82%, var(--color-bg-brand-strong));
 }
 
 /* ============================================================

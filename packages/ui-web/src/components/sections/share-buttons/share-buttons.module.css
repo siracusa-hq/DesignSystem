@@ -1,0 +1,47 @@
+/* ShareButtons — SNS シェア（実測: News 8/12・ブログ 15/15）。
+
+   明背景に置かれるため、操作色は primary（`--color-bg-brand-*` / `--color-text-brand-*`）を使う。
+   `brand`（装飾色）を文字・塗りに使ってはならない（packages/ui-web/CLAUDE.md）。 */
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.label {
+  margin-right: var(--spacing-2);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-raised);
+  color: var(--color-on-surface-secondary);
+  transition:
+    background var(--duration-fast) var(--ease-default),
+    border-color var(--duration-fast) var(--ease-default),
+    color var(--duration-fast) var(--ease-default);
+}
+.button:hover {
+  border-color: var(--color-border-brand);
+  background: var(--color-surface-muted);
+  color: var(--color-text-brand-strong);
+}
+.button:focus-visible {
+  outline: 2px solid var(--color-ring-brand);
+  outline-offset: 2px;
+}
+.icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}

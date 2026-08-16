@@ -1,0 +1,283 @@
+/* DocumentArticle — Markdown 由来の本文を受ける記事・法務文書の器。
+
+   **新しい組版は作らない。** 読み幅・本文寸法・章見出しは
+   case-study-article.module.css の実測値（9サイト×3記事）と同じものを使う:
+   - 読み幅 46.5rem（実測中央値 742px）
+   - 本文 16px / 行間 1.80
+   - 記事タイトル 32px / 700
+   - 章 h2 26px / 700
+
+   ここで足しているのは、Markdown が必要とする語彙（ul / ol / table / code /
+   blockquote）だけ。本文は単一の面に置く（実測 9/9。面リズムは記事の外側だけ）。 */
+
+.article {
+  max-width: 46.5rem;
+  margin-inline: auto;
+}
+
+/* ---- パンくず（一覧への戻り導線） ---- */
+.breadcrumb {
+  margin-bottom: var(--spacing-6);
+}
+.breadcrumbList {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+}
+.breadcrumbSeparator {
+  color: var(--color-on-surface-muted);
+}
+/* 現在地。リンクにしない */
+.breadcrumbCurrent {
+  color: var(--color-on-surface-muted);
+}
+
+/* ---- タイトル（case-study-article .title と同値） ---- */
+.title {
+  margin: 0;
+  font-size: var(--text-display-sm);
+  line-height: 1.35;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  letter-spacing: -0.02em;
+}
+@media (min-width: 48rem) {
+  .title {
+    /* 実測中央値 32px。スケールに 2rem の段が無いため記事のローカル値として持つ */
+    font-size: 2rem;
+  }
+}
+.title:lang(ja) {
+  letter-spacing: 0;
+  line-height: 1.45;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--spacing-1) var(--spacing-4);
+  margin-top: var(--spacing-3);
+}
+.date {
+  font-variant-numeric: tabular-nums;
+}
+
+.lead {
+  margin-top: var(--spacing-10);
+}
+.leadParagraph {
+  margin: 0;
+  font-size: var(--text-body-md);
+  line-height: 1.8;
+  color: var(--color-on-surface);
+}
+.leadParagraph + .leadParagraph {
+  margin-top: var(--spacing-6);
+}
+
+/* ---- 要点パネル（法務文書の対象範囲・記事の前提）
+        意匠は case-study-article の冒頭サマリーと共有する ---- */
+.panel {
+  margin-top: var(--spacing-10);
+  border-radius: var(--radius-card);
+  background: var(--color-bg-brand-subtle);
+  padding: var(--spacing-6);
+}
+@media (min-width: 48rem) {
+  .panel {
+    padding: var(--spacing-8);
+  }
+}
+.panelRow {
+  display: grid;
+  gap: var(--spacing-1) var(--spacing-6);
+  padding: var(--spacing-4) 0;
+}
+@media (min-width: 48rem) {
+  .panelRow {
+    grid-template-columns: 7rem 1fr;
+  }
+}
+.panelRow:first-child {
+  padding-top: 0;
+}
+.panelRow:last-child {
+  padding-bottom: 0;
+}
+/* 面の上に線を1本だけ引く（ブランド色から導出） */
+.panelRow + .panelRow {
+  border-top: 1px solid color-mix(in oklab, var(--color-text-brand) 24%, transparent);
+}
+.panelLabel {
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  font-weight: 700;
+  color: var(--color-text-brand-strong);
+}
+.panelBody {
+  font-size: var(--text-body-md);
+  line-height: 1.8;
+  color: var(--color-on-surface);
+}
+
+/* ============================================================
+   本文の組版（Markdown 由来の HTML を子孫セレクタで受ける）
+
+   利用側が渡す DOM にクラスを付けさせないため、ここだけは要素セレクタを使う。
+   スコープは .prose の内側に限られるので、面の外へ漏れることはない。
+   ============================================================ */
+.prose {
+  margin-top: var(--spacing-4);
+}
+
+.prose h2 {
+  margin: var(--spacing-14) 0 var(--spacing-6);
+  font-size: var(--text-heading-lg);
+  line-height: 1.45;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  letter-spacing: -0.02em;
+}
+@media (min-width: 48rem) {
+  .prose h2 {
+    /* 実測中央値 26px。スケールに 1.625rem の段が無いためローカル値 */
+    font-size: 1.625rem;
+  }
+}
+.prose h2:lang(ja) {
+  letter-spacing: 0;
+}
+/* 章見出しに区切り罫を引かない（実測: 記事本文は単一の面・線を持たない） */
+
+.prose h3 {
+  margin: var(--spacing-8) 0 var(--spacing-3);
+  font-size: var(--text-heading-sm);
+  line-height: 1.6;
+  font-weight: 700;
+  color: var(--color-text-brand-strong);
+}
+
+.prose p {
+  margin: 0;
+  font-size: var(--text-body-md);
+  line-height: 1.8;
+  color: var(--color-on-surface);
+}
+.prose p + p {
+  margin-top: var(--spacing-6);
+}
+
+.prose ul,
+.prose ol {
+  margin: var(--spacing-6) 0 0;
+  padding-left: var(--spacing-6);
+  display: grid;
+  gap: var(--spacing-2);
+  font-size: var(--text-body-md);
+  line-height: 1.8;
+  color: var(--color-on-surface);
+}
+.prose li::marker {
+  color: var(--color-text-brand);
+}
+
+.prose a {
+  color: var(--color-text-brand);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.prose a:focus-visible {
+  outline: 2px solid var(--color-ring-brand);
+  outline-offset: 2px;
+}
+
+/* 表は自分の器の中で横スクロールさせる。
+   Markdown が生成する DOM にラッパー div を足せないため、table 自身を
+   スクロール容器にする（display: block + width: max-content）。
+   広く使われている形で、行・セルは匿名テーブルボックスとして通常どおり組まれる。 */
+.prose table {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  overflow-x: auto;
+  margin-top: var(--spacing-6);
+  border-collapse: collapse;
+}
+.prose th,
+.prose td {
+  text-align: left;
+  vertical-align: top;
+  padding: var(--spacing-3) var(--spacing-4);
+  border-bottom: 1px solid var(--color-border);
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+}
+.prose thead th {
+  background: var(--color-surface-sunken);
+  font-weight: 700;
+  color: var(--color-on-surface);
+}
+.prose tbody th {
+  font-weight: 700;
+  color: var(--color-text-brand-strong);
+}
+.prose td {
+  color: var(--color-on-surface-secondary);
+}
+
+/* 引用の飾り枠は作らない（実測 27記事中 0件）。字下げだけで示す */
+.prose blockquote {
+  margin: var(--spacing-6) 0 0;
+  padding-inline-start: var(--spacing-6);
+  color: var(--color-on-surface-secondary);
+}
+
+.prose code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background: var(--color-surface-muted);
+  border-radius: var(--radius-sm);
+  padding: 0.1em 0.35em;
+}
+.prose pre {
+  margin: var(--spacing-6) 0 0;
+  overflow-x: auto;
+  border-radius: var(--radius-media);
+  background: var(--color-surface-sunken);
+  border: 1px solid var(--color-border);
+  padding: var(--spacing-4);
+}
+.prose pre code {
+  background: none;
+  padding: 0;
+  font-size: var(--text-body-sm);
+  line-height: 1.7;
+}
+
+.prose hr {
+  margin: var(--spacing-10) 0 0;
+  border: 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.prose img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: var(--spacing-8);
+  border-radius: var(--radius-card);
+}
+
+/* ---- 更新日（改定履歴のある法務文書） ---- */
+.updated {
+  margin-top: var(--spacing-10);
+  padding-top: var(--spacing-6);
+  border-top: 1px solid var(--color-border);
+}

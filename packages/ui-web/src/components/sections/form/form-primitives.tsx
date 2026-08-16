@@ -106,6 +106,47 @@ export const FormSelect = React.forwardRef<HTMLSelectElement, FormSelectProps>(
 );
 FormSelect.displayName = 'FormSelect';
 
+export interface FormCheckboxProps
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'className' | 'type'> {
+  /**
+   * ラベル。リンクを含められる（「個人情報の取り扱いに同意します」の
+   * 「個人情報の取り扱い」だけをリンクにするため、文字列ではなくノードを取る）。
+   */
+  label: React.ReactNode;
+  error?: string;
+}
+
+/**
+ * FormCheckbox — 同意チェックなどの真偽値入力。
+ *
+ * OS 標準の見た目を使わない（白い面で灰色に沈み、ホバーも効かないため）。
+ * FormInput と同じ線・角丸・フォーカスリングの語彙で描く。
+ */
+export const FormCheckbox = React.forwardRef<HTMLInputElement, FormCheckboxProps>(
+  ({ label, error, id, name, ...props }, ref) => {
+    const inputId = id ?? `check-${name ?? 'field'}`;
+    return (
+      <div className={styles.field}>
+        <div className={styles.checkField}>
+          <input
+            ref={ref}
+            id={inputId}
+            name={name}
+            type="checkbox"
+            className={cn(styles.checkbox, error && styles.hasError)}
+            {...props}
+          />
+          <label htmlFor={inputId} className={styles.checkLabel}>
+            {label}
+          </label>
+        </div>
+        {error && <p className={styles.errorText}>{error}</p>}
+      </div>
+    );
+  },
+);
+FormCheckbox.displayName = 'FormCheckbox';
+
 export interface FormButtonProps
   extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'className'> {
   loading?: boolean;
