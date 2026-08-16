@@ -449,6 +449,26 @@ describe('パターンごとの面シーケンス', () => {
     expect(document.querySelectorAll(`.${pageStyles.slotMuted}`)).toHaveLength(0);
   });
 
+  it('コンテンツ回遊（ContentHub）は白。ティントは社会的証明の塊に限る語彙', () => {
+    render(
+      <LandingPage
+        {...defineLandingPage({
+          ...productInput,
+          contentHub: {
+            title: '関連コンテンツ',
+            groups: [{ kind: 'resource', title: 'お役立ち資料', items: [{ href: '#dl', title: '資料' }] }],
+          },
+        })}
+      />,
+    );
+    // 回遊は説得の流れではなく導線。ContentHub 自身も「セクションは塗らず
+    // Page のリズムに乗る」設計（content-hub-workorder.md §9）
+    expect(surfaceOfText('関連コンテンツ')).toBe('default');
+    // 直前の事例はティントのまま（回遊を挟んでも社会的証明の浮きは変わらない）
+    expect(surfaceOfText('導入事例')).toBe('tinted');
+    expect(document.querySelectorAll(`.${pageStyles.slotMuted}`)).toHaveLength(0);
+  });
+
   it('lead-gen: 資料の中身とフォームがティント、数値は白', () => {
     render(
       <LandingPage
