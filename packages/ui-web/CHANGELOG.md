@@ -1,5 +1,12 @@
 # @polastack/gtm-design-system
 
+## 0.18.0
+
+### Minor Changes
+
+- 3272add: ヒーローにファーストビュー基準の最低高さを導入（ビジュアル微修正 #9）。セクション余白を半減した結果、ヒーローのファーストビュー占有が 93% → 71% に落ち、次の章の見出しが画面内に入っていた（CorporateTop・1440×900 実測）。実サイト13件を測ると、次の見出しが画面内に入っているのは 2件のみで、1画面を占有しているサイトはいずれも高さを視野基準で持っており、パディングで埋めているサイトは 0件だった（docs/research/research-first-view.md）。`--hero-min-height: calc(92svh - 4rem)` を追加し `HeroSection` の `min-height` に充当、コンテンツは縦中央寄せ。占有は 92%（モバイル 95%）に戻り、残り 8% に次の面が覗いてスクロールの手がかりが残る。campaign トーンは「密度を上げて FV に情報を寄せる」定義と衝突するため適用外（`--hero-min-height: 0`）。背景演出つきヒーローは視野が低いときでも 38rem を確保する。
+- 3272add: セクション余白を実測レンジまで詰めた（ビジュアル微修正 #8）。`sectionSpacing` / `--spacing-section-*` は「セクションの**片側**パディング」なので、隣り合うと `下 + 上` で2倍になる。この2倍を見落として片側の値（md = 6rem = 96px）を実測の**継ぎ目の実効余白**（国内中央値 96〜104px）と突き合わせていたため、実ページの継ぎ目は 256〜352px = 実測の 2.5〜3.4倍になっていた（Chromium 実レンダリングで計測。research-eyebrow.md §4-2 追記）。3トーンとも同率で半減し、本文セクション同士の継ぎ目は product 128px / trust 160px / campaign 96px（実測レンジ 96〜174px の内側）になる。値: product `sm 2.5 / md 3 / lg 4 / xl 5rem`、trust `3 / 4 / 5 / 6rem`、campaign `2 / 2.5 / 3 / 4rem`。LandingPage の章内従属余白（`.attached`）も同率で縮小。
+
 ## 0.17.0
 
 ### Minor Changes
