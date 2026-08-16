@@ -1,5 +1,29 @@
 # @polastack/gtm-design-system
 
+## 0.16.0
+
+### Minor Changes
+
+- c7a347f: 顔になるページの面をニュートラルグレーからブランドティント淡色（白 50% + ramp-50）へ変更し、`<Page>` に面の割当口を2つ追加した。
+
+  - `surfaces`: スロットごとの明示割当。LP 系（product / product-portfolio-top / lead-gen）は機械的な交互をやめ、白の連続の中に社会的証明の塊だけがティントで浮かぶ配置になる
+  - `autoSurface`: 自動割当が沈んだ面に使う色。`corporate-top` は交互リズムを保ったまま色だけティントになる（既定は従来どおり `muted`）
+
+  事例系・記事系・獲得系のページ型は従来のニュートラルの自動ゼブラのまま。既定の見た目は変わらない。
+
+  tokens 側はティント面のコントラスト期待値（全4ブランド × 白 / CTABand 面 / 本文）をテストに追加。
+
+### Patch Changes
+
+- c7a347f: 沈んだ面の上でカード・フォーム部品が背景と同じ色になる不具合を修正した。
+
+  `<Page>` の面スロットは `--color-surface` を再定義して面を塗るため、スロットの内側で自分の背景に `--color-surface` を使っていた部品（ServicePortfolio / FeatureGrid / PricingCard / CaseStudyCard / TestimonialSection / SecurityBadges / ComparisonTable / MigrationComparison / Pagination / ShareButtons / フォーム部品 / SelectField / ProductShot / MarketingButton の secondary）が面と同色になり、浮いて見えなかった。浮く面のための `--color-surface-raised` に統一した（`.bgDark` が両方を暗い値へ振り替えているため暗面でも正しく効く）。
+
+  ニュートラルの muted 面でも起きていた（カードが `#f4f4f5` になる）が、面がほぼ白のため目視で気づきにくかった。同じ誤りを二度作らないよう、`css-modules-contract.test.ts` に「スロット内の部品は `--color-surface` を背景に使わない」検査を追加した。
+
+- Updated dependencies [c7a347f]
+  - @siracusahq/tokens@0.3.1
+
 ## 0.15.0
 
 ### Minor Changes
