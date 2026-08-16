@@ -85,6 +85,13 @@ function SlotShowcase() {
       {/* 面と装飾 */}
       <div className="flex flex-wrap items-center gap-3">
         <span
+          className="rounded-lg border border-[var(--color-border)] px-4 py-2 text-body-sm"
+          style={{ background: 'var(--color-surface-tinted)' }}
+          title="白 50% + ramp-50 50%。LP の面リズム（Page の tinted スロット）が使う。白 / ティント / subtle 面が 1.06〜1.08:1 の等間隔になる"
+        >
+          ティント面（--color-surface-tinted）
+        </span>
+        <span
           className="rounded-lg px-4 py-2 text-body-sm"
           style={{ background: 'var(--color-bg-brand-subtle)' }}
         >

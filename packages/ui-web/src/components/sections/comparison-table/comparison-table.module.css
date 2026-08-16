@@ -11,7 +11,7 @@
 }
 
 .headRow {
-  background: var(--color-surface);
+  background: var(--color-surface-raised);
 }
 .head {
   position: sticky;
