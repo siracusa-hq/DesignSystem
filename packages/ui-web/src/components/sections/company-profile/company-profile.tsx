@@ -1,18 +1,34 @@
 import * as React from 'react';
 import { Section } from '@/components/primitives/section';
 import { Container } from '@/components/primitives/container';
+import { Link } from '@/components/primitives/link';
 import { SectionHeader } from '@/components/sections/section-header';
 import styles from './company-profile.module.css';
+
+/**
+ * 値1件。href を持つオブジェクトを渡すとリンクとして組む
+ * （窓口一覧の mailto、会社概要の公式サイト行など。コーポレートサイト申し送り
+ * 2026-08-16 P3）。メールアドレスは `href: 'mailto:...'` を明示すること —
+ * 文字列からの自動 mailto 化はしない（書いたとおりに出る原則）。
+ */
+export type CompanyProfileValue = string | { text: string; href: string };
 
 export interface CompanyProfileItem {
   label: string;
   /**
    * 値。配列を渡すと箇条書きで組む（事業内容など複数行の項目用）。
+   * 文字列とリンクは配列の中で混在できる。
    *
    * 「従業員数 12名（2026年7月末時点）」のように**時点を伴う数値は、時点を
    * この値の中に含めて書く**（GUIDELINES §3「数値には基準時点を必ず添える」）。
    */
-  value: string | string[];
+  value: CompanyProfileValue | CompanyProfileValue[];
+}
+
+function ProfileValue({ value }: { value: CompanyProfileValue }) {
+  if (typeof value === 'string') return <>{value}</>;
+  /* 表の中で「押せる」と分かる必要があるため、下線つきの既定バリアントで出す */
+  return <Link href={value.href}>{value.text}</Link>;
 }
 
 export interface CompanyProfileSectionProps
@@ -43,11 +59,13 @@ export const CompanyProfileSection = React.forwardRef<HTMLElement, CompanyProfil
                 {Array.isArray(item.value) ? (
                   <ul className={styles.valueList}>
                     {item.value.map((v, j) => (
-                      <li key={j}>{v}</li>
+                      <li key={j}>
+                        <ProfileValue value={v} />
+                      </li>
                     ))}
                   </ul>
                 ) : (
-                  item.value
+                  <ProfileValue value={item.value} />
                 )}
               </dd>
             </div>

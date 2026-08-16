@@ -77,6 +77,12 @@
     "limit": "13 kB"
   },
   {
+    "name": "BusinessShowcase のみ（事業紹介2階層・MarketingButton/MediaFrame 込み）",
+    "path": "dist/index.js",
+    "import": "{ BusinessShowcase }",
+    "limit": "12 kB"
+  },
+  {
     "name": "styles.css（配布スタイル全量・gzip）",
     "path": "dist/styles.css",
     "limit": "15 kB"

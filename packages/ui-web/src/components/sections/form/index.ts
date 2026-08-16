@@ -22,4 +22,5 @@ export type {
   ExtraField,
   ConsentOption,
   PhoneOption,
+  CompanyOption,
 } from './form-section';

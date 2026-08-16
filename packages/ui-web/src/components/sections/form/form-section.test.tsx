@@ -286,6 +286,24 @@ describe('名前付きの3項目（種別 / 電話 / 同意）', () => {
     expect(screen.getByLabelText('電話番号')).toBeRequired();
   });
 
+  it('company は既定で必須（従来互換）', () => {
+    render(<ContactForm title="x" />);
+    expect(screen.getByLabelText('会社名')).toBeRequired();
+  });
+
+  it('company="optional" は任意で出る（正本では会社名は任意。申し送り P4）', () => {
+    render(<ContactForm title="x" company="optional" />);
+    const company = screen.getByLabelText('会社名');
+    expect(company).toBeInTheDocument();
+    expect(company).not.toBeRequired();
+  });
+
+  it('company="off" は会社名欄ごと出ない（イチサン用の隠しフィールドも出さない）', () => {
+    const { container } = render(<ContactForm title="x" company="off" />);
+    expect(screen.queryByLabelText('会社名')).not.toBeInTheDocument();
+    expect(container.querySelector('input[name="zipcode"]')).not.toBeInTheDocument();
+  });
+
   it('consent は未チェックで送信できない（同意は任意にできない）', () => {
     render(<ContactForm title="x" consent={{ href: '/privacy' }} />);
     const checkbox = screen.getByRole('checkbox');
