@@ -106,6 +106,21 @@ export const 面リズムの自動割当: Story = {
 };
 
 /**
+ * 自動割当の色をティントに（`autoSurface="tinted"`): `corporate-top` が使う形。
+ *
+ * 上の「面リズムの自動割当」と**沈む位置は同じ**で、色だけがニュートラルグレー
+ * （#f4f4f5）からブランドのティント淡色に変わる。LP のように「どこで面が変わるか」
+ * まで作り替えるのではなく、色だけをブランド寄りにしたいページ型のための口。
+ *
+ * 任意スロットの有無で崩れないのが `surfaces` との違い。どのスロットが沈むかは
+ * 自動のままなので、途中のセクションが省かれてもティントが連続したり消えたりしない。
+ */
+export const 自動割当をティントに: Story = {
+  args: { brand: 'corporate', tone: 'trust', autoSurface: 'tinted' },
+  render: (args) => <Page {...args}>{sections.props.children}</Page>,
+};
+
+/**
  * 面の明示割当（`surfaces`）: LP の面シーケンス。
  *
  * 機械的な ABAB ゼブラをやめ、**白の連続の中に社会的証明（数値 / 導入企業の声）だけが

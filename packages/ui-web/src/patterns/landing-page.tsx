@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Page, type PageSlotSurface } from '@/components/layout/page';
+import { Page, type PageProps, type PageSlotSurface } from '@/components/layout/page';
 import { PageLayout } from '@/components/layout/page-layout';
 import { createCTAClickCapture } from '@/lib/cta-click';
 import { isDev } from '@/lib/dev';
@@ -163,6 +163,8 @@ export const LandingPage: React.FC<LandingPageProps> = (props) => {
   const handleClickCapture = createCTAClickCapture<HTMLDivElement>(onCTAClick, undefined);
 
   let slots: (PageSlot | null | false | undefined)[];
+  /* 自動割当が沈んだ面に使う色。既定はニュートラル。ページ型ごとに切り替える */
+  let autoSurface: PageProps['autoSurface'];
   switch (props.pattern) {
     case 'product': {
       const offers = props.hero.offers;
@@ -239,7 +241,12 @@ export const LandingPage: React.FC<LandingPageProps> = (props) => {
       break;
     }
     case 'corporate-top': {
-      /* 読み手が買い手ではない型。面はニュートラルの自動ゼブラのままにする */
+      /* 読み手が買い手ではない型。LP のような「白の連続 + 社会的証明の塊」ではなく
+         交互のリズムを保つ（そこは元の判断のまま）。色だけニュートラルから
+         ブランドのティントへ寄せる。about / stats は任意スロットなので、
+         明示割当ではなく autoSurface で色だけ差し替える
+         （どのスロットが沈むかを自動に任せれば、省略時も隣接・連続が壊れない） */
+      autoSurface = 'tinted';
       slots = [
         { node: hero(props.hero) },
         { node: <ServicePortfolio key="services" {...props.services} /> },
@@ -399,7 +406,7 @@ export const LandingPage: React.FC<LandingPageProps> = (props) => {
       data-tone={tone}
       onClickCapture={handleClickCapture}
     >
-      <Page brand={brand} tone={tone} surfaces={surfaces}>
+      <Page brand={brand} tone={tone} surfaces={surfaces} autoSurface={autoSurface}>
         {sections}
       </Page>
     </PageLayout>

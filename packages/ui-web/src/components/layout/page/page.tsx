@@ -67,6 +67,17 @@ export interface PageProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'c
    * 知っているパターン側にしか決められないため、この口を開けている。
    */
   surfaces?: PageSlotSurface[];
+  /**
+   * 自動割当が沈んだ面に使う色（2026-08、既定: `muted`）。
+   *
+   * 交互リズムそのものは変えず、**色だけ**を差し替える。`tinted` にすると
+   * ニュートラルグレー（#f4f4f5）の代わりにブランドのティント淡色を使う。
+   *
+   * `surfaces` の明示割当と違い、どのスロットが沈むかは自動のままなので、
+   * **任意スロット（`about` / `stats` 等）が省かれても隣接や連続が壊れない。**
+   * リズムは既存のままでよく色だけブランド寄りにしたいページ型はこちらを使う。
+   */
+  autoSurface?: Extract<PageSlotSurface, 'muted' | 'tinted'>;
   children?: React.ReactNode;
 }
 
@@ -114,6 +125,7 @@ export const Page = React.forwardRef<HTMLDivElement, PageProps>(
       tone = 'product',
       children,
       surfaces: requested,
+      autoSurface = 'muted',
       onCTAClick,
       onClickCapture,
       ...props
@@ -234,12 +246,17 @@ export const Page = React.forwardRef<HTMLDivElement, PageProps>(
       }
 
       /* 強調面（淡いブランド面）は muted との対比が 1.053:1 しかなく、隣接すると
-         面差が消える（research-cta-band.md §0）。直後が accent なら muted にしない */
-      const muted = alternation % 2 === 1 && !nextIsAccent;
-      alternation = nextIsAccent ? 0 : alternation + 1;
-      if (!muted) return child;
+         面差が消える（research-cta-band.md §0）。直後が accent なら muted にしない。
+         ティントは強調面と 1.06:1 以上を確保できるため、この回避は要らない */
+      const avoidBeforeAccent = nextIsAccent && autoSurface === 'muted';
+      const sunken = alternation % 2 === 1 && !avoidBeforeAccent;
+      alternation = avoidBeforeAccent ? 0 : alternation + 1;
+      if (!sunken) return child;
       return (
-        <div key={`page-slot-${i}`} className={styles.slotMuted}>
+        <div
+          key={`page-slot-${i}`}
+          className={autoSurface === 'tinted' ? styles.slotTinted : styles.slotMuted}
+        >
           {child}
         </div>
       );

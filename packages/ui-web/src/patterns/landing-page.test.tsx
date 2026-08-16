@@ -491,7 +491,7 @@ describe('パターンごとの面シーケンス', () => {
     expect(surfaceOfText('資料請求')).toBe('tinted'); // form
   });
 
-  it('corporate-top: 従来どおりニュートラルの自動ゼブラ（ティントは使わない）', () => {
+  it('corporate-top: 交互リズムは保ったまま、沈んだ面の色がティントになる', () => {
     render(
       <LandingPage
         {...defineLandingPage({
@@ -509,10 +509,44 @@ describe('パターンごとの面シーケンス', () => {
       />,
     );
     expect(surfaceOfText('事業の裏側を、まっすぐに。')).toBe('default');
-    // hero=default → services=muted → stats=default（about 省略なので stats が3番目）
-    expect(surfaceOfText('事業内容')).toBe('muted');
+    // 沈む位置は従来と同じ（hero=白 → services=沈む → stats=白）。色だけが変わる
+    expect(surfaceOfText('事業内容')).toBe('tinted');
     expect(surfaceOfText('数字で見る')).toBe('default');
-    expect(document.querySelectorAll(`.${pageStyles.slotTinted}`)).toHaveLength(0);
+    // ニュートラルの沈んだ面はもう使わない
+    expect(document.querySelectorAll(`.${pageStyles.slotMuted}`)).toHaveLength(0);
+  });
+
+  it('corporate-top: 任意スロット（about）が入っても交互が壊れない', () => {
+    render(
+      <LandingPage
+        {...defineLandingPage({
+          pattern: 'corporate-top',
+          brand: 'corporate',
+          hero: { title: '事業の裏側を、まっすぐに。' },
+          services: {
+            title: '事業内容',
+            services: [
+              { brand: 'polastack', name: 'Polastack', description: 'Agent 基盤', href: '#' },
+            ],
+          },
+          about: {
+            title: '私たちについて',
+            features: [{ title: '沿革', description: '2024年創業。' }],
+          },
+          stats: {
+            title: '数字で見る',
+            stats: [{ value: '3期', label: '連続黒字' }],
+            asOf: '2026年7月時点',
+          },
+        })}
+      />,
+    );
+    // autoSurface は「どのスロットが沈むか」を自動に任せるので、
+    // 任意スロットの有無でティントが連続したり消えたりしない
+    expect(surfaceOfText('事業の裏側を、まっすぐに。')).toBe('default');
+    expect(surfaceOfText('事業内容')).toBe('tinted');
+    expect(surfaceOfText('私たちについて')).toBe('default');
+    expect(surfaceOfText('数字で見る')).toBe('tinted');
   });
 
   it('条件付きスロットを省いても面がズレない（pricing / reasons / faq なし）', () => {

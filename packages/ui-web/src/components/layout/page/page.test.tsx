@@ -321,6 +321,64 @@ describe('Page.surfaces（面の明示割当・2026-08）', () => {
   });
 });
 
+describe('Page.autoSurface（自動割当の色・2026-08）', () => {
+  const Accent = markPageSurface(
+    ({ label }: { label: string }) => <section>{label}</section>,
+    'accent',
+  );
+
+  it('既定は muted（渡さないときの見た目は変わらない）', () => {
+    const { getByText } = render(
+      <Page>
+        <Plain label="a" />
+        <Plain label="b" />
+      </Page>,
+    );
+    expect(surfaceOf(getByText('b'))).toBe('muted');
+  });
+
+  it("'tinted' は交互の位置を変えず、沈んだ面の色だけを差し替える", () => {
+    const { getByText } = render(
+      <Page autoSurface="tinted">
+        <Plain label="a" />
+        <Plain label="b" />
+        <Plain label="c" />
+        <Plain label="d" />
+      </Page>,
+    );
+    // 沈む位置（2番目・4番目）は muted のときと同じ
+    expect(surfaceOf(getByText('a'))).toBe('default');
+    expect(surfaceOf(getByText('b'))).toBe('tinted');
+    expect(surfaceOf(getByText('c'))).toBe('default');
+    expect(surfaceOf(getByText('d'))).toBe('tinted');
+  });
+
+  it("'tinted' なら強調面の直前でも沈められる（muted と違い面差が残る）", () => {
+    const { getByText } = render(
+      <Page autoSurface="tinted">
+        <Plain label="a" />
+        <Plain label="b" />
+        <Accent label="band" />
+      </Page>,
+    );
+    // muted なら面差 1.053:1 で消えるため回避するが、ティントは 1.06:1 以上を確保できる
+    expect(surfaceOf(getByText('b'))).toBe('tinted');
+  });
+
+  it('暗面によるリセットは autoSurface に関係なく効く', () => {
+    const { getByText } = render(
+      <Page autoSurface="tinted">
+        <Plain label="a" />
+        <Dark label="dark" />
+        <Plain label="b" />
+        <Plain label="c" />
+      </Page>,
+    );
+    expect(surfaceOf(getByText('b'))).toBe('default');
+    expect(surfaceOf(getByText('c'))).toBe('tinted');
+  });
+});
+
 describe('Page.onCTAClick（計測フック・Stage 4 Slice 0）', () => {
   it('data-cta を持つ CTA のクリックで id / label / href が届く', async () => {
     const onCTAClick = vi.fn();
