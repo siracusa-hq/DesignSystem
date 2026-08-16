@@ -14,7 +14,10 @@ export interface LeadershipMember {
   nameEn?: string;
   /** alt には人物と文脈を書く（GUIDELINES §3） */
   photo?: { src: string; alt: string };
-  bio?: string;
+  /** 担当領域の1行（例: 「GTM戦略・事業開発」）。ラベルは focusLabel で差し替え可能 */
+  focus?: string;
+  /** 配列を渡すと略歴を箇条書きで組む（経歴3〜4行の役員紹介用。CompanyProfileItem と同じ流儀） */
+  bio?: string | string[];
 }
 
 export interface LeadershipSectionProps
@@ -23,6 +26,8 @@ export interface LeadershipSectionProps
   title?: React.ReactNode;
   subtitle?: string;
   members: LeadershipMember[];
+  /** focus 行の先頭ラベル。既定「担当」（英語ページでは 'Focus' 等を渡す） */
+  focusLabel?: string;
 }
 
 /**
@@ -35,7 +40,7 @@ export interface LeadershipSectionProps
  * 列数を指定する props は持たない。
  */
 export const LeadershipSection = React.forwardRef<HTMLElement, LeadershipSectionProps>(
-  ({ eyebrow, title, subtitle, members, ...props }, ref) => (
+  ({ eyebrow, title, subtitle, members, focusLabel = '担当', ...props }, ref) => (
     <Section ref={ref} background="default" spacing="md" {...props}>
       <Container>
         <SectionHeader eyebrow={eyebrow} title={title} subtitle={subtitle} />
@@ -60,11 +65,29 @@ export const LeadershipSection = React.forwardRef<HTMLElement, LeadershipSection
                   )}
                 </div>
               </div>
-              {m.bio && (
+              {m.focus && (
                 <Text as="p" size="body-sm" tone="secondary">
-                  {m.bio}
+                  <span className={styles.focusLabel}>{focusLabel}</span>
+                  {m.focus}
                 </Text>
               )}
+              {m.bio &&
+                (Array.isArray(m.bio) ? (
+                  /* 略歴の箇条書き（正本が箇条書きの経歴を「／」で1行に潰させない） */
+                  <ul className={styles.bioList}>
+                    {m.bio.map((line, j) => (
+                      <li key={j}>
+                        <Text as="span" size="body-sm" tone="secondary">
+                          {line}
+                        </Text>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <Text as="p" size="body-sm" tone="secondary">
+                    {m.bio}
+                  </Text>
+                ))}
             </div>
           ))}
         </div>

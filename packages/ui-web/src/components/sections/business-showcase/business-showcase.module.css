@@ -1,0 +1,63 @@
+/* BusinessShowcase — 事業内容の2階層（事業 h3 → プロダクト h4）。
+
+   プロダクト行の意匠は feature-showcase.module.css と揃える（同じグリッド・
+   同じ交互配置・DOM 順は文が先 = 読み上げ順を保つ）。新しい行意匠を作らない。
+   事業の塊の縦リズムは content-hub.module.css の .group と揃える。 */
+
+.business + .business {
+  margin-top: var(--spacing-20);
+}
+
+/* 事業の小見出しとリード文。プロダクト行との従属関係は
+   見出し階層（h3 → h4）と左右いっぱいのヘアラインで示す */
+.businessHead {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  margin-bottom: var(--spacing-10);
+  padding-bottom: var(--spacing-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.products {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-16);
+}
+
+.row {
+  display: grid;
+  align-items: center;
+  gap: var(--spacing-12);
+}
+@media (min-width: 64rem) {
+  .row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  /* 偶数番は文とビジュアルを入れ替える（DOM 順は文が先のまま） */
+  .reversed > :first-child {
+    order: 2;
+  }
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-4);
+}
+
+.audienceLabel {
+  margin-right: var(--spacing-2);
+  font-weight: 700;
+  color: var(--color-text-brand-strong);
+}
+
+/* ボタンの手前だけ一段広く空ける（.copy の gap-4 に足す） */
+.action {
+  margin-top: var(--spacing-2);
+}
+
+.media {
+  position: relative;
+}

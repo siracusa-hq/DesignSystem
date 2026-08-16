@@ -75,6 +75,66 @@ export const TwoMembers: Story = {
   },
 };
 
+/** 担当1行 + 略歴の箇条書き（会社情報ページの正本形式。bio に配列を渡す） */
+export const WithFocusAndBulletBio: Story = {
+  render: (_, { globals }) => {
+    const isJa = globals.locale === 'ja';
+    return (
+      <LeadershipSection
+        title={isJa ? '経営陣' : 'Leadership'}
+        focusLabel={isJa ? '担当' : 'Focus'}
+        members={
+          isJa
+            ? [
+                {
+                  role: '代表取締役',
+                  name: '金子 傑',
+                  focus: 'GTM戦略・事業開発',
+                  bio: [
+                    '2019年4月 VMware株式会社 入社',
+                    '2020年2月 エンタープライズ営業本部にて大手金融機関向け営業に従事',
+                    '2023年12月 株式会社siracusa 創業',
+                  ],
+                },
+                {
+                  role: '取締役 CTO',
+                  name: '立花 直人',
+                  focus: 'プロダクト開発・技術アーキテクチャ',
+                  bio: [
+                    '国内外のプラットフォーム企業でバックエンド基盤の開発をリード',
+                    '検索基盤・データ基盤の設計を専門とする',
+                    'Polastack のアーキテクチャ全般を担当',
+                  ],
+                },
+              ]
+            : [
+                {
+                  role: 'CEO',
+                  name: 'Suguru Kaneko',
+                  focus: 'GTM strategy and business development',
+                  bio: [
+                    'Joined VMware in April 2019',
+                    'Enterprise sales for major financial institutions from 2020',
+                    'Founded siracusa Inc. in December 2023',
+                  ],
+                },
+                {
+                  role: 'CTO',
+                  name: 'Naoto Tachibana',
+                  focus: 'Product and architecture',
+                  bio: [
+                    'Led backend platform work at platform companies',
+                    'Specialist in search and data infrastructure',
+                    'Owns the Polastack architecture',
+                  ],
+                },
+              ]
+        }
+      />
+    );
+  },
+};
+
 /** 3名以上 → 3列。写真を渡さない場合はイニシャルで枠を保つ（カードの高さを揃えるため） */
 export const ThreeMembers: Story = {
   render: (_, { globals }) => {

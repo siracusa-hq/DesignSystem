@@ -82,6 +82,23 @@ export const 日本向けフル構成: Story = {
 };
 
 /**
+ * 会社名を任意にした状態（`company="optional"`）。
+ * コーポレートサイトの問い合わせ正本は会社名を任意と定めており、
+ * 電話番号と同じ3値（off / optional / required）で切り替えられる。既定は required。
+ */
+export const 会社名を任意にする: Story = {
+  render: () => (
+    <ContactForm
+      title="お問い合わせ"
+      subtitle="法人・個人を問わずご相談いただけます。"
+      company="optional"
+      phone="optional"
+      consent={{ href: '/privacy' }}
+    />
+  ),
+};
+
+/**
  * `extraFields` で項目を足した状態。
  *
  * **開いているのは「項目」であって「見た目」ではない。** 受け取るのはデータだけで、

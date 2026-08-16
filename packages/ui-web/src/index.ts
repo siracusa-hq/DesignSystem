@@ -120,6 +120,13 @@ export {
   type ShowcaseItem,
 } from './components/sections/feature-showcase';
 export {
+  BusinessShowcase,
+  type BusinessShowcaseProps,
+  type BusinessLine,
+  type BusinessLineProducts,
+  type BusinessProduct,
+} from './components/sections/business-showcase';
+export {
   ComparisonTable,
   type ComparisonTableProps,
   type ComparisonColumn,
@@ -184,6 +191,7 @@ export type {
   ExtraField,
   ConsentOption,
   PhoneOption,
+  CompanyOption,
 } from './components/sections/form';
 export {
   CaseStudySection,
@@ -222,6 +230,7 @@ export {
   CompanyProfileSection,
   type CompanyProfileSectionProps,
   type CompanyProfileItem,
+  type CompanyProfileValue,
 } from './components/sections/company-profile';
 export {
   LeadershipSection,

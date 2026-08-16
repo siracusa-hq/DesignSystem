@@ -211,8 +211,16 @@ function NameEmailRow({ isJa }: { isJa: boolean }) {
   );
 }
 
+/**
+ * 会社名欄の出し方。既定は 'required'（従来と同じ）。
+ * コーポレートサイトの問い合わせ正本では会社名は任意のため、'optional' を選べる
+ * （申し送り 2026-08-16 P4）。個人からの問い合わせを受ける窓口では 'off' も選べる。
+ */
+export type CompanyOption = 'off' | 'optional' | 'required';
+
 /** 会社名 + イチサンフォーム自動補完の隠しフィールド */
-function CompanyField({ isJa }: { isJa: boolean }) {
+function CompanyField({ mode, isJa }: { mode: CompanyOption; isJa: boolean }) {
+  if (mode === 'off') return null;
   return (
     <>
       <FormInput
@@ -221,7 +229,7 @@ function CompanyField({ isJa }: { isJa: boolean }) {
         placeholder={isJa ? '株式会社...' : 'Company name'}
         autofillKey="company_name"
         autoComplete="off"
-        required
+        required={mode === 'required'}
       />
       {/* イチサンフォームで自動取得される隠しフィールド */}
       <input type="hidden" name="zipcode" className="location_zipcode" />
@@ -426,6 +434,11 @@ export interface ContactFormProps extends BaseFormSectionProps {
   inquiryTypes?: string[];
   /** 電話番号欄。既定 'off' */
   phone?: PhoneOption;
+  /**
+   * 会社名欄。既定 'required'（従来互換）。
+   * 'off' にする場合、イチサンフォームは会社名から補完するため ichisanEnabled と併用できない。
+   */
+  company?: CompanyOption;
   /** 個人情報の取り扱いへの同意チェック */
   consent?: ConsentOption;
   /** 組み込み項目では足りないときの追加項目。見た目は DS が決める */
@@ -447,6 +460,7 @@ export const ContactForm = React.forwardRef<HTMLElement, ContactFormProps>(
       ichisanEnabled = false,
       inquiryTypes,
       phone = 'off',
+      company = 'required',
       consent,
       extraFields,
       ...props
@@ -457,6 +471,14 @@ export const ContactForm = React.forwardRef<HTMLElement, ContactFormProps>(
     const isJa = lang !== 'en';
     useSubmitLabelCheck(submitLabel ?? (isJa ? '問い合わせる' : 'Contact Us'));
     useExtraFieldsCheck(extraFields);
+    React.useEffect(() => {
+      if (isDev && ichisanEnabled && company === 'off') {
+        console.warn(
+          '[ContactForm] company="off" と ichisanEnabled は併用できません。' +
+            'イチサンフォームは会社名の入力から住所等を補完するため、会社名欄が無いと何もしません。',
+        );
+      }
+    }, [ichisanEnabled, company]);
 
     return (
       <Section ref={ref} background="default" spacing="lg" {...props}>
@@ -482,7 +504,7 @@ export const ContactForm = React.forwardRef<HTMLElement, ContactFormProps>(
               />
             )}
             <NameEmailRow isJa={isJa} />
-            <CompanyField isJa={isJa} />
+            <CompanyField mode={company} isJa={isJa} />
             <PhoneField mode={phone} isJa={isJa} />
             <FormTextarea
               name="message"
@@ -562,7 +584,7 @@ export const ResourceRequestForm = React.forwardRef<HTMLElement, ResourceRequest
           >
             {resourceName && <input type="hidden" name="resource" value={resourceName} />}
             <NameEmailRow isJa={isJa} />
-            <CompanyField isJa={isJa} />
+            <CompanyField mode="required" isJa={isJa} />
             <FormInput
               name="role"
               label={isJa ? '役職' : 'Job Title'}
@@ -650,7 +672,7 @@ export const DemoRequestForm = React.forwardRef<HTMLElement, DemoRequestFormProp
             onResult={onResult}
           >
             <NameEmailRow isJa={isJa} />
-            <CompanyField isJa={isJa} />
+            <CompanyField mode="required" isJa={isJa} />
             <FormInput
               name="role"
               label={isJa ? '役職' : 'Job Title'}

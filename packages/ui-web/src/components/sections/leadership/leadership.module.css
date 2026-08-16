@@ -82,3 +82,25 @@
   font-weight: 700;
   color: var(--color-on-surface);
 }
+
+/* 担当行の先頭ラベル（BusinessShowcase の audienceLabel と同じ意匠） */
+.focusLabel {
+  margin-right: var(--spacing-2);
+  font-weight: 700;
+  color: var(--color-text-brand-strong);
+}
+
+/* 略歴の箇条書き。company-profile.module.css の .valueList と同じ意匠
+   （ブランド操作色 text-brand のマーカー。装飾色 decor-brand は使わない —
+   2026-08-16 のレビュー指摘）。新しい箇条書きの意匠を作らない */
+.bioList {
+  margin: 0;
+  padding-left: var(--spacing-5);
+  display: grid;
+  gap: var(--spacing-1);
+  /* preflight の list-style: none を打ち消してマーカーを出す */
+  list-style: disc;
+}
+.bioList li::marker {
+  color: var(--color-text-brand);
+}

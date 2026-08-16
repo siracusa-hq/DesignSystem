@@ -64,3 +64,59 @@ export const Default: Story = {
     );
   },
 };
+
+/** href を持つ値はリンクで組む — 窓口一覧の mailto、会社概要の公式サイト行など */
+export const WithLinks: Story = {
+  render: (_, { globals }) => {
+    const isJa = globals.locale === 'ja';
+    return (
+      <CompanyProfileSection
+        title={isJa ? 'お問い合わせ窓口' : 'Contact points'}
+        subtitle={
+          isJa
+            ? '内容に応じて、以下の窓口までご連絡ください。'
+            : 'Reach the right inbox for your inquiry.'
+        }
+        items={
+          isJa
+            ? [
+                {
+                  label: '営業に関するお問い合わせ',
+                  value: { text: 'sales@siracusa.jp', href: 'mailto:sales@siracusa.jp' },
+                },
+                {
+                  label: 'パートナーシップ',
+                  value: { text: 'partners@siracusa.jp', href: 'mailto:partners@siracusa.jp' },
+                },
+                {
+                  label: '取材・メディア',
+                  value: { text: 'press@siracusa.jp', href: 'mailto:press@siracusa.jp' },
+                },
+                {
+                  // 配列の中で文字列とリンクを混在できる
+                  label: '公式サイト',
+                  value: [
+                    { text: 'https://siracusa.jp', href: 'https://siracusa.jp' },
+                    '受付時間: 平日 10:00–18:00',
+                  ],
+                },
+              ]
+            : [
+                {
+                  label: 'Sales',
+                  value: { text: 'sales@siracusa.jp', href: 'mailto:sales@siracusa.jp' },
+                },
+                {
+                  label: 'Partnerships',
+                  value: { text: 'partners@siracusa.jp', href: 'mailto:partners@siracusa.jp' },
+                },
+                {
+                  label: 'Press',
+                  value: { text: 'press@siracusa.jp', href: 'mailto:press@siracusa.jp' },
+                },
+              ]
+        }
+      />
+    );
+  },
+};

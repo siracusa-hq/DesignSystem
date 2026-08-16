@@ -50,8 +50,54 @@ describe('LeadershipSection', () => {
     expect(three.querySelector('.cols3')).toBeInTheDocument();
   });
 
+  it('担当行を既定ラベル「担当」つきで出し、focusLabel で差し替えられる', () => {
+    const withFocus = [{ ...members[0], focus: 'GTM戦略・事業開発' }];
+    const { container, rerender } = render(<LeadershipSection members={withFocus} />);
+    expect(container.textContent).toContain('担当');
+    expect(container.textContent).toContain('GTM戦略・事業開発');
+
+    rerender(<LeadershipSection members={withFocus} focusLabel="Focus" />);
+    expect(container.textContent).toContain('Focus');
+    expect(container.textContent).not.toContain('担当');
+  });
+
+  it('bio に配列を渡すと略歴を箇条書きで組む（「／」で1行に潰させない）', () => {
+    const bio = [
+      '2019年4月 VMware株式会社 入社',
+      '2020年2月 エンタープライズ営業本部にて大手金融機関向け営業に従事',
+      '2023年12月 株式会社siracusa 創業',
+    ];
+    render(<LeadershipSection members={[{ ...members[0], bio }]} />);
+    const items = screen.getAllByRole('listitem');
+    expect(items).toHaveLength(3);
+    expect(items[0]).toHaveTextContent('2019年4月 VMware株式会社 入社');
+    expect(items[2]).toHaveTextContent('2023年12月 株式会社siracusa 創業');
+  });
+
+  it('bio が文字列なら従来どおり段落で出す（後方互換）', () => {
+    render(<LeadershipSection members={[members[0]]} />);
+    expect(screen.getByText('GTM 戦略とパートナーシップを統括。')).toBeInTheDocument();
+    expect(screen.queryByRole('listitem')).not.toBeInTheDocument();
+  });
+
   it('a11y違反がない', async () => {
     const { container } = render(<LeadershipSection title="経営陣" members={members} />);
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it('箇条書き略歴+担当行でも a11y 違反がない', async () => {
+    const { container } = render(
+      <LeadershipSection
+        title="経営陣"
+        members={[
+          {
+            ...members[0],
+            focus: 'GTM戦略・事業開発',
+            bio: ['2019年4月 VMware株式会社 入社', '2023年12月 株式会社siracusa 創業'],
+          },
+        ]}
+      />,
+    );
     expect(await axe(container)).toHaveNoViolations();
   });
 });
