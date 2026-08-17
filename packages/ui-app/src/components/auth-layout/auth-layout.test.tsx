@@ -2,7 +2,12 @@ import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import { axe } from 'vitest-axe';
 import { brand } from '@siracusahq/tokens';
-import { AuthLayout, AuthLayoutForm, AuthLayoutVisual } from './auth-layout';
+import {
+  AuthLayout,
+  AuthLayoutForm,
+  AuthLayoutVisual,
+  AuthLayoutCentered,
+} from './auth-layout';
 
 describe('AuthLayout', () => {
   it('renders form and visual panels', () => {
@@ -65,6 +70,49 @@ describe('AuthLayout', () => {
     const ref = { current: null } as React.RefObject<HTMLDivElement>;
     render(<AuthLayout ref={ref} />);
     expect(ref.current).toBeInstanceOf(HTMLDivElement);
+  });
+
+  it('renders centered layout with plain surface by default', () => {
+    const { container } = render(
+      <AuthLayoutCentered>
+        <span data-testid="child" />
+      </AuthLayoutCentered>,
+    );
+    expect(container.firstChild).toHaveClass('bg-[var(--color-surface)]');
+    const content = screen.getByTestId('child').parentElement;
+    expect(content).toHaveClass('max-w-sm');
+    expect(content).not.toHaveClass('rounded-xl');
+  });
+
+  it('renders centered card variant on a sunken background', () => {
+    const { container } = render(
+      <AuthLayoutCentered variant="card">
+        <span data-testid="child" />
+      </AuthLayoutCentered>,
+    );
+    expect(container.firstChild).toHaveClass('bg-[var(--color-surface-sunken)]');
+    expect(screen.getByTestId('child').parentElement).toHaveClass('rounded-xl', 'shadow-sm');
+  });
+
+  it('constrains centered content width and allows override', () => {
+    render(
+      <AuthLayoutCentered contentClassName="max-w-md">
+        <span data-testid="child" />
+      </AuthLayoutCentered>,
+    );
+    expect(screen.getByTestId('child').parentElement).toHaveClass('max-w-md');
+  });
+
+  it('passes axe accessibility check for the centered layout', async () => {
+    const { container } = render(
+      <AuthLayoutCentered variant="card">
+        <h1>ログイン</h1>
+        <label htmlFor="email2">メールアドレス</label>
+        <input id="email2" type="email" />
+      </AuthLayoutCentered>,
+    );
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 
   it('passes axe accessibility check', async () => {

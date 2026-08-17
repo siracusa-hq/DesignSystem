@@ -2,9 +2,11 @@ export {
   AuthLayout,
   AuthLayoutForm,
   AuthLayoutVisual,
+  AuthLayoutCentered,
   type AuthLayoutProps,
   type AuthLayoutFormProps,
   type AuthLayoutVisualProps,
+  type AuthLayoutCenteredProps,
 } from './auth-layout';
 export {
   AuthVisualContent,

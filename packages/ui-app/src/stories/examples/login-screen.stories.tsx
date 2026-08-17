@@ -6,6 +6,7 @@ import {
   AuthLayout,
   AuthLayoutForm,
   AuthLayoutVisual,
+  AuthLayoutCentered,
   AuthVisualContent,
   AuthVisualBackdrop,
   AuthVisualTitle,
@@ -307,13 +308,24 @@ export const VisualLeft: Story = {
   ),
 };
 
-/** ビジュアルなしの1カラム（シンプル運用） */
-export const FormOnly: Story = {
+/**
+ * 素の中央1カラム（Linear / Vercel / Figma 型）。
+ * 既存ユーザーの日常導線であるログインでは、訴求パネルを持たない
+ * この構成がグローバルSaaSの多数派。
+ */
+export const Centered: Story = {
   render: () => (
-    <AuthLayout className="lg:grid-cols-1">
-      <AuthLayoutForm>
-        <LoginForm />
-      </AuthLayoutForm>
-    </AuthLayout>
+    <AuthLayoutCentered>
+      <LoginForm />
+    </AuthLayoutCentered>
+  ),
+};
+
+/** 中央カード型（SmartHR / マネーフォワード型）。国内SaaSの主流構成 */
+export const CenteredCard: Story = {
+  render: () => (
+    <AuthLayoutCentered variant="card">
+      <LoginForm />
+    </AuthLayoutCentered>
   ),
 };
