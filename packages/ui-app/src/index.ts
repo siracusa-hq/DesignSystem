@@ -442,6 +442,14 @@ export {
   type SidebarNavGroupProps,
   type SidebarNavItemProps,
 } from './components/sidebar-nav';
+export {
+  AuthLayout,
+  AuthLayoutForm,
+  AuthLayoutVisual,
+  type AuthLayoutProps,
+  type AuthLayoutFormProps,
+  type AuthLayoutVisualProps,
+} from './components/auth-layout';
 
 // PWA Components
 export {
