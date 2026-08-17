@@ -30,11 +30,19 @@ type Story = StoryObj;
 function LoginForm({ error, sso }: { error?: boolean; sso?: boolean }) {
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-semibold text-[var(--color-on-surface)]">ログイン</h1>
-        <p className="mt-1 text-sm text-[var(--color-on-surface-muted)]">
-          アカウント情報を入力してください
-        </p>
+      {/* 見出しは「製品名にログイン」一文のみ。説明サブコピーは置かない
+          （Linear/GitHub/freee 等の定石。ロゴはモバイルで Visual が消えるためフォーム側に置く） */}
+      <div className="flex flex-col gap-4">
+        <div
+          className="flex h-10 w-10 items-center justify-center rounded-lg text-lg font-bold text-white"
+          style={{ backgroundColor: brand[500] }}
+          aria-hidden="true"
+        >
+          P
+        </div>
+        <h1 className="text-2xl font-semibold text-[var(--color-on-surface)]">
+          Polastack にログイン
+        </h1>
       </div>
 
       {error && (
@@ -68,7 +76,7 @@ function LoginForm({ error, sso }: { error?: boolean; sso?: boolean }) {
             <Label htmlFor="remember">ログイン状態を保持</Label>
           </div>
           <Button variant="link" className="h-auto p-0">
-            パスワードをお忘れですか？
+            パスワードをお忘れの方
           </Button>
         </div>
 
@@ -95,6 +103,13 @@ function LoginForm({ error, sso }: { error?: boolean; sso?: boolean }) {
         </>
       )}
 
+      <p className="text-center text-sm text-[var(--color-on-surface-muted)]">
+        アカウントをお持ちでない方は
+        <a href="#signup" className="text-primary-500 hover:underline">
+          こちら
+        </a>
+      </p>
+
       <p className="text-center text-xs text-[var(--color-on-surface-muted)]">
         続行すると
         <a href="#terms" className="text-primary-500 hover:underline">
@@ -118,13 +133,6 @@ function ProductVisual() {
   ];
   return (
     <div className="flex max-w-md flex-col gap-8">
-      <div
-        className="flex h-12 w-12 items-center justify-center rounded-xl text-xl font-bold"
-        style={{ backgroundColor: brand[500], color: '#fff' }}
-        aria-hidden="true"
-      >
-        P
-      </div>
       <div>
         <h2 className="text-3xl font-semibold leading-snug">
           バックオフィスの定型業務を、
