@@ -1,6 +1,6 @@
 {
   "name": "@siracusahq/design-system",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Siracusa Design System - UI components and design tokens for business applications",
   "type": "module",
   "license": "MIT",
