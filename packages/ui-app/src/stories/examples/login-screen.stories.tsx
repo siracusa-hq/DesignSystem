@@ -329,3 +329,25 @@ export const CenteredCard: Story = {
     </AuthLayoutCentered>
   ),
 };
+
+/**
+ * 中央1カラム × SSO 主体（Linear の実構成に相当）。
+ * フォーム構成はレイアウトと直交しており、LoginForm の sso prop を渡すだけでよい。
+ * sso='bottom'（メール主体 + SSO 補助）も同様に組み合わせられる。
+ */
+export const CenteredSSO: Story = {
+  render: () => (
+    <AuthLayoutCentered>
+      <LoginForm sso="top" />
+    </AuthLayoutCentered>
+  ),
+};
+
+/** 中央カード型 × SSO 補助（メール主体）。国内SaaSで最も多い実構成 */
+export const CenteredCardSSO: Story = {
+  render: () => (
+    <AuthLayoutCentered variant="card">
+      <LoginForm sso="bottom" />
+    </AuthLayoutCentered>
+  ),
+};
