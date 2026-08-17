@@ -38,7 +38,7 @@ function LoginForm({ error, sso }: { error?: boolean; sso?: boolean }) {
       </div>
 
       {error && (
-        <Alert variant="error">
+        <Alert variant="destructive">
           <AlertCircle />
           <AlertTitle>ログインできませんでした</AlertTitle>
           <AlertDescription>
