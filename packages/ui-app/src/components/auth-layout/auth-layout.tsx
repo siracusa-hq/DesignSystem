@@ -50,6 +50,50 @@ export const AuthLayoutForm = React.forwardRef<HTMLDivElement, AuthLayoutFormPro
 );
 AuthLayoutForm.displayName = 'AuthLayoutForm';
 
+/* ----- AuthLayoutCentered ----- */
+
+export interface AuthLayoutCenteredProps extends React.HTMLAttributes<HTMLDivElement> {
+  /**
+   * `plain` は面の上にフォームを直接置く構成（Linear / Vercel / Figma 型）。
+   * `card` は沈めた背景の上に中央カードを浮かせる構成（SmartHR / マネーフォワード型）。
+   */
+  variant?: 'plain' | 'card';
+  /** フォーム幅の上限。既定は `max-w-sm`（384px） */
+  contentClassName?: string;
+}
+
+/**
+ * 認証画面用の中央1カラムレイアウト。ログイン（既存ユーザーの日常導線）では
+ * 訴求パネルを持たないこの構成が定石。訴求が必要な獲得導線では AuthLayout を使う。
+ */
+export const AuthLayoutCentered = React.forwardRef<HTMLDivElement, AuthLayoutCenteredProps>(
+  ({ className, variant = 'plain', contentClassName, children, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn(
+        'flex min-h-dvh flex-col items-center justify-center px-6 py-12',
+        variant === 'card'
+          ? 'bg-[var(--color-surface-sunken)]'
+          : 'bg-[var(--color-surface)]',
+        className,
+      )}
+      {...props}
+    >
+      <div
+        className={cn(
+          'w-full max-w-sm',
+          variant === 'card' &&
+            'rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-8 shadow-sm',
+          contentClassName,
+        )}
+      >
+        {children}
+      </div>
+    </div>
+  ),
+);
+AuthLayoutCentered.displayName = 'AuthLayoutCentered';
+
 /* ----- AuthLayoutVisual ----- */
 
 export interface AuthLayoutVisualProps extends React.HTMLAttributes<HTMLDivElement> {}

@@ -1,11 +1,22 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { AlertCircle, CheckCircle2 } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { brand } from '@siracusahq/tokens';
 import {
   AuthLayout,
   AuthLayoutForm,
   AuthLayoutVisual,
+  AuthLayoutCentered,
+  AuthVisualContent,
+  AuthVisualBackdrop,
+  AuthVisualTitle,
+  AuthVisualAccent,
+  AuthVisualDescription,
+  AuthVisualFeatures,
+  AuthVisualFeature,
+  AuthVisualQuote,
+  AuthVisualLogos,
+  AuthVisualStat,
 } from '../../components/auth-layout';
 import {
   FormField,
@@ -150,10 +161,7 @@ function LoginForm({ error, sso }: { error?: boolean; sso?: 'top' | 'bottom' }) 
   );
 }
 
-/**
- * 右パネルの製品訴求。暗色背景上の装飾なので brand スケールを直接使う
- * （ui-app のテーマには brand を公開しない方針のため、CSS変数化しないこと）。
- */
+/** 右パネルの製品訴求。AuthVisual* コンポーネント群で組み立てる */
 function ProductVisual() {
   const features = [
     '請求から入金消込までを1画面で',
@@ -161,25 +169,60 @@ function ProductVisual() {
     '既存の会計ソフトとAPI連携',
   ];
   return (
-    <div className="flex max-w-md flex-col gap-8">
-      <div>
-        <h2 className="text-3xl font-semibold leading-snug">
+    <>
+      <AuthVisualBackdrop />
+      <AuthVisualContent>
+        <AuthVisualTitle>
           バックオフィスの定型業務を、
-          <span style={{ color: brand[300] }}>自動で終わらせる。</span>
-        </h2>
-        <p className="mt-3 text-sm leading-relaxed text-white/70">
+          <AuthVisualAccent>自動で終わらせる。</AuthVisualAccent>
+        </AuthVisualTitle>
+        <AuthVisualDescription>
           Polastack は経理・労務・法務の反復作業を自動化する業務プラットフォームです。
-        </p>
-      </div>
-      <ul className="flex flex-col gap-3">
-        {features.map((feature) => (
-          <li key={feature} className="flex items-center gap-3 text-sm text-white/90">
-            <CheckCircle2 className="h-4 w-4 shrink-0" style={{ color: brand[400] }} />
-            {feature}
-          </li>
-        ))}
-      </ul>
-    </div>
+        </AuthVisualDescription>
+        <AuthVisualFeatures>
+          {features.map((feature) => (
+            <AuthVisualFeature key={feature}>{feature}</AuthVisualFeature>
+          ))}
+        </AuthVisualFeatures>
+      </AuthVisualContent>
+    </>
+  );
+}
+
+/** 単色化した架空の顧客ロゴ（実運用では monochrome の SVG ロゴを渡す） */
+function DemoLogo({ children }: { children: string }) {
+  return <span className="text-sm font-semibold tracking-tight">{children}</span>;
+}
+
+/**
+ * trust wall 構成（Drata / Supabase / Knock 型）。
+ * 「引用 + 氏名・役職 + 顧客ロゴ列 + 数値ピル」の4点セット。
+ * 既存ユーザーの日常導線であるログインでは Default の製品訴求に留め、
+ * サインアップ等の獲得導線でこちらを使う想定。
+ */
+function TrustVisual() {
+  return (
+    <>
+      <AuthVisualBackdrop />
+      <AuthVisualContent className="gap-10">
+        <AuthVisualStat value="月間 12万時間" label="の定型業務を自動化" />
+        <AuthVisualQuote
+          author="佐藤 誠"
+          role="経営管理部長 / ノヴァワークス株式会社"
+          logo={<DemoLogo>NOVAWORKS</DemoLogo>}
+        >
+          月次決算が5営業日から2営業日になりました。監査対応の資料づくりが実質ゼロになったのが一番大きい。
+        </AuthVisualQuote>
+        <AuthVisualLogos label="導入企業">
+          <DemoLogo>NOVAWORKS</DemoLogo>
+          <DemoLogo>関東製作所</DemoLogo>
+          <DemoLogo>AOBA Foods</DemoLogo>
+          <DemoLogo>みなと運輸</DemoLogo>
+          <DemoLogo>Hoshino Lab</DemoLogo>
+          <DemoLogo>クレド商事</DemoLogo>
+        </AuthVisualLogos>
+      </AuthVisualContent>
+    </>
   );
 }
 
@@ -191,6 +234,20 @@ export const Default: Story = {
       </AuthLayoutForm>
       <AuthLayoutVisual>
         <ProductVisual />
+      </AuthLayoutVisual>
+    </AuthLayout>
+  ),
+};
+
+/** trust wall 構成（引用 + ロゴ列 + 数値ピル）。サインアップ等の獲得導線向け */
+export const SocialProof: Story = {
+  render: () => (
+    <AuthLayout>
+      <AuthLayoutForm>
+        <LoginForm sso="top" />
+      </AuthLayoutForm>
+      <AuthLayoutVisual>
+        <TrustVisual />
       </AuthLayoutVisual>
     </AuthLayout>
   ),
@@ -251,13 +308,24 @@ export const VisualLeft: Story = {
   ),
 };
 
-/** ビジュアルなしの1カラム（シンプル運用） */
-export const FormOnly: Story = {
+/**
+ * 素の中央1カラム（Linear / Vercel / Figma 型）。
+ * 既存ユーザーの日常導線であるログインでは、訴求パネルを持たない
+ * この構成がグローバルSaaSの多数派。
+ */
+export const Centered: Story = {
   render: () => (
-    <AuthLayout className="lg:grid-cols-1">
-      <AuthLayoutForm>
-        <LoginForm />
-      </AuthLayoutForm>
-    </AuthLayout>
+    <AuthLayoutCentered>
+      <LoginForm />
+    </AuthLayoutCentered>
+  ),
+};
+
+/** 中央カード型（SmartHR / マネーフォワード型）。国内SaaSの主流構成 */
+export const CenteredCard: Story = {
+  render: () => (
+    <AuthLayoutCentered variant="card">
+      <LoginForm />
+    </AuthLayoutCentered>
   ),
 };
