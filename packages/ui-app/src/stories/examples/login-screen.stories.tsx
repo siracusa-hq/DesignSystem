@@ -27,7 +27,23 @@ const meta: Meta = {
 export default meta;
 type Story = StoryObj;
 
-function LoginForm({ error, sso }: { error?: boolean; sso?: boolean }) {
+function SSODivider() {
+  return (
+    <div className="flex items-center gap-3">
+      <Separator className="flex-1" />
+      <span className="text-xs text-[var(--color-on-surface-muted)]">または</span>
+      <Separator className="flex-1" />
+    </div>
+  );
+}
+
+/**
+ * sso='top' は SSO 主体の構成（Netlify/Supabase/Figma/Clerk/Resend 型）。
+ * ログインと登録を兼ねる導線のため、ボタン文言は「ログイン」ではなく
+ * 中立な「続行」を使う（Notion / Slack 日本語版の実文言に準拠）。
+ * sso='bottom' はメール+パスワード主体で、SSO は補助導線。
+ */
+function LoginForm({ error, sso }: { error?: boolean; sso?: 'top' | 'bottom' }) {
   return (
     <div className="flex flex-col gap-6">
       {/* 見出しは「製品名にログイン」一文のみ。説明サブコピーは置かない
@@ -53,6 +69,23 @@ function LoginForm({ error, sso }: { error?: boolean; sso?: boolean }) {
             メールアドレスまたはパスワードが正しくありません。
           </AlertDescription>
         </Alert>
+      )}
+
+      {sso === 'top' && (
+        <>
+          <div className="flex flex-col gap-2">
+            <Button variant="outline" className="w-full">
+              Google で続行
+            </Button>
+            <Button variant="outline" className="w-full">
+              Microsoft で続行
+            </Button>
+            <Button variant="outline" className="w-full">
+              SSO（SAML）で続行
+            </Button>
+          </div>
+          <SSODivider />
+        </>
       )}
 
       <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
@@ -85,13 +118,9 @@ function LoginForm({ error, sso }: { error?: boolean; sso?: boolean }) {
         </Button>
       </form>
 
-      {sso && (
+      {sso === 'bottom' && (
         <>
-          <div className="flex items-center gap-3">
-            <Separator className="flex-1" />
-            <span className="text-xs text-[var(--color-on-surface-muted)]">または</span>
-            <Separator className="flex-1" />
-          </div>
+          <SSODivider />
           <div className="flex flex-col gap-2">
             <Button variant="outline" className="w-full">
               Google でログイン
@@ -180,11 +209,26 @@ export const WithError: Story = {
   ),
 };
 
+/** SSO 主体の構成。SSO ボタン群を最上部に置き、メール+パスワードを補助扱いにする */
+export const SSOFirst: Story = {
+  render: () => (
+    <AuthLayout>
+      <AuthLayoutForm>
+        <LoginForm sso="top" />
+      </AuthLayoutForm>
+      <AuthLayoutVisual>
+        <ProductVisual />
+      </AuthLayoutVisual>
+    </AuthLayout>
+  ),
+};
+
+/** メール+パスワード主体で、SSO は補助導線としてフォームの下に置く構成 */
 export const WithSSO: Story = {
   render: () => (
     <AuthLayout>
       <AuthLayoutForm>
-        <LoginForm sso />
+        <LoginForm sso="bottom" />
       </AuthLayoutForm>
       <AuthLayoutVisual>
         <ProductVisual />
