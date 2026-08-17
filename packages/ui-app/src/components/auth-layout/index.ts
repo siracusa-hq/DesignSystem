@@ -8,15 +8,23 @@ export {
 } from './auth-layout';
 export {
   AuthVisualContent,
+  AuthVisualBackdrop,
   AuthVisualTitle,
   AuthVisualAccent,
   AuthVisualDescription,
   AuthVisualFeatures,
   AuthVisualFeature,
+  AuthVisualQuote,
+  AuthVisualLogos,
+  AuthVisualStat,
   type AuthVisualContentProps,
+  type AuthVisualBackdropProps,
   type AuthVisualTitleProps,
   type AuthVisualAccentProps,
   type AuthVisualDescriptionProps,
   type AuthVisualFeaturesProps,
   type AuthVisualFeatureProps,
+  type AuthVisualQuoteProps,
+  type AuthVisualLogosProps,
+  type AuthVisualStatProps,
 } from './auth-visual-content';

@@ -5,11 +5,15 @@ import { brand } from '@siracusahq/tokens';
 import { AuthLayout, AuthLayoutForm, AuthLayoutVisual } from './auth-layout';
 import {
   AuthVisualContent,
+  AuthVisualBackdrop,
   AuthVisualTitle,
   AuthVisualAccent,
   AuthVisualDescription,
   AuthVisualFeatures,
   AuthVisualFeature,
+  AuthVisualQuote,
+  AuthVisualLogos,
+  AuthVisualStat,
 } from './auth-visual-content';
 
 function renderPromo() {
@@ -69,6 +73,73 @@ describe('AuthVisualContent', () => {
     const ref = { current: null } as React.RefObject<HTMLDivElement>;
     render(<AuthVisualContent ref={ref} />);
     expect(ref.current).toBeInstanceOf(HTMLDivElement);
+  });
+
+  it('renders the backdrop as decoration, hidden from the a11y tree', () => {
+    render(<AuthVisualBackdrop data-testid="backdrop" />);
+    const backdrop = screen.getByTestId('backdrop');
+    expect(backdrop).toHaveAttribute('aria-hidden', 'true');
+    expect(backdrop).toHaveClass('pointer-events-none', 'absolute');
+    expect(backdrop.children).toHaveLength(2);
+  });
+
+  it('lets backdrop layers be disabled individually', () => {
+    render(<AuthVisualBackdrop data-testid="backdrop" glow={false} grid={false} />);
+    expect(screen.getByTestId('backdrop').children).toHaveLength(0);
+  });
+
+  it('renders quote with author, role and logo', () => {
+    render(
+      <AuthVisualQuote author="佐藤 誠" role="経営管理部長" logo={<span>LOGO</span>}>
+        月次決算が2営業日になりました。
+      </AuthVisualQuote>,
+    );
+    expect(screen.getByText('月次決算が2営業日になりました。')).toBeInTheDocument();
+    expect(screen.getByText('佐藤 誠')).toBeInTheDocument();
+    expect(screen.getByText('経営管理部長')).toBeInTheDocument();
+    expect(screen.getByText('LOGO')).toBeInTheDocument();
+  });
+
+  it('renders logos as a labeled list', () => {
+    render(
+      <AuthVisualLogos label="導入企業">
+        <span>A社</span>
+        <span>B社</span>
+        <span>C社</span>
+      </AuthVisualLogos>,
+    );
+    expect(screen.getByText('導入企業')).toBeInTheDocument();
+    expect(screen.getAllByRole('listitem')).toHaveLength(3);
+  });
+
+  it('renders stat value and label', () => {
+    render(<AuthVisualStat value="月間 12万時間" label="の定型業務を自動化" />);
+    expect(screen.getByText('月間 12万時間')).toBeInTheDocument();
+    expect(screen.getByText('の定型業務を自動化')).toBeInTheDocument();
+  });
+
+  it('passes axe accessibility check for the trust wall composition', async () => {
+    const { container } = render(
+      <AuthLayout>
+        <AuthLayoutForm>
+          <h1>ログイン</h1>
+        </AuthLayoutForm>
+        <AuthLayoutVisual>
+          <AuthVisualBackdrop />
+          <AuthVisualContent>
+            <AuthVisualStat value="月間 12万時間" label="の定型業務を自動化" />
+            <AuthVisualQuote author="佐藤 誠" role="経営管理部長">
+              引用文
+            </AuthVisualQuote>
+            <AuthVisualLogos label="導入企業">
+              <span>A社</span>
+            </AuthVisualLogos>
+          </AuthVisualContent>
+        </AuthLayoutVisual>
+      </AuthLayout>,
+    );
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 
   it('passes axe accessibility check inside AuthLayout', async () => {
