@@ -449,6 +449,18 @@ export {
   type AuthLayoutProps,
   type AuthLayoutFormProps,
   type AuthLayoutVisualProps,
+  AuthVisualContent,
+  AuthVisualTitle,
+  AuthVisualAccent,
+  AuthVisualDescription,
+  AuthVisualFeatures,
+  AuthVisualFeature,
+  type AuthVisualContentProps,
+  type AuthVisualTitleProps,
+  type AuthVisualAccentProps,
+  type AuthVisualDescriptionProps,
+  type AuthVisualFeaturesProps,
+  type AuthVisualFeatureProps,
 } from './components/auth-layout';
 
 // PWA Components

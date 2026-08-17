@@ -1,11 +1,17 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { AlertCircle, CheckCircle2 } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { brand } from '@siracusahq/tokens';
 import {
   AuthLayout,
   AuthLayoutForm,
   AuthLayoutVisual,
+  AuthVisualContent,
+  AuthVisualTitle,
+  AuthVisualAccent,
+  AuthVisualDescription,
+  AuthVisualFeatures,
+  AuthVisualFeature,
 } from '../../components/auth-layout';
 import {
   FormField,
@@ -150,10 +156,7 @@ function LoginForm({ error, sso }: { error?: boolean; sso?: 'top' | 'bottom' }) 
   );
 }
 
-/**
- * 右パネルの製品訴求。暗色背景上の装飾なので brand スケールを直接使う
- * （ui-app のテーマには brand を公開しない方針のため、CSS変数化しないこと）。
- */
+/** 右パネルの製品訴求。AuthVisual* コンポーネント群で組み立てる */
 function ProductVisual() {
   const features = [
     '請求から入金消込までを1画面で',
@@ -161,25 +164,20 @@ function ProductVisual() {
     '既存の会計ソフトとAPI連携',
   ];
   return (
-    <div className="flex max-w-md flex-col gap-8">
-      <div>
-        <h2 className="text-3xl font-semibold leading-snug">
-          バックオフィスの定型業務を、
-          <span style={{ color: brand[300] }}>自動で終わらせる。</span>
-        </h2>
-        <p className="mt-3 text-sm leading-relaxed text-white/70">
-          Polastack は経理・労務・法務の反復作業を自動化する業務プラットフォームです。
-        </p>
-      </div>
-      <ul className="flex flex-col gap-3">
+    <AuthVisualContent>
+      <AuthVisualTitle>
+        バックオフィスの定型業務を、
+        <AuthVisualAccent>自動で終わらせる。</AuthVisualAccent>
+      </AuthVisualTitle>
+      <AuthVisualDescription>
+        Polastack は経理・労務・法務の反復作業を自動化する業務プラットフォームです。
+      </AuthVisualDescription>
+      <AuthVisualFeatures>
         {features.map((feature) => (
-          <li key={feature} className="flex items-center gap-3 text-sm text-white/90">
-            <CheckCircle2 className="h-4 w-4 shrink-0" style={{ color: brand[400] }} />
-            {feature}
-          </li>
+          <AuthVisualFeature key={feature}>{feature}</AuthVisualFeature>
         ))}
-      </ul>
-    </div>
+      </AuthVisualFeatures>
+    </AuthVisualContent>
   );
 }
 
