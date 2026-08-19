@@ -123,9 +123,10 @@ describe('(d) 公開済みの現行色とのドリフト検出', () => {
     expect(get('peerdesk')[600]).toBe('#3a363e');
     expect(get('peerdesk')[50]).toBe('#f3eff6');
     expect(get('peerdesk')[900]).toBe('#353139');
-    // タックスピア既存3色
-    expect(get('peerdesk-taxpeer')[500]).toBe('#2f6847');
-    expect(get('peerdesk-taxpeer')[800]).toBe('#1d4630');
+    // タックスピア（2026-08-19 CEO 裁定・正本 = Polastack_GTM brand-assets/ manifest v1.2.0）
+    // 操作段はロゴ資産と同一 hex。旧値 #2f6847 は正本確定前の暫定で、
+    // 差は ΔL 0.002 / ΔC 0.0008 / ΔH 1.8° と視覚的には同一だった。
+    expect(get('peerdesk-taxpeer')[500]).toBe('#316745');
     expect(get('peerdesk-taxpeer')[50]).toBe('#eaf3ec');
   });
 });

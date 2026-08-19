@@ -50,15 +50,15 @@
   --ramp-peerdesk-950: #1e1c1f;
   /* タックスピア — explicit */
   --ramp-peerdesk-taxpeer-50: #eaf3ec;
-  --ramp-peerdesk-taxpeer-100: #c3e0cc;
-  --ramp-peerdesk-taxpeer-200: #9dcfaf;
-  --ramp-peerdesk-taxpeer-300: #6abc8b;
-  --ramp-peerdesk-taxpeer-400: #5aa176;
-  --ramp-peerdesk-taxpeer-500: #2f6847;
-  --ramp-peerdesk-taxpeer-600: #3e7152;
-  --ramp-peerdesk-taxpeer-700: #325d43;
-  --ramp-peerdesk-taxpeer-800: #1d4630;
-  --ramp-peerdesk-taxpeer-900: #1b3626;
+  --ramp-peerdesk-taxpeer-100: #c3e0cb;
+  --ramp-peerdesk-taxpeer-200: #9fcfad;
+  --ramp-peerdesk-taxpeer-300: #6dbc88;
+  --ramp-peerdesk-taxpeer-400: #5ca174;
+  --ramp-peerdesk-taxpeer-500: #316745;
+  --ramp-peerdesk-taxpeer-600: #407151;
+  --ramp-peerdesk-taxpeer-700: #335d42;
+  --ramp-peerdesk-taxpeer-800: #20462e;
+  --ramp-peerdesk-taxpeer-900: #1c3625;
   --ramp-peerdesk-taxpeer-950: #0f2216;
 }
 
@@ -176,6 +176,6 @@
   --color-decor-brand: var(--ramp-peerdesk-taxpeer-300);
   --color-decor-brand-soft: var(--ramp-peerdesk-taxpeer-200);
   --color-on-brand: #ffffff;
-  --shadow-glow-brand: 0 0 24px rgb(106 188 139 / 0.25);
-  --shadow-glow-brand-lg: 0 0 48px rgb(106 188 139 / 0.3);
+  --shadow-glow-brand: 0 0 24px rgb(109 188 136 / 0.25);
+  --shadow-glow-brand-lg: 0 0 48px rgb(109 188 136 / 0.3);
 }
