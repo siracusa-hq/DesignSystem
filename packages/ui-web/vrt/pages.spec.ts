@@ -20,6 +20,8 @@ interface StorybookIndex {
 /** ページ単位ストーリーの所在。ここに無いものはコンポーネント単体とみなして対象外 */
 const PAGE_STORY_PREFIXES = [
   'patterns-landingpage--',
+  'patterns-corporatepage--',
+  'patterns-contentpage--',
   'patterns-worstcase--',
   'examples-corporatetop',
 ];

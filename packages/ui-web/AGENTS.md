@@ -18,7 +18,7 @@ import '@siracusahq/gtm-design-system/styles.css';
 | ----------------- | ------------------------------------------------------------------------------------ | ------------------------------------------ |
 | ブランド `brand`  | `corporate` / `polastack` / `peerdesk` / `peerdesk-taxpeer`                          | 誰の顔か。色相と視覚デバイスを決める       |
 | トーン `tone`     | `trust` / `product` / `campaign`                                                     | 何を狙うページか。余白量・装飾量を決める   |
-| ページ型 `pattern` | `product` / `product-portfolio-top` / `lead-gen` / `case-study-list` / `case-study-detail` / `corporate-top` / `article-list` / `article-detail` / `resources-library` / `seminar-list` / `seminar-detail` | 構成。セクションの順序と面のリズムを決める |
+| ページ型 `pattern` | ランディング型: `product` / `product-portfolio-top` / `lead-gen` / `corporate-top`、コンテンツ型: `case-study-list` / `case-study-detail` / `article-list` / `article-detail` / `resources-library` / `seminar-list` / `seminar-detail` | 構成。セクションの順序と面のリズムを決める |
 
 ブランドとトーンは直交する。`brand="peerdesk" tone="campaign"` も `brand="corporate" tone="trust"` も成立し、組み合わせに禁止はない。
 
@@ -41,7 +41,7 @@ import { defineLandingPage, LandingPage } from '@siracusahq/gtm-design-system';
 })} />
 ```
 
-必須スロットが欠けていれば型エラーで落ちる。各ページ型で用意すべき素材は [GUIDELINES.md §2](./GUIDELINES.md#2-ユースケース別ガイドページ型5つ) にチェックリストがある。
+必須スロットが欠けていれば型エラーで落ちる。各ページ型で用意すべき素材は [GUIDELINES.md §2](./GUIDELINES.md#2-ユースケース別ガイドページ型11) にチェックリストがある。
 
 ### (b) 一点物のページ — `<Page>`
 

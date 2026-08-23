@@ -222,9 +222,13 @@
 }
 
 /* CTA 専用アクセント（第3のオプション役割）。既定は操作色へのフォールバック。
-   var() は使用時に解決されるため data-brand 切替に自動追従する。
-   専用 CTA 色を持つブランドのみ [data-brand='...'] で上書きする。 */
-:root {
+   セレクタが `:root, [data-brand]` なのは CSS の仕様上の要請（theme.css の
+   ティント面と同じ）。カスタムプロパティ内の var() は宣言された要素で解決されて
+   から継承されるため、:root だけに書くと [data-brand] 子孫でブランドの操作色に
+   追従せず、既定ブランドの色で凍結される（polastack の料金 CTA がティールに
+   なる実バグが出た）。専用 CTA 色を持つブランドのみ [data-brand='...'] で上書きする。 */
+:root,
+[data-brand] {
   --color-bg-cta: var(--color-bg-brand-primary);
   --color-bg-cta-hover: var(--color-bg-brand-hover);
   --color-bg-cta-active: var(--color-bg-brand-active);

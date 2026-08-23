@@ -162,8 +162,10 @@ export const SLOTS: ReadonlyArray<
 /**
  * 第3のオプション役割: CTA 専用アクセント（LP調査で確認された実務パターン。
  * 例: ブランド青に対し CTA だけ黄色）。
- * 既定では操作色スロットへの var() フォールバックとして :root に1回だけ出力される
- * （var() は使用時に解決されるため data-brand の切替に自動追従する）。
+ * 既定では操作色スロットへの var() フォールバックとして `:root, [data-brand]` に
+ * 出力される。カスタムプロパティ内の var() は**宣言された要素で解決されてから
+ * 継承される**ため、:root だけに書くとブランド切替に追従しない（CSS の仕様。
+ * theme.css のティント面と同じ理由で [data-brand] にも同じ宣言が要る）。
  * ブランドが専用 CTA 色を持つ場合のみ、将来 [data-brand] 側で上書きする。
  */
 export const CTA_SLOTS: ReadonlyArray<{ name: string; fallback: string }> = [

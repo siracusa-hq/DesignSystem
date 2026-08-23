@@ -36,6 +36,16 @@ const productInput = defineLandingPage({
       { title: '進捗ボード', description: '全顧問先の提出状況を一覧できます。' },
     ],
   },
+  showcase: {
+    title: '機能の深掘り',
+    items: [
+      {
+        title: '自動リマインドの仕組み',
+        description: '期日から逆算して催促が自動で回ります。',
+        features: ['期日の逆算', 'エスカレーション段階設定'],
+      },
+    ],
+  },
   midCta: { title: 'まずは資料からご覧ください', note: '無料・1分で完了' },
   pricing: {
     title: '料金',
@@ -162,12 +172,13 @@ describe('defineLandingPage', () => {
 });
 
 describe('LandingPage', () => {
-  it('product: 実測順（Hero → 証明 → 機能 → 帯 → 料金 → 事例 → FAQ → 締め）で描画する', () => {
+  it('product: 実測順（Hero → 証明 → 機能 → 深掘り → 帯 → 料金 → 事例 → FAQ → 締め）で描画する', () => {
     const { container } = render(<LandingPage {...productInput} />);
     const texts = [
       '税務書類の収集を、追いかけずに終わらせる。',
       '800事務所',
       '主要機能',
+      '機能の深掘り', // showcase
       'まずは資料からご覧ください', // 帯
       '料金',
       '導入事例',
@@ -182,6 +193,12 @@ describe('LandingPage', () => {
     });
     const sorted = [...positions].sort((a, b) => a - b);
     expect(positions).toEqual(sorted);
+  });
+
+  it('product: showcase 省略時は深掘りセクションを描画しない（任意スロット）', () => {
+    const { showcase: _omitted, ...rest } = productInput;
+    render(<LandingPage {...rest} />);
+    expect(screen.queryByText('機能の深掘り')).toBeNull();
   });
 
   it('midCta と closing は hero と同じオファーを再利用する（ラベル2種ルールの構造的担保）', () => {
