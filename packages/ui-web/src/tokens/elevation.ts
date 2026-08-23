@@ -36,7 +36,7 @@ export const shadows = {
 export const radii = {
   ...baseRadii,
   /** ボタン・入力・小バッジ */
-  control: '0.75rem',
+  control: '0.5rem',
   /** 画像・スクリーンショット・動画 */
   media: '1rem',
   /** カード・テスティモニアル・事例 */

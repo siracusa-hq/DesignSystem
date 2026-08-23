@@ -19,6 +19,9 @@ export const Variants: Story = {
         <MarketingButton variant="primary">
           {isJa ? '無料で始める' : 'Get Started Free'}
         </MarketingButton>
+        <MarketingButton variant="outline">
+          {isJa ? 'ログイン' : 'Log In'}
+        </MarketingButton>
         <MarketingButton variant="secondary">
           {isJa ? 'ドキュメントを見る' : 'View Docs'}
         </MarketingButton>

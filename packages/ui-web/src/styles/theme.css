@@ -255,7 +255,7 @@
   --radius-3xl: 1.5rem;
   --radius-full: 9999px;
   /* 役割名ラディウス（Web/LP の形状語彙）。入れ子の規則: 内側 > 外側 は禁止 */
-  --radius-control: 0.75rem;
+  --radius-control: 0.5rem;
   --radius-media: 1rem;
   --radius-card: 1.25rem;
   --radius-panel: 1.5rem;
