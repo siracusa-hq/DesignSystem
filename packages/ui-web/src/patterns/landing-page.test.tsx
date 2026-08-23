@@ -6,10 +6,12 @@ import { axe } from 'vitest-axe';
 import {
   defineLandingPage,
   LandingPage,
+  LANDING_PAGE_PATTERNS,
   type OfferPair,
   type CaseStudyDetailInput,
 } from './index';
 import { ResourceRequestForm } from '@/components/sections/form';
+import pageStyles from '@/components/layout/page/page.module.css';
 
 const offers: OfferPair = [
   { label: '資料をダウンロード', href: '#dl' },
@@ -387,6 +389,179 @@ describe('社会的証明スロットの空検査（Stage 5 Slice 1）', () => {
 });
 
 /* ============================================================
+   面の割当（2026-08）
+
+   LP 系のパターンは「白の連続の中に社会的証明だけがティントで浮かぶ」割当を持つ。
+   機械的な ABAB ゼブラの実サイトは実測で確認できておらず、面交替は 1〜3 回が主流
+   （docs/research/research-eyebrow.md §4-3）。どのスロットが浮くかは
+   パターンの設計判断そのものなので、ここで固定する。
+   ============================================================ */
+
+/** そのテキストを含むセクションに割り当てられた面（スロットの有無から読む） */
+const surfaceOfText = (text: string) => {
+  const el = screen.getAllByText(text)[0];
+  if (el.closest(`.${pageStyles.slotTinted}`)) return 'tinted';
+  if (el.closest(`.${pageStyles.slotMuted}`)) return 'muted';
+  return 'default';
+};
+
+describe('パターンごとの面シーケンス', () => {
+  it('product: 社会的証明（proof / 事例）だけがティント、他は白（交替2回）', () => {
+    render(<LandingPage {...productInput} />);
+    expect(surfaceOfText('税務書類の収集を、追いかけずに終わらせる。')).toBe('default'); // hero
+    expect(surfaceOfText('800事務所')).toBe('tinted'); // proof
+    expect(surfaceOfText('主要機能')).toBe('default'); // features
+    expect(surfaceOfText('料金')).toBe('default'); // pricing
+    expect(surfaceOfText('導入事例')).toBe('tinted'); // cases
+    expect(surfaceOfText('よくある質問')).toBe('default'); // faq
+    // ニュートラルの沈んだ面は LP 系パターンでは使わない
+    expect(document.querySelectorAll(`.${pageStyles.slotMuted}`)).toHaveLength(0);
+  });
+
+  it('product-portfolio-top: proof と事例がティント、製品カードは白', () => {
+    render(
+      <LandingPage
+        {...defineLandingPage({
+          pattern: 'product-portfolio-top',
+          brand: 'corporate',
+          hero: { title: 'シリーズで、まとめてなくす。', offers },
+          proof: {
+            stats: { stats: [{ value: '2,000社', label: '導入' }], asOf: '2026年7月時点' },
+          },
+          products: {
+            title: 'プロダクト',
+            services: [
+              { brand: 'polastack', name: 'Polastack', description: 'Agent 基盤', href: '#' },
+            ],
+          },
+          midCta: { title: 'まずは資料からご覧ください' },
+          cases: {
+            title: '導入事例',
+            cases: [{ companyName: 'あさひ製作所', quote: '書類回収が自動化されました。' }],
+          },
+          closing: { title: '締めの見出し' },
+        })}
+      />,
+    );
+    expect(surfaceOfText('2,000社')).toBe('tinted'); // proof
+    expect(surfaceOfText('プロダクト')).toBe('default'); // products
+    expect(surfaceOfText('導入事例')).toBe('tinted'); // cases
+    expect(document.querySelectorAll(`.${pageStyles.slotMuted}`)).toHaveLength(0);
+  });
+
+  it('コンテンツ回遊（ContentHub）は白。ティントは社会的証明の塊に限る語彙', () => {
+    render(
+      <LandingPage
+        {...defineLandingPage({
+          ...productInput,
+          contentHub: {
+            title: '関連コンテンツ',
+            groups: [{ kind: 'resource', title: 'お役立ち資料', items: [{ href: '#dl', title: '資料' }] }],
+          },
+        })}
+      />,
+    );
+    // 回遊は説得の流れではなく導線。ContentHub 自身も「セクションは塗らず
+    // Page のリズムに乗る」設計（content-hub-workorder.md §9）
+    expect(surfaceOfText('関連コンテンツ')).toBe('default');
+    // 直前の事例はティントのまま（回遊を挟んでも社会的証明の浮きは変わらない）
+    expect(surfaceOfText('導入事例')).toBe('tinted');
+    expect(document.querySelectorAll(`.${pageStyles.slotMuted}`)).toHaveLength(0);
+  });
+
+  it('lead-gen: 資料の中身とフォームがティント、数値は白', () => {
+    render(
+      <LandingPage
+        {...defineLandingPage({
+          pattern: 'lead-gen',
+          brand: 'peerdesk',
+          hero: { title: '5分でわかるピアデスク' },
+          contents: {
+            title: '資料の内容',
+            features: [{ title: '機能一覧', description: '全機能の概要を掲載。' }],
+          },
+          stats: { title: '数字で見るピアデスク', stats: [{ value: '98%', label: '継続率' }], asOf: '2026年7月時点' },
+          form: <ResourceRequestForm title="資料請求" ichisanEnabled={false} />,
+        })}
+      />,
+    );
+    expect(surfaceOfText('5分でわかるピアデスク')).toBe('default'); // hero
+    expect(surfaceOfText('資料の内容')).toBe('tinted'); // contents
+    expect(surfaceOfText('数字で見るピアデスク')).toBe('default'); // stats
+    expect(surfaceOfText('資料請求')).toBe('tinted'); // form
+  });
+
+  it('corporate-top: 交互リズムは保ったまま、沈んだ面の色がティントになる', () => {
+    render(
+      <LandingPage
+        {...defineLandingPage({
+          pattern: 'corporate-top',
+          brand: 'corporate',
+          hero: { title: '事業の裏側を、まっすぐに。' },
+          services: {
+            title: '事業内容',
+            services: [
+              { brand: 'polastack', name: 'Polastack', description: 'Agent 基盤', href: '#' },
+            ],
+          },
+          stats: { title: '数字で見る', stats: [{ value: '3期', label: '連続黒字' }], asOf: '2026年7月時点' },
+        })}
+      />,
+    );
+    expect(surfaceOfText('事業の裏側を、まっすぐに。')).toBe('default');
+    // 沈む位置は従来と同じ（hero=白 → services=沈む → stats=白）。色だけが変わる
+    expect(surfaceOfText('事業内容')).toBe('tinted');
+    expect(surfaceOfText('数字で見る')).toBe('default');
+    // ニュートラルの沈んだ面はもう使わない
+    expect(document.querySelectorAll(`.${pageStyles.slotMuted}`)).toHaveLength(0);
+  });
+
+  it('corporate-top: 任意スロット（about）が入っても交互が壊れない', () => {
+    render(
+      <LandingPage
+        {...defineLandingPage({
+          pattern: 'corporate-top',
+          brand: 'corporate',
+          hero: { title: '事業の裏側を、まっすぐに。' },
+          services: {
+            title: '事業内容',
+            services: [
+              { brand: 'polastack', name: 'Polastack', description: 'Agent 基盤', href: '#' },
+            ],
+          },
+          about: {
+            title: '私たちについて',
+            features: [{ title: '沿革', description: '2024年創業。' }],
+          },
+          stats: {
+            title: '数字で見る',
+            stats: [{ value: '3期', label: '連続黒字' }],
+            asOf: '2026年7月時点',
+          },
+        })}
+      />,
+    );
+    // autoSurface は「どのスロットが沈むか」を自動に任せるので、
+    // 任意スロットの有無でティントが連続したり消えたりしない
+    expect(surfaceOfText('事業の裏側を、まっすぐに。')).toBe('default');
+    expect(surfaceOfText('事業内容')).toBe('tinted');
+    expect(surfaceOfText('私たちについて')).toBe('default');
+    expect(surfaceOfText('数字で見る')).toBe('tinted');
+  });
+
+  it('条件付きスロットを省いても面がズレない（pricing / reasons / faq なし）', () => {
+    const { pricing: _p, reasons: _r, faq: _f, ...withoutOptional } = productInput as typeof productInput & {
+      reasons?: unknown;
+    };
+    render(<LandingPage {...(withoutOptional as typeof productInput)} />);
+    // 落ちたスロットの surface も一緒に落ちるので、事例はティントのまま
+    expect(surfaceOfText('800事務所')).toBe('tinted');
+    expect(surfaceOfText('主要機能')).toBe('default');
+    expect(surfaceOfText('導入事例')).toBe('tinted');
+  });
+});
+
+/* ============================================================
    計測フック（Stage 4 Slice 0）
    ============================================================ */
 
@@ -493,5 +668,165 @@ describe('LandingPage.onCTAClick', () => {
     );
     await userEvent.click(screen.getByRole('link', { name: '機能' }));
     expect(onCTAClick).not.toHaveBeenCalled();
+  });
+});
+
+/* ============================================================
+   獲得系ページ型（2026-08-15。acquisition-pages-workorder.md）
+   ============================================================ */
+
+describe('lead-gen の header? 緩和が非破壊であること', () => {
+  /** 資料個票は 6/6 がグローバルナビを持つため header を渡せるようにした。
+      ただし**省略時に剥がす既定は据え置き**で、既存の呼び出しは変わらない */
+  it('header を渡さなければグローバルナビは出ない（既存の挙動）', () => {
+    const { container } = render(
+      <LandingPage
+        {...defineLandingPage({
+          pattern: 'lead-gen',
+          brand: 'peerdesk',
+          hero: { title: '5分でわかるピアデスク' },
+          contents: { features: [{ title: '機能一覧', description: '全機能の概要を掲載。' }] },
+          form: <ResourceRequestForm title="資料請求" ichisanEnabled={false} />,
+        })}
+      />,
+    );
+    expect(container.querySelector('header')).toBeNull();
+  });
+
+  it('header を渡すとグローバルナビが出る（資料個票）', () => {
+    render(
+      <LandingPage
+        {...defineLandingPage({
+          pattern: 'lead-gen',
+          brand: 'peerdesk',
+          header: { navItems: [{ label: '機能', href: '#f' }] },
+          hero: { title: '5分でわかるピアデスク' },
+          contents: { features: [{ title: '機能一覧', description: '全機能の概要を掲載。' }] },
+          form: <ResourceRequestForm title="資料請求" ichisanEnabled={false} />,
+        })}
+      />,
+    );
+    expect(screen.getByRole('link', { name: '機能' })).toBeInTheDocument();
+  });
+});
+
+describe('獲得系3型の tone は campaign', () => {
+  it.each(['resources-library', 'seminar-list', 'seminar-detail'] as const)('%s', (pattern) => {
+    const input =
+      pattern === 'seminar-detail'
+        ? { pattern, brand: 'corporate' as const, seminar: { status: 'upcoming' as const, title: 't', startAt: '2026-09-10' } }
+        : pattern === 'seminar-list'
+          ? { pattern, brand: 'corporate' as const, page: { title: 't' }, list: { seminars: [] } }
+          : { pattern, brand: 'corporate' as const, page: { title: 't' }, list: { resources: [] } };
+    expect(defineLandingPage(input).tone).toBe('campaign');
+  });
+});
+
+describe('resources-library / seminar-* の描画', () => {
+  it('資料ライブラリは末尾 CTA を持たない（資料そのものがオファー）', () => {
+    const { container } = render(
+      <LandingPage
+        {...defineLandingPage({
+          pattern: 'resources-library',
+          brand: 'corporate',
+          page: { title: 'お役立ち資料' },
+          list: { resources: [{ href: '/dl/1', title: '導入事例集' }] },
+        })}
+      />,
+    );
+    expect(screen.getByRole('heading', { level: 1, name: 'お役立ち資料' })).toBeInTheDocument();
+    // CTASection は中央寄せの見出し + オファーを持つ。ここには無い
+    expect(container.querySelectorAll('section')).toHaveLength(1);
+  });
+
+  it('セミナー詳細は1セクションで完結し、フォームが締めになる', () => {
+    const { container } = render(
+      <LandingPage
+        {...defineLandingPage({
+          pattern: 'seminar-detail',
+          brand: 'corporate',
+          seminar: {
+            status: 'upcoming',
+            title: '現場DXの始め方',
+            startAt: '2026-09-10T14:00',
+            form: <ResourceRequestForm title="お申し込み" ichisanEnabled={false} />,
+          },
+        })}
+      />,
+    );
+    expect(screen.getByRole('heading', { level: 1, name: '現場DXの始め方' })).toBeInTheDocument();
+    expect(container.querySelector('form')).toBeInTheDocument();
+  });
+});
+
+/* ============================================================
+   ContentHub（2026-08-15。content-hub-workorder.md）
+   ============================================================ */
+
+describe('contentHub スロットの追加が非破壊であること', () => {
+  const productBase = {
+    pattern: 'product' as const,
+    brand: 'corporate' as const,
+    hero: { title: 't', offers: [{ label: '資料をダウンロード', href: '#dl' }] as OfferPair },
+    features: { features: [{ title: 'f', description: 'd' }] },
+    closing: { title: 'c' },
+  };
+
+  it('contentHub を渡さなければ描画されるセクション数が変わらない', () => {
+    const { container } = render(<LandingPage {...defineLandingPage(productBase)} />);
+    const before = container.querySelectorAll('section').length;
+
+    const { container: after } = render(
+      <LandingPage
+        {...defineLandingPage({
+          ...productBase,
+          contentHub: {
+            groups: [{ kind: 'resource', items: [{ href: '#dl1', title: '資料' }] }],
+          },
+        })}
+      />,
+    );
+    expect(after.querySelectorAll('section').length).toBeGreaterThan(before);
+  });
+
+  it('コンテンツ回遊は FAQ の後・締めの前に入る（実測 11/11 が最終CTAの前）', () => {
+    const { container } = render(
+      <LandingPage
+        {...defineLandingPage({
+          ...productBase,
+          faq: { title: 'よくある質問', items: [{ question: 'q', answer: 'a' }] },
+          contentHub: {
+            title: '関連コンテンツ',
+            groups: [{ kind: 'resource', title: 'お役立ち資料', items: [{ href: '#dl1', title: '資料' }] }],
+          },
+          closing: { title: '締めの見出し' },
+        })}
+      />,
+    );
+    const text = container.textContent ?? '';
+    expect(text.indexOf('よくある質問')).toBeLessThan(text.indexOf('関連コンテンツ'));
+    expect(text.indexOf('関連コンテンツ')).toBeLessThan(text.indexOf('締めの見出し'));
+  });
+
+  it('product-portfolio-top でも使える', () => {
+    render(
+      <LandingPage
+        {...defineLandingPage({
+          pattern: 'product-portfolio-top',
+          brand: 'corporate',
+          hero: { title: 't', offers: [{ label: '資料をダウンロード', href: '#dl' }] },
+          products: {
+            services: [{ brand: 'corporate', name: 'p', description: 'd', href: '#p' }],
+          },
+          contentHub: { groups: [{ kind: 'news', title: 'お知らせ', items: [{ href: '#n', title: 'n', publishedAt: '2026-07-30' }] }] },
+          closing: { title: 'c' },
+        })}
+      />,
+    );
+    expect(screen.getByRole('heading', { level: 3, name: 'お知らせ' })).toBeInTheDocument();
+  });
+
+  it('ページ型は 11 種のまま（ContentHub はセクションであってページ型ではない）', () => {
+    expect(LANDING_PAGE_PATTERNS).toHaveLength(11);
   });
 });

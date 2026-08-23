@@ -4,7 +4,7 @@
 .shot {
   border-radius: var(--radius-media);
   border: 1px solid var(--color-border);
-  background: var(--color-surface);
+  background: var(--color-surface-raised);
   box-shadow: var(--shadow-card);
   overflow: hidden;
 }

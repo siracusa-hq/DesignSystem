@@ -1,0 +1,59 @@
+/* HistorySection — 沿革（年 + 出来事）。
+
+   **縦の導線は引かない。** 時系列であることは年の並びと行間の横罫が示しており、
+   縦線を足すと線の語彙が増えるだけになる（ブランド決定 2026-08-15）。
+   節点はすべて同じ塗りで、強調フラグも持たない — どれが節目かは本文が語る。
+
+   行間の淡い横罫はブランド色から導出する（case-study-article の
+   冒頭サマリーと同じ作り）。セクションを区切る線ではない。 */
+
+.list {
+  display: grid;
+  --dot-size: 0.75rem;
+  /* 節点の中心。年の行（body-md / 行間 1.75rem）の光学中心に合わせる */
+  --dot-center: 1.875rem;
+}
+.row {
+  display: grid;
+  gap: var(--spacing-1) var(--spacing-6);
+  padding: var(--spacing-4) 0 var(--spacing-4) var(--spacing-8);
+  position: relative;
+}
+@media (min-width: 40rem) {
+  .row {
+    grid-template-columns: 9rem minmax(0, 1fr);
+  }
+}
+.row + .row {
+  border-top: 1px solid color-mix(in oklab, var(--color-text-brand) 18%, transparent);
+}
+/* 節点。左端に置き、中心を --dot-center に合わせる */
+.row::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: calc(var(--dot-center) - var(--dot-size) / 2);
+  width: var(--dot-size);
+  height: var(--dot-size);
+  border-radius: var(--radius-pill);
+  background: var(--color-text-brand);
+}
+
+.year {
+  font-size: var(--text-body-md);
+  line-height: var(--text-body-md--line-height);
+  font-weight: 700;
+  color: var(--color-on-surface);
+  font-variant-numeric: tabular-nums;
+}
+.month {
+  margin-left: var(--spacing-2);
+  font-size: var(--text-body-sm);
+  font-weight: 500;
+  color: var(--color-on-surface-muted);
+}
+.text {
+  font-size: var(--text-body-md);
+  line-height: 1.8;
+  color: var(--color-on-surface-secondary);
+}

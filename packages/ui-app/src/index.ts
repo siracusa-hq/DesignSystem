@@ -442,6 +442,36 @@ export {
   type SidebarNavGroupProps,
   type SidebarNavItemProps,
 } from './components/sidebar-nav';
+export {
+  AuthLayout,
+  AuthLayoutForm,
+  AuthLayoutVisual,
+  AuthLayoutCentered,
+  type AuthLayoutProps,
+  type AuthLayoutFormProps,
+  type AuthLayoutVisualProps,
+  type AuthLayoutCenteredProps,
+  AuthVisualContent,
+  AuthVisualBackdrop,
+  AuthVisualTitle,
+  AuthVisualAccent,
+  AuthVisualDescription,
+  AuthVisualFeatures,
+  AuthVisualFeature,
+  AuthVisualQuote,
+  AuthVisualLogos,
+  AuthVisualStat,
+  type AuthVisualContentProps,
+  type AuthVisualBackdropProps,
+  type AuthVisualTitleProps,
+  type AuthVisualAccentProps,
+  type AuthVisualDescriptionProps,
+  type AuthVisualFeaturesProps,
+  type AuthVisualFeatureProps,
+  type AuthVisualQuoteProps,
+  type AuthVisualLogosProps,
+  type AuthVisualStatProps,
+} from './components/auth-layout';
 
 // PWA Components
 export {

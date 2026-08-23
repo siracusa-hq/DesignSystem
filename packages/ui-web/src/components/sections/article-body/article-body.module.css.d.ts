@@ -1,0 +1,34 @@
+// ⚠️ 自動生成 — 手で編集しないこと。再生成: pnpm codegen
+declare const styles: {
+  readonly "article": string;
+  readonly "author": string;
+  readonly "authorInitial": string;
+  readonly "authorName": string;
+  readonly "authorPhoto": string;
+  readonly "authorRole": string;
+  readonly "breadcrumb": string;
+  readonly "breadcrumbCurrent": string;
+  readonly "breadcrumbList": string;
+  readonly "breadcrumbSeparator": string;
+  readonly "caption": string;
+  readonly "category": string;
+  readonly "chapter": string;
+  readonly "chapterHeading": string;
+  readonly "chapters": string;
+  readonly "date": string;
+  readonly "figure": string;
+  readonly "footer": string;
+  readonly "heroFigure": string;
+  readonly "heroPhoto": string;
+  readonly "lead": string;
+  readonly "meta": string;
+  readonly "paragraph": string;
+  readonly "photo": string;
+  readonly "relatedFooter": string;
+  readonly "title": string;
+  readonly "toc": string;
+  readonly "tocHeading": string;
+  readonly "tocLink": string;
+  readonly "tocList": string;
+};
+export default styles;

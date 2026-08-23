@@ -1,0 +1,89 @@
+/* SeminarCard — セミナー1件のカード。
+
+   意匠は CaseCard / ArticleCard / ResourceCard に揃える。
+   語彙は「状態バッジ + 日時 + 開催形式 + タイトル」。
+
+   **状態を色だけで区別しない。** 「受付中」と「受付終了」を色相だけで分けると
+   色覚特性によっては判別できないため、文言を必ず併記する
+   （acquisition-pages-workorder.md §7）。 */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-raised);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  text-decoration: none;
+  color: inherit;
+  transition:
+    box-shadow var(--duration-normal) var(--ease-default),
+    transform var(--duration-normal) var(--ease-default),
+    border-color var(--duration-normal) var(--ease-default);
+}
+.card:hover {
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--color-border-brand);
+  transform: translateY(-2px);
+}
+.card:focus-visible {
+  outline: 2px solid var(--color-ring-brand);
+  outline-offset: 2px;
+}
+
+/* 実測のヒーロー画像は 1.78〜1.92。一覧のサムネイルは 16:9 に正規化する */
+.thumbnail {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 12.5rem;
+  object-fit: cover;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  padding: var(--spacing-4);
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-1) var(--spacing-3);
+}
+
+.schedule {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--spacing-1) var(--spacing-3);
+}
+.date {
+  font-variant-numeric: tabular-nums;
+}
+.format {
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  font-weight: 700;
+  color: var(--color-text-brand-strong);
+}
+
+.title {
+  font-size: var(--text-body-md);
+  line-height: var(--text-body-md--line-height);
+  font-weight: 700;
+  color: var(--color-on-surface);
+}
+.card:hover .title {
+  color: var(--color-text-brand-strong);
+}
+
+/* 受付終了・アーカイブは面を沈ませて「もう申し込めない / 別の導線」であることを示す。
+   ただし**色だけに頼らない** — 文言は状態バッジが必ず出す */
+.cardClosed .thumbnail {
+  opacity: 0.6;
+}

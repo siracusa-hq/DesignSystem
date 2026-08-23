@@ -1,0 +1,22 @@
+/* ArticleListSection — お知らせ / ブログの一覧（article-list 型）。
+
+   カードの意匠は article-card.module.css にある。ここに残すのは一覧固有の
+   レイアウトだけ（case-study-list と同じ分け方）。
+
+   フィルタ行は帯にしない: 上下の線でセクションを区切る国内 BtoB SaaS は実測 0 件。
+   境界の語彙は面の色差だけに統一する。 */
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-4) var(--spacing-6);
+  margin-bottom: var(--spacing-6);
+}
+.count {
+  margin-bottom: var(--spacing-4);
+  font-variant-numeric: tabular-nums;
+}
+.empty {
+  padding: var(--spacing-12) 0;
+  text-align: center;
+}

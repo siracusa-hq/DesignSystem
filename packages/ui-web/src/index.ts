@@ -120,6 +120,13 @@ export {
   type ShowcaseItem,
 } from './components/sections/feature-showcase';
 export {
+  BusinessShowcase,
+  type BusinessShowcaseProps,
+  type BusinessLine,
+  type BusinessLineProducts,
+  type BusinessProduct,
+} from './components/sections/business-showcase';
+export {
   ComparisonTable,
   type ComparisonTableProps,
   type ComparisonColumn,
@@ -164,6 +171,7 @@ export {
   FormInput,
   FormTextarea,
   FormSelect,
+  FormCheckbox,
   FormButton,
   ContactForm,
   ResourceRequestForm,
@@ -173,11 +181,17 @@ export type {
   FormInputProps,
   FormTextareaProps,
   FormSelectProps,
+  FormCheckboxProps,
   FormButtonProps,
   ContactFormProps,
   ResourceRequestFormProps,
   DemoRequestFormProps,
   FormSubmitResult,
+  /** フォームの追加項目（見た目ではなく項目だけを足す口） */
+  ExtraField,
+  ConsentOption,
+  PhoneOption,
+  CompanyOption,
 } from './components/sections/form';
 export {
   CaseStudySection,
@@ -194,6 +208,123 @@ export {
   /** 一覧カードと事例記事のプロフィールが共有するメタ情報（値を2箇所に書かない） */
   type CaseStudyMeta,
 } from './components/sections/case-study-list';
+/* コーポレートサイトの下層ページ用（2026-08-15 追加）。
+   LP のセクション群と違い、読み物・会社情報という別の面を担う。
+
+   **お知らせ・ブログの一覧と記事は、ここではなく `article-list` /
+   `article-detail` のページ型が担う**（article-pages-workorder.md）。
+   DocumentArticle は法務文書・静的文書・404 の器であって、記事の器ではない。 */
+export {
+  ProseSection,
+  type ProseSectionProps,
+  type ProseSignature,
+  type ProseMoreLink,
+} from './components/sections/prose-section';
+export {
+  DocumentArticle,
+  type DocumentArticleProps,
+  type DocumentArticleLabels,
+  type DocumentPanelItem,
+} from './components/sections/document-article';
+export {
+  CompanyProfileSection,
+  type CompanyProfileSectionProps,
+  type CompanyProfileItem,
+  type CompanyProfileValue,
+} from './components/sections/company-profile';
+export {
+  LeadershipSection,
+  type LeadershipSectionProps,
+  type LeadershipMember,
+} from './components/sections/leadership';
+export {
+  HistorySection,
+  type HistorySectionProps,
+  type HistoryEvent,
+} from './components/sections/history';
+
+/* 記事系（article-list / article-detail）。News とブログを1組の部品で賄う。
+   カード語彙 ArticleListItem は一覧・関連記事・ContentHub が共有する */
+export { ArticleCard, type ArticleCardProps, type ArticleListItem } from './components/sections/article-card';
+export {
+  ArticleListSection,
+  ARTICLE_FILTER_AXES,
+  type ArticleListSectionProps,
+  type ArticleListLabels,
+  type ArticleFilterAxis,
+} from './components/sections/article-list';
+export {
+  ArticleBodySection,
+  ArticleRelatedSection,
+  type ArticleBodySectionProps,
+  type ArticleRelatedSectionProps,
+  /** News は著者・目次・更新日・監修者を型として持たない（実測 0/12） */
+  type NewsBodyProps,
+  type BlogBodyProps,
+  type ArticleChapter,
+  type ArticlePhoto,
+  type ArticlePerson,
+  type ArticleBodyLabels,
+} from './components/sections/article-body';
+export {
+  ShareButtons,
+  SHARE_SERVICES,
+  type ShareButtonsProps,
+  type ShareButtonsLabels,
+  type ShareService,
+} from './components/sections/share-buttons';
+
+/* 獲得系（resources-library / seminar-list / seminar-detail）。
+   共有語彙の決定は docs/composition-redesign.md 末尾「共有語彙の決定」 */
+export type { ContentImage, ContentPerson } from './lib/content-vocabulary';
+export {
+  ResourceCard,
+  type ResourceCardProps,
+  type ResourceListItem,
+} from './components/sections/resource-card';
+export {
+  ResourceListSection,
+  type ResourceListSectionProps,
+  type ResourceListLabels,
+} from './components/sections/resource-list';
+export {
+  SeminarCard,
+  SEMINAR_STATUSES,
+  formatSeminarDateTime,
+  type SeminarCardProps,
+  type SeminarListItem,
+  type SeminarStatus,
+  type SeminarFormat,
+  type SeminarStatusLabels,
+  type SeminarFormatLabels,
+} from './components/sections/seminar-card';
+export {
+  SeminarListSection,
+  type SeminarListSectionProps,
+  type SeminarListLabels,
+} from './components/sections/seminar-list';
+export {
+  SeminarDetailSection,
+  type SeminarDetailSectionProps,
+  /** status ごとに持てる情報が変わる（アーカイブに開催日時は存在しない） */
+  type UpcomingSeminarProps,
+  type ClosedSeminarProps,
+  type ArchiveSeminarProps,
+  type SeminarAgendaItem,
+  type EventMetaItem,
+  type SeminarDetailLabels,
+} from './components/sections/seminar-detail';
+
+/* ContentHub — LP 末尾のコンテンツ回遊（実測 9/13）。
+   系統ごとに塊を作る union で受け取る（混在1グリッドは実測 0/11） */
+export {
+  ContentHubSection,
+  type ContentHubSectionProps,
+  type ContentHubGroup,
+  type ContentHubGroups,
+  type ContentHubTile,
+} from './components/sections/content-hub';
+
 export {
   CaseStudyArticleSection,
   type CaseStudyArticleSectionProps,
@@ -237,9 +368,11 @@ export {
   Page,
   PAGE_BRANDS,
   PAGE_TONES,
+  PAGE_SLOT_SURFACES,
   type PageProps,
   type PageBrand,
   type PageTone,
+  type PageSlotSurface,
   type PageCTA,
   type PageCTAClickHandler,
 } from './components/layout/page';

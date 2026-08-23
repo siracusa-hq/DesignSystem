@@ -1,0 +1,14 @@
+/* SeminarListSection — 状態ごとに縦へ積む。
+   実測は タブ 4/8・フィルタ軸 1/8・バッジ 1/8 に割れており選ばせる根拠が無いため、
+   「状態ごとの見出しで積む」1つに固定した。予定用と終了用でページは分けない（0/8）。 */
+
+.group + .group {
+  margin-top: var(--spacing-16);
+}
+.groupHeading {
+  margin-bottom: var(--spacing-6);
+}
+.empty {
+  padding: var(--spacing-12) 0;
+  text-align: center;
+}

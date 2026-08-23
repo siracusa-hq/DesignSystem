@@ -78,7 +78,7 @@ import { SlideDeck, TitleSlide, StatSlide } from '@siracusahq/gtm-design-system/
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Colors**      | 操作用 `primary`（`#008575` / 白文字 4.55:1 で WCAG AA 適合）+ 装飾用 `brand`（`#13c3a0` / グラデーション・グロー専用）+ ニュートラル（neutral-850含む）+ セマンティック |
 | **Typography**  | Display 72px 〜 Caption 12px（基準 16px）、サイズ別letter-spacing最適化                                                                                                  |
-| **Spacing**     | セクション間余白 80–160px、コンテナ幅 640–1280px                                                                                                                         |
+| **Spacing**     | セクションの垂直パディング（片側）40–80px = 継ぎ目の実効余白 80–160px、コンテナ幅 640–1280px                                                                                                                         |
 | **Gradients**   | ブランドグラデーション、グロー効果、テキストグラデーション                                                                                                               |
 | **Elevation**   | シャドウ + プライマリグロー                                                                                                                                              |
 | **Animation**   | フェードイン、スライド、スケール、ブラーイン + スクロール連動                                                                                                            |
@@ -202,9 +202,39 @@ Container, Section, Grid, Heading, Text, Eyebrow, MarketingButton, SelectField, 
 
 HeroSection, FeatureGrid, FeatureShowcase, PricingTable, PricingCard, CTASection, CTABand, FAQSection, ComparisonTable, TestimonialSection, LogoCloud, StatsSection, CodeBlock, ServicePortfolio, CaseStudySection, CaseStudyListSection
 
+#### コーポレートサイトの下層ページ（5）
+
+散文・法務文書・会社情報。LP のセクション群とは別の面を担う。
+
+ProseSection（散文 = ミッション・代表挨拶）, DocumentArticle（法務文書・404 の器）, CompanyProfileSection（会社概要表）, LeadershipSection（経営陣）, HistorySection（沿革）
+
+`DocumentArticle` は **Markdown → HTML の変換を同梱しない**。変換済みの内容を `children` に渡すと、組版（見出し階層・表・リスト・引用）だけを DS が担う。
+
+**お知らせ・ブログの一覧と記事はこれらの担当ではない。** `article-list` / `article-detail` ページ型が担う（下記）。
+
+#### 記事系（お知らせ / ブログ・4）
+
+ArticleListSection（一覧）, ArticleCard（記事カード）, ArticleBodySection（記事本体）, ArticleRelatedSection（関連記事）, ShareButtons
+
+`ArticleBodySection` は `kind: 'news' | 'blog'` の判別ユニオン。**News には著者・監修者・目次・更新日が型として存在しない**（実測 0/12）。日付は ISO（`YYYY-MM-DD`）で渡し、表示書式はシステムが決める。
+
+#### 獲得系（資料DL / セミナー・5）
+
+ResourceListSection（資料ライブラリ）, ResourceCard, SeminarListSection（セミナー一覧）, SeminarCard, SeminarDetailSection（セミナー詳細）
+
+**資料カードは日付を持たない**（実測 0/7）。記事カードとの最大の違いで、`ArticleListItem` に統合しなかった理由でもあります。カードの遷移先は詳細ページでもフォームでもよく、どちらも実測に存在します。
+
+`SeminarDetailSection` は `status: 'upcoming' | 'closed' | 'archive'` の判別ユニオン。**アーカイブに開催日時は、開催予定に視聴期限は型として存在しません。**
+
+**資料個票のページ型はありません。** `lead-gen` に `header` を渡して組みます（差分がグローバルナビ1点のみのため）。
+
 #### フォーム（Netlify Forms 対応）
 
-ContactForm, ResourceRequestForm, DemoRequestForm（+ FormInput / FormTextarea / FormSelect / FormButton）
+ContactForm, ResourceRequestForm, DemoRequestForm（+ FormInput / FormTextarea / FormSelect / FormCheckbox / FormButton）
+
+項目は `inquiryTypes`（問い合わせ種別）/ `phone`（電話番号）/ `consent`（個人情報同意）と、任意の追加項目 `extraFields` で足せる。**開いているのは「項目」であって「見た目」ではない** — `extraFields` はデータだけを受け取り、描画は DS のフォーム部品に固定される。
+
+外部の入力補完サービス（`ichisanEnabled`）は **既定オフ**。有効にすると外部スクリプトを読み込む。
 
 #### プロダクト固有 + 日本市場向け（4）
 
@@ -495,9 +525,39 @@ Container, Section, Grid, Heading, Text, Eyebrow, MarketingButton, SelectField, 
 
 HeroSection, FeatureGrid, FeatureShowcase, PricingTable, PricingCard, CTASection, CTABand, FAQSection, ComparisonTable, TestimonialSection, LogoCloud, StatsSection, CodeBlock, ServicePortfolio, CaseStudySection, CaseStudyListSection
 
+#### Corporate site sub-pages (5)
+
+Prose, legal documents and company information — a different surface from the landing-page sections.
+
+ProseSection (prose: mission, CEO message), DocumentArticle (legal document and 404 shell), CompanyProfileSection, LeadershipSection, HistorySection
+
+`DocumentArticle` **does not bundle a Markdown parser**. Pass already-converted HTML as `children`; the design system owns only the typesetting (heading hierarchy, tables, lists, quotes).
+
+**News and blog listings/articles are not covered here** — they belong to the `article-list` / `article-detail` page types (below).
+
+#### Articles (news / blog, 4)
+
+ArticleListSection, ArticleCard, ArticleBodySection, ArticleRelatedSection, ShareButtons
+
+`ArticleBodySection` is a discriminated union on `kind: 'news' | 'blog'`. **News has no author, supervisor, table of contents or updated date — they do not exist in the type** (measured 0/12). Dates are passed as ISO (`YYYY-MM-DD`); the display format is decided by the system.
+
+#### Acquisition (resources / seminars, 5)
+
+ResourceListSection, ResourceCard, SeminarListSection, SeminarCard, SeminarDetailSection
+
+**Resource cards carry no date** (measured 0/7) — the main reason they were not merged into `ArticleListItem`. A card may link to a detail page or straight to a form; both exist in the field.
+
+`SeminarDetailSection` is a discriminated union on `status: 'upcoming' | 'closed' | 'archive'`. **An archive has no start time, and an upcoming session has no viewing deadline — in the type itself.**
+
+**There is no page type for a single resource.** Use `lead-gen` with a `header` (the only difference was the global nav).
+
 #### Forms (Netlify Forms ready)
 
-ContactForm, ResourceRequestForm, DemoRequestForm (+ FormInput / FormTextarea / FormSelect / FormButton)
+ContactForm, ResourceRequestForm, DemoRequestForm (+ FormInput / FormTextarea / FormSelect / FormCheckbox / FormButton)
+
+Fields can be extended with `inquiryTypes`, `phone`, `consent`, and arbitrary `extraFields`. **What is open is the set of fields, not the styling** — `extraFields` takes data only, and rendering is fixed to the design system's own form parts.
+
+The external autofill service (`ichisanEnabled`) is **off by default**; enabling it loads a third-party script.
 
 #### Product-specific + Japan market (4)
 

@@ -1,0 +1,227 @@
+/* ArticleBodySection — News / ブログの記事本体（article-detail 型）。
+
+   **読み幅と本文寸法は case-study-article と同じ値を使う**（読み物の組版を2つ持たない）。
+   実ブラウザ計測（2026-08-15。article-pages-workorder.md §9-1）の結果:
+   ブログ中央値 680px / News 中央値 780px / 全16本 725px に対し、
+   現行 46.5rem（744px）との差は 2.6%。種別ごとに割らず1つに保つ判断をした。
+
+   記事本文は単一の面に置く（実測。章のあいだに Page の面リズムを入れない）。 */
+
+.article {
+  max-width: 46.5rem;
+  margin-inline: auto;
+}
+
+/* ---- パンくず・戻り導線（実測 News 10/12・ブログ 11/15。必須にしない） ---- */
+.breadcrumb {
+  margin-bottom: var(--spacing-6);
+}
+.breadcrumbList {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+}
+.breadcrumbSeparator,
+.breadcrumbCurrent {
+  color: var(--color-on-surface-muted);
+}
+
+/* ---- タイトル（case-study-article .title と同値） ---- */
+.title {
+  margin: 0;
+  font-size: var(--text-display-sm);
+  line-height: 1.35;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  letter-spacing: -0.02em;
+}
+@media (min-width: 48rem) {
+  .title {
+    font-size: 2rem;
+  }
+}
+.title:lang(ja) {
+  letter-spacing: 0;
+  line-height: 1.45;
+}
+
+/* 公開日は News 12/12・ブログ 15/15 が持つ（事例記事の 6/27 とは逆転している） */
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--spacing-1) var(--spacing-4);
+  margin-top: var(--spacing-3);
+}
+.date {
+  font-variant-numeric: tabular-nums;
+}
+.category {
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  font-weight: 700;
+  color: var(--color-text-brand-strong);
+}
+
+.heroFigure {
+  margin: var(--spacing-8) 0 0;
+}
+.heroPhoto {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1.9 / 1;
+  max-height: 24rem;
+  border-radius: var(--radius-card);
+  object-fit: cover;
+}
+
+/* ---- 著者・監修者（ブログのみ。著者 14/15・監修者 3/15） ---- */
+.author {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-8);
+  padding-top: var(--spacing-6);
+  border-top: 1px solid var(--color-border);
+}
+.authorPhoto,
+.authorInitial {
+  width: 3.5rem;
+  height: 3.5rem;
+  flex: none;
+  border-radius: var(--radius-pill);
+  object-fit: cover;
+}
+.authorInitial {
+  display: grid;
+  place-items: center;
+  background: var(--color-bg-brand-subtle);
+  color: var(--color-text-brand-strong);
+  font-weight: 700;
+}
+.authorName {
+  font-size: var(--text-body-md);
+  line-height: var(--text-body-md--line-height);
+  font-weight: 700;
+  color: var(--color-on-surface);
+}
+.authorRole {
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  font-weight: 700;
+  color: var(--color-text-brand-strong);
+}
+
+/* ---- 目次（ブログ 12/15。News には型として存在しない） ---- */
+.toc {
+  margin-top: var(--spacing-10);
+  border-radius: var(--radius-card);
+  background: var(--color-bg-brand-subtle);
+  padding: var(--spacing-6);
+}
+.tocHeading {
+  margin: 0 0 var(--spacing-3);
+  font-size: var(--text-body-md);
+  line-height: var(--text-body-md--line-height);
+  font-weight: 700;
+  color: var(--color-text-brand-strong);
+}
+.tocList {
+  margin: 0;
+  padding-left: var(--spacing-5);
+  display: grid;
+  gap: var(--spacing-2);
+}
+.tocList li::marker {
+  color: var(--color-text-brand);
+}
+.tocLink {
+  color: var(--color-on-surface);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.tocLink:hover {
+  color: var(--color-text-brand-strong);
+}
+.tocLink:focus-visible {
+  outline: 2px solid var(--color-ring-brand);
+  outline-offset: 2px;
+}
+
+/* ---- リード文・本文（16px / 行間 1.80。case-study-article と同値） ---- */
+.lead {
+  margin-top: var(--spacing-10);
+}
+.paragraph {
+  margin: 0;
+  font-size: var(--text-body-md);
+  line-height: 1.8;
+  color: var(--color-on-surface);
+}
+.paragraph + .paragraph {
+  margin-top: var(--spacing-6);
+}
+
+.chapters {
+  margin-top: var(--spacing-4);
+}
+.chapter {
+  margin-top: var(--spacing-14);
+  /* 目次からのアンカー遷移で見出しが上端に貼り付かないようにする */
+  scroll-margin-top: var(--spacing-8);
+}
+.chapterHeading {
+  margin: 0 0 var(--spacing-6);
+  font-size: var(--text-heading-lg);
+  line-height: 1.45;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  letter-spacing: -0.02em;
+}
+@media (min-width: 48rem) {
+  .chapterHeading {
+    font-size: 1.625rem;
+  }
+}
+.chapterHeading:lang(ja) {
+  letter-spacing: 0;
+}
+
+.figure {
+  margin: var(--spacing-10) 0 0;
+}
+.photo {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  border-radius: var(--radius-card);
+  object-fit: cover;
+}
+.caption {
+  margin-top: var(--spacing-2);
+}
+
+/* ---- 更新日・シェア（記事末尾） ---- */
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-12);
+  padding-top: var(--spacing-6);
+  border-top: 1px solid var(--color-border);
+}
+
+/* ---- 関連記事 ---- */
+.relatedFooter {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--spacing-10);
+}

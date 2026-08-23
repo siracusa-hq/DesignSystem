@@ -10,9 +10,11 @@ import { CTASection } from '../../components/sections/cta-section';
 /**
  * Page — ページのリズム（面・トーン）を割り当てるコンテナ（Stage 3）。
  *
- * - セクションは自分では面を選ばない。Page が default ↔ muted を交互に割り当てる
+ * - セクションは自分では面を選ばない。既定では Page が default ↔ muted を交互に割り当てる
  * - 自分で暗面を塗るセクション（ModuleOverview / CTASection 等）は
  *   リズムから除外され、直後は必ず default から再開する
+ * - `surfaces` を渡すと、パターン／ページ側が面を明示的に割り当てられる
+ *   （LP はここで白 × ブランドティントの面を作る）
  * - `brand`（誰の顔か）と `tone`（何を狙うページか）は直交する
  */
 const meta = {
@@ -101,6 +103,43 @@ const sections = (
 export const 面リズムの自動割当: Story = {
   args: { brand: 'peerdesk', tone: 'product' },
   render: (args) => <Page {...args}>{sections.props.children}</Page>,
+};
+
+/**
+ * 自動割当の色をティントに（`autoSurface="tinted"`): `corporate-top` が使う形。
+ *
+ * 上の「面リズムの自動割当」と**沈む位置は同じ**で、色だけがニュートラルグレー
+ * （#f4f4f5）からブランドのティント淡色に変わる。LP のように「どこで面が変わるか」
+ * まで作り替えるのではなく、色だけをブランド寄りにしたいページ型のための口。
+ *
+ * 任意スロットの有無で崩れないのが `surfaces` との違い。どのスロットが沈むかは
+ * 自動のままなので、途中のセクションが省かれてもティントが連続したり消えたりしない。
+ */
+export const 自動割当をティントに: Story = {
+  args: { brand: 'corporate', tone: 'trust', autoSurface: 'tinted' },
+  render: (args) => <Page {...args}>{sections.props.children}</Page>,
+};
+
+/**
+ * 面の明示割当（`surfaces`）: LP の面シーケンス。
+ *
+ * 機械的な ABAB ゼブラをやめ、**白の連続の中に社会的証明（数値 / 導入企業の声）だけが
+ * ブランドのティント淡色で浮かぶ**割当にしたもの。面交替は2回で、国内 BtoB SaaS
+ * 実測の主流レンジ（1〜3回・対比 1.04〜1.12:1）に収まる
+ * （docs/research/research-eyebrow.md §4-3）。
+ *
+ * 上の「面リズムの自動割当」と見比べること。違いはニュートラルグレー（#f4f4f5）か
+ * ブランドティントか、そして**どこで面が変わるか**の2点。
+ */
+export const 面の明示割当_LP風: Story = {
+  args: { brand: 'peerdesk', tone: 'product' },
+  render: (args) => (
+    /* hero=auto / 数値=tinted / 機能=default / ModuleOverview=auto（暗面を自己申告）/
+       導入企業の声=tinted / CTA=配列の外（暗面を自己申告） */
+    <Page {...args} surfaces={['auto', 'tinted', 'default', 'auto', 'tinted']}>
+      {sections.props.children}
+    </Page>
+  ),
 };
 
 /** trust トーン: セクション余白が1段広くなる（コーポレート向け） */

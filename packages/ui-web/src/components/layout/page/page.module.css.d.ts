@@ -2,5 +2,6 @@
 declare const styles: {
   readonly "page": string;
   readonly "slotMuted": string;
+  readonly "slotTinted": string;
 };
 export default styles;

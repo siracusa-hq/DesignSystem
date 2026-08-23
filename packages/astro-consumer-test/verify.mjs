@@ -112,12 +112,17 @@ const checks = [
   ['HTML: 数値訴求の時点表記（asOf）が静的に出る（景表法）', indexHtml.includes('2026年7月末時点')],
   /*
    * 面リズムエンジン（Stage 3）が Astro のビルドを越えて効いていること。
-   * Page は children を1件ずつ見て default ↔ muted を交互に割り当てるので、
+   * Page は children を1件ずつ見て面を割り当てるので、
    * 「React 側でコンポーズされている」ことがそのまま前提になる。
    * **.astro テンプレートで直接セクションを並べるとこれは効かない**（§7-11）。
    * ここが 0 件になったら、LP が全ページ真っ白（面の差が無い）になっている。
+   *
+   * index は pattern: 'product' なので、2026-08 の改訂で割り当たるのは
+   * **ティント面**（proof / cases）になった。ニュートラルの muted 面は
+   * corporate-top・事例系の自動ゼブラに残っているが、このサンプルには
+   * 該当ページが無いためここでは検査しない。
    */
-  ['HTML: 面リズム（muted スロット）が割り当たっている', indexHtml.includes('page_slotMuted')],
+  ['HTML: 面リズム（ティントスロット）が割り当たっている', indexHtml.includes('page_slotTinted')],
   [
     `HTML: スタイルシートが実ファイルとして配信される（${linkedHrefs.join(', ') || 'link なし'}）`,
     linkedHrefs.length > 0 && linkedCss.every((c) => c !== null),
@@ -165,6 +170,12 @@ const checks = [
 
   /* --- CSS -------------------------------------------------------------- */
   ['CSS: スロット定義を含む（--color-bg-brand-primary）', css.includes('--color-bg-brand-primary')],
+  /* 上のティントスロットは --color-surface-tinted を再定義するだけの空クラスなので、
+     トークン本体が配信 CSS に載っていなければ面の色差は出ない（クラスだけ出て真っ白になる） */
+  [
+    'CSS: ティント面のトークンを含む（--color-surface-tinted）',
+    css.includes('--color-surface-tinted'),
+  ],
   [
     'CSS: ブランドランプを含む（--ramp-peerdesk-taxpeer-500）',
     css.includes('--ramp-peerdesk-taxpeer-500'),
