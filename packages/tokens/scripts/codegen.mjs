@@ -78,6 +78,13 @@ function slotLines(b) {
   return lines;
 }
 
+// CTA スロット（第3のオプション役割）。既定は操作色へのフォールバック。
+// var() は「宣言された要素」の計算値確定時に解決されてから子孫へ継承されるため、
+// :root 宣言だけでは data-brand 切替に追従しない（#157）。
+// 必ず各 [data-brand] ブロックでも再宣言し、ブランドスコープ上で再解決させる。
+// 専用 CTA 色を持つブランドは、利用側 CSS の [data-brand='...'] 上書きで従来どおり変更できる。
+const ctaSlotLines = () => CTA_SLOTS.map((s) => `  ${s.name}: var(${s.fallback});`);
+
 function slotsBlock() {
   const def = brands.find((b) => b.key === DEFAULT_BRAND);
   const parts = [];
@@ -86,15 +93,20 @@ function slotsBlock() {
   parts.push(
     [
       '/* CTA 専用アクセント（第3のオプション役割）。既定は操作色へのフォールバック。',
-      '   var() は使用時に解決されるため data-brand 切替に自動追従する。',
-      "   専用 CTA 色を持つブランドのみ [data-brand='...'] で上書きする。 */",
+      '   注意: var() は宣言要素で解決されてから継承されるため、この :root 宣言だけでは',
+      "   data-brand 切替に追従しない。各 [data-brand='...'] ブロックでも再宣言する（#157）。",
+      "   専用 CTA 色を持つブランドは利用側の [data-brand='...'] で上書きする。 */",
       ':root {',
-      ...CTA_SLOTS.map((s) => `  ${s.name}: var(${s.fallback});`),
+      ...ctaSlotLines(),
       '}',
     ].join('\n'),
   );
   for (const b of brands) {
-    parts.push(`[data-brand='${b.dataBrand}'] {\n` + slotLines(b).join('\n') + '\n}');
+    parts.push(
+      `[data-brand='${b.dataBrand}'] {\n` +
+        [...slotLines(b), ...ctaSlotLines()].join('\n') +
+        '\n}',
+    );
   }
   return parts.join('\n\n');
 }

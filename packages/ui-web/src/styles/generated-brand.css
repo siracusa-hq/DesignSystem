@@ -91,8 +91,9 @@
 }
 
 /* CTA 専用アクセント（第3のオプション役割）。既定は操作色へのフォールバック。
-   var() は使用時に解決されるため data-brand 切替に自動追従する。
-   専用 CTA 色を持つブランドのみ [data-brand='...'] で上書きする。 */
+   注意: var() は宣言要素で解決されてから継承されるため、この :root 宣言だけでは
+   data-brand 切替に追従しない。各 [data-brand='...'] ブロックでも再宣言する（#157）。
+   専用 CTA 色を持つブランドは利用側の [data-brand='...'] で上書きする。 */
 :root {
   --color-bg-cta: var(--color-bg-brand-primary);
   --color-bg-cta-hover: var(--color-bg-brand-hover);
@@ -118,6 +119,10 @@
   --color-on-brand: #ffffff;
   --shadow-glow-brand: 0 0 24px rgb(19 195 160 / 0.25);
   --shadow-glow-brand-lg: 0 0 48px rgb(19 195 160 / 0.3);
+  --color-bg-cta: var(--color-bg-brand-primary);
+  --color-bg-cta-hover: var(--color-bg-brand-hover);
+  --color-bg-cta-active: var(--color-bg-brand-active);
+  --color-on-cta: var(--color-on-brand);
 }
 
 [data-brand='polastack'] {
@@ -138,6 +143,10 @@
   --color-on-brand: #ffffff;
   --shadow-glow-brand: 0 0 24px rgb(125 165 253 / 0.25);
   --shadow-glow-brand-lg: 0 0 48px rgb(125 165 253 / 0.3);
+  --color-bg-cta: var(--color-bg-brand-primary);
+  --color-bg-cta-hover: var(--color-bg-brand-hover);
+  --color-bg-cta-active: var(--color-bg-brand-active);
+  --color-on-cta: var(--color-on-brand);
 }
 
 [data-brand='peerdesk'] {
@@ -158,6 +167,10 @@
   --color-on-brand: #ffffff;
   --shadow-glow-brand: 0 0 24px rgb(172 164 177 / 0.25);
   --shadow-glow-brand-lg: 0 0 48px rgb(172 164 177 / 0.3);
+  --color-bg-cta: var(--color-bg-brand-primary);
+  --color-bg-cta-hover: var(--color-bg-brand-hover);
+  --color-bg-cta-active: var(--color-bg-brand-active);
+  --color-on-cta: var(--color-on-brand);
 }
 
 [data-brand='peerdesk-taxpeer'] {
@@ -178,4 +191,8 @@
   --color-on-brand: #ffffff;
   --shadow-glow-brand: 0 0 24px rgb(106 188 139 / 0.25);
   --shadow-glow-brand-lg: 0 0 48px rgb(106 188 139 / 0.3);
+  --color-bg-cta: var(--color-bg-brand-primary);
+  --color-bg-cta-hover: var(--color-bg-brand-hover);
+  --color-bg-cta-active: var(--color-bg-brand-active);
+  --color-on-cta: var(--color-on-brand);
 }

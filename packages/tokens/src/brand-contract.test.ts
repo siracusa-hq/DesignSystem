@@ -176,6 +176,22 @@ describe('(e) 生成 CSS とレジストリの同期', () => {
     }
   });
 
+  it('CTA スロットが各 [data-brand] ブロック内で再宣言されている（#157: :root 宣言は宣言要素で解決されるためブランド切替に追従しない）', () => {
+    for (const file of cssFiles) {
+      const css = readFileSync(file, 'utf8');
+      for (const b of brands) {
+        const start = css.indexOf(`[data-brand='${b.dataBrand}'] {`);
+        expect(start, `${b.dataBrand} のブロックが存在しない`).toBeGreaterThanOrEqual(0);
+        const block = css.slice(start, css.indexOf('}', start));
+        for (const slot of CTA_SLOTS) {
+          expect(block, `${b.dataBrand} 内の ${slot.name}`).toContain(
+            `${slot.name}: var(${slot.fallback});`,
+          );
+        }
+      }
+    }
+  });
+
   it('SLOTS の参照段はすべて契約の段に存在する', () => {
     for (const slot of SLOTS) {
       if (slot.step !== undefined) {
