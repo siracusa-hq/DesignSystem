@@ -102,6 +102,49 @@ export const 製品LP_Polastack_王道: Story = {
         { label: '無料で試す', href: '#signup' },
       ],
     },
+    /* フッターまで含めて1ページが単体で成立する（実サイトと同じ4グループ構成） */
+    footer: {
+      logo: <strong>Polastack</strong>,
+      description: 'Enterprise Backend Platform',
+      linkGroups: [
+        {
+          title: 'プロダクト',
+          links: [
+            { label: '機能一覧', href: '#features' },
+            { label: 'パートナープログラム', href: '#partners' },
+            { label: '料金プラン', href: '#pricing' },
+          ],
+        },
+        {
+          title: '開発者',
+          links: [
+            { label: 'ドキュメント', href: '#docs' },
+            { label: 'API リファレンス', href: '#api' },
+            { label: 'Changelog', href: '#changelog' },
+          ],
+        },
+        {
+          title: '会社情報',
+          links: [
+            { label: '会社概要', href: '#company' },
+            { label: 'お問い合わせ', href: '#contact' },
+          ],
+        },
+        {
+          title: 'リーガル',
+          links: [
+            { label: '利用規約', href: '#terms' },
+            { label: 'プライバシーポリシー', href: '#privacy' },
+            { label: '特定商取引法に基づく表記', href: '#tokushoho' },
+          ],
+        },
+      ],
+      copyright: '© 2026 siracusa Inc.',
+      legalLinks: [
+        { label: 'プライバシー', href: '#privacy' },
+        { label: '利用規約', href: '#terms' },
+      ],
+    },
     hero: {
       title: '書くのは機能と画面だけ。',
       subtitle:
