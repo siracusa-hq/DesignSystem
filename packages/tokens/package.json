@@ -1,6 +1,6 @@
 {
   "name": "@siracusahq/tokens",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Siracusa brand design tokens - the single source of truth shared by the product UI and GTM design systems",
   "type": "module",
   "license": "MIT",

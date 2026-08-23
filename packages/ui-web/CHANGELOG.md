@@ -1,5 +1,18 @@
 # @polastack/gtm-design-system
 
+## 0.19.0
+
+### Minor Changes
+
+- 371c35c: 製品LP（product 型）に機能深掘り用の `showcase` スロット（FeatureShowcase・任意）を追加。Polastack 実サイトの「設定ファイルで見る機能一覧」を王道の製品LP構成として収容するためのもので、描画位置は features（概要グリッド）と midCta の間。既存の入力はそのまま動く（非破壊）。あわせてページ型11種を「ランディング型（product / product-portfolio-top / lead-gen / corporate-top）」と「コンテンツ型（一覧・記事・詳細の7種）」の2系統として GUIDELINES / AGENTS に整理し、Storybook の棚を Patterns/LandingPage・Patterns/CorporatePage・Patterns/ContentPage に分割した。
+- e98b26c: MarketingButton に `outline` バリアント（primary の反転: 白地 + ブランド色の文字と縁取り）を追加。MarketingHeader の末尾以外のアクション（ログイン等）は ghost から outline に変更。あわせて `--radius-control` を 0.75rem → 0.5rem に緩和（ボタン・入力等の角丸が弱まる）。
+
+### Patch Changes
+
+- 371c35c: CTA スロット（`--color-bg-cta` ほか）が全ブランドで既定ブランドのティールに凍結されるバグを修正。カスタムプロパティ内の var() は宣言された要素で解決されてから継承されるため、`:root` だけの宣言では `[data-brand]` の切替に追従しない。codegen のセレクタを `:root, [data-brand]` に変更し、`variant="cta"` のボタン（料金カード・CTABand・CTASection の第1アクション）がページのブランド操作色に正しく追従するようにした。
+- Updated dependencies [371c35c]
+  - @siracusahq/tokens@0.3.2
+
 ## 0.18.0
 
 ### Minor Changes
