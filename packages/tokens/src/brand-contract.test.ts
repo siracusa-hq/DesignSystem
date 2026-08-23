@@ -7,6 +7,8 @@
  *   (c) ダーク面での不適合（操作段はダーク面テキストに使えない）
  *   (d) 公開済みの現行色とのドリフト
  *   (e) 生成 CSS とレジストリのズレ（コミット漏れ・手編集の検出）
+ *   (f) :root 凍結（ブランド上書き変数を参照するプロパティが :root にだけ
+ *       宣言され、data-brand 切替に追従しなくなる事故）
  */
 
 import { readFileSync } from 'node:fs';
@@ -192,4 +194,80 @@ describe('(e) 生成 CSS とレジストリの同期', () => {
       }
     }
   });
+});
+
+describe('(f) :root 凍結ガード — ブランド追従すべき変数が :root にだけ宣言されていない', () => {
+  /*
+   * カスタムプロパティ内の var() は**宣言された要素で解決されてから継承される**
+   * （CSS Custom Properties の仕様）。そのため、[data-brand='…'] で上書きされる
+   * 変数を参照するプロパティを :root にだけ宣言すると、その解決結果が既定
+   * ブランドの色で凍結され、data-brand 切替に追従しない。
+   *
+   * 実際に --color-bg-cta がこの形で全ブランドでティールに凍結されていた
+   * （polastack の製品LPで料金 CTA だけ青にならない形で顕在化）。
+   * 修正はセレクタを `:root, [data-brand]` にすること。ここではその再発を
+   * 特定の変数名ではなく**構造**で止める: 「ブランド上書き変数を参照する
+   * プロパティは、[data-brand] を含むセレクタでも宣言されていなければならない」。
+   */
+  const generatedCssFiles = [
+    resolve(__dirname, '../css/brand.css'),
+    resolve(__dirname, '../../ui-web/src/styles/generated-brand.css'),
+  ];
+
+  interface Rule {
+    selector: string;
+    declarations: [name: string, value: string][];
+  }
+
+  function parseFlatRules(css: string): Rule[] {
+    const noComments = css.replace(/\/\*[\s\S]*?\*\//g, '');
+    const rules: Rule[] = [];
+    for (const m of noComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+      const selector = m[1].trim();
+      if (selector.startsWith('@')) continue;
+      const declarations = [...m[2].matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)].map(
+        (d) => [d[1], d[2].trim()] as [string, string],
+      );
+      rules.push({ selector, declarations });
+    }
+    return rules;
+  }
+
+  for (const file of generatedCssFiles) {
+    const short = file.split('/packages/')[1];
+    it(`${short}: ブランド上書き変数を参照するプロパティは [data-brand] でも宣言されている`, () => {
+      const rules = parseFlatRules(readFileSync(file, 'utf8'));
+
+      /* [data-brand='x'] ブロックで上書きされる変数（= ブランドごとに値が変わる変数） */
+      const brandOverridden = new Set(
+        rules
+          .filter((r) => r.selector.includes("[data-brand='"))
+          .flatMap((r) => r.declarations.map(([name]) => name)),
+      );
+      expect(brandOverridden.size).toBeGreaterThan(0);
+
+      /* 各プロパティが [data-brand]（無印含む）を含むセレクタで宣言されているか */
+      const declaredUnderDataBrand = new Set(
+        rules
+          .filter((r) => r.selector.includes('[data-brand'))
+          .flatMap((r) => r.declarations.map(([name]) => name)),
+      );
+
+      for (const rule of rules) {
+        if (rule.selector.includes('[data-brand')) continue;
+        if (!rule.selector.split(',').some((s) => s.trim() === ':root')) continue;
+        for (const [name, value] of rule.declarations) {
+          const refs = [...value.matchAll(/var\(\s*(--[\w-]+)/g)].map((r) => r[1]);
+          const frozenRefs = refs.filter((ref) => brandOverridden.has(ref));
+          if (frozenRefs.length === 0) continue;
+          expect(
+            declaredUnderDataBrand.has(name),
+            `${name} は ${frozenRefs.join(', ')} を参照しているのに :root にしか宣言がない。` +
+              '解決結果が既定ブランドで凍結され data-brand 切替に追従しなくなる。' +
+              'セレクタを `:root, [data-brand]` にすること（codegen.mjs の slotsBlock 参照）',
+          ).toBe(true);
+        }
+      }
+    });
+  }
 });
