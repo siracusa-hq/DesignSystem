@@ -39,7 +39,7 @@
    primary CTA の隣に置く従属アクション用 */
 .outline {
   border: 1px solid var(--color-border-brand-strong);
-  background: var(--color-surface);
+  background: var(--color-surface-raised);
   color: var(--color-text-brand);
 }
 .outline:hover {
