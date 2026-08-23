@@ -21,7 +21,7 @@ export interface HeaderAction {
 export interface MarketingHeaderProps extends Omit<React.HTMLAttributes<HTMLElement>, 'className'> {
   logo?: React.ReactNode;
   navItems?: NavItem[];
-  /** variant は自動割当: 末尾 = primary / それ以外 = ghost */
+  /** variant は自動割当: 末尾 = primary / それ以外 = outline（primary の反転） */
   actions?: HeaderAction[];
   sticky?: boolean;
 }
@@ -42,7 +42,7 @@ export const MarketingHeader = React.forwardRef<HTMLElement, MarketingHeaderProp
       actions?.map((action, i) => (
         <MarketingButton
           key={i}
-          variant={i === actions.length - 1 ? 'primary' : 'ghost'}
+          variant={i === actions.length - 1 ? 'primary' : 'outline'}
           size="sm"
           href={action.href}
           fullWidth={fullWidth}

@@ -21,6 +21,11 @@ describe('MarketingButton', () => {
     expect(container.firstChild).toHaveClass('secondary');
   });
 
+  it('outline variantを適用する', () => {
+    const { container } = render(<MarketingButton variant="outline">ログイン</MarketingButton>);
+    expect(container.firstChild).toHaveClass('outline');
+  });
+
   it('sizeを適用する', () => {
     const { container } = render(<MarketingButton size="lg">大きいボタン</MarketingButton>);
     expect(container.firstChild).toHaveClass('sizeLg');

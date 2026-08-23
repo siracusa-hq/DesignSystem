@@ -23,6 +23,8 @@ export const marketingButtonVariants = cva(styles.button, {
   variants: {
     variant: {
       primary: styles.primary,
+      /** primary の反転（白地 + ブランド色の文字と縁取り） */
+      outline: styles.outline,
       secondary: styles.secondary,
       ghost: styles.ghost,
       /** CTA 第3役割（--color-cta-*）。コンバージョン導線用 */
