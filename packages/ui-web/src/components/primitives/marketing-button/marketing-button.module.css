@@ -43,11 +43,16 @@
   color: var(--color-text-brand);
 }
 .outline:hover {
-  background: var(--color-bg-brand-subtle);
-  color: var(--color-text-brand-strong);
+  background: var(--color-bg-brand-primary);
+  border-color: var(--color-bg-brand-primary);
+  color: var(--color-on-brand);
+  box-shadow: var(--shadow-glow-brand);
   transform: translateY(-2px);
 }
 .outline:active {
+  background: var(--color-bg-brand-hover);
+  border-color: var(--color-bg-brand-hover);
+  color: var(--color-on-brand);
   transform: translateY(0);
 }
 
