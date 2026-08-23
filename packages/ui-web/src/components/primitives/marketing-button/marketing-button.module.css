@@ -35,6 +35,22 @@
   transform: translateY(0);
 }
 
+/* primary の反転（白地 + ブランド色の文字と縁取り）。ヘッダーの「ログイン」等、
+   primary CTA の隣に置く従属アクション用 */
+.outline {
+  border: 1px solid var(--color-border-brand-strong);
+  background: var(--color-surface);
+  color: var(--color-text-brand);
+}
+.outline:hover {
+  background: var(--color-bg-brand-subtle);
+  color: var(--color-text-brand-strong);
+  transform: translateY(-2px);
+}
+.outline:active {
+  transform: translateY(0);
+}
+
 .secondary {
   border: 1px solid var(--color-border);
   background: var(--color-surface);
