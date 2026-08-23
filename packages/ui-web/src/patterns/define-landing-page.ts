@@ -4,6 +4,7 @@ import type { HeroSectionProps } from '@/components/sections/hero-section';
 import type { LogoCloudProps } from '@/components/sections/logo-cloud';
 import type { StatsSectionProps } from '@/components/sections/stats-section';
 import type { FeatureGridProps } from '@/components/sections/feature-grid';
+import type { FeatureShowcaseProps } from '@/components/sections/feature-showcase';
 import type { PricingTableProps } from '@/components/sections/pricing';
 import type { CaseStudySectionProps } from '@/components/sections/case-study-card';
 import type { CaseStudyListSectionProps } from '@/components/sections/case-study-list';
@@ -81,12 +82,18 @@ interface LandingPageCommon {
   footer?: MarketingFooterProps;
 }
 
-/** 単一製品 LP（実測最多）。順序: Hero → 証明 → 機能 → (帯) → 料金 → 選ばれる理由 → 事例 → FAQ → 締め */
+/** 単一製品 LP（実測最多）。順序: Hero → 証明 → 機能 → (深掘り) → (帯) → 料金 → 選ばれる理由 → 事例 → FAQ → 締め */
 export interface ProductPageInput extends LandingPageCommon {
   pattern: 'product';
   hero: LandingHero;
   proof?: LandingProof;
   features: Slot<FeatureGridProps>;
+  /**
+   * 機能の深掘りショーケース（任意）。左右交互のメディア + 箇条書きで、
+   * features（概要グリッド）の直後に置かれる。
+   * 王道の実例: Polastack LP「設定ファイルで見る機能一覧」（5ドメイン + 開発体験）。
+   */
+  showcase?: Slot<FeatureShowcaseProps>;
   midCta?: LandingMidCta;
   /** 料金 → 事例の順で描画される（実測 4:1。composition-redesign.md §3-2） */
   pricing?: Slot<PricingTableProps>;

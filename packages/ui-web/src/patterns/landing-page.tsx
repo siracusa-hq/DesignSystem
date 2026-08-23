@@ -7,6 +7,7 @@ import { HeroSection } from '@/components/sections/hero-section';
 import { LogoCloud } from '@/components/sections/logo-cloud';
 import { StatsSection } from '@/components/sections/stats-section';
 import { FeatureGrid } from '@/components/sections/feature-grid';
+import { FeatureShowcase } from '@/components/sections/feature-showcase';
 import { PricingTable } from '@/components/sections/pricing';
 import { CaseStudySection } from '@/components/sections/case-study-card';
 import { CaseStudyListSection } from '@/components/sections/case-study-list';
@@ -174,6 +175,10 @@ export const LandingPage: React.FC<LandingPageProps> = (props) => {
         { node: hero(props.hero) },
         { node: proof(props.proof), surface: 'tinted' },
         { node: <FeatureGrid key="features" {...props.features} />, surface: 'default' },
+        {
+          node: props.showcase && <FeatureShowcase key="showcase" {...props.showcase} />,
+          surface: 'default',
+        },
         { node: midCta(props.midCta, offers) }, // CTABand が accent を自己申告する
         {
           node: props.pricing && <PricingTable key="pricing" {...props.pricing} />,
