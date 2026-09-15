@@ -231,8 +231,13 @@ export {
   FilterChip,
   ActiveFilters,
   FilterBarActions,
+  FilterSelector,
+  FilterChipSelect,
   type FilterChipProps,
   type ActiveFiltersProps,
+  type FilterOption,
+  type FilterSelectorProps,
+  type FilterChipSelectProps,
 } from './components/filter-bar';
 
 // Breadcrumb

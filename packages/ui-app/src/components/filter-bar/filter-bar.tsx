@@ -1,6 +1,12 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { X, ListFilter } from 'lucide-react';
+import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
+import { X, ListFilter, Check, ChevronDown } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+} from '@/components/dropdown-menu/dropdown-menu';
 import { cn } from '@/lib/cn';
 
 /* ----- FilterBar ----- */
@@ -144,6 +150,47 @@ export interface FilterSelectorProps {
   className?: string;
 }
 
+/**
+ * DropdownMenu 内で使う、ブランドカラーのチェックボックス表示を持つ項目。
+ * onSelect を preventDefault してマルチセレクト中にメニューが閉じないようにする。
+ */
+function FilterMenuCheckboxItem({
+  checked,
+  onCheckedChange,
+  children,
+}: {
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <DropdownMenuPrimitive.CheckboxItem
+      checked={checked}
+      onCheckedChange={onCheckedChange}
+      onSelect={(e) => e.preventDefault()}
+      className={cn(
+        'relative flex cursor-pointer select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors',
+        'focus:bg-[var(--color-surface-muted)]',
+        'data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+        'touch:min-h-[--touch-target-min]',
+      )}
+    >
+      <span
+        aria-hidden="true"
+        className={cn(
+          'flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border transition-colors duration-fast',
+          checked
+            ? 'border-primary-400 bg-primary-400 text-white'
+            : 'border-[var(--color-border-input)]',
+        )}
+      >
+        {checked && <Check className="h-3 w-3" strokeWidth={3} />}
+      </span>
+      {children}
+    </DropdownMenuPrimitive.CheckboxItem>
+  );
+}
+
 export function FilterSelector({
   options,
   selected,
@@ -151,54 +198,118 @@ export function FilterSelector({
   label = 'Filters',
   className,
 }: FilterSelectorProps) {
-  const [open, setOpen] = React.useState(false);
-  const menuRef = React.useRef<HTMLDivElement>(null);
-
-  React.useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    }
-    if (open) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () =>
-        document.removeEventListener('mousedown', handleClickOutside);
-    }
-  }, [open]);
-
   return (
-    <div className={cn('relative', className)} ref={menuRef}>
-      <button
-        type="button"
-        className="inline-flex items-center gap-1 rounded-md border border-[var(--color-border-input)] bg-[var(--color-surface-raised)] px-3 py-1.5 text-sm transition-colors hover:bg-[var(--color-surface-muted)] touch:min-h-[--touch-target-min]"
-        onClick={() => setOpen(!open)}
-        aria-label={label}
-        aria-expanded={open}
-      >
-        <ListFilter className="h-3.5 w-3.5" />
-        {label}
-      </button>
-
-      {open && (
-        <div className="absolute right-0 top-full z-popover mt-1 min-w-[10rem] rounded-md border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-1 shadow-md">
-          {options.map((opt) => (
-            <label
-              key={opt.id}
-              className="flex items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-[var(--color-surface-sunken)] cursor-pointer touch:min-h-[--touch-target-min]"
-            >
-              <input
-                type="checkbox"
-                checked={selected.includes(opt.id)}
-                onChange={(e) => onToggle(opt.id, e.target.checked)}
-                className="h-4 w-4 cursor-pointer"
-              />
-              {opt.label}
-            </label>
-          ))}
-        </div>
-      )}
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          className={cn(
+            'inline-flex items-center gap-1 rounded-md border border-[var(--color-border-input)] bg-[var(--color-surface-raised)] px-3 py-1.5 text-sm transition-colors hover:bg-[var(--color-surface-muted)] touch:min-h-[--touch-target-min]',
+            className,
+          )}
+          aria-label={label}
+        >
+          <ListFilter className="h-3.5 w-3.5" />
+          {label}
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="min-w-[10rem]">
+        {options.map((opt) => (
+          <FilterMenuCheckboxItem
+            key={opt.id}
+            checked={selected.includes(opt.id)}
+            onCheckedChange={(checked) => onToggle(opt.id, checked)}
+          >
+            {opt.label}
+          </FilterMenuCheckboxItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 FilterSelector.displayName = 'FilterSelector';
+
+/* ----- FilterChipSelect ----- */
+
+export interface FilterChipSelectProps
+  extends VariantProps<typeof filterChipVariants> {
+  label: string;
+  /** 選択できる値の候補 */
+  options: FilterOption[];
+  /** 選択中の値の id 配列 */
+  selected: string[];
+  onSelectedChange: (ids: string[]) => void;
+  onRemove?: () => void;
+  /** 値が未選択のときに表示するテキスト */
+  placeholder?: string;
+  /** マウント時にメニューを開く（FilterSelector で軸を追加した直後に値を選ばせる用途） */
+  defaultOpen?: boolean;
+  className?: string;
+}
+
+export function FilterChipSelect({
+  label,
+  options,
+  selected,
+  onSelectedChange,
+  onRemove,
+  placeholder = 'Any',
+  defaultOpen,
+  variant,
+  className,
+}: FilterChipSelectProps) {
+  const selectedLabels = options
+    .filter((opt) => selected.includes(opt.id))
+    .map((opt) => opt.label);
+  const display =
+    selectedLabels.length === 0
+      ? placeholder
+      : selectedLabels.length <= 2
+        ? selectedLabels.join(', ')
+        : `${selectedLabels.length} selected`;
+
+  function handleToggle(id: string, checked: boolean) {
+    onSelectedChange(
+      checked ? [...selected, id] : selected.filter((s) => s !== id),
+    );
+  }
+
+  return (
+    <span className={cn(filterChipVariants({ variant }), className)}>
+      <DropdownMenu defaultOpen={defaultOpen}>
+        <DropdownMenuTrigger asChild>
+          <button
+            type="button"
+            className="inline-flex items-center gap-1 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] focus-visible:ring-offset-1 ring-offset-[var(--color-ring-offset)]"
+          >
+            <span className="text-xs opacity-70">{label}:</span>
+            <span>{display}</span>
+            <ChevronDown className="h-3 w-3 opacity-70" aria-hidden="true" />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="min-w-[10rem]">
+          {options.map((opt) => (
+            <FilterMenuCheckboxItem
+              key={opt.id}
+              checked={selected.includes(opt.id)}
+              onCheckedChange={(checked) => handleToggle(opt.id, checked)}
+            >
+              {opt.label}
+            </FilterMenuCheckboxItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+      {onRemove && (
+        <button
+          type="button"
+          onClick={onRemove}
+          className="ml-0.5 inline-flex items-center justify-center rounded-full p-0.5 hover:bg-black/10 transition-colors touch:min-h-[--touch-target-min] touch:min-w-[--touch-target-min]"
+          aria-label={`Remove ${label} filter`}
+        >
+          <X className="h-3 w-3" />
+        </button>
+      )}
+    </span>
+  );
+}
+FilterChipSelect.displayName = 'FilterChipSelect';
