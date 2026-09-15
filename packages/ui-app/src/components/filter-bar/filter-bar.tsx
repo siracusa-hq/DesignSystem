@@ -12,7 +12,7 @@ export const FilterBar = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'flex flex-wrap items-center gap-2 rounded-lg border border-[var(--color-on-surface)] bg-[var(--color-surface-sunken)] p-3',
+      'flex flex-wrap items-center gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-sunken)] p-3',
       className,
     )}
     role="toolbar"
