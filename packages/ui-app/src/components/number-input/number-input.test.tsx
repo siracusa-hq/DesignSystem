@@ -68,6 +68,81 @@ describe('NumberInput', () => {
     expect(screen.getByRole('textbox')).toHaveValue('3.14');
   });
 
+  describe('thousandSeparator', () => {
+    it('displays controlled value with separators', () => {
+      render(
+        <NumberInput aria-label="Amount" value={1234567} onChange={() => {}} thousandSeparator />,
+      );
+      expect(screen.getByRole('textbox')).toHaveValue('1,234,567');
+    });
+
+    it('displays default value with separators', () => {
+      render(<NumberInput aria-label="Amount" defaultValue={1234567} thousandSeparator />);
+      expect(screen.getByRole('textbox')).toHaveValue('1,234,567');
+    });
+
+    it('formats on blur', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      render(<NumberInput aria-label="Amount" onChange={onChange} thousandSeparator />);
+      const input = screen.getByRole('textbox');
+      await user.type(input, '1234567');
+      await user.tab();
+      expect(input).toHaveValue('1,234,567');
+      expect(onChange).toHaveBeenLastCalledWith(1234567);
+    });
+
+    it('removes separators while focused for editing', async () => {
+      const user = userEvent.setup();
+      render(<NumberInput aria-label="Amount" defaultValue={1234567} thousandSeparator />);
+      const input = screen.getByRole('textbox');
+      await user.click(input);
+      expect(input).toHaveValue('1234567');
+      await user.tab();
+      expect(input).toHaveValue('1,234,567');
+    });
+
+    it('parses input containing commas', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      render(<NumberInput aria-label="Amount" onChange={onChange} thousandSeparator />);
+      const input = screen.getByRole('textbox');
+      await user.type(input, '1,234');
+      await user.tab();
+      expect(onChange).toHaveBeenLastCalledWith(1234);
+    });
+
+    it('groups only the integer part with precision', () => {
+      render(
+        <NumberInput
+          aria-label="Price"
+          value={1234567.891}
+          precision={2}
+          onChange={() => {}}
+          thousandSeparator
+        />,
+      );
+      expect(screen.getByRole('textbox')).toHaveValue('1,234,567.89');
+    });
+
+    it('formats negative values', () => {
+      render(
+        <NumberInput aria-label="Amount" value={-1234567} onChange={() => {}} thousandSeparator />,
+      );
+      expect(screen.getByRole('textbox')).toHaveValue('-1,234,567');
+    });
+
+    it('increments from a formatted value', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      render(
+        <NumberInput aria-label="Amount" value={1234} onChange={onChange} thousandSeparator />,
+      );
+      await user.click(screen.getByLabelText('Increment'));
+      expect(onChange).toHaveBeenCalledWith(1235);
+    });
+  });
+
   it('handles disabled state', () => {
     render(<NumberInput aria-label="Amount" disabled />);
     expect(screen.getByRole('textbox')).toBeDisabled();
