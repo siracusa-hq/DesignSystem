@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.10.0
+
+### Minor Changes
+
+- 28dbc05: FilterBar の選択UIを刷新。
+
+  - `FilterChipSelect` を新規追加: チップをクリックすると値の候補（例: Role → Owner/Admin/User/Guest）をマルチセレクトできる Linear 型のフィルターチップ
+  - `FilterSelector` を Radix DropdownMenu ベースに再構築: チェックボックスがネイティブ表示（黒）からブランドカラー（primary）になり、矢印キー・Esc などのキーボード操作に対応
+  - `FilterSelector` / `FilterChipSelect` をパッケージルートから export
+
+- b6bb09a: 検索付きマルチセレクト `MultiSelect` を追加。Combobox と同じ cmdk ベースで、開くと検索入力欄で絞り込みながら複数選択できる。選択済みはトリガー内にタグ表示（`maxDisplay` 超過分は「+N」に集約）、リスト項目はブランドカラーのチェックボックス表示で、選択してもメニューは閉じない。
+
+### Patch Changes
+
+- 114e515: FilterBar コンテナの枠線色を修正。誤ってテキスト用トークン `--color-on-surface`（ライトでほぼ黒・ダークでほぼ白）が使われていたのを、他のコンテナ系コンポーネントと同じ `--color-border` に統一。
+
 ## 0.9.0
 
 ### Minor Changes
