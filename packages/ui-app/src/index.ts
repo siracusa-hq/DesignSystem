@@ -109,6 +109,11 @@ export {
   type ComboboxProps,
   type ComboboxOption,
 } from './components/combobox';
+export {
+  MultiSelect,
+  type MultiSelectProps,
+  type MultiSelectOption,
+} from './components/multi-select';
 
 // Form Patterns
 export {
