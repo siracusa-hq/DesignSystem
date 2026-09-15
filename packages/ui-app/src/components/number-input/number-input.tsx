@@ -28,6 +28,11 @@ export interface NumberInputProps
   max?: number;
   step?: number;
   precision?: number;
+  /**
+   * blur 時に整数部へ3桁区切りのカンマを付与する。
+   * フォーカス中はカンマなしの生の数字で編集できる。
+   */
+  thousandSeparator?: boolean;
   disabled?: boolean;
   readOnly?: boolean;
   name?: string;
@@ -52,6 +57,7 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
       max,
       step = 1,
       precision,
+      thousandSeparator,
       disabled,
       readOnly,
       ...props
@@ -61,16 +67,30 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
     const [internalValue, setInternalValue] = React.useState<string>(
       defaultValue != null ? formatValue(defaultValue, precision) : '',
     );
+    const [focused, setFocused] = React.useState(false);
 
     const isControlled = controlledValue !== undefined;
+    // フォーカス中はカンマなしで編集させ、blur 後の表示にのみ区切りを適用する
     const displayValue = isControlled
       ? controlledValue != null
-        ? formatValue(controlledValue, precision)
+        ? formatValue(controlledValue, precision, thousandSeparator && !focused)
         : ''
       : internalValue;
 
-    function formatValue(val: number, prec?: number): string {
-      return prec != null ? val.toFixed(prec) : String(val);
+    function formatValue(
+      val: number,
+      prec?: number,
+      withSeparator: boolean | undefined = thousandSeparator,
+    ): string {
+      const base = prec != null ? val.toFixed(prec) : String(val);
+      if (!withSeparator) return base;
+      const [int, frac] = base.split('.');
+      const grouped = int.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      return frac != null ? `${grouped}.${frac}` : grouped;
+    }
+
+    function parseNumber(raw: string): number {
+      return parseFloat(raw.replace(/,/g, ''));
     }
 
     function clamp(val: number): number {
@@ -104,14 +124,22 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
         onChange?.(undefined);
         return;
       }
-      const num = parseFloat(raw);
+      const num = parseNumber(raw);
       if (!isNaN(num)) {
         onChange?.(num);
       }
     }
 
+    function handleFocus() {
+      setFocused(true);
+      if (!isControlled && thousandSeparator) {
+        setInternalValue((v) => v.replace(/,/g, ''));
+      }
+    }
+
     function handleBlur() {
-      const num = parseFloat(displayValue);
+      setFocused(false);
+      const num = parseNumber(displayValue);
       if (!isNaN(num)) {
         updateValue(num);
       } else {
@@ -120,12 +148,12 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
     }
 
     function increment() {
-      const current = parseFloat(displayValue) || 0;
+      const current = parseNumber(displayValue) || 0;
       updateValue(current + step);
     }
 
     function decrement() {
-      const current = parseFloat(displayValue) || 0;
+      const current = parseNumber(displayValue) || 0;
       updateValue(current - step);
     }
 
@@ -154,6 +182,7 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
           inputMode="numeric"
           value={displayValue}
           onChange={handleInputChange}
+          onFocus={handleFocus}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
           disabled={disabled}
@@ -167,7 +196,7 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
               type="button"
               tabIndex={-1}
               onClick={increment}
-              disabled={max != null && parseFloat(displayValue) >= max}
+              disabled={max != null && parseNumber(displayValue) >= max}
               className="flex flex-1 items-center justify-center px-1.5 text-[var(--color-on-surface-muted)] hover:bg-[var(--color-surface-muted)] disabled:opacity-30 touch:min-w-[--touch-target-min]"
               aria-label="Increment"
             >
@@ -177,7 +206,7 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
               type="button"
               tabIndex={-1}
               onClick={decrement}
-              disabled={min != null && parseFloat(displayValue) <= min}
+              disabled={min != null && parseNumber(displayValue) <= min}
               className="flex flex-1 items-center justify-center border-t border-[var(--color-border-input)] px-1.5 text-[var(--color-on-surface-muted)] hover:bg-[var(--color-surface-muted)] disabled:opacity-30 touch:min-w-[--touch-target-min]"
               aria-label="Decrement"
             >

@@ -48,6 +48,24 @@ export const WithPrecision: Story = {
   },
 };
 
+export const WithThousandSeparator: Story = {
+  render: () => {
+    const [value, setValue] = useState<number | undefined>(1234567);
+    return (
+      <div className="w-40">
+        <Label>Amount (JPY)</Label>
+        <NumberInput
+          value={value}
+          onChange={setValue}
+          thousandSeparator
+          step={1000}
+          aria-label="Amount"
+        />
+      </div>
+    );
+  },
+};
+
 export const Disabled: Story = {
   args: { value: 42, disabled: true, 'aria-label': 'Disabled' },
 };
