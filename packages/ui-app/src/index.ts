@@ -114,6 +114,17 @@ export {
   type MultiSelectProps,
   type MultiSelectOption,
 } from './components/multi-select';
+export {
+  Autocomplete,
+  type AutocompleteProps,
+  type AutocompleteOption,
+} from './components/autocomplete';
+export {
+  CompanyLookupField,
+  type CompanyLookupFieldProps,
+  type CompanyCandidate,
+  type CompanyAddress,
+} from './components/company-lookup-field';
 
 // Form Patterns
 export {
