@@ -76,7 +76,7 @@ Button, Badge, Avatar, AvatarGroup, Separator, Skeleton, Spinner, Card, Tooltip,
 
 ### フォーム
 
-Label, Input, Textarea, Checkbox, RadioGroup, Switch, Select, Combobox, DatePicker, NumberInput, FormField, DynamicFormField, FormLayout
+Label, Input, Textarea, Checkbox, RadioGroup, Switch, Select, Combobox, Autocomplete, CompanyLookupField, DatePicker, NumberInput, FormField, DynamicFormField, FormLayout
 
 ### データ表示
 
