@@ -464,6 +464,15 @@ export {
   type SidebarNavItemProps,
 } from './components/sidebar-nav';
 export {
+  SecondaryNav,
+  SecondaryNavHeader,
+  SecondaryNavSection,
+  SecondaryNavItem,
+  type SecondaryNavProps,
+  type SecondaryNavSectionProps,
+  type SecondaryNavItemProps,
+} from './components/secondary-nav';
+export {
   AuthLayout,
   AuthLayoutForm,
   AuthLayoutVisual,
