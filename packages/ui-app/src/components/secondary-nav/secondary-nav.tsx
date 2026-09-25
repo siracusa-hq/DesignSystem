@@ -26,7 +26,9 @@ export const SecondaryNav = React.forwardRef<HTMLElement, SecondaryNavProps>(
       ref={ref}
       className={cn(
         // モバイル: 横スクロールの1行。md+: 固定幅の縦カラム
-        'flex shrink-0 gap-1 overflow-x-auto border-b border-[var(--color-border)] px-3 py-2',
+        // 背景を1段沈めて(surface-sunken)、1階層目(AppShellSidebar=raised)との
+        // 階層差をボーダーだけでなく背景の段差でも読めるようにする
+        'flex shrink-0 gap-1 overflow-x-auto border-b border-[var(--color-border)] bg-[var(--color-surface-sunken)] px-3 py-2',
         'md:w-[var(--secondary-nav-width)] md:flex-col md:overflow-x-visible md:overflow-y-auto md:border-b-0 md:border-r md:py-4',
         className,
       )}
@@ -158,7 +160,8 @@ export const SecondaryNavItem = React.forwardRef<
               asChild && 'md:ml-auto',
               active
                 ? 'bg-[var(--color-primary-100)] text-[var(--color-primary-700)] dark:bg-[var(--color-primary-950)] dark:text-[var(--color-primary-300)]'
-                : 'bg-[var(--color-surface-sunken)] text-[var(--color-on-surface-muted)]',
+                : // ナビ背景が surface-sunken なので、バッジは1段上の muted で埋没を防ぐ
+                  'bg-[var(--color-surface-muted)] text-[var(--color-on-surface-muted)]',
             )}
           >
             {badge}
