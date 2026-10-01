@@ -573,31 +573,21 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
     const { r, c } = editing;
     const current = rows[r]?.[column.key] ?? null;
     const changed = ok && value !== current;
-    const appendRow = move === 'down' && r === rows.length - 1;
     setEditing(null);
 
-    // セル更新と行追加は必ず1回の applyChange にまとめる。
-    // 別々に呼ぶと2回目が古い rows から作られ、1回目の更新を上書きして
-    // 「Enter で変更が消えて行だけ増える」バグになる（実際に起きた）
-    if (changed || appendRow) {
+    if (changed) {
       const next = [...rows];
-      if (changed) {
-        const newRow = { ...next[r], [column.key]: value } as Row;
-        transferRowIdentity(next[r], newRow);
-        next[r] = newRow;
-      }
-      if (appendRow) next.push(createRow());
+      const newRow = { ...next[r], [column.key]: value } as Row;
+      transferRowIdentity(next[r], newRow);
+      next[r] = newRow;
       applyChange(next);
     }
 
+    // 最下行の Enter でも行は自動追加しない。既存行を修正して確定する
+    // たびに空行が増えてしまうため（行追加はボタン / 右クリック /
+    // ペースト時の自動拡張で行う）。move は clamp されるので最下行では留まる
     if (move === 'down') {
-      if (appendRow) {
-        // rows はまだ古い配列なので clamp を通さず直接移動する
-        setActive({ r: r + 1, c });
-        setAnchor({ r: r + 1, c });
-      } else {
-        moveActive(r + 1, c);
-      }
+      moveActive(r + 1, c);
     } else if (move === 'right') {
       moveActive(r, Math.min(c + 1, columns.length - 1));
     }

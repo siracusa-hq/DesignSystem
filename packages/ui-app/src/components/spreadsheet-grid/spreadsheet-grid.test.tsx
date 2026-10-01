@@ -195,7 +195,7 @@ describe('SpreadsheetGrid 編集', () => {
     expect(screen.getByText('12')).toBeInTheDocument();
   });
 
-  it('最下行のセルを編集して Enter すると、変更の反映と行追加が両方行われる', async () => {
+  it('最下行のセルを編集して Enter しても行は増えず、変更だけが反映される', async () => {
     const user = userEvent.setup();
     const onRows = vi.fn();
     render(<Harness onRows={onRows} />);
@@ -206,25 +206,20 @@ describe('SpreadsheetGrid 編集', () => {
     await user.type(input, '新しい品目');
     await user.keyboard('{Enter}');
     const rows = onRows.mock.calls.at(-1)![0];
-    expect(rows).toHaveLength(3);
+    expect(rows).toHaveLength(2);
     expect(rows[1].item).toBe('新しい品目');
     expect(screen.getByText('新しい品目')).toBeInTheDocument();
-    // 1回の操作なので Undo 1回で両方（変更と行追加）が戻る
-    await user.keyboard('{Control>}z{/Control}');
-    const undone = onRows.mock.calls.at(-1)![0];
-    expect(undone).toHaveLength(2);
-    expect(undone[1].item).toBe('保守');
+    expect(screen.queryByRole('rowheader', { name: '3' })).not.toBeInTheDocument();
   });
 
-  it('最下行で Enter 確定すると新規行が追加される', async () => {
+  it('最下行で変更なしの Enter 確定では何も起きない', async () => {
     const user = userEvent.setup();
     const onRows = vi.fn();
     render(<Harness onRows={onRows} />);
     await user.click(getCell('保守'));
     await user.keyboard('{F2}{Enter}');
-    const rows = onRows.mock.calls.at(-1)![0];
-    expect(rows).toHaveLength(3);
-    expect(screen.getByRole('rowheader', { name: '3' })).toBeInTheDocument();
+    expect(onRows).not.toHaveBeenCalled();
+    expect(screen.queryByRole('rowheader', { name: '3' })).not.toBeInTheDocument();
   });
 
   it('select 列は Select コンポーネントで編集でき、選択で確定される', async () => {
