@@ -41,7 +41,7 @@ import {
    - バリデーションはセル編集中にもリアルタイムに表示する
    - Cmd/Ctrl+Z で Undo、Cmd/Ctrl+Shift+Z / Ctrl+Y で Redo。
      グリッド内部からの変更のみが履歴対象（外部からの rows 差し替えで
-     履歴はリセットされる）
+     履歴はリセットされる）。history={false} ならアプリ側で持つ
    - 入力できるセルを選んでいる間は、セルに透明な入力欄を置いて
      フォーカスを渡す。打鍵や日本語入力（IME）の変換開始で、
      そのまま同じ入力欄で編集に入る（変換が途切れない）
@@ -95,9 +95,38 @@ export interface SpreadsheetError {
   message: string;
 }
 
+export interface SpreadsheetCellRef {
+  rowIndex: number;
+  columnKey: string;
+}
+
+export interface SpreadsheetSelection {
+  /** 起点のセル（フォーカスのあるセル） */
+  active: SpreadsheetCellRef;
+  /** 範囲に入っている行（表に出ている行だけ・上から順） */
+  rowIndexes: number[];
+  /** 範囲に入っている列（左から順） */
+  columnKeys: string[];
+}
+
+export type SpreadsheetMenuTarget =
+  | {
+      kind: 'cells';
+      /** 右クリックした行 */
+      rowIndex: number;
+      /** 対象の行（右クリックした行が範囲内なら範囲の行、外ならその行だけ） */
+      rowIndexes: number[];
+      columnKey: string;
+    }
+  | { kind: 'footer'; columnKey: string };
+
 export interface SpreadsheetGridHandle {
   /** 変更済みセルのマーカーをすべて消す（保存完了後に呼ぶ） */
   clearDirty: () => void;
+  /** セルを選ぶ（見えるところまでスクロールする）。extendTo を渡すと範囲を選ぶ */
+  select: (cell: SpreadsheetCellRef, extendTo?: SpreadsheetCellRef) => void;
+  /** グリッドにフォーカスを戻す */
+  focus: () => void;
 }
 
 export interface SpreadsheetGridProps<Row extends object = SpreadsheetRow> {
@@ -136,6 +165,31 @@ export interface SpreadsheetGridProps<Row extends object = SpreadsheetRow> {
   rowHeaderWidth?: number;
   /** 左から固定する列の数（行番号の列も固定する）。DataTable と同じ名前 */
   stickyColumns?: number;
+
+  /** 選択が変わったとき */
+  onSelectionChange?: (selection: SpreadsheetSelection | null) => void;
+  /** グリッドより先に呼ぶ。event.preventDefault() すると、グリッドはそのキーを処理しない */
+  onKeyDown?: (
+    event: React.KeyboardEvent,
+    context: { selection: SpreadsheetSelection | null; editing: boolean },
+  ) => void;
+  /** 右クリックメニューに足す中身（ContextMenuItem など） */
+  contextMenu?: (target: SpreadsheetMenuTarget) => React.ReactNode;
+  /** 既定の行操作（挿入・複製・移動・削除）をメニューに出すか。既定 true */
+  rowActions?: boolean;
+  /**
+   * 元に戻すをグリッドの中で持つか。既定 true。false なら Cmd/Ctrl+Z・Y を
+   * グリッドが取らず、外から rows が変わっても変更セルの印を消さない
+   */
+  history?: boolean;
+  /** 貼り付けを差し替える。行を返すとそれを使い、undefined なら既定の動き */
+  onPaste?: (paste: {
+    text: string;
+    matrix: string[][];
+    selection: SpreadsheetSelection;
+  }) => Row[] | undefined;
+  /** 複製で行を作る。既定は浅いコピー */
+  duplicateRow?: (row: Row) => Row;
 }
 
 /* ----- 値の読み書き ----- */
@@ -416,7 +470,7 @@ interface EditingState {
   r: number;
   c: number;
   draft: string;
-  /** enter: 打ち始め（打鍵・日本語入力）で入った／edit: Enter・F2・ダブルクリックで入った */
+  /** enter: 打ち始めで入った（↑↓で確定して移動）／edit: Enter・F2・ダブルクリックで入った */
   mode: 'enter' | 'edit';
 }
 
@@ -715,6 +769,13 @@ function SpreadsheetGridInner<Row extends object>(
     renderRowHeader,
     rowHeaderWidth = 44,
     stickyColumns = 0,
+    onSelectionChange,
+    onKeyDown: onKeyDownProp,
+    contextMenu,
+    rowActions = true,
+    history = true,
+    onPaste: onPasteProp,
+    duplicateRow,
   } = props;
 
   const [active, setActive] = React.useState<CellPos | null>(null);
@@ -725,11 +786,7 @@ function SpreadsheetGridInner<Row extends object>(
     editingRef.current = next;
     setEditingState(next);
   };
-  // 右クリックした行と、メニューの対象の行（範囲の中なら範囲の行）
-  const [menuTarget, setMenuTarget] = React.useState<{
-    rowIndex: number;
-    rowIndexes: number[];
-  } | null>(null);
+  const [menuTarget, setMenuTarget] = React.useState<SpreadsheetMenuTarget | null>(null);
   const [dirtyVersion, bumpDirtyVersion] = React.useReducer((v: number) => v + 1, 0);
 
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -782,7 +839,8 @@ function SpreadsheetGridInner<Row extends object>(
      「一度でも編集したか」ではなく「最後に保存した時点（ベースライン）の
      値と現在値が違うか」で判定する。値を元に戻したセルや Undo したセルの
      マーカーは自然に消える。ベースラインは行 id → 行オブジェクトのマップで、
-     マウント時・clearDirty 時・外部からの rows 差し替え時に取り直す */
+     マウント時・clearDirty 時・外部からの rows 差し替え時に取り直す
+     （history={false} では外部からの差し替えでは取り直さない） */
 
   const baselineRef = React.useRef<Map<string, Row> | null>(null);
   if (baselineRef.current === null) {
@@ -819,6 +877,11 @@ function SpreadsheetGridInner<Row extends object>(
     };
   }, [active, anchor, vpos]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const isMultiCell =
+    !!selectionRect &&
+    (selectionRect.top !== selectionRect.bottom ||
+      selectionRect.left !== selectionRect.right);
+
   const isRowSelected = (r: number) => {
     const v = vOf(r);
     return (
@@ -829,6 +892,25 @@ function SpreadsheetGridInner<Row extends object>(
       selectionRect.right === columns.length - 1
     );
   };
+
+  const selection = React.useMemo<SpreadsheetSelection | null>(() => {
+    if (!active || !selectionRect || !columns[active.c]) return null;
+    return {
+      active: { rowIndex: active.r, columnKey: columns[active.c].key },
+      rowIndexes: visible.slice(selectionRect.top, selectionRect.bottom + 1),
+      columnKeys: columns
+        .slice(selectionRect.left, selectionRect.right + 1)
+        .map((c) => c.key),
+    };
+  }, [active, selectionRect, visible, columns]);
+
+  const lastSelectionKey = React.useRef('');
+  React.useEffect(() => {
+    const key = selection ? JSON.stringify(selection) : '';
+    if (key === lastSelectionKey.current) return;
+    lastSelectionKey.current = key;
+    onSelectionChange?.(selection);
+  }, [selection]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /* ----- Undo / Redo -----
 
@@ -845,14 +927,42 @@ function SpreadsheetGridInner<Row extends object>(
     future: [],
   });
   const lastInternalRowsRef = React.useRef<Row[]>(rows);
+  const prevRowsRef = React.useRef<Row[]>(rows);
 
-  React.useEffect(() => {
-    if (rows !== lastInternalRowsRef.current) {
+  React.useLayoutEffect(() => {
+    const prev = prevRowsRef.current;
+    prevRowsRef.current = rows;
+    if (rows === lastInternalRowsRef.current) return;
+    lastInternalRowsRef.current = rows;
+    if (history) {
       historyRef.current = { past: [], future: [] };
-      lastInternalRowsRef.current = rows;
       // 外部からのデータ差し替えは「保存済みの新しい状態」とみなす
       rebuildBaseline(rows);
       bumpDirtyVersion();
+    }
+    // 外から行が増減・並べ替えされたら、選んでいた行を ID で追いかける
+    if (prev !== rows) {
+      const index = new Map(ids.map((id, i) => [id, i]));
+      const remap = (pos: CellPos | null): CellPos | null => {
+        if (!pos) return pos;
+        const prevRow = prev[pos.r];
+        const ni = prevRow ? index.get(idOf(prevRow)) : undefined;
+        if (ni === undefined) {
+          return rows.length === 0
+            ? null
+            : { r: Math.min(pos.r, rows.length - 1), c: pos.c };
+        }
+        return ni === pos.r ? pos : { r: ni, c: pos.c };
+      };
+      setActive((a) => remap(a));
+      setAnchor((a) => remap(a));
+      const ed = editingRef.current;
+      if (ed) {
+        const prevRow = prev[ed.r];
+        const ni = prevRow ? index.get(idOf(prevRow)) : undefined;
+        if (ni === undefined) setEditing(null);
+        else if (ni !== ed.r) setEditing({ ...ed, r: ni });
+      }
     }
   }, [rows]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -870,11 +980,13 @@ function SpreadsheetGridInner<Row extends object>(
   }, [active, rows.length]);
 
   const applyChange = (next: Row[]) => {
-    historyRef.current.past.push(rows);
-    if (historyRef.current.past.length > HISTORY_LIMIT) {
-      historyRef.current.past.shift();
+    if (history) {
+      historyRef.current.past.push(rows);
+      if (historyRef.current.past.length > HISTORY_LIMIT) {
+        historyRef.current.past.shift();
+      }
+      historyRef.current.future = [];
     }
-    historyRef.current.future = [];
     lastInternalRowsRef.current = next;
     onRowsChange(next);
   };
@@ -1034,6 +1146,22 @@ function SpreadsheetGridInner<Row extends object>(
     void navigator.clipboard?.writeText(selectionText()).catch(() => {});
   };
 
+  /** 範囲の入力できるセルすべてに同じ値を入れる（読めない値のセルは変えない） */
+  const fillSelection = (text: string) => {
+    if (!selectionRect) return;
+    const updates: { r: number; c: number; value: SpreadsheetCellValue }[] = [];
+    for (let v = selectionRect.top; v <= selectionRect.bottom; v++) {
+      const r = visible[v];
+      for (let c = selectionRect.left; c <= selectionRect.right; c++) {
+        if (!canEdit(r, c)) continue;
+        const value = parsePastedValue(columns[c], text);
+        if (value === KEEP) continue;
+        updates.push({ r, c, value });
+      }
+    }
+    writeCells(updates);
+  };
+
   const clearSelection = () => {
     if (!selectionRect) return;
     const updates: { r: number; c: number; value: SpreadsheetCellValue }[] = [];
@@ -1059,6 +1187,20 @@ function SpreadsheetGridInner<Row extends object>(
     e.preventDefault();
     // Excel の改行（CRLF・CR）と、改行やタブを含むセル（"…" で囲まれる）も読む
     const matrix = parseClipboardTable(text);
+
+    if (onPasteProp && selection) {
+      const result = onPasteProp({ text, matrix, selection });
+      if (result) {
+        applyChange(result);
+        return;
+      }
+    }
+
+    // 1 つの値を範囲に貼ると、範囲すべてに入る（Excel と同じ）
+    if (matrix.length === 1 && matrix[0].length === 1 && isMultiCell) {
+      fillSelection(matrix[0][0]);
+      return;
+    }
 
     const startV = selectionRect ? selectionRect.top : vOf(active.r);
     const startC = selectionRect ? selectionRect.left : active.c;
@@ -1089,6 +1231,12 @@ function SpreadsheetGridInner<Row extends object>(
     const width = Math.max(...matrix.map((m) => m.length));
     setAnchor({ r: visible[startV] ?? active.r, c: startC });
     setActive({ r: lastR, c: Math.min(columns.length - 1, startC + width - 1) });
+  };
+
+  const handleCopy = (e: React.ClipboardEvent) => {
+    if (editingRef.current || !selectionRect) return;
+    e.preventDefault();
+    e.clipboardData.setData('text/plain', selectionText());
   };
 
   /* ----- 行選択 -----
@@ -1153,6 +1301,9 @@ function SpreadsheetGridInner<Row extends object>(
     return [r];
   };
 
+  const copyRow = (row: Row): Row =>
+    duplicateRow ? duplicateRow(row) : ({ ...row } as Row);
+
   const insertRows = (index: number, count = 1) => {
     const newRows = Array.from({ length: count }, () => createRow());
     const next = [...rows];
@@ -1165,7 +1316,7 @@ function SpreadsheetGridInner<Row extends object>(
   };
 
   const duplicateRows = (start: number, end: number) => {
-    const copies = rows.slice(start, end + 1).map((row) => ({ ...row }) as Row);
+    const copies = rows.slice(start, end + 1).map(copyRow);
     const next = [...rows];
     next.splice(end + 1, 0, ...copies);
     applyChange(next);
@@ -1211,7 +1362,9 @@ function SpreadsheetGridInner<Row extends object>(
   const handleKeyDown = (e: React.KeyboardEvent) => {
     // 日本語の変換中は触らない
     if (e.nativeEvent.isComposing || e.keyCode === 229) return;
-    if (editingRef.current || !active) return;
+    if (editingRef.current) return;
+    onKeyDownProp?.(e, { selection, editing: false });
+    if (e.defaultPrevented || !active) return;
     const { r, c } = active;
     const v = vOf(r);
     const column = columns[c];
@@ -1265,13 +1418,14 @@ function SpreadsheetGridInner<Row extends object>(
         return;
       }
       case 'Enter':
+        if (mod) return;
         e.preventDefault();
         if (column.type === 'checkbox') {
           toggleCheckbox(r, c);
         } else if (EDITABLE_TYPES.includes(column.type) && canEdit(r, c)) {
           startEdit(r, c);
         } else {
-          moveActive(v + 1, c);
+          moveActive(v + (e.shiftKey ? -1 : 1), c);
         }
         return;
       case 'F2':
@@ -1305,6 +1459,12 @@ function SpreadsheetGridInner<Row extends object>(
       copySelection();
       return;
     }
+    if (mod && (e.key === 'x' || e.key === 'X')) {
+      e.preventDefault();
+      copySelection();
+      clearSelection();
+      return;
+    }
     if (mod && (e.key === 'a' || e.key === 'A')) {
       e.preventDefault();
       setAnchor({ r: visible[0], c: 0 });
@@ -1312,13 +1472,13 @@ function SpreadsheetGridInner<Row extends object>(
       return;
     }
     // Undo / Redo（Cmd/Ctrl+Z、Shift で Redo。Ctrl+Y も Redo）
-    if (mod && (e.key === 'z' || e.key === 'Z')) {
+    if (history && mod && (e.key === 'z' || e.key === 'Z')) {
       e.preventDefault();
       if (e.shiftKey) redo();
       else undo();
       return;
     }
-    if (mod && (e.key === 'y' || e.key === 'Y')) {
+    if (history && mod && (e.key === 'y' || e.key === 'Y')) {
       e.preventDefault();
       redo();
       return;
@@ -1355,17 +1515,45 @@ function SpreadsheetGridInner<Row extends object>(
       e.stopPropagation();
       return;
     }
+    const mod = e.metaKey || e.ctrlKey;
+    if (mod && e.key === 'Enter' && isMultiCell) {
+      // 範囲の入力できるセルすべてに同じ値を入れる
+      e.preventDefault();
+      e.stopPropagation();
+      const draft = ed.draft;
+      setEditing(null);
+      fillSelection(draft);
+      return;
+    }
     switch (e.key) {
       case 'Enter':
       case 'Tab': {
         e.preventDefault();
-        commitEdit(e.key === 'Enter' ? 'down' : 'right');
+        const move =
+          e.key === 'Enter'
+            ? e.shiftKey
+              ? 'up'
+              : 'down'
+            : e.shiftKey
+              ? 'left'
+              : 'right';
+        commitEdit(move);
         break;
       }
       case 'Escape':
         e.preventDefault();
         cancelEdit();
         break;
+      case 'ArrowDown':
+      case 'ArrowUp': {
+        const d = e.key === 'ArrowDown' ? 1 : -1;
+        if (ed.mode === 'enter') {
+          // 打ち始めで入った編集中は ↑↓ で確定して移動（Excel と同じ）
+          e.preventDefault();
+          commitEdit(d > 0 ? 'down' : 'up');
+        }
+        break;
+      }
     }
     e.stopPropagation();
   };
@@ -1487,6 +1675,30 @@ function SpreadsheetGridInner<Row extends object>(
       rebuildBaseline(rows);
       bumpDirtyVersion();
     },
+    select: (cell, extendTo) => {
+      const c = columns.findIndex((col) => col.key === cell.columnKey);
+      if (c < 0 || cell.rowIndex < 0 || cell.rowIndex >= rows.length) return;
+      if (editingRef.current) commitEdit('none');
+      pendingFocusRef.current = true;
+      setActive({ r: cell.rowIndex, c });
+      const ec = extendTo
+        ? columns.findIndex((col) => col.key === extendTo.columnKey)
+        : -1;
+      setAnchor(
+        extendTo && ec >= 0 && extendTo.rowIndex >= 0 && extendTo.rowIndex < rows.length
+          ? { r: extendTo.rowIndex, c: ec }
+          : { r: cell.rowIndex, c },
+      );
+    },
+    focus: () => {
+      pendingFocusRef.current = true;
+      if (!active && visible.length) {
+        setActive({ r: visible[0], c: 0 });
+        setAnchor({ r: visible[0], c: 0 });
+        return;
+      }
+      focusActive();
+    },
   }));
 
   /* ----- 行に渡す操作（参照は変えず、最新の状態を読む） ----- */
@@ -1553,8 +1765,30 @@ function SpreadsheetGridInner<Row extends object>(
       if (column.type === 'checkbox' || column.type === 'readonly') return;
       startEdit(r, c);
     },
-    handleCellContextMenu: (r) => {
-      setMenuTarget({ rowIndex: r, rowIndexes: targetRowsOf(r) });
+    handleCellContextMenu: (r, c) => {
+      // 範囲の外を右クリックしたら、そのセルを選び直す（Excel と同じ）。
+      // 範囲の中なら範囲はそのまま（まとめて操作する）
+      const v = vOf(r);
+      const inside =
+        !!selectionRect &&
+        v >= selectionRect.top &&
+        v <= selectionRect.bottom &&
+        c >= selectionRect.left &&
+        c <= selectionRect.right;
+      const insideRows =
+        !!selectionRect && v >= selectionRect.top && v <= selectionRect.bottom;
+      if (!inside && !insideRows) {
+        if (editingRef.current) commitEdit('none');
+        pendingFocusRef.current = true;
+        setActive({ r, c });
+        setAnchor({ r, c });
+      }
+      setMenuTarget({
+        kind: 'cells',
+        rowIndex: r,
+        rowIndexes: targetRowsOf(r),
+        columnKey: columns[c]?.key ?? '',
+      });
     },
     handleHeaderMouseDown: (r, e) => {
       if (e.button !== 0) return;
@@ -1670,6 +1904,8 @@ function SpreadsheetGridInner<Row extends object>(
 
   const menuContent = (() => {
     if (!menuTarget) return null;
+    const custom = contextMenu?.(menuTarget) ?? null;
+    if (menuTarget.kind !== 'cells' || !rowActions) return custom;
     const targets = menuTarget.rowIndexes;
     const start = Math.min(...targets);
     const end = Math.max(...targets);
@@ -1714,7 +1950,13 @@ function SpreadsheetGridInner<Row extends object>(
         </ContextMenuItem>
       </>
     );
-    return builtins;
+    return (
+      <>
+        {builtins}
+        {custom && <ContextMenuSeparator />}
+        {custom}
+      </>
+    );
   })();
 
   const closeMenu = (e: Event) => {
@@ -1800,6 +2042,9 @@ function SpreadsheetGridInner<Row extends object>(
           return (
             <td
               key={column.key}
+              onContextMenu={() =>
+                setMenuTarget({ kind: 'footer', columnKey: column.key })
+              }
               style={left !== undefined ? { left } : undefined}
               className={cn(
                 'sticky bottom-0 z-30 h-9 border-r border-t border-[var(--color-border)] bg-[var(--color-surface-sunken)] px-2 text-sm font-medium last:border-r-0',
@@ -1845,6 +2090,7 @@ function SpreadsheetGridInner<Row extends object>(
         style={{ minWidth: tableMinWidth }}
         onKeyDown={handleKeyDown}
         onPaste={handlePaste}
+        onCopy={handleCopy}
       >
         <colgroup>
           <col style={{ width: rowHeaderWidth }} />
@@ -1869,6 +2115,8 @@ function SpreadsheetGridInner<Row extends object>(
             </th>
             {columns.map((column, c) => {
               const left = stickyLefts[c];
+              const inSel =
+                !!selectionRect && c >= selectionRect.left && c <= selectionRect.right;
               const align = column.align ?? 'left';
               return (
                 <th
@@ -1878,12 +2126,27 @@ function SpreadsheetGridInner<Row extends object>(
                   }}
                   scope="col"
                   style={left !== undefined ? { left } : undefined}
+                  onMouseDown={(e) => {
+                    // 列見出しのクリックで列を選ぶ（Shift で広げる）
+                    if (e.button !== 0 || visible.length === 0) return;
+                    e.preventDefault();
+                    if (editingRef.current) commitEdit('none');
+                    pendingFocusRef.current = true;
+                    if (e.shiftKey && anchor) {
+                      setAnchor({ r: visible[visible.length - 1], c: anchor.c });
+                      setActive({ r: visible[0], c });
+                      return;
+                    }
+                    setAnchor({ r: visible[visible.length - 1], c });
+                    setActive({ r: visible[0], c });
+                  }}
                   className={cn(
-                    'sticky top-0 z-30 border-b border-r border-[var(--color-border)] bg-[var(--color-surface-sunken)] px-2 py-1.5 text-xs font-medium text-[var(--color-on-surface-secondary)] last:border-r-0',
+                    'sticky top-0 z-30 cursor-pointer border-b border-r border-[var(--color-border)] bg-[var(--color-surface-sunken)] px-2 py-1.5 text-xs font-medium text-[var(--color-on-surface-secondary)] last:border-r-0',
                     left !== undefined && 'z-40',
                     align === 'right' && 'text-right',
                     align === 'center' && 'text-center',
                     align === 'left' && 'text-left',
+                    inSel && isMultiCell && 'text-[var(--color-on-surface-accent)]',
                   )}
                 >
                   {column.header}
@@ -1897,13 +2160,27 @@ function SpreadsheetGridInner<Row extends object>(
             })}
           </tr>
         </thead>
-        <ContextMenu onOpenChange={(open) => !open && setMenuTarget(null)}>
-          <ContextMenuTrigger asChild>{tbody}</ContextMenuTrigger>
-          <ContextMenuContent onCloseAutoFocus={closeMenu}>
-            {menuContent}
-          </ContextMenuContent>
-        </ContextMenu>
-        {tfoot}
+        {rowActions || contextMenu ? (
+          <ContextMenu onOpenChange={(open) => !open && setMenuTarget(null)}>
+            <ContextMenuTrigger asChild>{tbody}</ContextMenuTrigger>
+            <ContextMenuContent onCloseAutoFocus={closeMenu}>
+              {menuContent}
+            </ContextMenuContent>
+          </ContextMenu>
+        ) : (
+          tbody
+        )}
+        {tfoot &&
+          (contextMenu ? (
+            <ContextMenu onOpenChange={(open) => !open && setMenuTarget(null)}>
+              <ContextMenuTrigger asChild>{tfoot}</ContextMenuTrigger>
+              <ContextMenuContent onCloseAutoFocus={closeMenu}>
+                {menuContent}
+              </ContextMenuContent>
+            </ContextMenu>
+          ) : (
+            tfoot
+          ))}
       </table>
       {/* 横にスクロールしても、行追加ボタンは左に残す */}
       {!hideAddRow && (
