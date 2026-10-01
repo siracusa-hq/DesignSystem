@@ -368,10 +368,9 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
   const committingRef = React.useRef(false);
 
   // 行の同一性管理。セル更新で行オブジェクトを作り直しても React key と
-  // dirty マーカーが引き継がれるよう、WeakMap で id を採番する
+  // ベースライン（下記）が引き継がれるよう、WeakMap で id を採番する
   const rowKeyMap = React.useRef(new WeakMap<object, number>());
   const rowKeyCounter = React.useRef(0);
-  const dirtyMap = React.useRef(new WeakMap<object, Set<string>>());
 
   const getRowKey = (row: Row): number => {
     let key = rowKeyMap.current.get(row);
@@ -385,20 +384,41 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
   const transferRowIdentity = (oldRow: Row, newRow: Row) => {
     const key = rowKeyMap.current.get(oldRow);
     if (key !== undefined) rowKeyMap.current.set(newRow, key);
-    const dirty = dirtyMap.current.get(oldRow);
-    if (dirty) dirtyMap.current.set(newRow, new Set(dirty));
   };
 
-  const markDirty = (row: Row, columnKeys: string[]) => {
-    const set = dirtyMap.current.get(row) ?? new Set<string>();
-    for (const key of columnKeys) set.add(key);
-    dirtyMap.current.set(row, set);
-    bumpDirtyVersion();
+  /* ----- 未保存マーカー（ベースライン比較） -----
+
+     「一度でも編集したか」ではなく「最後に保存した時点（ベースライン）の
+     値と現在値が違うか」で判定する。値を元に戻したセルや Undo したセルの
+     マーカーは自然に消える。ベースラインは行 id → 行オブジェクトのマップで、
+     マウント時・clearDirty 時・外部からの rows 差し替え時に取り直す */
+
+  const baselineRef = React.useRef<Map<number, Row> | null>(null);
+  if (baselineRef.current === null) {
+    baselineRef.current = new Map(rows.map((row) => [getRowKey(row), row]));
+  }
+
+  const rebuildBaseline = (fromRows: Row[]) => {
+    baselineRef.current = new Map(fromRows.map((row) => [getRowKey(row), row]));
+  };
+
+  // 空値（null / undefined / 空文字）は同一とみなして比較する
+  const normalizeForDirty = (v: SpreadsheetCellValue) =>
+    v === undefined || v === null || v === '' ? null : v;
+
+  const isCellDirty = (row: Row, columnKey: string): boolean => {
+    const base = baselineRef.current!.get(getRowKey(row));
+    // ベースラインに無い行 = 保存後に追加された行
+    if (!base) return true;
+    return !Object.is(
+      normalizeForDirty(base[columnKey]),
+      normalizeForDirty(row[columnKey]),
+    );
   };
 
   React.useImperativeHandle(ref, () => ({
     clearDirty: () => {
-      dirtyMap.current = new WeakMap();
+      rebuildBaseline(rows);
       bumpDirtyVersion();
     },
   }));
@@ -460,6 +480,9 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
     if (rows !== lastInternalRowsRef.current) {
       historyRef.current = { past: [], future: [] };
       lastInternalRowsRef.current = rows;
+      // 外部からのデータ差し替えは「保存済みの新しい状態」とみなす
+      rebuildBaseline(rows);
+      bumpDirtyVersion();
     }
   }, [rows]);
 
@@ -520,10 +543,6 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
       }
       replaced.set(r, newRow);
       next[r] = newRow;
-      markDirty(newRow, [key]);
-    }
-    for (const row of appendedRows) {
-      markDirty(row, columns.filter((c) => c.type !== 'readonly').map((c) => c.key));
     }
     applyChange(next);
   };
@@ -562,7 +581,6 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
         // 最下行で Enter → 新規行を追加して移動
         // （rows はまだ古い配列なので clamp を通さず直接移動する）
         const newRow = createRow();
-        markDirty(newRow, columns.filter((col) => col.type !== 'readonly').map((col) => col.key));
         applyChange([...rows, newRow]);
         setActive({ r: r + 1, c });
         setAnchor({ r: r + 1, c });
@@ -743,15 +761,8 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
     return { start: menuRow, end: menuRow };
   };
 
-  const editableKeys = () =>
-    columns.filter((c) => c.type !== 'readonly').map((c) => c.key);
-
   const insertRows = (index: number, count = 1) => {
-    const newRows = Array.from({ length: count }, () => {
-      const row = createRow();
-      markDirty(row, editableKeys());
-      return row;
-    });
+    const newRows = Array.from({ length: count }, () => createRow());
     const next = [...rows];
     next.splice(index, 0, ...newRows);
     applyChange(next);
@@ -761,11 +772,7 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
   };
 
   const duplicateRows = (start: number, end: number) => {
-    const copies = rows.slice(start, end + 1).map((row) => {
-      const copy = { ...row } as Row;
-      markDirty(copy, editableKeys());
-      return copy;
-    });
+    const copies = rows.slice(start, end + 1).map((row) => ({ ...row }) as Row);
     const next = [...rows];
     next.splice(end + 1, 0, ...copies);
     applyChange(next);
@@ -1156,7 +1163,7 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
                         ? null
                         : validateCell(column, row[column.key], row);
                     const dirty =
-                      dirtyMap.current.get(row)?.has(column.key) ?? false;
+                      column.type !== 'readonly' && isCellDirty(row, column.key);
                     return (
                       <td
                         key={column.key}

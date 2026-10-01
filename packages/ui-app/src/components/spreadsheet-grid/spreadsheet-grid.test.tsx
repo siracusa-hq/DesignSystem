@@ -665,6 +665,42 @@ describe('SpreadsheetGrid 行選択と複数行操作', () => {
 });
 
 describe('SpreadsheetGrid dirty マーカー', () => {
+  it('値を元に戻すとマーカーが消える（ベースライン比較）', async () => {
+    const user = userEvent.setup();
+    render(<Harness />);
+    const cell = getCell('サーバー構築');
+    await user.click(cell);
+    // 変更 → マーカーが付く
+    await user.keyboard('{F2}');
+    let input = screen.getByRole('textbox');
+    await user.clear(input);
+    await user.type(input, '別の値');
+    await user.keyboard('{Enter}');
+    expect(document.querySelector('td[data-dirty]')).not.toBeNull();
+    // 手で元の値に戻す → マーカーが消える
+    await user.click(screen.getByText('別の値').closest('td')!);
+    await user.keyboard('{F2}');
+    input = screen.getByRole('textbox');
+    await user.clear(input);
+    await user.type(input, 'サーバー構築');
+    await user.keyboard('{Enter}');
+    expect(document.querySelector('td[data-dirty]')).toBeNull();
+  });
+
+  it('Undo で値が戻るとマーカーも消える', async () => {
+    const user = userEvent.setup();
+    render(<Harness />);
+    await user.click(getCell('サーバー構築'));
+    await user.keyboard('{F2}');
+    const input = screen.getByRole('textbox');
+    await user.clear(input);
+    await user.type(input, '別の値');
+    await user.keyboard('{Enter}');
+    expect(document.querySelector('td[data-dirty]')).not.toBeNull();
+    await user.keyboard('{Control>}z{/Control}');
+    expect(document.querySelector('td[data-dirty]')).toBeNull();
+  });
+
   it('編集したセルに data-dirty が付き、clearDirty で消える', async () => {
     const user = userEvent.setup();
     const ref = React.createRef<SpreadsheetGridHandle>();
