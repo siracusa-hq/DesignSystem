@@ -33,7 +33,8 @@ const meta: Meta = {
           '選択の通知（onSelectionChange）・ref.select／focus・キー操作の差し込み（onKeyDown）・' +
           '右クリックの項目（contextMenu・rowActions）・アプリ側の元に戻す（history={false}）・' +
           '貼り付けの差し替え（onPaste）で、アプリの画面と連動できる。' +
-          '編集中の Ctrl/Cmd+Enter で範囲にまとめて入力、Ctrl/Cmd+X で切り取り、列見出しで列を選ぶ。',
+          '編集中の Ctrl/Cmd+Enter で範囲にまとめて入力、Ctrl/Cmd+X で切り取り、列見出しで列を選ぶ。' +
+          '候補つきの入力列（type: \'autocomplete\'）は、打つたびに候補を出し、選ぶと行のほかの項目も書き換えられる。',
       },
     },
   },
@@ -619,6 +620,126 @@ export const AppIntegration: Story = {
             : '未選択'}
         </p>
       </div>
+    );
+  },
+};
+
+/* ----- 候補つきの入力列（autocomplete） ----- */
+
+interface PartRow {
+  id: string;
+  item: string;
+  qty: number | null;
+  unit: string | null;
+  unitPrice: number | null;
+}
+
+interface PartData {
+  unit: string;
+  unitPrice: number;
+}
+
+const partCatalog: { value: string; label: string; description: string; data: PartData }[] = [
+  { value: 'p1', label: '配管工事', description: '給排水', data: { unit: '式', unitPrice: 120000 } },
+  { value: 'p2', label: '配線工事', description: '電気', data: { unit: 'ｍ', unitPrice: 800 } },
+  { value: 'p3', label: '内装解体', description: '解体', data: { unit: '㎡', unitPrice: 2000 } },
+  { value: 'p4', label: '産廃処分費', description: '処分', data: { unit: '式', unitPrice: 50000 } },
+  { value: 'p5', label: '養生費', description: '共通', data: { unit: '式', unitPrice: 32000 } },
+];
+
+const partUnits = ['式', '個', '台', '㎡', 'ｍ', '人工'].map((u) => ({ value: u, label: u }));
+
+let partSeq = 0;
+const newPart = (init: Partial<PartRow> = {}): PartRow => ({
+  item: '',
+  qty: null,
+  unit: null,
+  unitPrice: null,
+  ...init,
+  id: `part-${++partSeq}`,
+});
+
+/**
+ * 候補つきの入力列（type: 'autocomplete'）。
+ *
+ * - 品目: 打つたびに候補を出す（getOptions）。2 文字以上の前方一致か完全一致のときだけ
+ *   先頭を選ぶ。選ぶと単位・単価も入り（onSelectOption）、数量の列へ移る（focusAfterSelect）。
+ *   候補にない名前は、最後の行「…を新しい品目として入力」で入る（freeTextOption）
+ * - 単位: 決まった候補（options）を打った文字で絞り込む。全角と半角の違いは吸収する
+ *   （m2 で ㎡、m で ｍ にも当たる）。Excel から貼った単位も同じように照合する
+ */
+export const Autocomplete: Story = {
+  render: () => {
+    const [rows, setRows] = useState<PartRow[]>([
+      newPart({ item: '配管工事', qty: 1, unit: '式', unitPrice: 120000 }),
+      newPart(),
+      newPart(),
+    ]);
+    const columns: SpreadsheetColumn<PartRow>[] = [
+      {
+        key: 'item',
+        header: '品目',
+        type: 'autocomplete',
+        width: 220,
+        getOptions: (query) => partCatalog.filter((p) => !query || p.label.includes(query)),
+        renderOption: (option) => {
+          const data = option.data as PartData;
+          return (
+            <span className="flex items-baseline justify-between gap-3">
+              <span>
+                {option.label}
+                <span className="ml-2 text-xs text-[var(--color-on-surface-muted)]">
+                  {option.description}
+                </span>
+              </span>
+              <span className="tabular-nums text-xs text-[var(--color-on-surface-secondary)]">
+                {data.unitPrice.toLocaleString()}／{data.unit}
+              </span>
+            </span>
+          );
+        },
+        optionsHeader: () => 'よく使う品目・↑↓で選んで Enter',
+        optionsWidth: 320,
+        onSelectOption: (row, option) => {
+          const data = option.data as PartData;
+          return { ...row, item: option.label, unit: data.unit, unitPrice: data.unitPrice };
+        },
+        focusAfterSelect: () => 'qty',
+        freeTextOption: (text) => `「${text}」を新しい品目として入力`,
+      },
+      { key: 'qty', header: '数量', type: 'number', width: 90 },
+      {
+        key: 'unit',
+        header: '単位',
+        type: 'autocomplete',
+        width: 80,
+        align: 'center',
+        options: partUnits,
+        optionsWidth: 120,
+      },
+      { key: 'unitPrice', header: '単価', type: 'number', width: 120 },
+      {
+        key: 'amount',
+        header: '金額',
+        type: 'readonly',
+        width: 130,
+        align: 'right',
+        getValue: (row) =>
+          row.qty != null && row.unitPrice != null
+            ? (row.qty * row.unitPrice).toLocaleString()
+            : '',
+      },
+    ];
+    return (
+      <SpreadsheetGrid<PartRow>
+        aria-label="見積明細（候補つき）"
+        className="max-w-[720px]"
+        columns={columns}
+        rows={rows}
+        onRowsChange={setRows}
+        getRowId={(row) => row.id}
+        createRow={() => newPart()}
+      />
     );
   },
 };
