@@ -288,3 +288,40 @@ export const HundredRows: Story = {
     );
   },
 };
+
+/**
+ * 行の並び替え（Drag & Drop）。
+ *
+ * 1. 行番号をクリックして行を選択する（Shift+クリックで複数行）
+ * 2. 選択した行番号（グリップドット表示）を掴んでドラッグする
+ * 3. ドロップ位置に表示される線のところへ離すと移動する
+ *
+ * 並び替えも Cmd/Ctrl+Z で元に戻せる。キーボード派は右クリック →
+ * 「上へ移動 / 下へ移動」でも同じ操作ができる。
+ */
+export const DragAndDrop: Story = {
+  render: () => {
+    const [rows, setRows] = useState<EstimateRow[]>([
+      { item: '1. 要件定義', qty: 10, unit: 'person-day', unitPrice: 80000, taxable: true, note: '' },
+      { item: '2. 基本設計', qty: 15, unit: 'person-day', unitPrice: 75000, taxable: true, note: '' },
+      { item: '3. 実装', qty: 40, unit: 'person-day', unitPrice: 75000, taxable: true, note: '' },
+      { item: '4. テスト', qty: 20, unit: 'person-day', unitPrice: 70000, taxable: true, note: '' },
+      { item: '5. リリース作業', qty: 1, unit: 'set', unitPrice: 200000, taxable: true, note: '' },
+      { item: '6. 保守サポート', qty: 12, unit: 'month', unitPrice: 50000, taxable: true, note: '年間契約' },
+    ]);
+    return (
+      <div className="flex max-w-[960px] flex-col gap-2">
+        <p className="text-sm text-[var(--color-on-surface-secondary)]">
+          行番号をクリックして選択 → グリップドットを掴んでドラッグで並び替え。
+        </p>
+        <SpreadsheetGrid
+          aria-label="見積明細（並び替え）"
+          columns={estimateColumns}
+          rows={rows}
+          onRowsChange={setRows}
+          createRow={createEstimateRow}
+        />
+      </div>
+    );
+  },
+};

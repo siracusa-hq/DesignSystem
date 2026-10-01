@@ -1,5 +1,13 @@
 import * as React from 'react';
-import { Plus, Copy, Trash2, ArrowUp, ArrowDown, AlertCircle } from 'lucide-react';
+import {
+  Plus,
+  Copy,
+  Trash2,
+  ArrowUp,
+  ArrowDown,
+  AlertCircle,
+  GripVertical,
+} from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { Checkbox } from '@/components/checkbox';
 import {
@@ -1114,9 +1122,19 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
                         rowDrag.over === rows.length &&
                         r === rows.length - 1 &&
                         'shadow-[inset_0_-2px_0_var(--color-primary-500)]',
+                      rowDrag && 'cursor-grabbing',
                     )}
                   >
-                    {r + 1}
+                    <span className="flex items-center justify-center">
+                      {/* 選択行はドラッグ可能。グリップドットでアフォーダンスを示す */}
+                      {isRowSelected(r) && (
+                        <GripVertical
+                          aria-hidden
+                          className="-ml-1 h-3.5 w-3.5 shrink-0 opacity-60"
+                        />
+                      )}
+                      {r + 1}
+                    </span>
                   </th>
                   {columns.map((column, c) => {
                     const isEditing = editing?.r === r && editing?.c === c;
