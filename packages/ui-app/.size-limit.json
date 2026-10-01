@@ -21,5 +21,11 @@
     "path": "dist/index.js",
     "import": "{ DataTable }",
     "limit": "56 kB"
+  },
+  {
+    "name": "SpreadsheetGrid のみ",
+    "path": "dist/index.js",
+    "import": "{ SpreadsheetGrid }",
+    "limit": "45 kB"
   }
 ]
