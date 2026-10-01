@@ -66,6 +66,9 @@ function Harness({
 }
 
 const getCell = (text: string) => screen.getByText(text).closest('td')!;
+// 入力できるセルでは、フォーカスはセルの中の入力欄（日本語入力のため）
+const expectFocusIn = (cell: HTMLElement) =>
+  expect(cell.contains(document.activeElement)).toBe(true);
 
 describe('SpreadsheetGrid 基本描画', () => {
   it('grid ロールと行・セルを描画する', () => {
@@ -109,11 +112,11 @@ describe('SpreadsheetGrid キーボードナビゲーション', () => {
     render(<Harness />);
     const first = getCell('サーバー構築');
     await user.click(first);
-    expect(first).toHaveFocus();
+    expectFocusIn(first);
     await user.keyboard('{ArrowDown}');
-    expect(getCell('保守')).toHaveFocus();
+    expectFocusIn(getCell('保守'));
     await user.keyboard('{ArrowRight}');
-    expect(screen.getByText('12').closest('td')).toHaveFocus();
+    expectFocusIn(screen.getByText('12').closest('td')!);
   });
 
   it('Tab で右のセルへ移動する', async () => {
@@ -122,8 +125,7 @@ describe('SpreadsheetGrid キーボードナビゲーション', () => {
     const first = getCell('サーバー構築');
     await user.click(first);
     await user.keyboard('{Tab}');
-    const focused = document.activeElement as HTMLElement;
-    expect(focused.tagName).toBe('TD');
+    const focused = (document.activeElement as HTMLElement).closest('td')!;
     expect(focused).not.toBe(first);
     expect(focused.textContent).toBe('1'); // qty セル
   });
@@ -134,7 +136,7 @@ describe('SpreadsheetGrid キーボードナビゲーション', () => {
     const first = getCell('サーバー構築');
     await user.click(first);
     await user.keyboard('{ArrowUp}{ArrowLeft}');
-    expect(first).toHaveFocus();
+    expectFocusIn(first);
   });
 });
 
@@ -153,7 +155,7 @@ describe('SpreadsheetGrid 編集', () => {
     expect(onRows).toHaveBeenCalled();
     expect(screen.getByText('ネットワーク設計')).toBeInTheDocument();
     // 下のセルに移動している
-    expect(getCell('保守')).toHaveFocus();
+    expectFocusIn(getCell('保守'));
   });
 
   it('文字入力で即編集が始まり、入力文字が draft になる', async () => {
