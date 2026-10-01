@@ -3,6 +3,14 @@ import { Plus, Copy, Trash2, ArrowUp, ArrowDown, AlertCircle } from 'lucide-reac
 import { cn } from '@/lib/cn';
 import { Checkbox } from '@/components/checkbox';
 import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '@/components/select';
+import { DatePicker } from '@/components/date-picker';
+import {
   ContextMenu,
   ContextMenuTrigger,
   ContextMenuContent,
@@ -209,6 +217,107 @@ function formatCellForDisplay<Row extends SpreadsheetRow>(
 }
 
 /* ----- 本体 ----- */
+
+/* ----- select / date のセルエディタ -----
+
+   既存の Select / DatePicker（Radix Popover ベース）をセルエディタとして使う。
+   どちらも Portal を使うため blur ベースの確定は成立しない（フォーカスが
+   Portal に移った瞬間に blur が発火する）。そのため確定・取消は
+   「値の選択 = 確定」「Escape / 選択せず閉じる = 取消」で扱い、
+   別セルクリック時の取消はグリッド側の onMouseDown で面倒を見る。 */
+
+const SELECT_CLEAR_VALUE = '__spreadsheet_grid_clear__';
+
+function SelectCellEditor<Row extends SpreadsheetRow>({
+  column,
+  value,
+  invalid,
+  onCommit,
+  onCancel,
+}: {
+  column: SpreadsheetColumn<Row>;
+  value: SpreadsheetCellValue;
+  invalid: boolean;
+  onCommit: (value: SpreadsheetCellValue) => void;
+  onCancel: () => void;
+}) {
+  const committedRef = React.useRef(false);
+  return (
+    <Select
+      defaultOpen
+      value={typeof value === 'string' && value !== '' ? value : undefined}
+      onValueChange={(v) => {
+        committedRef.current = true;
+        onCommit(v === SELECT_CLEAR_VALUE ? null : v);
+      }}
+      onOpenChange={(open) => {
+        // 値を選ばずに閉じたら取消（選択時は onValueChange が先に走る）
+        if (!open && !committedRef.current) onCancel();
+      }}
+    >
+      <SelectTrigger
+        aria-label={column.header}
+        aria-invalid={invalid || undefined}
+        className="h-full w-full rounded-none border-0 bg-[var(--color-surface-raised)] px-2 text-sm ring-2 ring-inset ring-[var(--color-primary-500)]"
+      >
+        <SelectValue placeholder="—" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value={SELECT_CLEAR_VALUE}>—</SelectItem>
+        {column.options?.map((o) => (
+          <SelectItem key={o.value} value={o.value}>
+            {o.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+function DateCellEditor<Row extends SpreadsheetRow>({
+  column,
+  value,
+  invalid,
+  onCommit,
+  onCancel,
+}: {
+  column: SpreadsheetColumn<Row>;
+  value: SpreadsheetCellValue;
+  invalid: boolean;
+  onCommit: (value: SpreadsheetCellValue) => void;
+  onCancel: () => void;
+}) {
+  const triggerRef = React.useRef<HTMLButtonElement>(null);
+
+  // 編集開始と同時にカレンダーを開く（DatePicker は open を外から制御できない
+  // ため、トリガーのクリックで開く）
+  React.useEffect(() => {
+    triggerRef.current?.focus();
+    triggerRef.current?.click();
+  }, []);
+
+  return (
+    <div
+      className="h-full w-full"
+      onKeyDown={(e) => {
+        // Portal 内のキー操作も React ツリー経由でここに届く。
+        // グリッドのナビゲーションには渡さない
+        e.stopPropagation();
+        if (e.key === 'Escape') onCancel();
+      }}
+    >
+      <DatePicker
+        ref={triggerRef}
+        value={typeof value === 'string' ? value : ''}
+        onValueChange={(v) => onCommit(v === '' ? null : v)}
+        aria-label={column.header}
+        aria-invalid={invalid || undefined}
+        size="sm"
+        className="h-full w-full rounded-none border-0 ring-2 ring-inset ring-[var(--color-primary-500)]"
+      />
+    </div>
+  );
+}
 
 interface CellPos {
   r: number;
@@ -642,9 +751,36 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
 
   /* ----- セルの描画 ----- */
 
+  // select / date（ポップオーバー型エディタ）の確定。値の選択 = 確定
+  const commitPickerValue = (value: SpreadsheetCellValue) => {
+    if (!editing) return;
+    const column = columns[editing.c];
+    const current = rows[editing.r]?.[column.key] ?? null;
+    if (value !== current) {
+      updateCells([{ r: editing.r, key: column.key, value }]);
+    }
+    setEditing(null);
+  };
+
   const renderEditor = (column: SpreadsheetColumn<Row>, state: EditingState) => {
-    const { ok, value } = parseDraft(column.type, state.draft);
     const row = rows[state.r];
+
+    if (column.type === 'select' || column.type === 'date') {
+      const currentValue = row?.[column.key] ?? null;
+      const invalid = !!validateCell(column, currentValue, row);
+      const Editor = column.type === 'select' ? SelectCellEditor : DateCellEditor;
+      return (
+        <Editor
+          column={column}
+          value={currentValue}
+          invalid={invalid}
+          onCommit={commitPickerValue}
+          onCancel={cancelEdit}
+        />
+      );
+    }
+
+    const { ok, value } = parseDraft(column.type, state.draft);
     // 入力中のリアルタイム検証。パース不能な数値はパースエラーを優先
     const liveError = !ok
       ? '数値で入力してください'
@@ -668,47 +804,26 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
       'h-full w-full border-0 bg-[var(--color-surface-raised)] px-2 text-sm outline-none',
       'ring-2 ring-inset',
       liveError
-        ? 'ring-[var(--color-error-500)]'
+        ? 'ring-[var(--color-error-400)]'
         : 'ring-[var(--color-primary-500)]',
     );
 
     return (
       <>
-        {column.type === 'select' ? (
-          <select
-            ref={(node) => {
-              editorRef.current = node;
-            }}
-            value={state.draft}
-            onChange={(e) => setEditing({ ...state, draft: e.target.value })}
-            onKeyDown={editorKeyDown}
-            onBlur={() => commitEdit('none')}
-            className={editorClass}
-            aria-invalid={liveError ? true : undefined}
-          >
-            <option value="">—</option>
-            {column.options?.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </select>
-        ) : (
-          <input
-            ref={(node) => {
-              editorRef.current = node;
-            }}
-            type={column.type === 'date' ? 'date' : 'text'}
-            inputMode={column.type === 'number' ? 'decimal' : undefined}
-            value={state.draft}
-            onChange={(e) => setEditing({ ...state, draft: e.target.value })}
-            onKeyDown={editorKeyDown}
-            onBlur={() => commitEdit('none')}
-            className={editorClass}
-            aria-invalid={liveError ? true : undefined}
-            aria-describedby={liveError ? 'spreadsheet-live-error' : undefined}
-          />
-        )}
+        <input
+          ref={(node) => {
+            editorRef.current = node;
+          }}
+          type="text"
+          inputMode={column.type === 'number' ? 'decimal' : undefined}
+          value={state.draft}
+          onChange={(e) => setEditing({ ...state, draft: e.target.value })}
+          onKeyDown={editorKeyDown}
+          onBlur={() => commitEdit('none')}
+          className={editorClass}
+          aria-invalid={liveError ? true : undefined}
+          aria-describedby={liveError ? 'spreadsheet-live-error' : undefined}
+        />
         {liveError && (
           <div
             id="spreadsheet-live-error"
@@ -763,7 +878,7 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
               >
                 {column.header}
                 {column.required && (
-                  <span aria-hidden className="ml-0.5 text-[var(--color-error-500)]">
+                  <span aria-hidden className="ml-0.5 text-[var(--color-error-400)]">
                     *
                   </span>
                 )}
@@ -821,6 +936,17 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
                         data-error={error ? true : undefined}
                         onMouseDown={(e) => {
                           if (e.button !== 0) return;
+                          // select / date エディタは Portal を使うため blur で閉じない。
+                          // 別セルのクリックでここから取り消す
+                          // （input エディタは mousedown 後の blur が確定を担う）
+                          if (
+                            editing &&
+                            (editing.r !== r || editing.c !== c) &&
+                            (columns[editing.c].type === 'select' ||
+                              columns[editing.c].type === 'date')
+                          ) {
+                            setEditing(null);
+                          }
                           draggingRef.current = true;
                           if (e.shiftKey && active) {
                             setActive({ r, c });
@@ -837,15 +963,18 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
                           column.type === 'number' && 'text-right tabular-nums',
                           column.type === 'readonly' &&
                             'bg-[var(--color-surface-sunken)] text-[var(--color-on-surface-secondary)]',
+                          // エラーは淡い塗り + 細いリングに留める（赤を強くしすぎない）。
+                          // 選択中は選択色を優先し、アクティブ枠は ring と別プロパティ
+                          // （shadow）なので共存する
+                          error &&
+                            !isEditing &&
+                            'bg-[color-mix(in_oklab,var(--color-error-500)_10%,transparent)] ring-1 ring-inset ring-[var(--color-error-400)]',
                           isSelected(r, c) &&
                             !isEditing &&
                             'bg-[var(--color-surface-accent)]',
                           isActive &&
                             !isEditing &&
                             'shadow-[inset_0_0_0_2px_var(--color-primary-500)]',
-                          error &&
-                            !isEditing &&
-                            'shadow-[inset_0_0_0_1.5px_var(--color-error-500)]',
                           isEditing && 'p-0',
                         )}
                       >

@@ -215,8 +215,8 @@ interface TypesRow extends SpreadsheetRow {
 
 /**
  * サポートする全データ型: text / number / select / date / checkbox / readonly。
- * number は右寄せ + 桁区切り表示、checkbox は Space で、date はネイティブの
- * 日付入力で編集する。
+ * number は右寄せ + 桁区切り表示、checkbox は Space でトグル。select / date は
+ * デザインシステムの Select / DatePicker がセルエディタとして開く。
  */
 export const AllColumnTypes: Story = {
   render: () => {

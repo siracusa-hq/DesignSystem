@@ -206,15 +206,83 @@ describe('SpreadsheetGrid 編集', () => {
     expect(screen.getByRole('rowheader', { name: '3' })).toBeInTheDocument();
   });
 
-  it('select 列は選択肢を編集できる', async () => {
+  it('select 列は Select コンポーネントで編集でき、選択で確定される', async () => {
     const user = userEvent.setup();
-    render(<Harness />);
-    const cell = screen.getByText('式').closest('td')!;
-    await user.dblClick(cell);
-    const select = screen.getByRole('combobox');
-    await user.selectOptions(select, 'piece');
-    fireEvent.blur(select);
+    const onRows = vi.fn();
+    render(<Harness onRows={onRows} />);
+    await user.dblClick(screen.getByText('式').closest('td')!);
+    // 編集開始と同時に Radix Select が開いている
+    await user.click(await screen.findByRole('option', { name: '個' }));
+    expect(onRows.mock.calls.at(-1)![0][0].unit).toBe('piece');
     expect(screen.getByText('個')).toBeInTheDocument();
+    // エディタは閉じている
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+  });
+
+  it('select 編集を選択せず Escape で閉じるとキャンセルされる', async () => {
+    const user = userEvent.setup();
+    const onRows = vi.fn();
+    render(<Harness onRows={onRows} />);
+    await user.dblClick(screen.getByText('式').closest('td')!);
+    expect(await screen.findByRole('listbox')).toBeInTheDocument();
+    await user.keyboard('{Escape}');
+    expect(onRows).not.toHaveBeenCalled();
+    expect(screen.getByText('式')).toBeInTheDocument();
+  });
+
+  it('select 編集で — を選ぶと値がクリアされる', async () => {
+    const user = userEvent.setup();
+    const onRows = vi.fn();
+    render(<Harness onRows={onRows} />);
+    await user.dblClick(screen.getByText('式').closest('td')!);
+    await user.click(await screen.findByRole('option', { name: '—' }));
+    expect(onRows.mock.calls.at(-1)![0][0].unit).toBeNull();
+  });
+
+  it('date 列は DatePicker で編集でき、日付選択で確定される', async () => {
+    const user = userEvent.setup();
+    const onRows = vi.fn();
+    const dateColumns: SpreadsheetColumn<EstimateRow>[] = [
+      { key: 'item', header: '品目', type: 'text' },
+      { key: 'due', header: '納期', type: 'date' },
+    ];
+    render(
+      <Harness
+        cols={dateColumns}
+        initial={[
+          { item: 'A', qty: null, unit: null, note: '', due: '2026-10-01' },
+        ]}
+        onRows={onRows}
+      />,
+    );
+    await user.dblClick(screen.getByText('2026-10-01').closest('td')!);
+    // 編集開始と同時にカレンダーが開く（2026年10月を表示）
+    expect(await screen.findByText('2026年10月')).toBeInTheDocument();
+    await user.click(screen.getByText('20'));
+    expect(onRows.mock.calls.at(-1)![0][0].due).toBe('2026-10-20');
+  });
+
+  it('date 編集は Escape でキャンセルされる', async () => {
+    const user = userEvent.setup();
+    const onRows = vi.fn();
+    const dateColumns: SpreadsheetColumn<EstimateRow>[] = [
+      { key: 'item', header: '品目', type: 'text' },
+      { key: 'due', header: '納期', type: 'date' },
+    ];
+    render(
+      <Harness
+        cols={dateColumns}
+        initial={[
+          { item: 'A', qty: null, unit: null, note: '', due: '2026-10-01' },
+        ]}
+        onRows={onRows}
+      />,
+    );
+    await user.dblClick(screen.getByText('2026-10-01').closest('td')!);
+    await screen.findByText('2026年10月');
+    await user.keyboard('{Escape}');
+    expect(onRows).not.toHaveBeenCalled();
+    expect(screen.getByText('2026-10-01')).toBeInTheDocument();
   });
 });
 
