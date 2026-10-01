@@ -474,6 +474,7 @@ export {
   type SpreadsheetCellValue,
   type SpreadsheetRow,
   type SpreadsheetError,
+  type SpreadsheetOption,
   type SpreadsheetCellRef,
   type SpreadsheetSelection,
   type SpreadsheetMenuTarget,
