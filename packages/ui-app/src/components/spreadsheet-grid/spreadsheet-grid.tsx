@@ -570,18 +570,29 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
     // その場で修正を促す（エラーはライブ表示済み）。blur 時のみ破棄して閉じる
     if (!ok && move !== 'none') return;
     committingRef.current = true;
-    const current = rows[editing.r]?.[column.key] ?? null;
-    if (ok && value !== current) {
-      updateCells([{ r: editing.r, key: column.key, value }]);
-    }
     const { r, c } = editing;
+    const current = rows[r]?.[column.key] ?? null;
+    const changed = ok && value !== current;
+    const appendRow = move === 'down' && r === rows.length - 1;
     setEditing(null);
+
+    // セル更新と行追加は必ず1回の applyChange にまとめる。
+    // 別々に呼ぶと2回目が古い rows から作られ、1回目の更新を上書きして
+    // 「Enter で変更が消えて行だけ増える」バグになる（実際に起きた）
+    if (changed || appendRow) {
+      const next = [...rows];
+      if (changed) {
+        const newRow = { ...next[r], [column.key]: value } as Row;
+        transferRowIdentity(next[r], newRow);
+        next[r] = newRow;
+      }
+      if (appendRow) next.push(createRow());
+      applyChange(next);
+    }
+
     if (move === 'down') {
-      if (r === rows.length - 1) {
-        // 最下行で Enter → 新規行を追加して移動
-        // （rows はまだ古い配列なので clamp を通さず直接移動する）
-        const newRow = createRow();
-        applyChange([...rows, newRow]);
+      if (appendRow) {
+        // rows はまだ古い配列なので clamp を通さず直接移動する
         setActive({ r: r + 1, c });
         setAnchor({ r: r + 1, c });
       } else {
