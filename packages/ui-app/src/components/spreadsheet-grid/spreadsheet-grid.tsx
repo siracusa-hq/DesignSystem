@@ -967,6 +967,13 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
       : validateCell(column, value, row);
 
     const editorKeyDown = (e: React.KeyboardEvent) => {
+      // IME（日本語入力など）の変換確定の Enter / Tab はセル確定として
+      // 扱わない。isComposing はブラウザにより確定の瞬間 false になる
+      // ことがあるため、レガシーな keyCode 229 も併せて見る
+      if (e.nativeEvent.isComposing || e.keyCode === 229) {
+        e.stopPropagation();
+        return;
+      }
       if (e.key === 'Enter') {
         e.preventDefault();
         commitEdit('down');

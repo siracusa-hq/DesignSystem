@@ -212,6 +212,25 @@ describe('SpreadsheetGrid 編集', () => {
     expect(screen.queryByRole('rowheader', { name: '3' })).not.toBeInTheDocument();
   });
 
+  it('IME 変換確定の Enter ではセル確定されない', async () => {
+    const user = userEvent.setup();
+    const onRows = vi.fn();
+    render(<Harness onRows={onRows} />);
+    await user.click(getCell('サーバー構築'));
+    await user.keyboard('{F2}');
+    const input = screen.getByRole('textbox');
+    await user.clear(input);
+    await user.type(input, 'かな入力ちゅう');
+    // IME 確定の Enter（isComposing: true）
+    fireEvent.keyDown(input, { key: 'Enter', isComposing: true, keyCode: 229 });
+    // 編集モードのまま、確定も移動もしていない
+    expect(screen.getByRole('textbox')).toBeInTheDocument();
+    expect(onRows).not.toHaveBeenCalled();
+    // 通常の Enter で確定される
+    await user.keyboard('{Enter}');
+    expect(screen.getByText('かな入力ちゅう')).toBeInTheDocument();
+  });
+
   it('最下行で変更なしの Enter 確定では何も起きない', async () => {
     const user = userEvent.setup();
     const onRows = vi.fn();
