@@ -20,7 +20,8 @@ const meta: Meta = {
           'F2・文字入力・ダブルクリックで編集、Shift+矢印/ドラッグで範囲選択、' +
           'Excel/Google Sheets との TSV コピー&ペースト、右クリックの行操作に対応。' +
           '行番号のクリック（Shift+クリック / ドラッグで複数行）で行を選択し、' +
-          '右クリックからまとめて挿入・複製・移動・削除できる。' +
+          '右クリックからまとめて挿入・複製・移動・削除でき、' +
+          '選択した行は行番号のドラッグ&ドロップでも並び替えられる。' +
           'Cmd/Ctrl+Z で元に戻す、Cmd/Ctrl+Shift+Z または Ctrl+Y でやり直し。' +
           'バリデーションエラーは入力中にリアルタイム表示される。',
       },
@@ -169,7 +170,7 @@ export const WithValidation: Story = {
  * 一括保存フロー。変更したセルには右上に警告色のマーカーが付き、
  * 「保存」で clearDirty() を呼ぶとマーカーが消える（実アプリでは API 送信成功後に呼ぶ）。
  */
-export const DirtyTracking: Story = {
+export const UnsavedChanges: Story = {
   render: () => {
     const gridRef = useRef<SpreadsheetGridHandle>(null);
     const [rows, setRows] = useState(initialEstimate);

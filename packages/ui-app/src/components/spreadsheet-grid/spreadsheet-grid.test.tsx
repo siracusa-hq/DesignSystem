@@ -575,6 +575,71 @@ describe('SpreadsheetGrid 行選択と複数行操作', () => {
     expect(rows.map((r: EstimateRow) => r.item)).toEqual(['A', 'B']);
   });
 
+  it('選択した行をドラッグ&ドロップで並び替えられる', async () => {
+    const user = userEvent.setup();
+    const onRows = vi.fn();
+    render(<Harness initial={threeRows()} onRows={onRows} />);
+    const h1 = screen.getByRole('rowheader', { name: '1' });
+    await user.click(h1); // 行1を選択
+    fireEvent.mouseDown(h1); // 選択済みヘッダーからドラッグ開始
+    fireEvent.mouseEnter(getCell('C').closest('tr')!); // 行3の上へ
+    fireEvent.mouseUp(getCell('C').closest('tbody')!);
+    const rows = onRows.mock.calls.at(-1)![0];
+    expect(rows.map((r: EstimateRow) => r.item)).toEqual(['B', 'C', 'A']);
+  });
+
+  it('複数行ブロックをまとめてドラッグ&ドロップできる', async () => {
+    const user = userEvent.setup();
+    const onRows = vi.fn();
+    render(<Harness initial={threeRows()} onRows={onRows} />);
+    // 行2〜3を選択
+    await user.click(screen.getByRole('rowheader', { name: '2' }));
+    await user.keyboard('{Shift>}');
+    await user.click(screen.getByRole('rowheader', { name: '3' }));
+    await user.keyboard('{/Shift}');
+    // 選択ブロックを先頭へ移動
+    const h2 = screen.getByRole('rowheader', { name: '2' });
+    fireEvent.mouseDown(h2);
+    fireEvent.mouseEnter(getCell('A').closest('tr')!);
+    fireEvent.mouseUp(getCell('A').closest('tbody')!);
+    const rows = onRows.mock.calls.at(-1)![0];
+    expect(rows.map((r: EstimateRow) => r.item)).toEqual(['B', 'C', 'A']);
+  });
+
+  it('行 D&D は Undo で元に戻せる', async () => {
+    const user = userEvent.setup();
+    const onRows = vi.fn();
+    render(<Harness initial={threeRows()} onRows={onRows} />);
+    const h1 = screen.getByRole('rowheader', { name: '1' });
+    await user.click(h1);
+    fireEvent.mouseDown(h1);
+    fireEvent.mouseEnter(getCell('C').closest('tr')!);
+    fireEvent.mouseUp(getCell('C').closest('tbody')!);
+    expect(
+      onRows.mock.calls.at(-1)![0].map((r: EstimateRow) => r.item),
+    ).toEqual(['B', 'C', 'A']);
+    await user.keyboard('{Control>}z{/Control}');
+    expect(
+      onRows.mock.calls.at(-1)![0].map((r: EstimateRow) => r.item),
+    ).toEqual(['A', 'B', 'C']);
+  });
+
+  it('動かさずに離した場合はその行だけの選択になる', async () => {
+    const user = userEvent.setup();
+    render(<Harness initial={threeRows()} />);
+    await user.click(screen.getByRole('rowheader', { name: '1' }));
+    await user.keyboard('{Shift>}');
+    await user.click(screen.getByRole('rowheader', { name: '2' }));
+    await user.keyboard('{/Shift}');
+    expect(document.querySelectorAll('td[aria-selected="true"]')).toHaveLength(8);
+    // 選択済みヘッダーを押してそのまま離す → 行2だけの選択に戻る
+    const h2 = screen.getByRole('rowheader', { name: '2' });
+    fireEvent.mouseDown(h2);
+    fireEvent.mouseUp(h2.closest('tbody')!);
+    expect(document.querySelectorAll('td[aria-selected="true"]')).toHaveLength(4);
+    expect(h2).toHaveAttribute('aria-selected', 'true');
+  });
+
   it('Shift+Space で選択行スパンが行選択になる', async () => {
     const user = userEvent.setup();
     render(<Harness initial={threeRows()} />);

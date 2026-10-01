@@ -669,6 +669,38 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
 
   const rowDraggingRef = React.useRef(false);
 
+  /* ----- 行の Drag & Drop -----
+
+     選択済みの行番号セルをドラッグすると行ブロックを移動する
+     （未選択の行番号のドラッグは行選択の拡張）。Sheets と同じ使い分け。
+     over は「この行の直前に挿入する」挿入位置（0〜rows.length） */
+
+  const [rowDrag, setRowDrag] = React.useState<{
+    start: number;
+    end: number;
+    pressed: number;
+    over: number | null;
+  } | null>(null);
+
+  const completeRowDrag = () => {
+    if (!rowDrag) return;
+    const { start, end, over, pressed } = rowDrag;
+    setRowDrag(null);
+    if (over === null) {
+      // 動かさずに離した → その行だけの選択に戻す（Sheets と同じ）
+      selectRow(pressed, false);
+      return;
+    }
+    const len = end - start + 1;
+    const next = [...rows];
+    const block = next.splice(start, len);
+    const insertAt = over > end ? over - len : over;
+    next.splice(insertAt, 0, ...block);
+    applyChange(next);
+    setAnchor({ r: insertAt, c: columns.length - 1 });
+    setActive({ r: insertAt + len - 1, c: 0 });
+  };
+
   const selectRow = (r: number, extend: boolean) => {
     if (extend && anchor) {
       setAnchor({ r: anchor.r, c: columns.length - 1 });
@@ -1021,13 +1053,16 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
         <ContextMenu onOpenChange={(open) => !open && setMenuRow(null)}>
           <ContextMenuTrigger asChild>
             <tbody
+              className={cn(rowDrag && 'cursor-grabbing')}
               onMouseUp={() => {
                 draggingRef.current = false;
                 rowDraggingRef.current = false;
+                completeRowDrag();
               }}
               onMouseLeave={() => {
                 draggingRef.current = false;
                 rowDraggingRef.current = false;
+                setRowDrag(null);
               }}
             >
               {rows.map((row, r) => (
@@ -1035,23 +1070,50 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
                   key={getRowKey(row)}
                   aria-rowindex={r + 1}
                   onContextMenu={() => setMenuRow(r)}
+                  onMouseEnter={() => {
+                    if (rowDrag) {
+                      setRowDrag((prev) => {
+                        if (!prev) return prev;
+                        const over =
+                          r < prev.start ? r : r > prev.end ? r + 1 : null;
+                        return { ...prev, over };
+                      });
+                    }
+                  }}
                 >
                   <th
                     scope="row"
                     aria-selected={isRowSelected(r) || undefined}
                     onMouseDown={(e) => {
                       if (e.button !== 0) return;
-                      rowDraggingRef.current = true;
-                      selectRow(r, e.shiftKey);
+                      if (isRowSelected(r) && selectionRect) {
+                        // 選択済みの行番号をドラッグ → 行ブロックの移動
+                        setRowDrag({
+                          start: selectionRect.top,
+                          end: selectionRect.bottom,
+                          pressed: r,
+                          over: null,
+                        });
+                      } else {
+                        rowDraggingRef.current = true;
+                        selectRow(r, e.shiftKey);
+                      }
                     }}
                     onMouseEnter={() => {
                       if (rowDraggingRef.current) setActive({ r, c: 0 });
                     }}
                     className={cn(
-                      'cursor-pointer select-none border-b border-r border-[var(--color-border)] bg-[var(--color-surface-sunken)] px-2 py-1 text-center text-xs font-normal text-[var(--color-on-surface-muted)]',
+                      'select-none border-b border-r border-[var(--color-border)] bg-[var(--color-surface-sunken)] px-2 py-1 text-center text-xs font-normal text-[var(--color-on-surface-muted)]',
                       'hover:bg-[var(--color-surface-muted)]',
-                      isRowSelected(r) &&
-                        'bg-[var(--color-surface-accent)] text-[var(--color-on-surface-accent)] font-medium',
+                      isRowSelected(r)
+                        ? 'cursor-grab bg-[var(--color-surface-accent)] text-[var(--color-on-surface-accent)] font-medium'
+                        : 'cursor-pointer',
+                      rowDrag?.over === r &&
+                        'shadow-[inset_0_2px_0_var(--color-primary-500)]',
+                      rowDrag &&
+                        rowDrag.over === rows.length &&
+                        r === rows.length - 1 &&
+                        'shadow-[inset_0_-2px_0_var(--color-primary-500)]',
                     )}
                   >
                     {r + 1}
@@ -1123,6 +1185,13 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
                           isActive &&
                             !isEditing &&
                             'shadow-[inset_0_0_0_2px_var(--color-primary-500)]',
+                          // 行 D&D のドロップ位置インジケータ（行全体に線を引く）
+                          rowDrag?.over === r &&
+                            'shadow-[inset_0_2px_0_var(--color-primary-500)]',
+                          rowDrag &&
+                            rowDrag.over === rows.length &&
+                            r === rows.length - 1 &&
+                            'shadow-[inset_0_-2px_0_var(--color-primary-500)]',
                           isEditing && 'p-0',
                         )}
                       >
