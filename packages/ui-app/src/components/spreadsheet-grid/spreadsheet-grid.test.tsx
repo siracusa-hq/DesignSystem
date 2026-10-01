@@ -575,6 +575,18 @@ describe('SpreadsheetGrid 行選択と複数行操作', () => {
     expect(rows.map((r: EstimateRow) => r.item)).toEqual(['A', 'B']);
   });
 
+  it('未選択の行は1回のドラッグ操作でそのまま移動できる', () => {
+    const onRows = vi.fn();
+    render(<Harness initial={threeRows()} onRows={onRows} />);
+    const h1 = screen.getByRole('rowheader', { name: '1' });
+    // クリック→再クリック不要: 押した瞬間に掴めている
+    fireEvent.mouseDown(h1);
+    fireEvent.mouseEnter(getCell('C').closest('tr')!);
+    fireEvent.mouseUp(getCell('C').closest('tbody')!);
+    const rows = onRows.mock.calls.at(-1)![0];
+    expect(rows.map((r: EstimateRow) => r.item)).toEqual(['B', 'C', 'A']);
+  });
+
   it('選択した行をドラッグ&ドロップで並び替えられる', async () => {
     const user = userEvent.setup();
     const onRows = vi.fn();

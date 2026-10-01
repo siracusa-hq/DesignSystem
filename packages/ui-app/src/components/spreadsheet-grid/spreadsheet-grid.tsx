@@ -1102,20 +1102,26 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
                           pressed: r,
                           over: null,
                         });
-                      } else {
+                      } else if (e.shiftKey) {
+                        // Shift+押下は選択の拡張（そのままヘッダーを
+                        // ドラッグすると行選択が広がる）
                         rowDraggingRef.current = true;
-                        selectRow(r, e.shiftKey);
+                        selectRow(r, true);
+                      } else {
+                        // 未選択の行は、押した瞬間に選択しつつそのまま
+                        // ドラッグで移動できるようにする（1クリックで掴める）
+                        selectRow(r, false);
+                        setRowDrag({ start: r, end: r, pressed: r, over: null });
                       }
                     }}
                     onMouseEnter={() => {
                       if (rowDraggingRef.current) setActive({ r, c: 0 });
                     }}
                     className={cn(
-                      'select-none border-b border-r border-[var(--color-border)] bg-[var(--color-surface-sunken)] px-2 py-1 text-center text-xs font-normal text-[var(--color-on-surface-muted)]',
+                      'group cursor-grab select-none border-b border-r border-[var(--color-border)] bg-[var(--color-surface-sunken)] px-2 py-1 text-center text-xs font-normal text-[var(--color-on-surface-muted)]',
                       'hover:bg-[var(--color-surface-muted)]',
-                      isRowSelected(r)
-                        ? 'cursor-grab bg-[var(--color-surface-accent)] text-[var(--color-on-surface-accent)] font-medium'
-                        : 'cursor-pointer',
+                      isRowSelected(r) &&
+                        'bg-[var(--color-surface-accent)] text-[var(--color-on-surface-accent)] font-medium',
                       rowDrag?.over === r &&
                         'shadow-[inset_0_2px_0_var(--color-primary-500)]',
                       rowDrag &&
@@ -1126,13 +1132,18 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
                     )}
                   >
                     <span className="flex items-center justify-center">
-                      {/* 選択行はドラッグ可能。グリップドットでアフォーダンスを示す */}
-                      {isRowSelected(r) && (
-                        <GripVertical
-                          aria-hidden
-                          className="-ml-1 h-3.5 w-3.5 shrink-0 opacity-60"
-                        />
-                      )}
+                      {/* ドラッグ可能のアフォーダンス。選択行は常時、
+                          未選択行はホバーで薄く表示（常にレンダリングして
+                          レイアウトシフトを防ぐ） */}
+                      <GripVertical
+                        aria-hidden
+                        className={cn(
+                          '-ml-1 h-3.5 w-3.5 shrink-0',
+                          isRowSelected(r)
+                            ? 'opacity-60'
+                            : 'opacity-0 group-hover:opacity-40',
+                        )}
+                      />
                       {r + 1}
                     </span>
                   </th>
