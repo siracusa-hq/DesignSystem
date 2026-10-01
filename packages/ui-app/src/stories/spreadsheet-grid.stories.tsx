@@ -23,7 +23,11 @@ const meta: Meta = {
           '右クリックからまとめて挿入・複製・移動・削除でき、' +
           '選択した行は行番号のドラッグ&ドロップでも並び替えられる。' +
           'Cmd/Ctrl+Z で元に戻す、Cmd/Ctrl+Shift+Z または Ctrl+Y でやり直し。' +
-          'バリデーションエラーは入力中にリアルタイム表示される。',
+          'バリデーションエラーは入力中にリアルタイム表示される。' +
+          '日本語入力（IME）でも、選んだセルにそのまま打ち始められる。' +
+          'セルごとの入力可否（isCellEditable）・表示の差し替え（column.render）・' +
+          '書き込み口（column.setValue）・行の class・行番号・左の列の固定（stickyColumns）・' +
+          '合計行（column.footer）を外から決められる。',
       },
     },
   },
@@ -321,6 +325,135 @@ export const DragAndDrop: Story = {
           onRowsChange={setRows}
           createRow={createEstimateRow}
         />
+      </div>
+    );
+  },
+};
+
+/* ----- セルの入力可否・表示の差し替え・固定列・合計行 ----- */
+
+interface LineRow {
+  id: string;
+  kind: 'item' | 'subtotal';
+  code: string;
+  item: string;
+  qty: number | null;
+  unit: string | null;
+  unitPrice: number | null;
+  note: string;
+}
+
+const lineUnits = [
+  { value: 'piece', label: '個' },
+  { value: 'set', label: '式' },
+  { value: 'person-day', label: '人日' },
+];
+
+const line = (
+  kind: LineRow['kind'],
+  code: string,
+  item: string,
+  qty: number | null,
+  unit: string | null,
+  unitPrice: number | null,
+): LineRow => ({ id: `${kind}-${code}-${item}`, kind, code, item, qty, unit, unitPrice, note: '' });
+
+/**
+ * セル単位の入力可否（isCellEditable）・表示の差し替え（column.render）・書き込み口
+ * （column.setValue）・行の class（rowClassName）・行番号（renderRowHeader）・左の列の固定
+ * （stickyColumns）・合計行（column.footer）。
+ *
+ * - 「小計」の行は品番・数量・単位・単価を入力できない（打つと下に理由が出る）
+ * - 品目を書き換えると、品番を消す（setValue で 2 つの項目を一緒に変える）
+ * - 横にスクロールしても、行番号・品番・品目の列は左に残る
+ */
+export const CellControlAndLayout: Story = {
+  render: () => {
+    const [rows, setRows] = useState<LineRow[]>([
+      line('item', 'A-001', '要件定義', 10, 'person-day', 80000),
+      line('item', 'A-002', '設計・実装', 40, 'person-day', 75000),
+      line('subtotal', '', '小計（開発）', null, null, null),
+      line('item', 'B-001', 'サーバー費用', 12, 'piece', 50000),
+      line('subtotal', '', '小計（運用）', null, null, null),
+    ]);
+    const [message, setMessage] = useState('');
+    const amountOf = (target: LineRow): number => {
+      if (target.kind === 'item') return (target.qty ?? 0) * (target.unitPrice ?? 0);
+      // 小計: 直前の小計の次から、この行までの明細の合計
+      const end = rows.indexOf(target);
+      let sum = 0;
+      for (let i = end - 1; i >= 0 && rows[i].kind === 'item'; i--) {
+        sum += (rows[i].qty ?? 0) * (rows[i].unitPrice ?? 0);
+      }
+      return sum;
+    };
+    const columns: SpreadsheetColumn<LineRow>[] = [
+      { key: 'code', header: '品番', type: 'text', width: 100 },
+      {
+        key: 'item',
+        header: '品目',
+        type: 'text',
+        width: 200,
+        required: true,
+        setValue: (row, value) => ({ ...row, item: String(value ?? ''), code: '' }),
+        footer: '合計',
+      },
+      {
+        key: 'qty',
+        header: '数量',
+        type: 'number',
+        width: 90,
+        render: (row) => (row.kind === 'subtotal' ? '—' : row.qty?.toLocaleString()),
+      },
+      { key: 'unit', header: '単位', type: 'select', width: 90, options: lineUnits },
+      { key: 'unitPrice', header: '単価', type: 'number', width: 120 },
+      {
+        key: 'amount',
+        header: '金額',
+        type: 'readonly',
+        width: 130,
+        align: 'right',
+        className: 'bg-transparent',
+        getValue: (row) => amountOf(row),
+        render: (row) => (
+          <span className={row.kind === 'subtotal' ? 'font-semibold' : undefined}>
+            {amountOf(row).toLocaleString()}
+          </span>
+        ),
+        footer: (all) =>
+          all
+            .filter((r) => r.kind === 'item')
+            .reduce((sum, r) => sum + amountOf(r), 0)
+            .toLocaleString(),
+      },
+      { key: 'note', header: '備考', type: 'text', width: 260 },
+    ];
+    return (
+      <div className="flex max-w-[720px] flex-col gap-2">
+        <SpreadsheetGrid<LineRow>
+          aria-label="見積明細（入力可否・固定列・合計行）"
+          columns={columns}
+          rows={rows}
+          onRowsChange={setRows}
+          getRowId={(row) => row.id}
+          createRow={() => ({
+            ...line('item', '', '', null, null, null),
+            id: `item-${Date.now()}-${Math.random()}`,
+          })}
+          isCellEditable={(row, column) =>
+            !(row.kind === 'subtotal' && ['code', 'qty', 'unit', 'unitPrice'].includes(column.key))
+          }
+          onEditBlocked={({ row, column }) =>
+            setMessage(`「${row.item}」の${column.header}は自動で計算するため入力できません`)
+          }
+          rowClassName={(row) =>
+            row.kind === 'subtotal' ? 'bg-[var(--color-surface-sunken)]' : undefined
+          }
+          renderRowHeader={(row, i) => (row.kind === 'subtotal' ? '計' : i + 1)}
+          rowHeaderWidth={52}
+          stickyColumns={2}
+        />
+        <p className="min-h-5 text-sm text-[var(--color-on-surface-secondary)]">{message}</p>
       </div>
     );
   },
