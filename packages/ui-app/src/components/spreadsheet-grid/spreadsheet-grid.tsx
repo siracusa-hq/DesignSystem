@@ -29,6 +29,9 @@ import {
    - 数式・セル参照はサポートしない。計算列は type: 'readonly' +
      getValue でアプリ側から定義する
    - バリデーションはセル編集中にもリアルタイムに表示する
+   - Cmd/Ctrl+Z で Undo、Cmd/Ctrl+Shift+Z / Ctrl+Y で Redo。
+     グリッド内部からの変更のみが履歴対象（外部からの rows 差し替えで
+     履歴はリセットされる）
    -------------------------------------------------------- */
 
 export type SpreadsheetCellValue = string | number | boolean | null | undefined;
@@ -429,6 +432,66 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
     c >= selectionRect.left &&
     c <= selectionRect.right;
 
+  /* ----- Undo / Redo -----
+
+     内部からの変更はすべて applyChange を通るため、変更前の rows を
+     スナップショットとして積むだけで履歴になる（immutable 更新なので
+     参照コピーのみ、〜100行規模ではコストは無視できる）。
+     rows は完全制御型のため、アプリ側が外から rows を差し替えた場合
+     （保存後のサーバー再取得など）は履歴とズレる。その場合は検知して
+     履歴をリセットし、安全側に倒す */
+
+  const HISTORY_LIMIT = 100;
+  const historyRef = React.useRef<{ past: Row[][]; future: Row[][] }>({
+    past: [],
+    future: [],
+  });
+  const lastInternalRowsRef = React.useRef<Row[]>(rows);
+
+  React.useEffect(() => {
+    if (rows !== lastInternalRowsRef.current) {
+      historyRef.current = { past: [], future: [] };
+      lastInternalRowsRef.current = rows;
+    }
+  }, [rows]);
+
+  const applyChange = (next: Row[]) => {
+    historyRef.current.past.push(rows);
+    if (historyRef.current.past.length > HISTORY_LIMIT) {
+      historyRef.current.past.shift();
+    }
+    historyRef.current.future = [];
+    lastInternalRowsRef.current = next;
+    onRowsChange(next);
+  };
+
+  const restoreRows = (next: Row[]) => {
+    lastInternalRowsRef.current = next;
+    onRowsChange(next);
+    // 行数が減っていた場合に備えて選択位置をクランプする
+    if (next.length === 0) {
+      setActive(null);
+      setAnchor(null);
+    } else {
+      if (active) setActive({ r: Math.min(active.r, next.length - 1), c: active.c });
+      if (anchor) setAnchor({ r: Math.min(anchor.r, next.length - 1), c: anchor.c });
+    }
+  };
+
+  const undo = () => {
+    const prev = historyRef.current.past.pop();
+    if (!prev) return;
+    historyRef.current.future.push(rows);
+    restoreRows(prev);
+  };
+
+  const redo = () => {
+    const next = historyRef.current.future.pop();
+    if (!next) return;
+    historyRef.current.past.push(rows);
+    restoreRows(next);
+  };
+
   /* ----- データ更新 ----- */
 
   const updateCells = (
@@ -454,7 +517,7 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
     for (const row of appendedRows) {
       markDirty(row, columns.filter((c) => c.type !== 'readonly').map((c) => c.key));
     }
-    onRowsChange(next);
+    applyChange(next);
   };
 
   /* ----- 編集 ----- */
@@ -492,7 +555,7 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
         // （rows はまだ古い配列なので clamp を通さず直接移動する）
         const newRow = createRow();
         markDirty(newRow, columns.filter((col) => col.type !== 'readonly').map((col) => col.key));
-        onRowsChange([...rows, newRow]);
+        applyChange([...rows, newRow]);
         setActive({ r: r + 1, c });
         setAnchor({ r: r + 1, c });
       } else {
@@ -651,7 +714,7 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
     });
     const next = [...rows];
     next.splice(index, 0, ...newRows);
-    onRowsChange(next);
+    applyChange(next);
     const pos = { r: index, c: active?.c ?? 0 };
     setActive(pos);
     setAnchor(pos);
@@ -665,14 +728,14 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
     });
     const next = [...rows];
     next.splice(end + 1, 0, ...copies);
-    onRowsChange(next);
+    applyChange(next);
     setAnchor({ r: end + 1, c: columns.length - 1 });
     setActive({ r: end + copies.length, c: 0 });
   };
 
   const deleteRows = (start: number, end: number) => {
     const next = [...rows.slice(0, start), ...rows.slice(end + 1)];
-    onRowsChange(next);
+    applyChange(next);
     if (next.length === 0) {
       setActive(null);
       setAnchor(null);
@@ -688,7 +751,7 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
     const next = [...rows];
     const block = next.splice(start, end - start + 1);
     next.splice(start + dir, 0, ...block);
-    onRowsChange(next);
+    applyChange(next);
     setAnchor({ r: start + dir, c: columns.length - 1 });
     setActive({ r: end + dir, c: 0 });
   };
@@ -792,6 +855,18 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
       e.preventDefault();
       setAnchor({ r: 0, c: 0 });
       setActive({ r: rows.length - 1, c: columns.length - 1 });
+      return;
+    }
+    // Undo / Redo（Cmd/Ctrl+Z、Shift で Redo。Ctrl+Y も Redo）
+    if (mod && (e.key === 'z' || e.key === 'Z')) {
+      e.preventDefault();
+      if (e.shiftKey) redo();
+      else undo();
+      return;
+    }
+    if (mod && (e.key === 'y' || e.key === 'Y')) {
+      e.preventDefault();
+      redo();
       return;
     }
     // 印字可能文字で編集開始（Excel/Sheets と同じ）
@@ -1087,7 +1162,17 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
               ))}
             </tbody>
           </ContextMenuTrigger>
-          <ContextMenuContent>
+          <ContextMenuContent
+            // Radix の既定はトリガー(tbody)へのフォーカス復帰だが、tbody は
+            // フォーカス不能なので body に落ちてキー操作が効かなくなる。
+            // 閉じたらアクティブセルへ戻す
+            onCloseAutoFocus={(e) => {
+              e.preventDefault();
+              if (active) {
+                cellRefs.current.get(`${active.r}:${active.c}`)?.focus();
+              }
+            }}
+          >
             {(() => {
               const target = contextTargetRows();
               if (!target) return null;

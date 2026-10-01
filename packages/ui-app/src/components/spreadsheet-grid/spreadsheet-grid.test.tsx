@@ -632,6 +632,100 @@ describe('SpreadsheetGrid checkbox 列', () => {
   });
 });
 
+describe('SpreadsheetGrid Undo / Redo', () => {
+  it('Ctrl+Z でセル編集が取り消され、Ctrl+Shift+Z でやり直せる', async () => {
+    const user = userEvent.setup();
+    render(<Harness />);
+    await user.click(getCell('サーバー構築'));
+    await user.keyboard('{F2}');
+    const input = screen.getByRole('textbox');
+    await user.clear(input);
+    await user.type(input, '変更後');
+    await user.keyboard('{Escape}');
+    // Escape は編集破棄なので一旦確定し直す
+    await user.keyboard('{F2}');
+    const input2 = screen.getByRole('textbox');
+    await user.clear(input2);
+    await user.type(input2, '変更後');
+    await user.keyboard('{Enter}');
+    expect(screen.getByText('変更後')).toBeInTheDocument();
+
+    await user.keyboard('{Control>}z{/Control}');
+    expect(screen.getByText('サーバー構築')).toBeInTheDocument();
+    expect(screen.queryByText('変更後')).not.toBeInTheDocument();
+
+    await user.keyboard('{Control>}{Shift>}z{/Shift}{/Control}');
+    expect(screen.getByText('変更後')).toBeInTheDocument();
+  });
+
+  it('Ctrl+Y でもやり直せる', async () => {
+    const user = userEvent.setup();
+    render(<Harness />);
+    await user.click(getCell('サーバー構築'));
+    await user.keyboard('{Shift>}{ArrowRight}{/Shift}{Delete}');
+    expect(screen.queryByText('サーバー構築')).not.toBeInTheDocument();
+    await user.keyboard('{Control>}z{/Control}');
+    expect(screen.getByText('サーバー構築')).toBeInTheDocument();
+    await user.keyboard('{Control>}y{/Control}');
+    expect(screen.queryByText('サーバー構築')).not.toBeInTheDocument();
+  });
+
+  it('行削除を Undo で復元できる', async () => {
+    const user = userEvent.setup();
+    const onRows = vi.fn();
+    render(<Harness onRows={onRows} />);
+    fireEvent.contextMenu(getCell('サーバー構築'));
+    await user.click(await screen.findByText('行を削除'));
+    expect(screen.queryByText('サーバー構築')).not.toBeInTheDocument();
+    await user.keyboard('{Control>}z{/Control}');
+    expect(screen.getByText('サーバー構築')).toBeInTheDocument();
+    expect(onRows.mock.calls.at(-1)![0]).toHaveLength(2);
+  });
+
+  it('ペーストを Undo で取り消せる', async () => {
+    const user = userEvent.setup();
+    render(<Harness />);
+    await user.click(getCell('サーバー構築'));
+    fireEvent.paste(screen.getByRole('grid'), {
+      clipboardData: { getData: () => 'X\t9\nY\t8' },
+    });
+    expect(screen.getByText('X')).toBeInTheDocument();
+    await user.keyboard('{Control>}z{/Control}');
+    expect(screen.getByText('サーバー構築')).toBeInTheDocument();
+    expect(screen.getByText('保守')).toBeInTheDocument();
+    expect(screen.queryByText('X')).not.toBeInTheDocument();
+  });
+
+  it('Undo 後に新しい変更をすると Redo 履歴が消える', async () => {
+    const user = userEvent.setup();
+    render(<Harness />);
+    // 変更1: 数量セルをクリア
+    await user.click(getCell('サーバー構築'));
+    await user.keyboard('{Delete}');
+    expect(screen.queryByText('サーバー構築')).not.toBeInTheDocument();
+    // Undo で復元
+    await user.keyboard('{Control>}z{/Control}');
+    expect(screen.getByText('サーバー構築')).toBeInTheDocument();
+    // 変更2（新しい変更）
+    await user.keyboard('X');
+    const input = screen.getByRole('textbox');
+    await user.keyboard('{Enter}');
+    expect(input).not.toBeInTheDocument();
+    // Redo しても変更1は戻らない
+    await user.keyboard('{Control>}{Shift>}z{/Shift}{/Control}');
+    expect(screen.getByText('X')).toBeInTheDocument();
+  });
+
+  it('履歴がない状態の Undo は何もしない', async () => {
+    const user = userEvent.setup();
+    const onRows = vi.fn();
+    render(<Harness onRows={onRows} />);
+    await user.click(getCell('サーバー構築'));
+    await user.keyboard('{Control>}z{/Control}');
+    expect(onRows).not.toHaveBeenCalled();
+  });
+});
+
 describe('SpreadsheetGrid a11y', () => {
   it('has no accessibility violations', async () => {
     const { container } = render(<Harness />);
