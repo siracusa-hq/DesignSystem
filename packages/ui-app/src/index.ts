@@ -474,6 +474,9 @@ export {
   type SpreadsheetCellValue,
   type SpreadsheetRow,
   type SpreadsheetError,
+  type SpreadsheetCellRef,
+  type SpreadsheetSelection,
+  type SpreadsheetMenuTarget,
 } from './components/spreadsheet-grid';
 export {
   SecondaryNav,
