@@ -26,6 +26,6 @@
     "name": "SpreadsheetGrid のみ",
     "path": "dist/index.js",
     "import": "{ SpreadsheetGrid }",
-    "limit": "52 kB"
+    "limit": "60 kB"
   }
 ]

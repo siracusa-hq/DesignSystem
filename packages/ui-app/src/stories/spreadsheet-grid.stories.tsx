@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import {
   SpreadsheetGrid,
@@ -34,7 +34,8 @@ const meta: Meta = {
           '右クリックの項目（contextMenu・rowActions）・アプリ側の元に戻す（history={false}）・' +
           '貼り付けの差し替え（onPaste）で、アプリの画面と連動できる。' +
           '編集中の Ctrl/Cmd+Enter で範囲にまとめて入力、Ctrl/Cmd+X で切り取り、列見出しで列を選ぶ。' +
-          '候補つきの入力列（type: \'autocomplete\'）は、打つたびに候補を出し、選ぶと行のほかの項目も書き換えられる。',
+          '候補つきの入力列（type: \'autocomplete\'）は、打つたびに候補を出し、選ぶと行のほかの項目も書き換えられる。' +
+          'getRowDepth を渡すと階層つきの表（treegrid）になり、畳む・開く、配下ごとの並べ替えができる。',
       },
     },
   },
@@ -741,5 +742,162 @@ export const Autocomplete: Story = {
         createRow={() => newPart()}
       />
     );
+  },
+};
+
+/* ----- 階層（treegrid） ----- */
+
+interface EstimateNode {
+  id: string;
+  depth: number;
+  item: string;
+  qty: number | null;
+  unit: string | null;
+  unitPrice: number | null;
+}
+
+let nodeSeq = 0;
+const estimateNode = (
+  depth: number,
+  item: string,
+  qty: number | null = null,
+  unit: string | null = null,
+  unitPrice: number | null = null,
+): EstimateNode => ({ id: `node-${++nodeSeq}`, depth, item, qty, unit, unitPrice });
+
+const estimateUnits = ['式', '個', '㎡', 'ｍ', '人工'].map((u) => ({ value: u, label: u }));
+
+/** 子を持つ行（すぐ下により深い行が続く行）と、金額（子を持つ行は子の合計） */
+const summarize = (rows: EstimateNode[]) => {
+  const n = rows.length;
+  const isParent = rows.map((r, i) => i + 1 < n && rows[i + 1].depth > r.depth);
+  const amount = new Array<number>(n).fill(0);
+  for (let i = n - 1; i >= 0; i--) {
+    if (!isParent[i]) {
+      amount[i] = (rows[i].qty ?? 0) * (rows[i].unitPrice ?? 0);
+      continue;
+    }
+    for (let k = i + 1; k < n && rows[k].depth > rows[i].depth; k++) {
+      if (rows[k].depth === rows[i].depth + 1) amount[i] += amount[k];
+    }
+  }
+  return { isParent, amount };
+};
+
+function TreeEstimate({ initial, className }: { initial: EstimateNode[]; className?: string }) {
+  const [rows, setRows] = useState(initial);
+  const { isParent, amount } = useMemo(() => summarize(rows), [rows]);
+  const indexOf = useMemo(() => new Map(rows.map((row, i) => [row.id, i])), [rows]);
+  const at = (row: EstimateNode) => indexOf.get(row.id) ?? -1;
+  const columns: SpreadsheetColumn<EstimateNode>[] = [
+    { key: 'item', header: '名称', type: 'text', width: 260, footer: '合計' },
+    {
+      key: 'qty',
+      header: '数量',
+      type: 'number',
+      width: 90,
+      render: (row) => (isParent[at(row)] ? '1' : row.qty?.toLocaleString()),
+    },
+    {
+      key: 'unit',
+      header: '単位',
+      type: 'autocomplete',
+      width: 80,
+      align: 'center',
+      options: estimateUnits,
+      optionsWidth: 120,
+      render: (row) => (isParent[at(row)] ? '式' : row.unit),
+    },
+    {
+      key: 'unitPrice',
+      header: '単価',
+      type: 'number',
+      width: 110,
+      render: (row) => (isParent[at(row)] ? '' : row.unitPrice?.toLocaleString()),
+    },
+    {
+      key: 'amount',
+      header: '金額',
+      type: 'readonly',
+      width: 130,
+      align: 'right',
+      className: 'bg-transparent',
+      getValue: (row) => amount[at(row)],
+      render: (row) => (
+        <span className={isParent[at(row)] ? 'font-semibold' : undefined}>
+          {(amount[at(row)] ?? 0).toLocaleString()}
+        </span>
+      ),
+      footer: (all) =>
+        all
+          .reduce((sum, row, i) => (row.depth === 0 ? sum + (amount[i] ?? 0) : sum), 0)
+          .toLocaleString(),
+    },
+  ];
+  return (
+    <SpreadsheetGrid<EstimateNode>
+      aria-label="見積明細（階層）"
+      className={className}
+      columns={columns}
+      rows={rows}
+      onRowsChange={setRows}
+      getRowId={(row) => row.id}
+      getRowDepth={(row) => row.depth}
+      treeColumnKey="item"
+      createRow={(context) => estimateNode(context?.depth ?? 0, '')}
+      isCellEditable={(row, column) =>
+        !(isParent[at(row)] && ['qty', 'unit', 'unitPrice'].includes(column.key))
+      }
+      rowClassName={(row) =>
+        row.depth === 0 ? 'font-semibold bg-[var(--color-surface-sunken)]' : undefined
+      }
+      stickyColumns={1}
+    />
+  );
+}
+
+/**
+ * 階層つきの表（getRowDepth を渡すと treegrid になる）。データは平らな配列のまま、
+ * 行の深さで親子を決める（行の親は、直前にある、より浅い行）。
+ *
+ * - ▼／▶ で畳む・開く。矢印キーの移動・範囲・コピーは畳んだ配下を飛ばす
+ * - 行番号をドラッグすると配下ごと動く。落とせるのは同じ親の兄弟の間だけ（線が出る位置）
+ * - 右クリックの挿入・複製・上下移動・削除も配下ごと。挿入は同じ深さで入る
+ * - 子を持つ行の数量・単位・単価は入力できず（isCellEditable）、金額は子の合計
+ */
+export const Tree: Story = {
+  render: () => (
+    <TreeEstimate
+      className="max-w-[760px]"
+      initial={[
+        estimateNode(0, '解体工事'),
+        estimateNode(1, '内装解体'),
+        estimateNode(2, '床解体', 10, '㎡', 2000),
+        estimateNode(2, '壁解体', 20, '㎡', 1500),
+        estimateNode(1, '産廃処分'),
+        estimateNode(2, '産廃処分費', 1, '式', 50000),
+        estimateNode(0, '設備工事'),
+        estimateNode(1, '給排水'),
+        estimateNode(2, '配管', 15, 'ｍ', 3000),
+        estimateNode(2, '継手', 12, '個', 450),
+      ]}
+    />
+  ),
+};
+
+/** 階層つきで約 300 行（10 × 3 × 9 の 3 階層）。打鍵や矢印の移動で、変わった行だけ描き直す */
+export const TreeThreeHundredRows: Story = {
+  render: () => {
+    const initial: EstimateNode[] = [];
+    for (let a = 1; a <= 10; a++) {
+      initial.push(estimateNode(0, `大項目 ${a}`));
+      for (let b = 1; b <= 3; b++) {
+        initial.push(estimateNode(1, `中項目 ${a}-${b}`));
+        for (let c = 1; c <= 9; c++) {
+          initial.push(estimateNode(2, `明細 ${a}-${b}-${c}`, c, '個', 1000 * b));
+        }
+      }
+    }
+    return <TreeEstimate className="max-h-[520px] max-w-[760px]" initial={initial} />;
   },
 };
