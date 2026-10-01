@@ -6,7 +6,9 @@ import {
   type SpreadsheetColumn,
   type SpreadsheetGridHandle,
   type SpreadsheetRow,
+  type SpreadsheetSelection,
 } from '../components/spreadsheet-grid';
+import { ContextMenuItem } from '../components/context-menu';
 
 const meta: Meta = {
   title: 'Components/SpreadsheetGrid',
@@ -27,7 +29,11 @@ const meta: Meta = {
           '日本語入力（IME）でも、選んだセルにそのまま打ち始められる。' +
           'セルごとの入力可否（isCellEditable）・表示の差し替え（column.render）・' +
           '書き込み口（column.setValue）・行の class・行番号・左の列の固定（stickyColumns）・' +
-          '合計行（column.footer）を外から決められる。',
+          '合計行（column.footer）を外から決められる。' +
+          '選択の通知（onSelectionChange）・ref.select／focus・キー操作の差し込み（onKeyDown）・' +
+          '右クリックの項目（contextMenu・rowActions）・アプリ側の元に戻す（history={false}）・' +
+          '貼り付けの差し替え（onPaste）で、アプリの画面と連動できる。' +
+          '編集中の Ctrl/Cmd+Enter で範囲にまとめて入力、Ctrl/Cmd+X で切り取り、列見出しで列を選ぶ。',
       },
     },
   },
@@ -454,6 +460,164 @@ export const CellControlAndLayout: Story = {
           stickyColumns={2}
         />
         <p className="min-h-5 text-sm text-[var(--color-on-surface-secondary)]">{message}</p>
+      </div>
+    );
+  },
+};
+
+/* ----- アプリと分け合う（選択・キー操作・右クリック・元に戻す・貼り付け） ----- */
+
+interface TaskRow {
+  id: string;
+  task: string;
+  owner: string;
+  hours: number | null;
+  starred: boolean;
+}
+
+let taskSeq = 0;
+/** 新しい行（ID は毎回振り直す。複製にも使う） */
+const newTask = (init: Partial<TaskRow> = {}): TaskRow => ({
+  task: '',
+  owner: '',
+  hours: null,
+  starred: false,
+  ...init,
+  id: `task-${++taskSeq}`,
+});
+
+/**
+ * アプリの画面と連動する例。
+ *
+ * - 下に、選んだ行数と時間の合計が出る（onSelectionChange）
+ * - 元に戻す・やり直すはアプリ側の履歴（history={false}。ボタンと Ctrl/Cmd+Z）
+ * - Ctrl/Cmd+D で選んだ行を複製する（onKeyDown で足したショートカット）
+ * - 右クリック「★を付ける／外す」（contextMenu で足した項目）
+ * - 2 行以上の貼り付けは、選んだ行の下に新しい行として差し込む（onPaste）
+ * - 「3 行目の時間へ」で、外からセルを選ぶ（ref.select）
+ */
+export const AppIntegration: Story = {
+  render: () => {
+    const gridRef = useRef<SpreadsheetGridHandle>(null);
+    const [state, setState] = useState(() => ({
+      past: [] as TaskRow[][],
+      present: [
+        newTask({ task: '要件の確認', owner: '佐藤', hours: 4 }),
+        newTask({ task: '画面の設計', owner: '鈴木', hours: 12 }),
+        newTask({ task: '実装', owner: '佐藤', hours: 32 }),
+        newTask({ task: 'テスト', owner: '田中', hours: 16 }),
+      ],
+      future: [] as TaskRow[][],
+    }));
+    const rows = state.present;
+    const [selection, setSelection] = useState<SpreadsheetSelection | null>(null);
+    const commit = (next: TaskRow[]) =>
+      setState((s) => ({ past: [...s.past, s.present], present: next, future: [] }));
+    const undo = () =>
+      setState((s) =>
+        s.past.length
+          ? {
+              past: s.past.slice(0, -1),
+              present: s.past[s.past.length - 1],
+              future: [s.present, ...s.future],
+            }
+          : s,
+      );
+    const redo = () =>
+      setState((s) =>
+        s.future.length
+          ? { past: [...s.past, s.present], present: s.future[0], future: s.future.slice(1) }
+          : s,
+      );
+    const columns: SpreadsheetColumn<TaskRow>[] = [
+      {
+        key: 'task',
+        header: '作業',
+        type: 'text',
+        width: 220,
+        render: (row) => (row.starred ? `★ ${row.task}` : row.task),
+      },
+      { key: 'owner', header: '担当', type: 'text', width: 120 },
+      { key: 'hours', header: '時間', type: 'number', width: 100 },
+    ];
+    const selectedHours = (selection?.rowIndexes ?? []).reduce(
+      (sum, i) => sum + (rows[i]?.hours ?? 0),
+      0,
+    );
+    const buttonClass =
+      'rounded-md border border-[var(--color-border)] px-3 py-1 text-sm hover:bg-[var(--color-surface-muted)]';
+    return (
+      <div className="flex max-w-[640px] flex-col gap-2">
+        <div className="flex gap-2">
+          <button type="button" className={buttonClass} onClick={undo}>
+            元に戻す
+          </button>
+          <button type="button" className={buttonClass} onClick={redo}>
+            やり直す
+          </button>
+          <button
+            type="button"
+            className={buttonClass}
+            onClick={() => gridRef.current?.select({ rowIndex: 2, columnKey: 'hours' })}
+          >
+            3 行目の時間へ
+          </button>
+        </div>
+        <SpreadsheetGrid<TaskRow>
+          ref={gridRef}
+          aria-label="作業（アプリと連動）"
+          columns={columns}
+          rows={rows}
+          onRowsChange={commit}
+          getRowId={(row) => row.id}
+          createRow={() => newTask()}
+          duplicateRow={(row) => newTask(row)}
+          history={false}
+          onSelectionChange={setSelection}
+          onKeyDown={(e, { selection: current }) => {
+            const mod = e.metaKey || e.ctrlKey;
+            const key = e.key.toLowerCase();
+            if (mod && key === 'z') {
+              e.preventDefault();
+              if (e.shiftKey) redo();
+              else undo();
+            } else if (mod && key === 'd' && current) {
+              e.preventDefault();
+              const last = current.rowIndexes[current.rowIndexes.length - 1];
+              const copies = current.rowIndexes.map((i) => newTask(rows[i]));
+              commit([...rows.slice(0, last + 1), ...copies, ...rows.slice(last + 1)]);
+            }
+          }}
+          contextMenu={(target) =>
+            target.kind === 'cells' ? (
+              <ContextMenuItem
+                onSelect={() => {
+                  const on = !target.rowIndexes.every((i) => rows[i].starred);
+                  commit(
+                    rows.map((row, i) =>
+                      target.rowIndexes.includes(i) ? { ...row, starred: on } : row,
+                    ),
+                  );
+                }}
+              >
+                ★を付ける／外す
+              </ContextMenuItem>
+            ) : null
+          }
+          onPaste={({ matrix, selection: current }) => {
+            if (matrix.length < 2) return undefined;
+            const last = current.rowIndexes[current.rowIndexes.length - 1];
+            const added = matrix.map(([task = '', owner = '', hours = '']) =>
+              newTask({ task, owner, hours: hours.trim() === '' ? null : Number(hours) }),
+            );
+            return [...rows.slice(0, last + 1), ...added, ...rows.slice(last + 1)];
+          }}
+        />
+        <p className="text-sm text-[var(--color-on-surface-secondary)]">
+          {selection
+            ? `${selection.rowIndexes.length} 行を選択・時間の合計 ${selectedHours}`
+            : '未選択'}
+        </p>
       </div>
     );
   },
