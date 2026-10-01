@@ -485,6 +485,108 @@ describe('SpreadsheetGrid 行操作（コンテキストメニュー）', () => 
   });
 });
 
+describe('SpreadsheetGrid 行選択と複数行操作', () => {
+  const threeRows = (): EstimateRow[] => [
+    { item: 'A', qty: 1, unit: null, note: '' },
+    { item: 'B', qty: 2, unit: null, note: '' },
+    { item: 'C', qty: 3, unit: null, note: '' },
+  ];
+
+  it('行番号クリックで行全体が選択される', async () => {
+    const user = userEvent.setup();
+    render(<Harness initial={threeRows()} />);
+    await user.click(screen.getByRole('rowheader', { name: '1' }));
+    // 1行目の全4セルが選択される
+    const selected = document.querySelectorAll('td[aria-selected="true"]');
+    expect(selected).toHaveLength(4);
+    expect(
+      screen.getByRole('rowheader', { name: '1' }),
+    ).toHaveAttribute('aria-selected', 'true');
+  });
+
+  it('Shift+クリックで複数行に拡張される', async () => {
+    const user = userEvent.setup();
+    render(<Harness initial={threeRows()} />);
+    await user.click(screen.getByRole('rowheader', { name: '1' }));
+    const second = screen.getByRole('rowheader', { name: '2' });
+    await user.keyboard('{Shift>}');
+    await user.click(second);
+    await user.keyboard('{/Shift}');
+    expect(document.querySelectorAll('td[aria-selected="true"]')).toHaveLength(8);
+  });
+
+  it('複数行選択して右クリックするとまとめて削除できる', async () => {
+    const user = userEvent.setup();
+    const onRows = vi.fn();
+    render(<Harness initial={threeRows()} onRows={onRows} />);
+    await user.click(screen.getByRole('rowheader', { name: '1' }));
+    await user.keyboard('{Shift>}');
+    await user.click(screen.getByRole('rowheader', { name: '2' }));
+    await user.keyboard('{/Shift}');
+    // 選択範囲内の行を右クリック
+    fireEvent.contextMenu(getCell('A'));
+    await user.click(await screen.findByText('2行を削除'));
+    const rows = onRows.mock.calls.at(-1)![0];
+    expect(rows).toHaveLength(1);
+    expect(rows[0].item).toBe('C');
+  });
+
+  it('複数行選択で「下に2行を挿入」できる', async () => {
+    const user = userEvent.setup();
+    const onRows = vi.fn();
+    render(<Harness initial={threeRows()} onRows={onRows} />);
+    await user.click(screen.getByRole('rowheader', { name: '1' }));
+    await user.keyboard('{Shift>}');
+    await user.click(screen.getByRole('rowheader', { name: '2' }));
+    await user.keyboard('{/Shift}');
+    fireEvent.contextMenu(getCell('B'));
+    await user.click(await screen.findByText('下に2行を挿入'));
+    const rows = onRows.mock.calls.at(-1)![0];
+    expect(rows).toHaveLength(5);
+    expect(rows.map((r: EstimateRow) => r.item)).toEqual(['A', 'B', '', '', 'C']);
+  });
+
+  it('複数行を複製できる', async () => {
+    const user = userEvent.setup();
+    const onRows = vi.fn();
+    render(<Harness initial={threeRows()} onRows={onRows} />);
+    await user.click(screen.getByRole('rowheader', { name: '2' }));
+    await user.keyboard('{Shift>}');
+    await user.click(screen.getByRole('rowheader', { name: '3' }));
+    await user.keyboard('{/Shift}');
+    fireEvent.contextMenu(getCell('B'));
+    await user.click(await screen.findByText('2行を複製'));
+    const rows = onRows.mock.calls.at(-1)![0];
+    expect(rows.map((r: EstimateRow) => r.item)).toEqual(['A', 'B', 'C', 'B', 'C']);
+  });
+
+  it('選択範囲の外を右クリックした場合はその1行だけが対象になる', async () => {
+    const user = userEvent.setup();
+    const onRows = vi.fn();
+    render(<Harness initial={threeRows()} onRows={onRows} />);
+    await user.click(screen.getByRole('rowheader', { name: '1' }));
+    await user.keyboard('{Shift>}');
+    await user.click(screen.getByRole('rowheader', { name: '2' }));
+    await user.keyboard('{/Shift}');
+    // 選択外の3行目を右クリック → 単一行メニュー
+    fireEvent.contextMenu(getCell('C'));
+    await user.click(await screen.findByText('行を削除'));
+    const rows = onRows.mock.calls.at(-1)![0];
+    expect(rows.map((r: EstimateRow) => r.item)).toEqual(['A', 'B']);
+  });
+
+  it('Shift+Space で選択行スパンが行選択になる', async () => {
+    const user = userEvent.setup();
+    render(<Harness initial={threeRows()} />);
+    await user.click(getCell('B'));
+    await user.keyboard('{Shift>} {/Shift}');
+    expect(document.querySelectorAll('td[aria-selected="true"]')).toHaveLength(4);
+    expect(
+      screen.getByRole('rowheader', { name: '2' }),
+    ).toHaveAttribute('aria-selected', 'true');
+  });
+});
+
 describe('SpreadsheetGrid dirty マーカー', () => {
   it('編集したセルに data-dirty が付き、clearDirty で消える', async () => {
     const user = userEvent.setup();

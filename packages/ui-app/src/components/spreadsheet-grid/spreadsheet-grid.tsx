@@ -598,49 +598,99 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
     updateCells(updates);
   };
 
-  /* ----- 行操作 ----- */
+  /* ----- 行選択 -----
 
-  // 挿入系は rows がまだ古い配列のため clamp（moveActive）を通さず直接移動する
-  const insertRow = (index: number) => {
-    const newRow = createRow();
-    markDirty(newRow, columns.filter((c) => c.type !== 'readonly').map((c) => c.key));
+     行番号セルのクリックで行全体を選択する。Shift+クリック / ドラッグで
+     複数行に拡張。anchor を (開始行, 最終列)・active を (対象行, 先頭列) に
+     置くことで、選択矩形が常に全列をカバーする */
+
+  const rowDraggingRef = React.useRef(false);
+
+  const selectRow = (r: number, extend: boolean) => {
+    if (extend && anchor) {
+      setAnchor({ r: anchor.r, c: columns.length - 1 });
+    } else {
+      setAnchor({ r, c: columns.length - 1 });
+    }
+    setActive({ r, c: 0 });
+  };
+
+  const isRowSelected = (r: number) =>
+    !!selectionRect &&
+    r >= selectionRect.top &&
+    r <= selectionRect.bottom &&
+    selectionRect.left === 0 &&
+    selectionRect.right === columns.length - 1;
+
+  /* ----- 行操作 -----
+
+     コンテキストメニューは、右クリックした行が選択範囲の行スパンに
+     含まれていれば選択中の複数行を、そうでなければその行だけを対象にする。
+     挿入系は rows がまだ古い配列のため clamp（moveActive）を通さず直接移動する */
+
+  const contextTargetRows = (): { start: number; end: number } | null => {
+    if (menuRow === null) return null;
+    if (
+      selectionRect &&
+      menuRow >= selectionRect.top &&
+      menuRow <= selectionRect.bottom
+    ) {
+      return { start: selectionRect.top, end: selectionRect.bottom };
+    }
+    return { start: menuRow, end: menuRow };
+  };
+
+  const editableKeys = () =>
+    columns.filter((c) => c.type !== 'readonly').map((c) => c.key);
+
+  const insertRows = (index: number, count = 1) => {
+    const newRows = Array.from({ length: count }, () => {
+      const row = createRow();
+      markDirty(row, editableKeys());
+      return row;
+    });
     const next = [...rows];
-    next.splice(index, 0, newRow);
+    next.splice(index, 0, ...newRows);
     onRowsChange(next);
     const pos = { r: index, c: active?.c ?? 0 };
     setActive(pos);
     setAnchor(pos);
   };
 
-  const duplicateRow = (index: number) => {
-    const copy = { ...rows[index] } as Row;
-    markDirty(copy, columns.filter((c) => c.type !== 'readonly').map((c) => c.key));
+  const duplicateRows = (start: number, end: number) => {
+    const copies = rows.slice(start, end + 1).map((row) => {
+      const copy = { ...row } as Row;
+      markDirty(copy, editableKeys());
+      return copy;
+    });
     const next = [...rows];
-    next.splice(index + 1, 0, copy);
+    next.splice(end + 1, 0, ...copies);
     onRowsChange(next);
-    const pos = { r: index + 1, c: active?.c ?? 0 };
-    setActive(pos);
-    setAnchor(pos);
+    setAnchor({ r: end + 1, c: columns.length - 1 });
+    setActive({ r: end + copies.length, c: 0 });
   };
 
-  const deleteRow = (index: number) => {
-    const next = rows.filter((_, i) => i !== index);
+  const deleteRows = (start: number, end: number) => {
+    const next = [...rows.slice(0, start), ...rows.slice(end + 1)];
     onRowsChange(next);
     if (next.length === 0) {
       setActive(null);
       setAnchor(null);
-    } else if (active) {
-      moveActive(Math.min(active.r, next.length - 1), active.c);
+    } else {
+      const pos = { r: Math.min(start, next.length - 1), c: active?.c ?? 0 };
+      setActive(pos);
+      setAnchor(pos);
     }
   };
 
-  const moveRow = (index: number, dir: -1 | 1) => {
-    const target = index + dir;
-    if (target < 0 || target >= rows.length) return;
+  const moveRows = (start: number, end: number, dir: -1 | 1) => {
+    if (start + dir < 0 || end + dir >= rows.length) return;
     const next = [...rows];
-    [next[index], next[target]] = [next[target], next[index]];
+    const block = next.splice(start, end - start + 1);
+    next.splice(start + dir, 0, ...block);
     onRowsChange(next);
-    moveActive(target, active?.c ?? 0);
+    setAnchor({ r: start + dir, c: columns.length - 1 });
+    setActive({ r: end + dir, c: 0 });
   };
 
   /* ----- キーボード ----- */
@@ -712,6 +762,13 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
         startEdit(r, c);
         return;
       case ' ':
+        // Shift+Space: 選択範囲の行スパンを行選択に広げる（Sheets と同じ）
+        if (e.shiftKey && selectionRect) {
+          e.preventDefault();
+          setAnchor({ r: selectionRect.top, c: columns.length - 1 });
+          setActive({ r: selectionRect.bottom, c: 0 });
+          return;
+        }
         if (column.type === 'checkbox') {
           e.preventDefault();
           updateCells([{ r, key: column.key, value: rows[r][column.key] !== true }]);
@@ -891,9 +948,11 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
             <tbody
               onMouseUp={() => {
                 draggingRef.current = false;
+                rowDraggingRef.current = false;
               }}
               onMouseLeave={() => {
                 draggingRef.current = false;
+                rowDraggingRef.current = false;
               }}
             >
               {rows.map((row, r) => (
@@ -904,7 +963,21 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
                 >
                   <th
                     scope="row"
-                    className="select-none border-b border-r border-[var(--color-border)] bg-[var(--color-surface-sunken)] px-2 py-1 text-center text-xs font-normal text-[var(--color-on-surface-muted)]"
+                    aria-selected={isRowSelected(r) || undefined}
+                    onMouseDown={(e) => {
+                      if (e.button !== 0) return;
+                      rowDraggingRef.current = true;
+                      selectRow(r, e.shiftKey);
+                    }}
+                    onMouseEnter={() => {
+                      if (rowDraggingRef.current) setActive({ r, c: 0 });
+                    }}
+                    className={cn(
+                      'cursor-pointer select-none border-b border-r border-[var(--color-border)] bg-[var(--color-surface-sunken)] px-2 py-1 text-center text-xs font-normal text-[var(--color-on-surface-muted)]',
+                      'hover:bg-[var(--color-surface-muted)]',
+                      isRowSelected(r) &&
+                        'bg-[var(--color-surface-accent)] text-[var(--color-on-surface-accent)] font-medium',
+                    )}
                   >
                     {r + 1}
                   </th>
@@ -1015,46 +1088,49 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
             </tbody>
           </ContextMenuTrigger>
           <ContextMenuContent>
-            <ContextMenuItem
-              onSelect={() => menuRow !== null && insertRow(menuRow)}
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              上に行を挿入
-            </ContextMenuItem>
-            <ContextMenuItem
-              onSelect={() => menuRow !== null && insertRow(menuRow + 1)}
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              下に行を挿入
-            </ContextMenuItem>
-            <ContextMenuItem
-              onSelect={() => menuRow !== null && duplicateRow(menuRow)}
-            >
-              <Copy className="mr-2 h-4 w-4" />
-              行を複製
-            </ContextMenuItem>
-            <ContextMenuSeparator />
-            <ContextMenuItem
-              disabled={menuRow === 0}
-              onSelect={() => menuRow !== null && moveRow(menuRow, -1)}
-            >
-              <ArrowUp className="mr-2 h-4 w-4" />
-              上へ移動
-            </ContextMenuItem>
-            <ContextMenuItem
-              disabled={menuRow === rows.length - 1}
-              onSelect={() => menuRow !== null && moveRow(menuRow, 1)}
-            >
-              <ArrowDown className="mr-2 h-4 w-4" />
-              下へ移動
-            </ContextMenuItem>
-            <ContextMenuSeparator />
-            <ContextMenuItem
-              onSelect={() => menuRow !== null && deleteRow(menuRow)}
-            >
-              <Trash2 className="mr-2 h-4 w-4 text-[var(--color-error-500)]" />
-              行を削除
-            </ContextMenuItem>
+            {(() => {
+              const target = contextTargetRows();
+              if (!target) return null;
+              const { start, end } = target;
+              const count = end - start + 1;
+              const unit = count > 1 ? `${count}行` : '行';
+              return (
+                <>
+                  <ContextMenuItem onSelect={() => insertRows(start, count)}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    上に{unit}を挿入
+                  </ContextMenuItem>
+                  <ContextMenuItem onSelect={() => insertRows(end + 1, count)}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    下に{unit}を挿入
+                  </ContextMenuItem>
+                  <ContextMenuItem onSelect={() => duplicateRows(start, end)}>
+                    <Copy className="mr-2 h-4 w-4" />
+                    {unit}を複製
+                  </ContextMenuItem>
+                  <ContextMenuSeparator />
+                  <ContextMenuItem
+                    disabled={start === 0}
+                    onSelect={() => moveRows(start, end, -1)}
+                  >
+                    <ArrowUp className="mr-2 h-4 w-4" />
+                    上へ移動
+                  </ContextMenuItem>
+                  <ContextMenuItem
+                    disabled={end === rows.length - 1}
+                    onSelect={() => moveRows(start, end, 1)}
+                  >
+                    <ArrowDown className="mr-2 h-4 w-4" />
+                    下へ移動
+                  </ContextMenuItem>
+                  <ContextMenuSeparator />
+                  <ContextMenuItem onSelect={() => deleteRows(start, end)}>
+                    <Trash2 className="mr-2 h-4 w-4 text-[var(--color-error-500)]" />
+                    {unit}を削除
+                  </ContextMenuItem>
+                </>
+              );
+            })()}
           </ContextMenuContent>
         </ContextMenu>
       </table>
@@ -1062,7 +1138,7 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
         <button
           type="button"
           onClick={() => {
-            insertRow(rows.length);
+            insertRows(rows.length);
           }}
           className="flex w-full items-center gap-1.5 px-3 py-2 text-sm text-[var(--color-on-surface-secondary)] transition-colors hover:bg-[var(--color-surface-muted)] hover:text-[var(--color-on-surface)]"
         >
