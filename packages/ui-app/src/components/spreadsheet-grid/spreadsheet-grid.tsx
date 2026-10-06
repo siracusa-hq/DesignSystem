@@ -9,6 +9,7 @@ import {
   GripVertical,
 } from 'lucide-react';
 import { cn } from '@/lib/cn';
+import { formatClipboardTable, parseClipboardTable } from '@/lib/clipboard-table';
 import { normalizeText, parseNumberText } from '@/lib/normalize-text';
 import { Checkbox } from '@/components/checkbox';
 import {
@@ -646,15 +647,16 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
 
   const copySelection = () => {
     if (!selectionRect) return;
-    const lines: string[] = [];
+    const table: string[][] = [];
     for (let r = selectionRect.top; r <= selectionRect.bottom; r++) {
       const cells: string[] = [];
       for (let c = selectionRect.left; c <= selectionRect.right; c++) {
         cells.push(formatCellForCopy(columns[c], rows[r]));
       }
-      lines.push(cells.join('\t'));
+      table.push(cells);
     }
-    void navigator.clipboard?.writeText(lines.join('\n')).catch(() => {});
+    // 改行やタブを含むセルは "…" で囲む（Excel に貼っても 1 つのセルになる）
+    void navigator.clipboard?.writeText(formatClipboardTable(table)).catch(() => {});
   };
 
   const handlePaste = (e: React.ClipboardEvent) => {
@@ -662,8 +664,8 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
     const text = e.clipboardData.getData('text/plain');
     if (!text) return;
     e.preventDefault();
-    const lines = text.replace(/\r/g, '').replace(/\n$/, '').split('\n');
-    const matrix = lines.map((line) => line.split('\t'));
+    // Excel の改行（CRLF・CR）と、改行やタブを含むセル（"…" で囲まれる）も読む
+    const matrix = parseClipboardTable(text);
     const start = selectionRect
       ? { r: selectionRect.top, c: selectionRect.left }
       : active;

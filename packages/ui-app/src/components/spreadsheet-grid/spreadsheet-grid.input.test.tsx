@@ -124,6 +124,10 @@ describe('数値の解釈と貼り付け', () => {
     ['¥1,500', 1500],
     ['−5', -5],
     ['－3', -3],
+    ['▲1,200', -1200],
+    ['△5', -5],
+    ['(1,200)', -1200],
+    ['（３００）', -300],
   ])('「%s」を %d として読む', async (text, expected) => {
     const onRows = await typeQty(text);
     expect(lastRows(onRows)[1].qty).toBe(expected);
@@ -153,5 +157,46 @@ describe('数値の解釈と貼り付け', () => {
     await user.click(getCell('式'));
     fireEvent.paste(screen.getByRole('grid'), { clipboardData: { getData: () => 'm2' } });
     expect(lastRows(onRows)[0].unit).toBe('sqm');
+  });
+});
+
+describe('Excel・スプレッドシートからの貼り付け', () => {
+  const paste = (text: string) =>
+    fireEvent.paste(screen.getByRole('grid'), { clipboardData: { getData: () => text } });
+
+  it.each([
+    ['CRLF（Windows の Excel）', 'A\t2\r\nB\t3\r\n'],
+    ['CR だけ（Mac の Excel の一部）', 'A\t2\rB\t3\r'],
+  ])('改行が %s でも行に分けて入れる', async (_, text) => {
+    const user = userEvent.setup();
+    const onRows = vi.fn();
+    render(<Harness onRows={onRows} />);
+    await user.click(getCell('サーバー構築'));
+    paste(text);
+    const rows = lastRows(onRows);
+    expect(rows).toHaveLength(2);
+    expect(rows[0]).toMatchObject({ item: 'A', qty: 2 });
+    expect(rows[1]).toMatchObject({ item: 'B', qty: 3 });
+  });
+
+  it('セル内に改行のあるセル（"…" で囲まれる）は、1 つのセルとして入れる', async () => {
+    const user = userEvent.setup();
+    const onRows = vi.fn();
+    render(<Harness onRows={onRows} />);
+    await user.click(getCell('月額'));
+    paste('"1行目\n2行目"\r\n');
+    const rows = lastRows(onRows);
+    expect(rows).toHaveLength(2);
+    expect(rows[1].note).toBe('1行目\n2行目');
+  });
+
+  it('コピーは、改行を含むセルを "…" で囲む（Excel に貼っても 1 つのセルになる）', async () => {
+    const user = userEvent.setup();
+    render(<Harness />);
+    await user.click(getCell('月額'));
+    paste('"1行目\n2行目"');
+    await user.keyboard('{Shift>}{ArrowLeft}{/Shift}');
+    await user.keyboard('{Control>}c{/Control}');
+    expect(await navigator.clipboard.readText()).toBe('\t"1行目\n2行目"');
   });
 });
