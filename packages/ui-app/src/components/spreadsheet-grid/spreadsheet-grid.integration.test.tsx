@@ -189,6 +189,27 @@ describe('選択・キー操作・右クリック・元に戻すをアプリと�
     expect(lastRows(onRows).map((r) => r.item)).toEqual(['サーバー構築', '保守', 'A@1']);
   });
 
+  it('onPaste の matrix は、Excel の文字を行と列に分けたもの（"…" で囲まれたセルは 1 つ）', async () => {
+    const user = userEvent.setup();
+    const onPaste = vi.fn((_paste: { matrix: string[][] }) => undefined);
+    render(<Harness onPaste={onPaste} />);
+    await user.click(getCell('保守'));
+    fireEvent.paste(screen.getByRole('grid'), {
+      clipboardData: { getData: () => 'A\t"1行目\n2行目"\r\nB\t▲1,200\r\n' },
+    });
+    expect(onPaste.mock.calls[0][0].matrix).toEqual([
+      ['A', '1行目\n2行目'],
+      ['B', '▲1,200'],
+    ]);
+  });
+
+  it('表の外で貼り付けを扱うアプリ向けに、同じ読み方の関数を barrel から使える', async () => {
+    const ds = await import('@/index');
+    expect(ds.parseClipboardTable('a\t"b\nc"\r\n')).toEqual([['a', 'b\nc']]);
+    expect(ds.formatClipboardTable([['b\nc']])).toBe('"b\nc"');
+    expect(ds.parseNumberText('▲1,200')).toBe(-1200);
+  });
+
   it('外から行が足されても、選んでいた行を ID で追いかける', async () => {
     const user = userEvent.setup();
     const onSelectionChange = vi.fn();

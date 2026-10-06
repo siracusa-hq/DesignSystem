@@ -182,7 +182,10 @@ export interface SpreadsheetGridProps<Row extends object = SpreadsheetRow> {
    * グリッドが取らず、外から rows が変わっても変更セルの印を消さない
    */
   history?: boolean;
-  /** 貼り付けを差し替える。行を返すとそれを使い、undefined なら既定の動き */
+  /**
+   * 貼り付けを差し替える。行を返すとそれを使い、undefined なら既定の動き。
+   * matrix は parseClipboardTable で行と列に分けたもの（Excel の改行・"…" で囲まれたセルも読む）
+   */
   onPaste?: (paste: {
     text: string;
     matrix: string[][];
