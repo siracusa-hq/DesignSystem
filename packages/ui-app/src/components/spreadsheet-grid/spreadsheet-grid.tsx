@@ -9,6 +9,8 @@ import {
   GripVertical,
 } from 'lucide-react';
 import { cn } from '@/lib/cn';
+import { formatClipboardTable, parseClipboardTable } from '@/lib/clipboard-table';
+import { normalizeText, parseNumberText } from '@/lib/normalize-text';
 import { Checkbox } from '@/components/checkbox';
 import {
   Select,
@@ -40,6 +42,9 @@ import {
    - Cmd/Ctrl+Z で Undo、Cmd/Ctrl+Shift+Z / Ctrl+Y で Redo。
      グリッド内部からの変更のみが履歴対象（外部からの rows 差し替えで
      履歴はリセットされる）
+   - 入力できるセルを選んでいる間は、セルに透明な入力欄を置いて
+     フォーカスを渡す。打鍵や日本語入力（IME）の変換開始で、
+     そのまま同じ入力欄で編集に入る（変換が途切れない）
    -------------------------------------------------------- */
 
 export type SpreadsheetCellValue = string | number | boolean | null | undefined;
@@ -117,8 +122,8 @@ function validateCell<Row extends SpreadsheetRow>(
     }
   }
   if (column.type === 'number' && value !== null && value !== undefined && value !== '') {
-    const num = typeof value === 'number' ? value : Number(value);
-    if (Number.isNaN(num)) return '数値で入力してください';
+    const num = typeof value === 'number' ? value : parseNumberText(String(value));
+    if (num === undefined || num === null || Number.isNaN(num)) return '数値で入力してください';
     if (column.min !== undefined && num < column.min)
       return `${column.min} 以上を入力してください`;
     if (column.max !== undefined && num > column.max)
@@ -150,10 +155,8 @@ function parseDraft(
   draft: string,
 ): { ok: boolean; value: SpreadsheetCellValue } {
   if (type === 'number') {
-    const trimmed = draft.trim().replace(/,/g, '');
-    if (trimmed === '') return { ok: true, value: null };
-    const num = Number(trimmed);
-    return Number.isNaN(num) ? { ok: false, value: null } : { ok: true, value: num };
+    const num = parseNumberText(draft);
+    return num === undefined ? { ok: false, value: null } : { ok: true, value: num };
   }
   if (type === 'select' || type === 'date') {
     return { ok: true, value: draft === '' ? null : draft };
@@ -161,31 +164,47 @@ function parseDraft(
   return { ok: true, value: draft };
 }
 
+/** 読めない値の印（貼り付けではセルを変えずに元の値を残す） */
+const KEEP: unique symbol = Symbol('keep');
+type PastedValue = SpreadsheetCellValue | typeof KEEP;
+
+/** 選択肢の照合。値かラベルの完全一致を先に、なければ表記ゆれを吸収して探す */
+function matchOption(
+  options: SpreadsheetSelectOption[] | undefined,
+  text: string,
+): string | undefined {
+  if (!options) return undefined;
+  const exact = options.find((o) => o.value === text) ?? options.find((o) => o.label === text);
+  if (exact) return exact.value;
+  const q = normalizeText(text);
+  if (!q) return undefined;
+  return (
+    options.find((o) => normalizeText(o.value) === q) ??
+    options.find((o) => normalizeText(o.label) === q)
+  )?.value;
+}
+
 function parsePastedValue<Row extends SpreadsheetRow>(
   column: SpreadsheetColumn<Row>,
   text: string,
-): SpreadsheetCellValue {
+): PastedValue {
   const trimmed = text.trim();
   switch (column.type) {
     case 'number': {
-      if (trimmed === '') return null;
-      const num = Number(trimmed.replace(/,/g, ''));
-      return Number.isNaN(num) ? null : num;
+      const num = parseNumberText(trimmed);
+      return num === undefined ? KEEP : num;
     }
     case 'checkbox':
       return /^(true|1|yes|✓|○)$/i.test(trimmed);
     case 'date': {
       if (trimmed === '') return null;
-      const normalized = trimmed.replace(/\//g, '-');
-      return /^\d{4}-\d{2}-\d{2}$/.test(normalized) ? normalized : null;
+      const normalized = trimmed.normalize('NFKC').replace(/\//g, '-');
+      return /^\d{4}-\d{2}-\d{2}$/.test(normalized) ? normalized : KEEP;
     }
     case 'select': {
       if (trimmed === '') return null;
       // value か label のどちらでも受け付ける（Excel からはラベルが貼られがち）
-      const byValue = column.options?.find((o) => o.value === trimmed);
-      if (byValue) return byValue.value;
-      const byLabel = column.options?.find((o) => o.label === trimmed);
-      return byLabel ? byLabel.value : null;
+      return matchOption(column.options, trimmed) ?? KEEP;
     }
     default:
       return text;
@@ -339,9 +358,14 @@ interface EditingState {
   r: number;
   c: number;
   draft: string;
+  /** enter: 打ち始め（打鍵・日本語入力）で入った／edit: Enter・F2・ダブルクリックで入った */
+  mode: 'enter' | 'edit';
 }
 
 const EDITABLE_TYPES: SpreadsheetColumnType[] = ['text', 'number', 'select', 'date'];
+/** 透明な入力欄を置いて、打鍵・日本語入力で編集に入る列 */
+const isTextType = (type: SpreadsheetColumnType | undefined) =>
+  type === 'text' || type === 'number';
 
 function SpreadsheetGridInner<Row extends SpreadsheetRow>(
   {
@@ -363,7 +387,8 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
   const [, bumpDirtyVersion] = React.useReducer((v: number) => v + 1, 0);
 
   const cellRefs = React.useRef(new Map<string, HTMLTableCellElement>());
-  const editorRef = React.useRef<HTMLInputElement | HTMLSelectElement | null>(null);
+  // 選んだセル（入力できるセル）に置く入力欄。編集中はそのまま編集欄になる
+  const activeInputRef = React.useRef<HTMLInputElement | null>(null);
   const draggingRef = React.useRef(false);
   const committingRef = React.useRef(false);
 
@@ -425,20 +450,26 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
 
   /* ----- フォーカス管理 ----- */
 
+  // 選んだセルへフォーカスを置く。入力できるセルでは、セルの中の入力欄へ置く
+  // （フォーカスが入力欄にあれば、日本語入力の変換がそのまま始まる）
   React.useEffect(() => {
-    if (active && !editing) {
-      cellRefs.current.get(`${active.r}:${active.c}`)?.focus({ preventScroll: false });
-    }
-  }, [active, editing]);
+    if (!active) return;
+    // select / date の編集中は、自前のエディタがフォーカスを持つ
+    if (editing && !isTextType(columns[editing.c]?.type)) return;
+    const target = activeInputRef.current ?? cellRefs.current.get(`${active.r}:${active.c}`);
+    if (target && document.activeElement !== target) target.focus({ preventScroll: false });
+  }, [active, editing]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Enter・F2・ダブルクリックで編集に入ったら、カーソルを末尾へ（Excel・Google
+  // スプレッドシートと同じ）。打ち始め（日本語の変換中を含む）は、入力欄が
+  // 自分で位置を持つので触らない
   React.useEffect(() => {
-    if (editing) {
-      editorRef.current?.focus();
-      if (editorRef.current instanceof HTMLInputElement) {
-        editorRef.current.select();
-      }
-    }
-  }, [editing?.r, editing?.c]); // eslint-disable-line react-hooks/exhaustive-deps
+    const input = activeInputRef.current;
+    if (!editing || editing.mode !== 'edit' || !input) return;
+    input.focus();
+    const n = input.value.length;
+    input.setSelectionRange(n, n);
+  }, [editing?.r, editing?.c, editing?.mode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /* ----- 選択範囲 ----- */
 
@@ -559,7 +590,7 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
         : value === null || value === undefined
           ? ''
           : String(value);
-    setEditing({ r, c, draft });
+    setEditing({ r, c, draft, mode: initialDraft !== undefined ? 'enter' : 'edit' });
   };
 
   const commitEdit = (move: 'down' | 'right' | 'none') => {
@@ -616,15 +647,16 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
 
   const copySelection = () => {
     if (!selectionRect) return;
-    const lines: string[] = [];
+    const table: string[][] = [];
     for (let r = selectionRect.top; r <= selectionRect.bottom; r++) {
       const cells: string[] = [];
       for (let c = selectionRect.left; c <= selectionRect.right; c++) {
         cells.push(formatCellForCopy(columns[c], rows[r]));
       }
-      lines.push(cells.join('\t'));
+      table.push(cells);
     }
-    void navigator.clipboard?.writeText(lines.join('\n')).catch(() => {});
+    // 改行やタブを含むセルは "…" で囲む（Excel に貼っても 1 つのセルになる）
+    void navigator.clipboard?.writeText(formatClipboardTable(table)).catch(() => {});
   };
 
   const handlePaste = (e: React.ClipboardEvent) => {
@@ -632,8 +664,8 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
     const text = e.clipboardData.getData('text/plain');
     if (!text) return;
     e.preventDefault();
-    const lines = text.replace(/\r/g, '').replace(/\n$/, '').split('\n');
-    const matrix = lines.map((line) => line.split('\t'));
+    // Excel の改行（CRLF・CR）と、改行やタブを含むセル（"…" で囲まれる）も読む
+    const matrix = parseClipboardTable(text);
     const start = selectionRect
       ? { r: selectionRect.top, c: selectionRect.left }
       : active;
@@ -650,7 +682,10 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
         if (c >= columns.length) return;
         const column = columns[c];
         if (column.type === 'readonly') return;
-        updates.push({ r, key: column.key, value: parsePastedValue(column, cellText) });
+        const value = parsePastedValue(column, cellText);
+        // 読めない値は、セルを空にせず元の値を残す
+        if (value === KEEP) return;
+        updates.push({ r, key: column.key, value });
       });
     });
     updateCells(updates, appended);
@@ -807,6 +842,8 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
   /* ----- キーボード ----- */
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    // 日本語の変換中は触らない（入力欄にフォーカスがあるため、変換中のキーもここへ届く）
+    if (e.nativeEvent.isComposing || e.keyCode === 229) return;
     if (editing || !active) return;
     const { r, c } = active;
     const column = columns[c];
@@ -919,9 +956,13 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
     }
     // 印字可能文字で編集開始（Excel/Sheets と同じ）
     if (!mod && !e.altKey && e.key.length === 1) {
-      if (column.type === 'text' || column.type === 'number') {
-        e.preventDefault();
-        startEdit(r, c, e.key);
+      if (isTextType(column.type)) {
+        // 入力欄にフォーカスがあれば、入力欄が文字を受け取って編集に入る（onChange）。
+        // ないとき（フォーカスがセルに残っているとき）だけ、ここで編集に入る
+        if (e.target !== activeInputRef.current) {
+          e.preventDefault();
+          startEdit(r, c, e.key);
+        }
       } else if (column.type === 'select' || column.type === 'date') {
         e.preventDefault();
         startEdit(r, c);
@@ -944,70 +985,93 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
 
   const renderEditor = (column: SpreadsheetColumn<Row>, state: EditingState) => {
     const row = rows[state.r];
-
-    if (column.type === 'select' || column.type === 'date') {
-      const currentValue = row?.[column.key] ?? null;
-      const invalid = !!validateCell(column, currentValue, row);
-      const Editor = column.type === 'select' ? SelectCellEditor : DateCellEditor;
-      return (
-        <Editor
-          column={column}
-          value={currentValue}
-          invalid={invalid}
-          onCommit={commitPickerValue}
-          onCancel={cancelEdit}
-        />
-      );
-    }
-
-    const { ok, value } = parseDraft(column.type, state.draft);
-    // 入力中のリアルタイム検証。パース不能な数値はパースエラーを優先
-    const liveError = !ok
-      ? '数値で入力してください'
-      : validateCell(column, value, row);
-
-    const editorKeyDown = (e: React.KeyboardEvent) => {
-      // IME（日本語入力など）の変換確定の Enter / Tab はセル確定として
-      // 扱わない。isComposing はブラウザにより確定の瞬間 false になる
-      // ことがあるため、レガシーな keyCode 229 も併せて見る
-      if (e.nativeEvent.isComposing || e.keyCode === 229) {
-        e.stopPropagation();
-        return;
-      }
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        commitEdit('down');
-      } else if (e.key === 'Tab') {
-        e.preventDefault();
-        commitEdit('right');
-      } else if (e.key === 'Escape') {
-        e.preventDefault();
-        cancelEdit();
-      }
-      e.stopPropagation();
-    };
-
-    const editorClass = cn(
-      'h-full w-full border-0 bg-[var(--color-surface-raised)] px-2 text-sm outline-none',
-      'ring-2 ring-inset',
-      liveError
-        ? 'ring-[var(--color-error-400)]'
-        : 'ring-[var(--color-primary-500)]',
+    const currentValue = row?.[column.key] ?? null;
+    const invalid = !!validateCell(column, currentValue, row);
+    const Editor = column.type === 'select' ? SelectCellEditor : DateCellEditor;
+    return (
+      <Editor
+        column={column}
+        value={currentValue}
+        invalid={invalid}
+        onCommit={commitPickerValue}
+        onCancel={cancelEdit}
+      />
     );
+  };
 
+  /** 編集中の入力欄のキー操作。編集中でなければ表のキー操作へ渡す */
+  const editorKeyDown = (e: React.KeyboardEvent) => {
+    if (!editing) return;
+    // IME（日本語入力など）の変換確定の Enter / Tab はセル確定として
+    // 扱わない。isComposing はブラウザにより確定の瞬間 false になる
+    // ことがあるため、レガシーな keyCode 229 も併せて見る
+    if (e.nativeEvent.isComposing || e.keyCode === 229) {
+      e.stopPropagation();
+      return;
+    }
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      commitEdit('down');
+    } else if (e.key === 'Tab') {
+      e.preventDefault();
+      commitEdit('right');
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      cancelEdit();
+    }
+    e.stopPropagation();
+  };
+
+  /* 入力できるセル（text / number）を選んでいる間、セルに常に置く入力欄。
+     編集中でないときは透明で、打鍵（onChange）や日本語入力の変換開始
+     （onCompositionStart）で編集に入り、同じ入力欄をそのまま編集欄に使う。
+     フォーカスを移さないので、変換が途切れない */
+  const renderCellInput = (column: SpreadsheetColumn<Row>, r: number, c: number) => {
+    const state = editing && editing.r === r && editing.c === c ? editing : null;
+    const row = rows[r];
+    let liveError: string | null = null;
+    if (state) {
+      const { ok, value } = parseDraft(column.type, state.draft);
+      // 入力中のリアルタイム検証。パース不能な数値はパースエラーを優先
+      liveError = !ok ? '数値で入力してください' : validateCell(column, value, row);
+    }
     return (
       <>
         <input
           ref={(node) => {
-            editorRef.current = node;
+            activeInputRef.current = node;
           }}
           type="text"
           inputMode={column.type === 'number' ? 'decimal' : undefined}
-          value={state.draft}
-          onChange={(e) => setEditing({ ...state, draft: e.target.value })}
+          value={state ? state.draft : ''}
+          spellCheck={false}
+          autoComplete="off"
+          aria-label={
+            state ? column.header : `${column.header} ${formatCellForCopy(column, row)}`.trim()
+          }
+          onChange={(e) => {
+            if (state) setEditing({ ...state, draft: e.target.value });
+            else startEdit(r, c, e.target.value);
+          }}
+          onCompositionStart={() => {
+            // 日本語入力の変換開始で編集に入る（入力欄の値は空のまま変えない）
+            if (!editing) startEdit(r, c, '');
+          }}
           onKeyDown={editorKeyDown}
-          onBlur={() => commitEdit('none')}
-          className={editorClass}
+          onBlur={() => {
+            if (editing) commitEdit('none');
+          }}
+          className={cn(
+            'absolute inset-0 h-full w-full border-0 bg-transparent px-2 text-sm outline-none',
+            state
+              ? cn(
+                  'bg-[var(--color-surface-raised)] text-[var(--color-on-surface)] ring-2 ring-inset',
+                  liveError
+                    ? 'ring-[var(--color-error-400)]'
+                    : 'ring-[var(--color-primary-500)]',
+                )
+              : 'text-transparent caret-transparent',
+          )}
           aria-invalid={liveError ? true : undefined}
           aria-describedby={liveError ? 'spreadsheet-live-error' : undefined}
         />
@@ -1172,6 +1236,7 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
                         : validateCell(column, row[column.key], row);
                     const dirty =
                       column.type !== 'readonly' && isCellDirty(row, column.key);
+                    const textInput = isActive && isTextType(column.type);
                     return (
                       <td
                         key={column.key}
@@ -1180,7 +1245,7 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
                           else cellRefs.current.delete(`${r}:${c}`);
                         }}
                         role="gridcell"
-                        tabIndex={isActive ? 0 : -1}
+                        tabIndex={isActive && !textInput ? 0 : -1}
                         aria-colindex={c + 2}
                         aria-selected={isSelected(r, c) || undefined}
                         aria-readonly={column.type === 'readonly' || undefined}
@@ -1200,6 +1265,25 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
                               columns[editing.c].type === 'date')
                           ) {
                             setEditing(null);
+                          }
+                          // 入力欄を置くセルでは、入力欄の外（セルの余白など）を押しても
+                          // フォーカスをセルへ移さない（入力欄に置き直す）
+                          if (
+                            isTextType(column.type) &&
+                            (e.target as HTMLElement).tagName !== 'INPUT'
+                          ) {
+                            e.preventDefault();
+                            // 別のセルで文字を編集中なら確定する（blur が起きないため）
+                            if (
+                              editing &&
+                              (editing.r !== r || editing.c !== c) &&
+                              isTextType(columns[editing.c].type)
+                            ) {
+                              commitEdit('none');
+                            }
+                            requestAnimationFrame(() =>
+                              activeInputRef.current?.focus({ preventScroll: true }),
+                            );
                           }
                           draggingRef.current = true;
                           if (e.shiftKey && active) {
@@ -1236,12 +1320,12 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
                             rowDrag.over === rows.length &&
                             r === rows.length - 1 &&
                             'shadow-[inset_0_-2px_0_var(--color-primary-500)]',
-                          isEditing && 'p-0',
+                          isEditing && !isTextType(column.type) && 'p-0',
                         )}
                       >
-                        {isEditing ? (
+                        {isEditing && !isTextType(column.type) ? (
                           renderEditor(column, editing)
-                        ) : column.type === 'checkbox' ? (
+                        ) : isEditing ? null : column.type === 'checkbox' ? (
                           <span className="flex items-center justify-center">
                             <Checkbox
                               tabIndex={-1}
@@ -1262,6 +1346,7 @@ function SpreadsheetGridInner<Row extends SpreadsheetRow>(
                             )}
                           </span>
                         )}
+                        {textInput && renderCellInput(column, r, c)}
                         {dirty && (
                           <span
                             aria-hidden
