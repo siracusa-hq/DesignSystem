@@ -8,6 +8,8 @@ import {
   ArrowDown,
   AlertCircle,
   GripVertical,
+  ChevronDown,
+  ChevronRight,
 } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { formatClipboardTable, parseClipboardTable } from '@/lib/clipboard-table';
@@ -46,6 +48,8 @@ import {
    - 入力できるセルを選んでいる間は、セルに透明な入力欄を置いて
      フォーカスを渡す。打鍵や日本語入力（IME）の変換開始で、
      そのまま同じ入力欄で編集に入る（変換が途切れない）
+   - getRowDepth を渡すと階層つきの表（treegrid）になる。データは
+     平らな配列のまま、行の深さで親子を決める
    -------------------------------------------------------- */
 
 export type SpreadsheetCellValue = string | number | boolean | null | undefined;
@@ -164,8 +168,8 @@ export interface SpreadsheetGridProps<Row extends object = SpreadsheetRow> {
   rows: Row[];
   /** 編集・行操作・ペーストなど、すべての変更がここに集約される */
   onRowsChange: (rows: Row[]) => void;
-  /** 行追加時の初期値。既定は空オブジェクト */
-  createRow?: () => Row;
+  /** 行追加時の初期値。既定は空オブジェクト。階層つきでは depth が渡る */
+  createRow?: (context?: { depth: number }) => Row;
   /** 下部の行追加ボタンを隠す */
   hideAddRow?: boolean;
   /** 行追加ボタンのラベル。既定「行を追加」 */
@@ -223,6 +227,14 @@ export interface SpreadsheetGridProps<Row extends object = SpreadsheetRow> {
   }) => Row[] | undefined;
   /** 複製で行を作る。既定は浅いコピー */
   duplicateRow?: (row: Row) => Row;
+
+  /** 階層の深さ（0 が最上位）。指定すると階層つきの表（treegrid）になる */
+  getRowDepth?: (row: Row, rowIndex: number) => number;
+  /** 字下げと ▶ を出す列。既定は先頭の列 */
+  treeColumnKey?: string;
+  /** 畳んでいる行の ID。指定しなければグリッドの中で持つ */
+  collapsedRowIds?: ReadonlySet<string>;
+  onCollapsedRowIdsChange?: (ids: Set<string>) => void;
 }
 
 /* ----- 値の読み書き ----- */
@@ -408,6 +420,33 @@ function filterOptions(
   return [...starts, ...includes];
 }
 
+/* ----- 階層 -----
+
+   平らな行の並びと深さから親子を決める。行の親は「直前にある、より浅い行」。
+   end[i] は i の配下の終わり（含まない）。 */
+
+interface TreeInfo {
+  depth: number[];
+  parent: Int32Array;
+  end: Int32Array;
+}
+
+function buildTree(depths: number[]): TreeInfo {
+  const n = depths.length;
+  const parent = new Int32Array(n).fill(-1);
+  const end = new Int32Array(n);
+  const stack: number[] = [];
+  for (let i = 0; i < n; i++) {
+    while (stack.length && depths[stack[stack.length - 1]] >= depths[i]) {
+      end[stack.pop()!] = i;
+    }
+    parent[i] = stack.length ? stack[stack.length - 1] : -1;
+    stack.push(i);
+  }
+  while (stack.length) end[stack.pop()!] = n;
+  return { depth: depths, parent, end };
+}
+
 /** from〜to（含まない）の行のまとまりを、at の位置（元の並びでの位置）へ動かす */
 function moveBlock<T>(items: T[], from: number, to: number, at: number): T[] {
   const block = items.slice(from, to);
@@ -416,6 +455,9 @@ function moveBlock<T>(items: T[], from: number, to: number, at: number): T[] {
   rest.splice(insertAt, 0, ...block);
   return rest;
 }
+
+const INDENT = 18;
+const TOGGLE_WIDTH = 16;
 
 /* ----- select / date のセルエディタ -----
 
@@ -680,6 +722,8 @@ interface GridApi<Row extends object> {
   headerMouseDown: (r: number, e: React.MouseEvent) => void;
   headerMouseEnter: (r: number) => void;
   rowMouseEnter: (r: number) => void;
+  rowMouseMove: (r: number, e: React.MouseEvent<HTMLTableRowElement>) => void;
+  toggleCollapse: (r: number) => void;
   inputChange: (value: string) => void;
   inputCompositionStart: () => void;
   inputBlur: () => void;
@@ -705,6 +749,11 @@ interface RowViewProps<Row extends object> {
   dropEdge: 'top' | 'bottom' | null;
   dragging: boolean;
   dirtyVersion: number;
+  depth: number;
+  treeCol: number;
+  hasChildren: boolean;
+  collapsed: boolean;
+  treeMode: boolean;
   stickyLefts: (number | undefined)[];
   headerSticky: boolean;
   isCellEditable?: (
@@ -733,8 +782,11 @@ function RowViewInner<Row extends object>(p: RowViewProps<Row>) {
   return (
     <tr
       aria-rowindex={r + 1}
+      aria-level={p.treeMode ? p.depth + 1 : undefined}
+      aria-expanded={p.treeMode && p.hasChildren ? !p.collapsed : undefined}
       className={cn('bg-[var(--color-surface-raised)]', p.className)}
       onMouseEnter={() => api.rowMouseEnter(r)}
+      onMouseMove={p.dragging ? (e) => api.rowMouseMove(r, e) : undefined}
     >
       <th
         scope="row"
@@ -787,7 +839,7 @@ function RowViewInner<Row extends object>(p: RowViewProps<Row>) {
         const left = p.stickyLefts[c];
         const align = column.align ?? (column.type === 'number' ? 'right' : 'left');
 
-        const display: React.ReactNode =
+        let display: React.ReactNode =
           column.type === 'checkbox' && !column.render ? (
             <span className="flex items-center justify-center">
               <Checkbox
@@ -804,6 +856,39 @@ function RowViewInner<Row extends object>(p: RowViewProps<Row>) {
                 : formatCellForDisplay(column, row)}
             </span>
           );
+        if (c === p.treeCol) {
+          display = (
+            <span
+              className="flex min-w-0 items-center gap-1"
+              style={{ paddingLeft: p.depth * INDENT }}
+            >
+              {p.hasChildren ? (
+                <button
+                  type="button"
+                  tabIndex={-1}
+                  aria-label={p.collapsed ? '開く' : '畳む'}
+                  className="grid h-4 w-4 shrink-0 place-items-center rounded text-[var(--color-on-surface-muted)] hover:bg-[var(--color-surface-muted)]"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    api.toggleCollapse(r);
+                  }}
+                >
+                  {p.collapsed ? (
+                    <ChevronRight aria-hidden className="h-3.5 w-3.5" />
+                  ) : (
+                    <ChevronDown aria-hidden className="h-3.5 w-3.5" />
+                  )}
+                </button>
+              ) : (
+                <span aria-hidden className="w-4 shrink-0" />
+              )}
+              <span className="min-w-0 flex-1">{display}</span>
+            </span>
+          );
+        }
+        const inputOffset = c === p.treeCol ? 8 + p.depth * INDENT + TOGGLE_WIDTH : 0;
+
         return (
           <td
             key={column.key}
@@ -911,8 +996,10 @@ function RowViewInner<Row extends object>(p: RowViewProps<Row>) {
                 onCompositionStart={api.inputCompositionStart}
                 onBlur={api.inputBlur}
                 onKeyDown={api.inputKeyDown}
+                style={inputOffset ? { left: inputOffset } : undefined}
                 className={cn(
-                  'absolute inset-0 h-full w-full border-0 bg-transparent px-2 text-sm outline-none',
+                  'absolute inset-y-0 right-0 h-full border-0 bg-transparent px-2 text-sm outline-none',
+                  !inputOffset && 'left-0',
                   align === 'right' && 'text-right',
                   align === 'center' && 'text-center',
                   textEditing
@@ -994,6 +1081,10 @@ function SpreadsheetGridInner<Row extends object>(
     history = true,
     onPaste: onPasteProp,
     duplicateRow,
+    getRowDepth,
+    treeColumnKey,
+    collapsedRowIds,
+    onCollapsedRowIdsChange,
   } = props;
 
   const [active, setActive] = React.useState<CellPos | null>(null);
@@ -1045,13 +1136,45 @@ function SpreadsheetGridInner<Row extends object>(
 
   const ids = React.useMemo(() => rows.map(idOf), [rows, getRowId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  /* ----- 表に出ている行 -----
+  /* ----- 階層と、表に出ている行 ----- */
 
-     選択・移動・コピーは、表に出ている行の並び（visible）の位置で数える */
+  const treeMode = !!getRowDepth;
+  const tree = React.useMemo(
+    () => (getRowDepth ? buildTree(rows.map((row, i) => getRowDepth(row, i))) : null),
+    [rows, getRowDepth],
+  );
+  const [collapsedInternal, setCollapsedInternal] = React.useState<Set<string>>(
+    () => new Set(),
+  );
+  const collapsed = collapsedRowIds ?? collapsedInternal;
+  const setCollapsed = (next: Set<string>) => {
+    if (!collapsedRowIds) setCollapsedInternal(next);
+    onCollapsedRowIdsChange?.(next);
+  };
+  const hasChildren = (r: number) => !!tree && tree.end[r] > r + 1;
 
-  const visible = React.useMemo(() => rows.map((_, i) => i), [rows]);
-  const vpos = React.useMemo(() => Int32Array.from(visible), [visible]);
+  const visible = React.useMemo(() => {
+    const list: number[] = [];
+    for (let i = 0; i < rows.length;) {
+      list.push(i);
+      if (tree && tree.end[i] > i + 1 && collapsed.has(ids[i])) i = tree.end[i];
+      else i++;
+    }
+    return list;
+  }, [rows.length, tree, collapsed, ids]);
+
+  const vpos = React.useMemo(() => {
+    const a = new Int32Array(rows.length).fill(-1);
+    visible.forEach((r, v) => {
+      a[r] = v;
+    });
+    return a;
+  }, [visible, rows.length]);
   const vOf = (r: number) => (r >= 0 && r < vpos.length ? vpos[r] : -1);
+
+  const treeCol = treeMode
+    ? Math.max(0, treeColumnKey ? columns.findIndex((c) => c.key === treeColumnKey) : 0)
+    : -1;
 
   /* ----- 未保存マーカー（ベースライン比較） -----
 
@@ -1185,18 +1308,20 @@ function SpreadsheetGridInner<Row extends object>(
     }
   }, [rows]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // 行が減って選んでいた行がなくなったら、最後の行へ寄せる
+  // 選んでいる行が畳まれて見えなくなったら、見えている親へ移す
   React.useEffect(() => {
-    if (!active || active.r < rows.length) return;
-    if (rows.length === 0) {
+    if (!active) return;
+    if (active.r < rows.length && vOf(active.r) >= 0) return;
+    let r = Math.min(active.r, rows.length - 1);
+    while (tree && r >= 0 && vOf(r) < 0) r = tree.parent[r];
+    if (r < 0) {
       setActive(null);
       setAnchor(null);
       return;
     }
-    const r = rows.length - 1;
     setActive({ r, c: active.c });
     setAnchor({ r, c: active.c });
-  }, [active, rows.length]);
+  }, [active, vpos, rows.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const applyChange = (next: Row[]) => {
     if (history) {
@@ -1532,7 +1657,7 @@ function SpreadsheetGridInner<Row extends object>(
     const rowAt = (v: number): number => {
       if (v < visible.length) return visible[v];
       const r = rows.length + appended.length;
-      appended.push(createRow());
+      appended.push(createRow(tree ? { depth: 0 } : undefined));
       return r;
     };
     let lastR = active.r;
@@ -1574,13 +1699,15 @@ function SpreadsheetGridInner<Row extends object>(
 
      選択済みの行番号セルをドラッグすると行ブロックを移動する
      （未選択の行番号のドラッグは行選択の拡張）。Sheets と同じ使い分け。
-     over は「この行の直前に挿入する」挿入位置（0〜rows.length） */
+     over は「この行の直前に挿入する」挿入位置（0〜rows.length）。
+     階層つきでは配下ごと動かし、同じ親の兄弟の間にしか落とせない */
 
   const [rowDrag, setRowDrag] = React.useState<{
     start: number;
     end: number;
     pressed: number;
     over: number | null;
+    edge: { r: number; side: 'top' | 'bottom' } | null;
   } | null>(null);
 
   const selectRow = (r: number, extend: boolean) => {
@@ -1606,8 +1733,46 @@ function SpreadsheetGridInner<Row extends object>(
     const next = moveBlock(rows, start, end + 1, over);
     applyChange(next);
     const insertAt = over > end ? over - len : over;
-    setAnchor({ r: insertAt, c: columns.length - 1 });
-    setActive({ r: insertAt + len - 1, c: 0 });
+    if (tree) {
+      selectRow(insertAt, false);
+    } else {
+      setAnchor({ r: insertAt, c: columns.length - 1 });
+      setActive({ r: insertAt + len - 1, c: 0 });
+    }
+  };
+
+  /** 階層つきの落とし先。動かす行と同じ親の兄弟の前か、兄弟の配下の後ろ */
+  const treeDropTarget = (
+    from: number,
+    hover: number,
+    clientY: number,
+    rect: DOMRect,
+  ): { at: number; edge: { r: number; side: 'top' | 'bottom' } } | null => {
+    if (!tree) return null;
+    const d = tree.depth[from];
+    let s = hover;
+    while (s >= 0 && tree.depth[s] > d) s = tree.parent[s];
+    if (
+      s < 0 ||
+      s === from ||
+      tree.depth[s] !== d ||
+      tree.parent[s] !== tree.parent[from]
+    ) {
+      return null;
+    }
+    const before = hover === s && clientY < rect.top + rect.height / 2;
+    const at = before ? s : tree.end[s];
+    if (at === from || at === tree.end[from]) return null;
+    let edgeRow = s;
+    if (!before) {
+      for (let k = tree.end[s] - 1; k >= s; k--) {
+        if (vOf(k) >= 0) {
+          edgeRow = k;
+          break;
+        }
+      }
+    }
+    return { at, edge: { r: edgeRow, side: before ? 'top' : 'bottom' } };
   };
 
   /* ----- 行操作 -----
@@ -1627,8 +1792,10 @@ function SpreadsheetGridInner<Row extends object>(
   const copyRow = (row: Row): Row =>
     duplicateRow ? duplicateRow(row) : ({ ...row } as Row);
 
-  const insertRows = (index: number, count = 1) => {
-    const newRows = Array.from({ length: count }, () => createRow());
+  const insertRows = (index: number, count = 1, depth = 0) => {
+    const newRows = Array.from({ length: count }, () =>
+      createRow(tree ? { depth } : undefined),
+    );
     const next = [...rows];
     next.splice(index, 0, ...newRows);
     applyChange(next);
@@ -1669,6 +1836,39 @@ function SpreadsheetGridInner<Row extends object>(
     applyChange(next);
     setAnchor({ r: start + dir, c: columns.length - 1 });
     setActive({ r: end + dir, c: 0 });
+  };
+
+  /** 階層つき: 前／次の兄弟と配下ごと入れ替える */
+  const moveTreeRow = (r: number, dir: -1 | 1) => {
+    if (!tree) return;
+    const p = tree.parent[r];
+    const d = tree.depth[r];
+    if (dir === -1) {
+      let s = r - 1;
+      while (s >= 0 && tree.depth[s] > d) s = tree.parent[s];
+      if (s < 0 || tree.parent[s] !== p || tree.depth[s] !== d) return;
+      applyChange(moveBlock(rows, r, tree.end[r], s));
+      selectRow(s, false);
+    } else {
+      const ns = tree.end[r];
+      if (ns >= rows.length || tree.parent[ns] !== p || tree.depth[ns] !== d) return;
+      const at = tree.end[ns];
+      applyChange(moveBlock(rows, r, tree.end[r], at));
+      selectRow(r + (tree.end[ns] - ns), false);
+    }
+  };
+
+  const canMoveTreeRow = (r: number, dir: -1 | 1): boolean => {
+    if (!tree) return false;
+    const p = tree.parent[r];
+    const d = tree.depth[r];
+    if (dir === -1) {
+      let s = r - 1;
+      while (s >= 0 && tree.depth[s] > d) s = tree.parent[s];
+      return s >= 0 && tree.parent[s] === p && tree.depth[s] === d;
+    }
+    const ns = tree.end[r];
+    return ns < rows.length && tree.parent[ns] === p && tree.depth[ns] === d;
   };
 
   /* ----- キーボード ----- */
@@ -2011,6 +2211,18 @@ function SpreadsheetGridInner<Row extends object>(
     select: (cell, extendTo) => {
       const c = columns.findIndex((col) => col.key === cell.columnKey);
       if (c < 0 || cell.rowIndex < 0 || cell.rowIndex >= rows.length) return;
+      // 畳まれた配下なら、上位を開く
+      if (tree) {
+        const open = new Set(collapsed);
+        let changed = false;
+        for (const target of [cell.rowIndex, extendTo?.rowIndex]) {
+          if (target === undefined) continue;
+          for (let p = tree.parent[target]; p >= 0; p = tree.parent[p]) {
+            if (open.delete(ids[p])) changed = true;
+          }
+        }
+        if (changed) setCollapsed(open);
+      }
       if (editingRef.current) commitEdit('none');
       pendingFocusRef.current = true;
       setActive({ r: cell.rowIndex, c });
@@ -2045,6 +2257,8 @@ function SpreadsheetGridInner<Row extends object>(
     handleHeaderMouseDown: (_r: number, _e: React.MouseEvent) => {},
     handleHeaderMouseEnter: (_r: number) => {},
     handleRowMouseEnter: (_r: number) => {},
+    handleRowMouseMove: (_r: number, _e: React.MouseEvent<HTMLTableRowElement>) => {},
+    toggleCollapse: (_r: number) => {},
     handleInputChange: (_value: string) => {},
     handleCompositionStart: () => {},
     handleInputBlur: () => {},
@@ -2128,6 +2342,23 @@ function SpreadsheetGridInner<Row extends object>(
     handleHeaderMouseDown: (r, e) => {
       if (e.button !== 0) return;
       if (editingRef.current) commitEdit('none');
+      if (tree) {
+        if (e.shiftKey) {
+          rowDraggingRef.current = true;
+          selectRow(r, true);
+        } else {
+          // 階層つきは、押した行を配下ごと掴む
+          selectRow(r, false);
+          setRowDrag({
+            start: r,
+            end: tree.end[r] - 1,
+            pressed: r,
+            over: null,
+            edge: null,
+          });
+        }
+        return;
+      }
       if (isRowSelected(r) && selectionRect) {
         // 選択済みの行番号をドラッグ → 行ブロックの移動
         setRowDrag({
@@ -2135,6 +2366,7 @@ function SpreadsheetGridInner<Row extends object>(
           end: visible[selectionRect.bottom],
           pressed: r,
           over: null,
+          edge: null,
         });
       } else if (e.shiftKey) {
         // Shift+押下は選択の拡張（そのままヘッダーを
@@ -2145,19 +2377,44 @@ function SpreadsheetGridInner<Row extends object>(
         // 未選択の行は、押した瞬間に選択しつつそのまま
         // ドラッグで移動できるようにする（1クリックで掴める）
         selectRow(r, false);
-        setRowDrag({ start: r, end: r, pressed: r, over: null });
+        setRowDrag({ start: r, end: r, pressed: r, over: null, edge: null });
       }
     },
     handleHeaderMouseEnter: (r) => {
       if (rowDraggingRef.current) setActive({ r, c: 0 });
     },
     handleRowMouseEnter: (r) => {
-      if (!rowDrag) return;
+      if (!rowDrag || tree) return;
       setRowDrag((prev) => {
         if (!prev) return prev;
         const over = r < prev.start ? r : r > prev.end ? r + 1 : null;
         return { ...prev, over };
       });
+    },
+    handleRowMouseMove: (r, e) => {
+      if (!rowDrag || !tree) return;
+      const target = treeDropTarget(
+        rowDrag.start,
+        r,
+        e.clientY,
+        e.currentTarget.getBoundingClientRect(),
+      );
+      const over = target?.at ?? null;
+      const edge = target?.edge ?? null;
+      if (
+        over !== rowDrag.over ||
+        edge?.r !== rowDrag.edge?.r ||
+        edge?.side !== rowDrag.edge?.side
+      ) {
+        setRowDrag({ ...rowDrag, over, edge });
+      }
+    },
+    toggleCollapse: (r) => {
+      const id = ids[r];
+      const next = new Set(collapsed);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      setCollapsed(next);
     },
     handleInputChange: (value) => {
       const ed = editingRef.current;
@@ -2209,6 +2466,8 @@ function SpreadsheetGridInner<Row extends object>(
       headerMouseDown: (r, e) => latest.current.handleHeaderMouseDown(r, e),
       headerMouseEnter: (r) => latest.current.handleHeaderMouseEnter(r),
       rowMouseEnter: (r) => latest.current.handleRowMouseEnter(r),
+      rowMouseMove: (r, e) => latest.current.handleRowMouseMove(r, e),
+      toggleCollapse: (r) => latest.current.toggleCollapse(r),
       inputChange: (value) => latest.current.handleInputChange(value),
       inputCompositionStart: () => latest.current.handleCompositionStart(),
       inputBlur: () => latest.current.handleInputBlur(),
@@ -2260,7 +2519,50 @@ function SpreadsheetGridInner<Row extends object>(
     const end = Math.max(...targets);
     const count = targets.length;
     const unit = count > 1 ? `${count}行` : '行';
-    const builtins = (
+    const builtins = tree ? (
+      <>
+        <ContextMenuItem onSelect={() => insertRows(start, count, tree.depth[start])}>
+          <Plus className="mr-2 h-4 w-4" />
+          上に{unit}を挿入
+        </ContextMenuItem>
+        <ContextMenuItem
+          onSelect={() => insertRows(tree.end[end], count, tree.depth[end])}
+        >
+          <Plus className="mr-2 h-4 w-4" />
+          下に{unit}を挿入
+        </ContextMenuItem>
+        <ContextMenuItem onSelect={() => duplicateRows(start, tree.end[end] - 1)}>
+          <Copy className="mr-2 h-4 w-4" />
+          {unit}を複製
+        </ContextMenuItem>
+        <ContextMenuSeparator />
+        <ContextMenuItem
+          disabled={count > 1 || !canMoveTreeRow(start, -1)}
+          onSelect={() => moveTreeRow(start, -1)}
+        >
+          <ArrowUp className="mr-2 h-4 w-4" />
+          上へ移動
+        </ContextMenuItem>
+        <ContextMenuItem
+          disabled={count > 1 || !canMoveTreeRow(start, 1)}
+          onSelect={() => moveTreeRow(start, 1)}
+        >
+          <ArrowDown className="mr-2 h-4 w-4" />
+          下へ移動
+        </ContextMenuItem>
+        <ContextMenuSeparator />
+        <ContextMenuItem
+          onSelect={() => {
+            const drop = new Set<number>();
+            for (const t of targets) for (let k = t; k < tree.end[t]; k++) drop.add(k);
+            deleteRowSet(drop);
+          }}
+        >
+          <Trash2 className="mr-2 h-4 w-4 text-[var(--color-error-500)]" />
+          {unit}を削除
+        </ContextMenuItem>
+      </>
+    ) : (
       <>
         <ContextMenuItem onSelect={() => insertRows(start, count)}>
           <Plus className="mr-2 h-4 w-4" />
@@ -2338,11 +2640,15 @@ function SpreadsheetGridInner<Row extends object>(
           !!selectionRect && v >= selectionRect.top && v <= selectionRect.bottom;
         const dropEdge: 'top' | 'bottom' | null = !rowDrag
           ? null
-          : rowDrag.over === r
-            ? 'top'
-            : rowDrag.over === rows.length && r === rows.length - 1
-              ? 'bottom'
-              : null;
+          : tree
+            ? rowDrag.edge?.r === r
+              ? rowDrag.edge.side
+              : null
+            : rowDrag.over === r
+              ? 'top'
+              : rowDrag.over === rows.length && r === rows.length - 1
+                ? 'bottom'
+                : null;
         return (
           <RowView
             key={getRowId ? ids[r] : getRowKey(row)}
@@ -2357,6 +2663,11 @@ function SpreadsheetGridInner<Row extends object>(
             dropEdge={dropEdge}
             dragging={!!rowDrag}
             dirtyVersion={dirtyVersion}
+            depth={tree ? tree.depth[r] : 0}
+            treeCol={treeCol}
+            hasChildren={hasChildren(r)}
+            collapsed={tree ? collapsed.has(ids[r]) : false}
+            treeMode={treeMode}
             stickyLefts={stickyLefts}
             headerSticky={headerSticky}
             isCellEditable={isCellEditable}
@@ -2428,7 +2739,7 @@ function SpreadsheetGridInner<Row extends object>(
       )}
     >
       <table
-        role="grid"
+        role={treeMode ? 'treegrid' : 'grid'}
         aria-label={ariaLabel}
         aria-rowcount={rows.length}
         aria-colcount={colCount + 1}
