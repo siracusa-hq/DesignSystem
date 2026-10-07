@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.14.0
+
+### Minor Changes
+
+- d25950c: SpreadsheetGrid: アプリと分け合う口を追加。選択の通知（onSelectionChange）、ref.select／ref.focus、グリッドより先に呼ぶキー操作（onKeyDown）、右クリックの項目（contextMenu・rowActions。合計行の右クリックも届く）、アプリ側で持つ元に戻す（history={false}）、貼り付けの差し替え（onPaste）、複製の作り方（duplicateRow）。Excel と同じ操作として、編集中の Ctrl/Cmd+Enter で範囲にまとめて入力、1 つの値を範囲に貼ると範囲すべてに入る、Ctrl/Cmd+X、列見出しで列を選ぶ、打ち始めの ↑↓ で確定して移動、Shift+Enter／Shift+Tab、範囲の外の右クリックでそのセルを選ぶ、を追加。外から rows が変わったときは、選んでいた行を行 ID で追いかける。表の外で貼り付け・コピーを扱うアプリ向けに、SpreadsheetGrid と同じ読み方の parseClipboardTable・formatClipboardTable・parseNumberText を公開。
+- 8cea693: SpreadsheetGrid に候補つきの入力列（type: 'autocomplete'）を追加。決まった候補（options）は打った文字で絞り込み（全角/半角・ひらがな/カタカナ・大文字/小文字の違いを吸収）、関数で出す候補（getOptions）は 2 文字以上の前方一致か完全一致のときだけ先頭を選ぶ。renderOption・optionsHeader・optionsWidth で表示を変え、onSelectOption で行のほかの項目も書き換え、focusAfterSelect で選んだあとに移る列を決める。候補にない文字も確定でき（allowFreeText）、freeTextOption で「打った文字をそのまま入れる」行を出せる。日本語入力の変換中は候補を選ばない。候補つき入力列と Excel の貼り付けの読み取りで大きくなったため、サイズ枠（SpreadsheetGrid のみ）を 60 kB に上げた。
+- 0cf7226: SpreadsheetGrid: セル単位の入力可否（isCellEditable / onEditBlocked）、表示の差し替え（column.render）、書き込み口（column.setValue）、行の class（rowClassName）、行番号（renderRowHeader / rowHeaderWidth）、左の列の固定（stickyColumns）、合計行（column.footer）、column.align / column.className、行 ID（getRowId）を追加。行の型はセル以外の項目（入れ子のオブジェクトなど）も持てるようにした。行は部品に分けて memo 化し、変わった行だけを描き直す。
+- 906edaf: SpreadsheetGrid に階層を追加。getRowDepth を渡すと階層つきの表（treegrid）になり、データは平らな配列のまま行の深さで親子を決める。treeColumnKey の列に字下げと ▼／▶ を出して畳む・開く（collapsedRowIds / onCollapsedRowIdsChange で外からも持てる）。矢印キーの移動・範囲・コピーは畳んだ配下を飛ばし、選んでいた行が隠れたら見えている親へ移る。行のドラッグと右クリックの上下移動は配下ごと動き、同じ親の兄弟の間にしか落とせない。既定の削除・複製は配下ごと、挿入は同じ深さ（createRow に depth が渡る）。行には aria-level・aria-expanded を付ける。
+
+### Patch Changes
+
+- 4f14957: SpreadsheetGrid: 選んだセルに打ち始めたときに 1 文字目が消える不具合と、日本語入力（IME）で打ち始められない不具合を修正。数値列で全角数字・全角/数学記号のマイナス・桁区切り・「円」「¥」を読み、16 進数・指数表記・Infinity は読まないように修正。読めない値を貼り付けたときはセルを空にせず元の値を残すように修正。select 列の貼り付けで全角/半角・ひらがな/カタカナ・大文字/小文字の違いを吸収するように修正。Excel・スプレッドシートからの貼り付けで、CR だけの改行と、セル内の改行やタブ（"…" で囲まれたセル）を正しく読むように修正し、数値列で ▲1,200・△1,200・(1,200) を負数として読むように修正。コピーでは改行やタブを含むセルを "…" で囲み、Excel に貼っても 1 つのセルになるように修正。
+
 ## 0.13.0
 
 ### Minor Changes
