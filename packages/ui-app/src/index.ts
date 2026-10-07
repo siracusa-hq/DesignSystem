@@ -1,6 +1,9 @@
 // Utilities
 export { cn } from './lib/cn';
 export { createContext } from './lib/create-context';
+// 表計算ソフトとの貼り付け・コピーを、SpreadsheetGrid と同じ読み方で扱う
+export { formatClipboardTable, parseClipboardTable } from './lib/clipboard-table';
+export { parseNumberText } from './lib/normalize-text';
 
 // Hooks
 export { useBreakpoint, BREAKPOINTS, type Breakpoint } from './hooks';
@@ -474,6 +477,9 @@ export {
   type SpreadsheetCellValue,
   type SpreadsheetRow,
   type SpreadsheetError,
+  type SpreadsheetCellRef,
+  type SpreadsheetSelection,
+  type SpreadsheetMenuTarget,
 } from './components/spreadsheet-grid';
 export {
   SecondaryNav,
