@@ -50,6 +50,10 @@ import {
      そのまま同じ入力欄で編集に入る（変換が途切れない）
    - getRowDepth を渡すと階層つきの表（treegrid）になる。データは
      平らな配列のまま、行の深さで親子を決める
+   - 列定義に fields: [上段, 下段] を指定すると、その列は2段セルになり
+     1レコードが2行で描画される（会計システムの仕訳入力の借方/貸方など）。
+     データは「1レコード = 1行オブジェクト」のまま。階層（getRowDepth）
+     とは同時に使えない
    -------------------------------------------------------- */
 
 export type SpreadsheetCellValue = string | number | boolean | null | undefined;
@@ -76,7 +80,8 @@ export interface SpreadsheetOption<T = unknown> {
 export interface SpreadsheetColumn<Row extends object = SpreadsheetRow> {
   key: string;
   header: string;
-  type: SpreadsheetColumnType;
+  /** 列の型。fields（2段セル）を指定する場合は不要 */
+  type?: SpreadsheetColumnType;
   /** 列幅(px)。既定 160 */
   width?: number;
   /** type: 'select' の選択肢。type: 'autocomplete' では決まった候補（打った文字で絞り込む） */
@@ -121,7 +126,45 @@ export interface SpreadsheetColumn<Row extends object = SpreadsheetRow> {
   allowFreeText?: boolean;
   /** autocomplete: 候補の最後に「打った文字をそのまま入れる」行を出す（その表示） */
   freeTextOption?: (text: string) => React.ReactNode;
+  /**
+   * 2段セル: [上段, 下段] のフィールドペア。指定した列は1レコードが
+   * 上下2段で描画される（例: 借方科目/貸方科目）。指定時は列自身の
+   * type / options などセル向けの指定は使われない。fields を持たない列は
+   * rowSpan=2 で1段のまま表示される（例: 日付・金額・摘要）。
+   * 階層（getRowDepth）とは同時に使えない
+   */
+  fields?: [SpreadsheetTierField<Row>, SpreadsheetTierField<Row>];
 }
+
+/**
+ * 2段セルの各段（上段/下段）のフィールド定義。列からレイアウト向けの
+ * 指定（width / footer / fields など）を除いたもので、autocomplete の
+ * 候補まわりも段ごとに指定できる
+ */
+export interface SpreadsheetTierField<Row extends object = SpreadsheetRow>
+  extends Omit<
+    SpreadsheetColumn<Row>,
+    'fields' | 'width' | 'footer' | 'type' | 'className' | 'align'
+  > {
+  /** 段のラベル。列ヘッダーに上段/下段で積んで表示される */
+  header: string;
+  type: SpreadsheetColumnType;
+}
+
+/** 列の (段) からセル1つ分のフィールド定義を取り出す。無い段は null */
+function fieldOf<Row extends object>(
+  column: SpreadsheetColumn<Row>,
+  t: 0 | 1,
+): SpreadsheetTierField<Row> | null {
+  if (column.fields) return column.fields[t] ?? null;
+  return t === 0 ? (column as SpreadsheetTierField<Row>) : null;
+}
+
+function tiersOf<Row extends object>(column: SpreadsheetColumn<Row>): readonly (0 | 1)[] {
+  return column.fields ? TIERS_BOTH : TIERS_SINGLE;
+}
+const TIERS_BOTH = [0, 1] as const;
+const TIERS_SINGLE = [0] as const;
 
 export interface SpreadsheetError {
   rowIndex: number;
@@ -293,9 +336,12 @@ export function getSpreadsheetErrors<Row extends object>(
   const errors: SpreadsheetError[] = [];
   rows.forEach((row, rowIndex) => {
     for (const column of columns) {
-      if (column.type === 'readonly') continue;
-      const message = validateCell(column, cellOf(row, column.key), row);
-      if (message) errors.push({ rowIndex, columnKey: column.key, message });
+      for (const t of tiersOf(column)) {
+        const field = fieldOf(column, t)!;
+        if (field.type === 'readonly') continue;
+        const message = validateCell(field, cellOf(row, field.key), row);
+        if (message) errors.push({ rowIndex, columnKey: field.key, message });
+      }
     }
   });
   return errors;
@@ -492,8 +538,14 @@ function SelectCellEditor<Row extends object>({
         onCommit(v === SELECT_CLEAR_VALUE ? null : v);
       }}
       onOpenChange={(open) => {
-        // 値を選ばずに閉じたら取消（選択時は onValueChange が先に走る）
-        if (!open && !committedRef.current) onCancel();
+        // 値を選ばずに閉じたら取消。Radix は選択時にも onOpenChange(false) が
+        // onValueChange より先に届くことがあるため、同じタスクの処理が
+        // 終わるのを待ってから「選択が無かったとき」だけ取り消す
+        if (!open && !committedRef.current) {
+          queueMicrotask(() => {
+            if (!committedRef.current) onCancel();
+          });
+        }
       }}
     >
       <SelectTrigger
@@ -687,11 +739,14 @@ function OptionsPopup({
 interface CellPos {
   r: number;
   c: number;
+  /** 段。2段セル列でのみ 1 になり得る（上段 = 0, 下段 = 1） */
+  t: 0 | 1;
 }
 
 interface EditingState {
   r: number;
   c: number;
+  t: 0 | 1;
   draft: string;
   /** enter: 打ち始めで入った（↑↓で確定して移動）／edit: Enter・F2・ダブルクリックで入った */
   mode: 'enter' | 'edit';
@@ -702,6 +757,7 @@ interface EditingState {
 
 interface EditingView {
   c: number;
+  t: 0 | 1;
   draft: string;
   liveError: string | null;
   items: OptionItem[] | null;
@@ -712,12 +768,17 @@ interface EditingView {
 /** 行に渡す操作。参照は変わらない（中で最新の状態を読む） */
 interface GridApi<Row extends object> {
   isDirty: (row: Row, key: string) => boolean;
-  setCellRef: (r: number, c: number, node: HTMLTableCellElement | null) => void;
-  getCell: (r: number, c: number) => HTMLTableCellElement | undefined;
+  setCellRef: (
+    r: number,
+    c: number,
+    t: 0 | 1,
+    node: HTMLTableCellElement | null,
+  ) => void;
+  getCell: (r: number, c: number, t: 0 | 1) => HTMLTableCellElement | undefined;
   setInputRef: (node: HTMLInputElement | null) => void;
-  cellMouseDown: (r: number, c: number, e: React.MouseEvent) => void;
-  cellMouseEnter: (r: number, c: number) => void;
-  cellDoubleClick: (r: number, c: number) => void;
+  cellMouseDown: (r: number, c: number, t: 0 | 1, e: React.MouseEvent) => void;
+  cellMouseEnter: (r: number, c: number, t: 0 | 1) => void;
+  cellDoubleClick: (r: number, c: number, t: 0 | 1) => void;
   cellContextMenu: (r: number, c: number) => void;
   headerMouseDown: (r: number, e: React.MouseEvent) => void;
   headerMouseEnter: (r: number) => void;
@@ -730,7 +791,7 @@ interface GridApi<Row extends object> {
   inputKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   pickerCommit: (value: SpreadsheetCellValue) => void;
   pickerCancel: () => void;
-  checkboxChange: (r: number, c: number, checked: boolean) => void;
+  checkboxChange: (r: number, c: number, t: 0 | 1, checked: boolean) => void;
   optionHover: (index: number) => void;
   optionPick: (index: number) => void;
 }
@@ -739,8 +800,12 @@ interface RowViewProps<Row extends object> {
   row: Row;
   r: number;
   columns: SpreadsheetColumn<Row>[];
+  /** 2段セルの列が1つでもあるか（全レコードを2行で描画） */
+  hasTiers: boolean;
   /** この行がアクティブなら列の位置、違えば -1 */
   activeC: number;
+  /** アクティブなセルの段（activeC が -1 のときは意味を持たない） */
+  activeT: 0 | 1;
   /** 範囲に入っていれば左右の列、入っていなければ -1 */
   selLeft: number;
   selRight: number;
@@ -779,9 +844,263 @@ function RowViewInner<Row extends object>(p: RowViewProps<Row>) {
         ? 'shadow-[inset_0_-2px_0_var(--color-primary-500)]'
         : null;
 
-  return (
+  const renderCell = (column: SpreadsheetColumn<Row>, c: number, t: 0 | 1) => {
+    const field = fieldOf(column, t);
+    if (!field) return null;
+    const tiered = !!column.fields;
+    // 1段のセルは、2段グリッドでは rowSpan=2 でレコード全体に伸ばす
+    const spansRecord = p.hasTiers && !tiered;
+    const value = cellOf(row, field.key);
+    const typeEditable = field.type !== 'readonly';
+    const editable =
+      typeEditable && (p.isCellEditable ? p.isCellEditable(row, column, r) : true);
+    const isEditing = p.editing?.c === c && p.editing?.t === t;
+    const isActive = p.activeC === c && p.activeT === t;
+    const selected = p.selLeft >= 0 && c >= p.selLeft && c <= p.selRight;
+    const textInput = isActive && editable && TEXT_INPUT_TYPES.includes(field.type);
+    const pickerEditing =
+      isEditing && (field.type === 'select' || field.type === 'date');
+    const textEditing = isEditing && !pickerEditing;
+    const error =
+      isEditing || field.type === 'readonly'
+        ? null
+        : validateCell(field, value, row);
+    const dirty = field.type !== 'readonly' && api.isDirty(row, field.key);
+    const left = p.stickyLefts[c];
+    const align = column.align ?? (field.type === 'number' ? 'right' : 'left');
+    // ドロップ線: レコード全体に伸びるセルは上下どちらも担う。
+    // 2段セルは上線を上段、下線を下段が担う
+    const edgeShadow =
+      p.dropEdge === 'top'
+        ? t === 0 || spansRecord
+          ? dropShadow
+          : null
+        : p.dropEdge === 'bottom'
+          ? t === 1 || spansRecord || !p.hasTiers
+            ? dropShadow
+            : null
+          : null;
+
+    let display: React.ReactNode =
+      field.type === 'checkbox' && !field.render ? (
+        <span className="flex items-center justify-center">
+          <Checkbox
+            tabIndex={-1}
+            disabled={!editable}
+            checked={value === true}
+            onCheckedChange={(checked) => api.checkboxChange(r, c, t, checked === true)}
+          />
+        </span>
+      ) : (
+        <span className="block truncate">
+          {field.render
+            ? field.render(row, { rowIndex: r, editable })
+            : formatCellForDisplay(field, row)}
+        </span>
+      );
+    if (c === p.treeCol) {
+      display = (
+        <span
+          className="flex min-w-0 items-center gap-1"
+          style={{ paddingLeft: p.depth * INDENT }}
+        >
+          {p.hasChildren ? (
+            <button
+              type="button"
+              tabIndex={-1}
+              aria-label={p.collapsed ? '開く' : '畳む'}
+              className="grid h-4 w-4 shrink-0 place-items-center rounded text-[var(--color-on-surface-muted)] hover:bg-[var(--color-surface-muted)]"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                api.toggleCollapse(r);
+              }}
+            >
+              {p.collapsed ? (
+                <ChevronRight aria-hidden className="h-3.5 w-3.5" />
+              ) : (
+                <ChevronDown aria-hidden className="h-3.5 w-3.5" />
+              )}
+            </button>
+          ) : (
+            <span aria-hidden className="w-4 shrink-0" />
+          )}
+          <span className="min-w-0 flex-1">{display}</span>
+        </span>
+      );
+    }
+    const inputOffset = c === p.treeCol ? 8 + p.depth * INDENT + TOGGLE_WIDTH : 0;
+
+    return (
+      <td
+        key={`${column.key}:${t}`}
+        ref={(node) => api.setCellRef(r, c, t, node)}
+        rowSpan={spansRecord ? 2 : undefined}
+        role="gridcell"
+        tabIndex={isActive && !textInput ? 0 : -1}
+        aria-colindex={c + 2}
+        aria-selected={selected || undefined}
+        aria-readonly={!editable || undefined}
+        aria-invalid={error ? true : undefined}
+        title={error ?? undefined}
+        data-dirty={dirty || undefined}
+        data-error={error ? true : undefined}
+        data-locked={(typeEditable && !editable) || undefined}
+        data-tier={tiered ? t : undefined}
+        onMouseDown={(e) => api.cellMouseDown(r, c, t, e)}
+        onMouseEnter={() => api.cellMouseEnter(r, c, t)}
+        onDoubleClick={() => api.cellDoubleClick(r, c, t)}
+        onContextMenu={() => api.cellContextMenu(r, c)}
+        style={left !== undefined ? { position: 'sticky', left } : undefined}
+        className={cn(
+          // 下段の tr では「tr 内の最後の td」が最終列とは限らないため、
+          // last: ではなく列の位置で右端の罫線を消す
+          'relative h-9 border-b border-r border-[var(--color-border)] px-2 outline-none',
+          c === columns.length - 1 && 'border-r-0',
+          spansRecord && 'align-middle',
+          align === 'right' && 'text-right',
+          align === 'center' && 'text-center',
+          field.type === 'number' && 'tabular-nums',
+          field.type === 'readonly' &&
+            'bg-[var(--color-surface-sunken)] text-[var(--color-on-surface-secondary)]',
+          typeEditable && !editable && 'text-[var(--color-on-surface-muted)]',
+          column.className,
+          // 2段セルの上段と下段の間は破線の区切りにして、レコード境界
+          //（実線）と視覚的に区別する
+          tiered && t === 0 && '[border-bottom-style:dashed]',
+          // 固定した列は、行の背景（色と模様）を引き継いで下を流れるセルを隠す。
+          // 列の className より後に置き、アプリの指定で透けないようにする
+          left !== undefined && 'z-10 bg-inherit [background-image:inherit]',
+          // 編集中のセルは、入力中のエラー表示が隣の行に隠れないよう前に出す
+          isEditing && 'z-20',
+          // エラーは淡い塗り + 細いリングに留める（赤を強くしすぎない）。
+          // 選択中は選択色を優先し、アクティブ枠は ring と別プロパティ
+          // （shadow）なので共存する。固定した列では下が透けない色にする
+          error &&
+            !isEditing &&
+            (left !== undefined
+              ? 'bg-[color-mix(in_oklab,var(--color-error-500)_10%,var(--color-surface-raised))]'
+              : 'bg-[color-mix(in_oklab,var(--color-error-500)_10%,transparent)]'),
+          error && !isEditing && 'ring-1 ring-inset ring-[var(--color-error-400)]',
+          selected && !isEditing && 'bg-[var(--color-surface-accent)]',
+          isActive &&
+            !isEditing &&
+            'shadow-[inset_0_0_0_2px_var(--color-primary-500)]',
+          // 行 D&D のドロップ位置インジケータ（行全体に線を引く）
+          edgeShadow,
+          pickerEditing && 'p-0',
+        )}
+      >
+        {pickerEditing ? (
+          field.type === 'select' ? (
+            <SelectCellEditor
+              column={field}
+              value={value ?? null}
+              invalid={!!validateCell(field, value ?? null, row)}
+              onCommit={api.pickerCommit}
+              onCancel={api.pickerCancel}
+            />
+          ) : (
+            <DateCellEditor
+              column={field}
+              value={value ?? null}
+              invalid={!!validateCell(field, value ?? null, row)}
+              onCommit={api.pickerCommit}
+              onCancel={api.pickerCancel}
+            />
+          )
+        ) : textEditing ? null : (
+          display
+        )}
+        {textInput && (
+          <input
+            ref={api.setInputRef}
+            type="text"
+            value={textEditing ? p.editing!.draft : ''}
+            inputMode={field.type === 'number' ? 'decimal' : undefined}
+            spellCheck={false}
+            autoComplete="off"
+            role={field.type === 'autocomplete' ? 'combobox' : undefined}
+            aria-expanded={
+              field.type === 'autocomplete' ? !!p.editing?.items?.length : undefined
+            }
+            aria-controls={
+              field.type === 'autocomplete' && p.editing?.items?.length
+                ? p.listId
+                : undefined
+            }
+            aria-activedescendant={
+              field.type === 'autocomplete' && p.editing && p.editing.highlight >= 0
+                ? `${p.listId}-${p.editing.highlight}`
+                : undefined
+            }
+            aria-label={
+              textEditing
+                ? field.header
+                : `${field.header} ${formatCellForCopy(field, row)}`.trim()
+            }
+            aria-invalid={textEditing && p.editing!.liveError ? true : undefined}
+            aria-describedby={
+              textEditing && p.editing!.liveError ? p.errorId : undefined
+            }
+            onChange={(e) => api.inputChange(e.target.value)}
+            onCompositionStart={api.inputCompositionStart}
+            onBlur={api.inputBlur}
+            onKeyDown={api.inputKeyDown}
+            style={inputOffset ? { left: inputOffset } : undefined}
+            className={cn(
+              'absolute inset-y-0 right-0 h-full border-0 bg-transparent px-2 text-sm outline-none',
+              !inputOffset && 'left-0',
+              align === 'right' && 'text-right',
+              align === 'center' && 'text-center',
+              textEditing
+                ? cn(
+                    'z-0 bg-[var(--color-surface-raised)] text-[var(--color-on-surface)] caret-[var(--color-primary-600)] ring-2 ring-inset',
+                    p.editing!.liveError
+                      ? 'ring-[var(--color-error-400)]'
+                      : 'ring-[var(--color-primary-500)]',
+                  )
+                : 'text-transparent caret-transparent',
+            )}
+          />
+        )}
+        {textEditing && p.editing!.liveError && (
+          <div
+            id={p.errorId}
+            role="alert"
+            className="absolute left-0 top-full z-10 mt-0.5 flex items-center gap-1 whitespace-nowrap rounded border border-[var(--color-error-200)] bg-[var(--color-surface-raised)] px-2 py-1 text-xs text-[var(--color-error-600)] shadow-md"
+          >
+            <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+            {p.editing!.liveError}
+          </div>
+        )}
+        {textEditing && p.editing!.items && p.editing!.items.length > 0 && (
+          <OptionsPopup
+            anchor={api.getCell(r, c, t)}
+            width={field.optionsWidth ?? column.optionsWidth}
+            header={p.editing!.header}
+            items={p.editing!.items}
+            highlight={p.editing!.highlight}
+            listId={p.listId}
+            renderOption={field.renderOption}
+            freeTextOption={field.freeTextOption}
+            onHover={api.optionHover}
+            onPick={api.optionPick}
+          />
+        )}
+        {dirty && (
+          <span
+            aria-hidden
+            className="absolute right-0 top-0 h-0 w-0 border-l-[6px] border-t-[6px] border-l-transparent border-t-[var(--color-warning-500)]"
+          />
+        )}
+      </td>
+    );
+  };
+
+  const upperTr = (
     <tr
-      aria-rowindex={r + 1}
+      aria-rowindex={p.hasTiers ? r * 2 + 1 : r + 1}
       aria-level={p.treeMode ? p.depth + 1 : undefined}
       aria-expanded={p.treeMode && p.hasChildren ? !p.collapsed : undefined}
       className={cn('bg-[var(--color-surface-raised)]', p.className)}
@@ -790,13 +1109,14 @@ function RowViewInner<Row extends object>(p: RowViewProps<Row>) {
     >
       <th
         scope="row"
+        rowSpan={p.hasTiers ? 2 : undefined}
         aria-selected={p.rowSelected || undefined}
         onMouseDown={(e) => api.headerMouseDown(r, e)}
         onMouseEnter={() => api.headerMouseEnter(r)}
         onContextMenu={() => api.cellContextMenu(r, 0)}
         style={p.headerSticky ? { position: 'sticky', left: 0 } : undefined}
         className={cn(
-          'group cursor-grab select-none border-b border-r border-[var(--color-border)] bg-[var(--color-surface-sunken)] px-2 py-1 text-center text-xs font-normal text-[var(--color-on-surface-muted)]',
+          'group cursor-grab select-none border-b border-r border-[var(--color-border)] bg-[var(--color-surface-sunken)] px-2 py-1 text-center align-middle text-xs font-normal text-[var(--color-on-surface-muted)]',
           'hover:bg-[var(--color-surface-muted)]',
           p.headerSticky && 'z-10',
           p.rowSelected &&
@@ -819,234 +1139,24 @@ function RowViewInner<Row extends object>(p: RowViewProps<Row>) {
           {headerContent}
         </span>
       </th>
-      {columns.map((column, c) => {
-        const value = cellOf(row, column.key);
-        const typeEditable = column.type !== 'readonly';
-        const editable =
-          typeEditable && (p.isCellEditable ? p.isCellEditable(row, column, r) : true);
-        const isEditing = p.editing?.c === c;
-        const isActive = p.activeC === c;
-        const selected = p.selLeft >= 0 && c >= p.selLeft && c <= p.selRight;
-        const textInput = isActive && editable && TEXT_INPUT_TYPES.includes(column.type);
-        const pickerEditing =
-          isEditing && (column.type === 'select' || column.type === 'date');
-        const textEditing = isEditing && !pickerEditing;
-        const error =
-          isEditing || column.type === 'readonly'
-            ? null
-            : validateCell(column, value, row);
-        const dirty = column.type !== 'readonly' && api.isDirty(row, column.key);
-        const left = p.stickyLefts[c];
-        const align = column.align ?? (column.type === 'number' ? 'right' : 'left');
-
-        let display: React.ReactNode =
-          column.type === 'checkbox' && !column.render ? (
-            <span className="flex items-center justify-center">
-              <Checkbox
-                tabIndex={-1}
-                disabled={!editable}
-                checked={value === true}
-                onCheckedChange={(checked) => api.checkboxChange(r, c, checked === true)}
-              />
-            </span>
-          ) : (
-            <span className="block truncate">
-              {column.render
-                ? column.render(row, { rowIndex: r, editable })
-                : formatCellForDisplay(column, row)}
-            </span>
-          );
-        if (c === p.treeCol) {
-          display = (
-            <span
-              className="flex min-w-0 items-center gap-1"
-              style={{ paddingLeft: p.depth * INDENT }}
-            >
-              {p.hasChildren ? (
-                <button
-                  type="button"
-                  tabIndex={-1}
-                  aria-label={p.collapsed ? '開く' : '畳む'}
-                  className="grid h-4 w-4 shrink-0 place-items-center rounded text-[var(--color-on-surface-muted)] hover:bg-[var(--color-surface-muted)]"
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    api.toggleCollapse(r);
-                  }}
-                >
-                  {p.collapsed ? (
-                    <ChevronRight aria-hidden className="h-3.5 w-3.5" />
-                  ) : (
-                    <ChevronDown aria-hidden className="h-3.5 w-3.5" />
-                  )}
-                </button>
-              ) : (
-                <span aria-hidden className="w-4 shrink-0" />
-              )}
-              <span className="min-w-0 flex-1">{display}</span>
-            </span>
-          );
-        }
-        const inputOffset = c === p.treeCol ? 8 + p.depth * INDENT + TOGGLE_WIDTH : 0;
-
-        return (
-          <td
-            key={column.key}
-            ref={(node) => api.setCellRef(r, c, node)}
-            role="gridcell"
-            tabIndex={isActive && !textInput ? 0 : -1}
-            aria-colindex={c + 2}
-            aria-selected={selected || undefined}
-            aria-readonly={!editable || undefined}
-            aria-invalid={error ? true : undefined}
-            title={error ?? undefined}
-            data-dirty={dirty || undefined}
-            data-error={error ? true : undefined}
-            data-locked={(typeEditable && !editable) || undefined}
-            onMouseDown={(e) => api.cellMouseDown(r, c, e)}
-            onMouseEnter={() => api.cellMouseEnter(r, c)}
-            onDoubleClick={() => api.cellDoubleClick(r, c)}
-            onContextMenu={() => api.cellContextMenu(r, c)}
-            style={left !== undefined ? { position: 'sticky', left } : undefined}
-            className={cn(
-              'relative h-9 border-b border-r border-[var(--color-border)] px-2 outline-none last:border-r-0',
-              align === 'right' && 'text-right',
-              align === 'center' && 'text-center',
-              column.type === 'number' && 'tabular-nums',
-              column.type === 'readonly' &&
-                'bg-[var(--color-surface-sunken)] text-[var(--color-on-surface-secondary)]',
-              typeEditable && !editable && 'text-[var(--color-on-surface-muted)]',
-              column.className,
-              // 固定した列は、行の背景（色と模様）を引き継いで下を流れるセルを隠す。
-              // 列の className より後に置き、アプリの指定で透けないようにする
-              left !== undefined && 'z-10 bg-inherit [background-image:inherit]',
-              // 編集中のセルは、入力中のエラー表示が隣の行に隠れないよう前に出す
-              isEditing && 'z-20',
-              // エラーは淡い塗り + 細いリングに留める（赤を強くしすぎない）。
-              // 選択中は選択色を優先し、アクティブ枠は ring と別プロパティ
-              // （shadow）なので共存する。固定した列では下が透けない色にする
-              error &&
-                !isEditing &&
-                (left !== undefined
-                  ? 'bg-[color-mix(in_oklab,var(--color-error-500)_10%,var(--color-surface-raised))]'
-                  : 'bg-[color-mix(in_oklab,var(--color-error-500)_10%,transparent)]'),
-              error && !isEditing && 'ring-1 ring-inset ring-[var(--color-error-400)]',
-              selected && !isEditing && 'bg-[var(--color-surface-accent)]',
-              isActive &&
-                !isEditing &&
-                'shadow-[inset_0_0_0_2px_var(--color-primary-500)]',
-              // 行 D&D のドロップ位置インジケータ（行全体に線を引く）
-              dropShadow,
-              pickerEditing && 'p-0',
-            )}
-          >
-            {pickerEditing ? (
-              column.type === 'select' ? (
-                <SelectCellEditor
-                  column={column}
-                  value={value ?? null}
-                  invalid={!!validateCell(column, value ?? null, row)}
-                  onCommit={api.pickerCommit}
-                  onCancel={api.pickerCancel}
-                />
-              ) : (
-                <DateCellEditor
-                  column={column}
-                  value={value ?? null}
-                  invalid={!!validateCell(column, value ?? null, row)}
-                  onCommit={api.pickerCommit}
-                  onCancel={api.pickerCancel}
-                />
-              )
-            ) : textEditing ? null : (
-              display
-            )}
-            {textInput && (
-              <input
-                ref={api.setInputRef}
-                type="text"
-                value={textEditing ? p.editing!.draft : ''}
-                inputMode={column.type === 'number' ? 'decimal' : undefined}
-                spellCheck={false}
-                autoComplete="off"
-                role={column.type === 'autocomplete' ? 'combobox' : undefined}
-                aria-expanded={
-                  column.type === 'autocomplete' ? !!p.editing?.items?.length : undefined
-                }
-                aria-controls={
-                  column.type === 'autocomplete' && p.editing?.items?.length
-                    ? p.listId
-                    : undefined
-                }
-                aria-activedescendant={
-                  column.type === 'autocomplete' && p.editing && p.editing.highlight >= 0
-                    ? `${p.listId}-${p.editing.highlight}`
-                    : undefined
-                }
-                aria-label={
-                  textEditing
-                    ? column.header
-                    : `${column.header} ${formatCellForCopy(column, row)}`.trim()
-                }
-                aria-invalid={textEditing && p.editing!.liveError ? true : undefined}
-                aria-describedby={
-                  textEditing && p.editing!.liveError ? p.errorId : undefined
-                }
-                onChange={(e) => api.inputChange(e.target.value)}
-                onCompositionStart={api.inputCompositionStart}
-                onBlur={api.inputBlur}
-                onKeyDown={api.inputKeyDown}
-                style={inputOffset ? { left: inputOffset } : undefined}
-                className={cn(
-                  'absolute inset-y-0 right-0 h-full border-0 bg-transparent px-2 text-sm outline-none',
-                  !inputOffset && 'left-0',
-                  align === 'right' && 'text-right',
-                  align === 'center' && 'text-center',
-                  textEditing
-                    ? cn(
-                        'z-0 bg-[var(--color-surface-raised)] text-[var(--color-on-surface)] caret-[var(--color-primary-600)] ring-2 ring-inset',
-                        p.editing!.liveError
-                          ? 'ring-[var(--color-error-400)]'
-                          : 'ring-[var(--color-primary-500)]',
-                      )
-                    : 'text-transparent caret-transparent',
-                )}
-              />
-            )}
-            {textEditing && p.editing!.liveError && (
-              <div
-                id={p.errorId}
-                role="alert"
-                className="absolute left-0 top-full z-10 mt-0.5 flex items-center gap-1 whitespace-nowrap rounded border border-[var(--color-error-200)] bg-[var(--color-surface-raised)] px-2 py-1 text-xs text-[var(--color-error-600)] shadow-md"
-              >
-                <AlertCircle className="h-3.5 w-3.5 shrink-0" />
-                {p.editing!.liveError}
-              </div>
-            )}
-            {textEditing && p.editing!.items && p.editing!.items.length > 0 && (
-              <OptionsPopup
-                anchor={api.getCell(r, c)}
-                width={column.optionsWidth}
-                header={p.editing!.header}
-                items={p.editing!.items}
-                highlight={p.editing!.highlight}
-                listId={p.listId}
-                renderOption={column.renderOption}
-                freeTextOption={column.freeTextOption}
-                onHover={api.optionHover}
-                onPick={api.optionPick}
-              />
-            )}
-            {dirty && (
-              <span
-                aria-hidden
-                className="absolute right-0 top-0 h-0 w-0 border-l-[6px] border-t-[6px] border-l-transparent border-t-[var(--color-warning-500)]"
-              />
-            )}
-          </td>
-        );
-      })}
+      {columns.map((column, c) => renderCell(column, c, 0))}
     </tr>
+  );
+
+  if (!p.hasTiers) return upperTr;
+
+  return (
+    <>
+      {upperTr}
+      <tr
+        aria-rowindex={r * 2 + 2}
+        className={cn('bg-[var(--color-surface-raised)]', p.className)}
+        onMouseEnter={() => api.rowMouseEnter(r)}
+        onMouseMove={p.dragging ? (e) => api.rowMouseMove(r, e) : undefined}
+      >
+        {columns.map((column, c) => (column.fields ? renderCell(column, c, 1) : null))}
+      </tr>
+    </>
   );
 }
 
@@ -1176,6 +1286,34 @@ function SpreadsheetGridInner<Row extends object>(
     ? Math.max(0, treeColumnKey ? columns.findIndex((c) => c.key === treeColumnKey) : 0)
     : -1;
 
+  /* ----- 2段セル ----- */
+
+  const hasTiers = columns.some((c) => c.fields);
+  if (hasTiers && treeMode) {
+    throw new Error(
+      'SpreadsheetGrid: fields（2段セル）と getRowDepth（階層）は同時に使えません',
+    );
+  }
+
+  /** 列に存在しない段を 0 に正規化する */
+  const tierOfCol = (c: number, t: number): 0 | 1 =>
+    columns[c]?.fields && t === 1 ? 1 : 0;
+
+  const fieldAt = (c: number, t: 0 | 1): SpreadsheetTierField<Row> | null => {
+    const column = columns[c];
+    return column ? fieldOf(column, t) : null;
+  };
+
+  /** フィールドの key から (列, 段) を探す。2段セルの下段の key も見つかる */
+  const findFieldPos = (key: string): { c: number; t: 0 | 1 } | null => {
+    for (let c = 0; c < columns.length; c++) {
+      for (const t of tiersOf(columns[c])) {
+        if (fieldOf(columns[c], t)?.key === key) return { c, t };
+      }
+    }
+    return null;
+  };
+
   /* ----- 未保存マーカー（ベースライン比較） -----
 
      「一度でも編集したか」ではなく「最後に保存した時点（ベースライン）の
@@ -1238,7 +1376,12 @@ function SpreadsheetGridInner<Row extends object>(
   const selection = React.useMemo<SpreadsheetSelection | null>(() => {
     if (!active || !selectionRect || !columns[active.c]) return null;
     return {
-      active: { rowIndex: active.r, columnKey: columns[active.c].key },
+      active: {
+        rowIndex: active.r,
+        // 2段セルでは段のフィールドの key（例: 下段なら creditAccount）
+        columnKey:
+          fieldOf(columns[active.c], active.t)?.key ?? columns[active.c].key,
+      },
       rowIndexes: visible.slice(selectionRect.top, selectionRect.bottom + 1),
       columnKeys: columns
         .slice(selectionRect.left, selectionRect.right + 1)
@@ -1292,9 +1435,9 @@ function SpreadsheetGridInner<Row extends object>(
         if (ni === undefined) {
           return rows.length === 0
             ? null
-            : { r: Math.min(pos.r, rows.length - 1), c: pos.c };
+            : { r: Math.min(pos.r, rows.length - 1), c: pos.c, t: pos.t };
         }
-        return ni === pos.r ? pos : { r: ni, c: pos.c };
+        return ni === pos.r ? pos : { r: ni, c: pos.c, t: pos.t };
       };
       setActive((a) => remap(a));
       setAnchor((a) => remap(a));
@@ -1319,8 +1462,8 @@ function SpreadsheetGridInner<Row extends object>(
       setAnchor(null);
       return;
     }
-    setActive({ r, c: active.c });
-    setAnchor({ r, c: active.c });
+    setActive({ r, c: active.c, t: 0 });
+    setAnchor({ r, c: active.c, t: 0 });
   }, [active, vpos, rows.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const applyChange = (next: Row[]) => {
@@ -1343,8 +1486,8 @@ function SpreadsheetGridInner<Row extends object>(
       setActive(null);
       setAnchor(null);
     } else {
-      if (active) setActive({ r: Math.min(active.r, next.length - 1), c: active.c });
-      if (anchor) setAnchor({ r: Math.min(anchor.r, next.length - 1), c: anchor.c });
+      if (active) setActive({ ...active, r: Math.min(active.r, next.length - 1) });
+      if (anchor) setAnchor({ ...anchor, r: Math.min(anchor.r, next.length - 1) });
     }
   };
 
@@ -1364,34 +1507,40 @@ function SpreadsheetGridInner<Row extends object>(
 
   /* ----- データ更新 ----- */
 
-  const canEdit = (r: number, c: number, row: Row | undefined = rows[r]): boolean => {
+  const canEdit = (
+    r: number,
+    c: number,
+    t: 0 | 1 = 0,
+    row: Row | undefined = rows[r],
+  ): boolean => {
     const column = columns[c];
-    if (!column || !row || column.type === 'readonly') return false;
+    const field = column ? fieldOf(column, t) : null;
+    if (!column || !field || !row || field.type === 'readonly') return false;
     return isCellEditable ? isCellEditable(row, column, r) : true;
   };
 
   /** セルに値を書く（setValue を通す）。何も変わらなければ false */
   const writeCells = (
-    updates: { r: number; c: number; value: SpreadsheetCellValue }[],
+    updates: { r: number; c: number; t: 0 | 1; value: SpreadsheetCellValue }[],
     appendedRows: Row[] = [],
   ): boolean => {
     const next = [...rows, ...appendedRows];
     let changed = appendedRows.length > 0;
-    for (const { r, c, value } of updates) {
+    for (const { r, c, t, value } of updates) {
       const base = next[r];
-      const column = columns[c];
-      if (!base || !column) continue;
+      const field = fieldAt(c, t);
+      if (!base || !field) continue;
       if (
         Object.is(
-          normalizeForCompare(cellOf(base, column.key)),
+          normalizeForCompare(cellOf(base, field.key)),
           normalizeForCompare(value),
         )
       ) {
         continue;
       }
-      const newRow = column.setValue
-        ? column.setValue(base, value)
-        : ({ ...base, [column.key]: value } as Row);
+      const newRow = field.setValue
+        ? field.setValue(base, value)
+        : ({ ...base, [field.key]: value } as Row);
       if (newRow === base) continue;
       transferRowIdentity(base, newRow);
       next[r] = newRow;
@@ -1412,22 +1561,22 @@ function SpreadsheetGridInner<Row extends object>(
 
   const itemsOf = (ed: EditingState | null): OptionItem[] | null => {
     if (!ed) return null;
-    const column = columns[ed.c];
+    const field = fieldAt(ed.c, ed.t);
     const row = rows[ed.r];
-    if (!column || column.type !== 'autocomplete' || !row) return null;
-    const key = `${ed.r}:${ed.c}:${ed.draft}`;
+    if (!field || field.type !== 'autocomplete' || !row) return null;
+    const key = `${ed.r}:${ed.c}:${ed.t}:${ed.draft}`;
     const cache = itemsCache.current;
     if (cache && cache.key === key && cache.rows === rows && cache.columns === columns) {
       return cache.items;
     }
-    const options = column.getOptions
-      ? column.getOptions(ed.draft, row)
-      : filterOptions(column.options ?? [], ed.draft);
+    const options = field.getOptions
+      ? field.getOptions(ed.draft, row)
+      : filterOptions(field.options ?? [], ed.draft);
     const items: OptionItem[] = options.map((option) => ({ kind: 'option', option }));
     const text = ed.draft.trim();
     if (
-      column.freeTextOption &&
-      column.allowFreeText !== false &&
+      field.freeTextOption &&
+      field.allowFreeText !== false &&
       text &&
       !options.some((o) => normalizeText(o.label) === normalizeText(text))
     ) {
@@ -1443,7 +1592,7 @@ function SpreadsheetGridInner<Row extends object>(
     const items = itemsOf(ed);
     let highlight = -1;
     if (items && items.length && !(ed.mode === 'edit' && ed.draft === ed.original)) {
-      const column = columns[ed.c];
+      const column = fieldAt(ed.c, ed.t)!;
       if (!column.getOptions) {
         highlight = items[0].kind === 'option' ? 0 : -1;
       } else {
@@ -1459,20 +1608,22 @@ function SpreadsheetGridInner<Row extends object>(
 
   /* ----- 編集 ----- */
 
-  const startEdit = (r: number, c: number, initialDraft?: string) => {
+  const startEdit = (r: number, c: number, t: 0 | 1, initialDraft?: string) => {
     const column = columns[c];
+    const field = fieldAt(c, t);
     const row = rows[r];
-    if (!column || !row || !EDITABLE_TYPES.includes(column.type)) return;
-    if (!canEdit(r, c)) {
+    if (!column || !field || !row || !EDITABLE_TYPES.includes(field.type)) return;
+    if (!canEdit(r, c, t)) {
       onEditBlocked?.({ row, rowIndex: r, column });
       return;
     }
-    const value = cellOf(row, column.key);
+    const value = cellOf(row, field.key);
     const original = value === null || value === undefined ? '' : String(value);
     setEditing(
       withHighlight({
         r,
         c,
+        t,
         draft: initialDraft !== undefined ? initialDraft : original,
         mode: initialDraft !== undefined ? 'enter' : 'edit',
         original,
@@ -1483,27 +1634,53 @@ function SpreadsheetGridInner<Row extends object>(
 
   /* ----- ナビゲーション ----- */
 
-  const moveActive = (v: number, c: number, extend = false) => {
+  const moveActive = (v: number, c: number, extend = false, t: number = 0) => {
     if (visible.length === 0) return;
+    const nc = Math.max(0, Math.min(columns.length - 1, c));
     const pos = {
       r: visible[Math.max(0, Math.min(visible.length - 1, v))],
-      c: Math.max(0, Math.min(columns.length - 1, c)),
+      c: nc,
+      t: tierOfCol(nc, t),
     };
     pendingFocusRef.current = true;
     setActive(pos);
     if (!extend) setAnchor(pos);
   };
 
+  /** 上下移動の次位置。2段セル列では 上段 → 下段 → 次レコード の順に進む */
+  const verticalNext = (
+    v: number,
+    c: number,
+    t: 0 | 1,
+    dir: -1 | 1,
+  ): { v: number; t: 0 | 1 } => {
+    const tiered = !!columns[c]?.fields;
+    if (dir === 1) {
+      if (tiered && t === 0) return { v, t: 1 };
+      if (v < visible.length - 1) return { v: v + 1, t: 0 };
+      return { v, t };
+    }
+    if (tiered && t === 1) return { v, t: 0 };
+    if (v > 0) return { v: v - 1, t: tiered ? 1 : 0 };
+    return { v, t };
+  };
+
+  const moveVertical = (v: number, c: number, t: 0 | 1, dir: -1 | 1, extend = false) => {
+    const next = verticalNext(v, c, t, dir);
+    moveActive(next.v, c, extend, next.t);
+  };
+
   const moveFrom = (
     r: number,
     c: number,
+    t: 0 | 1,
     dir: 'down' | 'up' | 'right' | 'left' | 'none',
   ) => {
     const v = vOf(r);
-    if (dir === 'down') moveActive(v + 1, c);
-    else if (dir === 'up') moveActive(v - 1, c);
-    else if (dir === 'right') moveActive(v, Math.min(c + 1, columns.length - 1));
-    else if (dir === 'left') moveActive(v, Math.max(c - 1, 0));
+    if (dir === 'down') moveVertical(v, c, t, 1);
+    else if (dir === 'up') moveVertical(v, c, t, -1);
+    else if (dir === 'right') moveActive(v, Math.min(c + 1, columns.length - 1), false, t);
+    else if (dir === 'left') moveActive(v, Math.max(c - 1, 0), false, t);
   };
 
   const commitEdit = (
@@ -1512,19 +1689,20 @@ function SpreadsheetGridInner<Row extends object>(
   ) => {
     const ed = editingRef.current;
     if (!ed || committingRef.current) return;
-    const column = columns[ed.c];
+    const field = fieldAt(ed.c, ed.t);
+    if (!field) return;
     const draft = draftOverride ?? ed.draft;
-    const { ok, value } = parseDraft(column.type, draft);
+    const { ok, value } = parseDraft(field.type, draft);
     // 数値として不正な入力: Enter/Tab では確定せず編集を継続させ、
     // その場で修正を促す（エラーはライブ表示済み）。blur 時のみ破棄して閉じる
     if (!ok && move !== 'none') return;
     committingRef.current = true;
     setEditing(null);
-    if (ok) writeCells([{ r: ed.r, c: ed.c, value }]);
+    if (ok) writeCells([{ r: ed.r, c: ed.c, t: ed.t, value }]);
     // 最下行の Enter でも行は自動追加しない。既存行を修正して確定する
     // たびに空行が増えてしまうため（行追加はボタン / 右クリック /
     // ペースト時の自動拡張で行う）。move は clamp されるので最下行では留まる
-    moveFrom(ed.r, ed.c, move);
+    moveFrom(ed.r, ed.c, ed.t, move);
     committingRef.current = false;
   };
 
@@ -1541,29 +1719,29 @@ function SpreadsheetGridInner<Row extends object>(
       commitEdit(move, item.text);
       return;
     }
-    const column = columns[ed.c];
+    const field = fieldAt(ed.c, ed.t);
     const row = rows[ed.r];
     setEditing(null);
-    if (!row) return;
-    const newRow = column.onSelectOption
-      ? column.onSelectOption(row, item.option)
-      : column.setValue
-        ? column.setValue(row, item.option.value)
-        : ({ ...row, [column.key]: item.option.value } as Row);
+    if (!row || !field) return;
+    const newRow = field.onSelectOption
+      ? field.onSelectOption(row, item.option)
+      : field.setValue
+        ? field.setValue(row, item.option.value)
+        : ({ ...row, [field.key]: item.option.value } as Row);
     if (newRow !== row) {
       const next = [...rows];
       transferRowIdentity(row, newRow);
       next[ed.r] = newRow;
       applyChange(next);
     }
-    const to = column.focusAfterSelect?.(newRow, item.option);
-    const toC = to ? columns.findIndex((col) => col.key === to) : -1;
-    if (toC >= 0) {
+    const to = field.focusAfterSelect?.(newRow, item.option);
+    const toPos = to ? findFieldPos(to) : null;
+    if (toPos) {
       pendingFocusRef.current = true;
-      setActive({ r: ed.r, c: toC });
-      setAnchor({ r: ed.r, c: toC });
+      setActive({ r: ed.r, c: toPos.c, t: toPos.t });
+      setAnchor({ r: ed.r, c: toPos.c, t: toPos.t });
     } else {
-      moveFrom(ed.r, ed.c, move);
+      moveFrom(ed.r, ed.c, ed.t, move);
     }
   };
 
@@ -1571,14 +1749,20 @@ function SpreadsheetGridInner<Row extends object>(
 
   const selectionText = () => {
     if (!selectionRect) return '';
+    // 2段グリッドの TSV は「1レコード = 2行」で直列化する（Excel 側で
+    // セル結合された2段レイアウトと相互運用できる形）。1段のみの列は
+    // 上段の行に値、下段の行は空になる
     const table: string[][] = [];
     for (let v = selectionRect.top; v <= selectionRect.bottom; v++) {
       const row = rows[visible[v]];
-      const cells: string[] = [];
-      for (let c = selectionRect.left; c <= selectionRect.right; c++) {
-        cells.push(formatCellForCopy(columns[c], row));
+      for (const t of hasTiers ? TIERS_BOTH : TIERS_SINGLE) {
+        const cells: string[] = [];
+        for (let c = selectionRect.left; c <= selectionRect.right; c++) {
+          const field = fieldOf(columns[c], t);
+          cells.push(field && (t === 0 || columns[c].fields) ? formatCellForCopy(field, row) : '');
+        }
+        table.push(cells);
       }
-      table.push(cells);
     }
     // 改行やタブを含むセルは "…" で囲む（Excel に貼っても 1 つのセルになる）
     return formatClipboardTable(table);
@@ -1592,14 +1776,17 @@ function SpreadsheetGridInner<Row extends object>(
   /** 範囲の入力できるセルすべてに同じ値を入れる（読めない値のセルは変えない） */
   const fillSelection = (text: string) => {
     if (!selectionRect) return;
-    const updates: { r: number; c: number; value: SpreadsheetCellValue }[] = [];
+    const updates: { r: number; c: number; t: 0 | 1; value: SpreadsheetCellValue }[] =
+      [];
     for (let v = selectionRect.top; v <= selectionRect.bottom; v++) {
       const r = visible[v];
       for (let c = selectionRect.left; c <= selectionRect.right; c++) {
-        if (!canEdit(r, c)) continue;
-        const value = parsePastedValue(columns[c], text);
-        if (value === KEEP) continue;
-        updates.push({ r, c, value });
+        for (const t of tiersOf(columns[c])) {
+          if (!canEdit(r, c, t)) continue;
+          const value = parsePastedValue(fieldOf(columns[c], t)!, text);
+          if (value === KEEP) continue;
+          updates.push({ r, c, t, value });
+        }
       }
     }
     writeCells(updates);
@@ -1607,22 +1794,26 @@ function SpreadsheetGridInner<Row extends object>(
 
   const clearSelection = () => {
     if (!selectionRect) return;
-    const updates: { r: number; c: number; value: SpreadsheetCellValue }[] = [];
+    const updates: { r: number; c: number; t: 0 | 1; value: SpreadsheetCellValue }[] =
+      [];
     for (let v = selectionRect.top; v <= selectionRect.bottom; v++) {
       const r = visible[v];
       for (let c = selectionRect.left; c <= selectionRect.right; c++) {
-        const column = columns[c];
-        if (!canEdit(r, c)) continue;
-        updates.push({
-          r,
-          c,
-          value:
-            column.type === 'checkbox'
-              ? false
-              : column.type === 'text' || column.type === 'autocomplete'
-                ? ''
-                : null,
-        });
+        for (const t of tiersOf(columns[c])) {
+          const field = fieldOf(columns[c], t)!;
+          if (!canEdit(r, c, t)) continue;
+          updates.push({
+            r,
+            c,
+            t,
+            value:
+              field.type === 'checkbox'
+                ? false
+                : field.type === 'text' || field.type === 'autocomplete'
+                  ? ''
+                  : null,
+          });
+        }
       }
     }
     writeCells(updates);
@@ -1652,33 +1843,52 @@ function SpreadsheetGridInner<Row extends object>(
 
     const startV = selectionRect ? selectionRect.top : vOf(active.r);
     const startC = selectionRect ? selectionRect.left : active.c;
-    const updates: { r: number; c: number; value: SpreadsheetCellValue }[] = [];
+    // 2段グリッドでは TSV の1行が1つの段に対応する（1レコード = 2行）。
+    // 単一セルから貼るときは押下中の段から、範囲からは上段から貼り始める
+    const lines = hasTiers ? 2 : 1;
+    const startLine = startV * lines + (!isMultiCell && hasTiers ? active.t : 0);
+    const updates: { r: number; c: number; t: 0 | 1; value: SpreadsheetCellValue }[] =
+      [];
     const appended: Row[] = [];
+    const appendedByV = new Map<number, number>();
     const rowAt = (v: number): number => {
       if (v < visible.length) return visible[v];
+      const hit = appendedByV.get(v);
+      if (hit !== undefined) return hit;
       const r = rows.length + appended.length;
       appended.push(createRow(tree ? { depth: 0 } : undefined));
+      appendedByV.set(v, r);
       return r;
     };
     let lastR = active.r;
-    matrix.forEach((cells, dr) => {
-      const r = rowAt(startV + dr);
+    matrix.forEach((cells, li) => {
+      const globalLine = startLine + li;
+      const v = Math.floor(globalLine / lines);
+      const t = (globalLine % lines) as 0 | 1;
+      const r = rowAt(v);
       lastR = r;
       const row = r < rows.length ? rows[r] : appended[r - rows.length];
       cells.forEach((cellText, dc) => {
         const c = startC + dc;
         if (c >= columns.length) return;
-        if (!canEdit(r, c, row)) return;
-        const value = parsePastedValue(columns[c], cellText);
+        // 1段列の下段の行は飛ばす（Excel の結合セルのレイアウトと同じ）
+        const field = fieldOf(columns[c], t);
+        if (!field) return;
+        if (!canEdit(r, c, t, row)) return;
+        const value = parsePastedValue(field, cellText);
         if (value === KEEP) return;
-        updates.push({ r, c, value });
+        updates.push({ r, c, t, value });
       });
     });
     writeCells(updates, appended);
     // ペースト範囲を選択状態にする
     const width = Math.max(...matrix.map((m) => m.length));
-    setAnchor({ r: visible[startV] ?? active.r, c: startC });
-    setActive({ r: lastR, c: Math.min(columns.length - 1, startC + width - 1) });
+    setAnchor({ r: visible[startV] ?? active.r, c: startC, t: 0 });
+    setActive({
+      r: lastR,
+      c: Math.min(columns.length - 1, startC + width - 1),
+      t: 0,
+    });
   };
 
   const handleCopy = (e: React.ClipboardEvent) => {
@@ -1713,11 +1923,11 @@ function SpreadsheetGridInner<Row extends object>(
   const selectRow = (r: number, extend: boolean) => {
     pendingFocusRef.current = true;
     if (extend && anchor) {
-      setAnchor({ r: anchor.r, c: columns.length - 1 });
+      setAnchor({ r: anchor.r, c: columns.length - 1, t: 0 });
     } else {
-      setAnchor({ r, c: columns.length - 1 });
+      setAnchor({ r, c: columns.length - 1, t: 0 });
     }
-    setActive({ r, c: 0 });
+    setActive({ r, c: 0, t: 0 });
   };
 
   const completeRowDrag = () => {
@@ -1736,8 +1946,8 @@ function SpreadsheetGridInner<Row extends object>(
     if (tree) {
       selectRow(insertAt, false);
     } else {
-      setAnchor({ r: insertAt, c: columns.length - 1 });
-      setActive({ r: insertAt + len - 1, c: 0 });
+      setAnchor({ r: insertAt, c: columns.length - 1, t: 0 });
+      setActive({ r: insertAt + len - 1, c: 0, t: 0 });
     }
   };
 
@@ -1799,7 +2009,7 @@ function SpreadsheetGridInner<Row extends object>(
     const next = [...rows];
     next.splice(index, 0, ...newRows);
     applyChange(next);
-    const pos = { r: index, c: active?.c ?? 0 };
+    const pos: CellPos = { r: index, c: active?.c ?? 0, t: 0 };
     pendingFocusRef.current = true;
     setActive(pos);
     setAnchor(pos);
@@ -1810,8 +2020,8 @@ function SpreadsheetGridInner<Row extends object>(
     const next = [...rows];
     next.splice(end + 1, 0, ...copies);
     applyChange(next);
-    setAnchor({ r: end + 1, c: columns.length - 1 });
-    setActive({ r: end + copies.length, c: 0 });
+    setAnchor({ r: end + 1, c: columns.length - 1, t: 0 });
+    setActive({ r: end + copies.length, c: 0, t: 0 });
   };
 
   const deleteRowSet = (drop: Set<number>) => {
@@ -1822,7 +2032,7 @@ function SpreadsheetGridInner<Row extends object>(
       setActive(null);
       setAnchor(null);
     } else {
-      const pos = { r: Math.min(first, next.length - 1), c: active?.c ?? 0 };
+      const pos: CellPos = { r: Math.min(first, next.length - 1), c: active?.c ?? 0, t: 0 };
       setActive(pos);
       setAnchor(pos);
     }
@@ -1834,8 +2044,8 @@ function SpreadsheetGridInner<Row extends object>(
     const block = next.splice(start, end - start + 1);
     next.splice(start + dir, 0, ...block);
     applyChange(next);
-    setAnchor({ r: start + dir, c: columns.length - 1 });
-    setActive({ r: end + dir, c: 0 });
+    setAnchor({ r: start + dir, c: columns.length - 1, t: 0 });
+    setActive({ r: end + dir, c: 0, t: 0 });
   };
 
   /** 階層つき: 前／次の兄弟と配下ごと入れ替える */
@@ -1873,13 +2083,15 @@ function SpreadsheetGridInner<Row extends object>(
 
   /* ----- キーボード ----- */
 
-  const toggleCheckbox = (r: number, c: number) => {
+  const toggleCheckbox = (r: number, c: number, t: 0 | 1) => {
     const column = columns[c];
-    if (!canEdit(r, c)) {
+    const field = fieldAt(c, t);
+    if (!field) return;
+    if (!canEdit(r, c, t)) {
       onEditBlocked?.({ row: rows[r], rowIndex: r, column });
       return;
     }
-    writeCells([{ r, c, value: cellOf(rows[r], column.key) !== true }]);
+    writeCells([{ r, c, t, value: cellOf(rows[r], field.key) !== true }]);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -1888,23 +2100,26 @@ function SpreadsheetGridInner<Row extends object>(
     if (editingRef.current) return;
     onKeyDownProp?.(e, { selection, editing: false });
     if (e.defaultPrevented || !active) return;
-    const { r, c } = active;
+    const { r, c, t } = active;
     const v = vOf(r);
     const column = columns[c];
-    if (!column) return;
+    const field = fieldAt(c, t);
+    if (!column || !field) return;
     const mod = e.ctrlKey || e.metaKey;
 
     const nav = (nv: number, nc: number) => {
       e.preventDefault();
-      moveActive(nv, nc, e.shiftKey);
+      moveActive(nv, nc, e.shiftKey, t);
     };
 
     switch (e.key) {
       case 'ArrowUp':
-        nav(v - 1, c);
+        e.preventDefault();
+        moveVertical(v, c, t, -1, e.shiftKey);
         return;
       case 'ArrowDown':
-        nav(v + 1, c);
+        e.preventDefault();
+        moveVertical(v, c, t, 1, e.shiftKey);
         return;
       case 'ArrowLeft':
         nav(v, c - 1);
@@ -1920,22 +2135,22 @@ function SpreadsheetGridInner<Row extends object>(
         return;
       case 'Tab': {
         // 端のセルでは preventDefault せず、グリッドの外へフォーカスを逃がす
-        // （フォーカストラップにしない）
+        // （フォーカストラップにしない）。段は維持する
         if (e.shiftKey) {
           if (c > 0) {
             e.preventDefault();
-            moveActive(v, c - 1);
+            moveActive(v, c - 1, false, t);
           } else if (v > 0) {
             e.preventDefault();
-            moveActive(v - 1, columns.length - 1);
+            moveActive(v - 1, columns.length - 1, false, t);
           }
         } else {
           if (c < columns.length - 1) {
             e.preventDefault();
-            moveActive(v, c + 1);
+            moveActive(v, c + 1, false, t);
           } else if (v < visible.length - 1) {
             e.preventDefault();
-            moveActive(v + 1, 0);
+            moveActive(v + 1, 0, false, t);
           }
         }
         return;
@@ -1943,29 +2158,29 @@ function SpreadsheetGridInner<Row extends object>(
       case 'Enter':
         if (mod) return;
         e.preventDefault();
-        if (column.type === 'checkbox') {
-          toggleCheckbox(r, c);
-        } else if (EDITABLE_TYPES.includes(column.type) && canEdit(r, c)) {
-          startEdit(r, c);
+        if (field.type === 'checkbox') {
+          toggleCheckbox(r, c, t);
+        } else if (EDITABLE_TYPES.includes(field.type) && canEdit(r, c, t)) {
+          startEdit(r, c, t);
         } else {
-          moveActive(v + (e.shiftKey ? -1 : 1), c);
+          moveVertical(v, c, t, e.shiftKey ? -1 : 1);
         }
         return;
       case 'F2':
         e.preventDefault();
-        startEdit(r, c);
+        startEdit(r, c, t);
         return;
       case ' ':
         // Shift+Space: 選択範囲の行スパンを行選択に広げる（Sheets と同じ）
         if (e.shiftKey && selectionRect) {
           e.preventDefault();
-          setAnchor({ r: visible[selectionRect.top], c: columns.length - 1 });
-          setActive({ r: visible[selectionRect.bottom], c: 0 });
+          setAnchor({ r: visible[selectionRect.top], c: columns.length - 1, t: 0 });
+          setActive({ r: visible[selectionRect.bottom], c: 0, t: 0 });
           return;
         }
-        if (column.type === 'checkbox') {
+        if (field.type === 'checkbox') {
           e.preventDefault();
-          toggleCheckbox(r, c);
+          toggleCheckbox(r, c, t);
         }
         return;
       case 'Delete':
@@ -1990,8 +2205,8 @@ function SpreadsheetGridInner<Row extends object>(
     }
     if (mod && (e.key === 'a' || e.key === 'A')) {
       e.preventDefault();
-      setAnchor({ r: visible[0], c: 0 });
-      setActive({ r: visible[visible.length - 1], c: columns.length - 1 });
+      setAnchor({ r: visible[0], c: 0, t: 0 });
+      setActive({ r: visible[visible.length - 1], c: columns.length - 1, t: 0 });
       return;
     }
     // Undo / Redo（Cmd/Ctrl+Z、Shift で Redo。Ctrl+Y も Redo）
@@ -2008,8 +2223,8 @@ function SpreadsheetGridInner<Row extends object>(
     }
     // 印字可能文字で編集開始（Excel/Sheets と同じ）
     if (!mod && !e.altKey && e.key.length === 1) {
-      if (TEXT_INPUT_TYPES.includes(column.type)) {
-        if (!canEdit(r, c)) {
+      if (TEXT_INPUT_TYPES.includes(field.type)) {
+        if (!canEdit(r, c, t)) {
           e.preventDefault();
           onEditBlocked?.({ row: rows[r], rowIndex: r, column });
           return;
@@ -2018,11 +2233,11 @@ function SpreadsheetGridInner<Row extends object>(
         // ないとき（フォーカスがセルに残っているとき）だけ、ここで編集に入る
         if (e.target !== activeInputRef.current) {
           e.preventDefault();
-          startEdit(r, c, e.key);
+          startEdit(r, c, t, e.key);
         }
-      } else if (column.type === 'select' || column.type === 'date') {
+      } else if (field.type === 'select' || field.type === 'date') {
         e.preventDefault();
-        startEdit(r, c);
+        startEdit(r, c, t);
       }
     }
   };
@@ -2169,20 +2384,21 @@ function SpreadsheetGridInner<Row extends object>(
   const focusActive = () => {
     if (!active) return;
     const target =
-      activeInputRef.current ?? cellRefs.current.get(`${active.r}:${active.c}`);
+      activeInputRef.current ??
+      cellRefs.current.get(`${active.r}:${active.c}:${active.t}`);
     if (target && document.activeElement !== target)
       target.focus({ preventScroll: true });
   };
 
   React.useLayoutEffect(() => {
     if (!active) return;
-    const td = cellRefs.current.get(`${active.r}:${active.c}`);
+    const td = cellRefs.current.get(`${active.r}:${active.c}:${active.t}`);
     if (!td) return;
     ensureVisible(td, active.c);
     const ed = editingRef.current;
-    const column = columns[active.c];
+    const field = fieldAt(active.c, active.t);
     // select / date は自前のエディタがフォーカスを持つ
-    if (ed && (column?.type === 'select' || column?.type === 'date')) return;
+    if (ed && (field?.type === 'select' || field?.type === 'date')) return;
     const inside =
       (containerRef.current?.contains(document.activeElement) ?? false) ||
       (focusInsideRef.current &&
@@ -2201,7 +2417,7 @@ function SpreadsheetGridInner<Row extends object>(
     input.focus();
     const n = input.value.length;
     input.setSelectionRange(n, n);
-  }, [editing?.r, editing?.c, editing?.mode]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [editing?.r, editing?.c, editing?.t, editing?.mode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   React.useImperativeHandle(ref, () => ({
     clearDirty: () => {
@@ -2209,7 +2425,9 @@ function SpreadsheetGridInner<Row extends object>(
       bumpDirtyVersion();
     },
     select: (cell, extendTo) => {
-      const c = columns.findIndex((col) => col.key === cell.columnKey);
+      // 2段セルの下段の key（例: creditAccount）でも選べる
+      const pos = findFieldPos(cell.columnKey);
+      const c = pos?.c ?? -1;
       if (c < 0 || cell.rowIndex < 0 || cell.rowIndex >= rows.length) return;
       // 畳まれた配下なら、上位を開く
       if (tree) {
@@ -2225,21 +2443,19 @@ function SpreadsheetGridInner<Row extends object>(
       }
       if (editingRef.current) commitEdit('none');
       pendingFocusRef.current = true;
-      setActive({ r: cell.rowIndex, c });
-      const ec = extendTo
-        ? columns.findIndex((col) => col.key === extendTo.columnKey)
-        : -1;
+      setActive({ r: cell.rowIndex, c, t: pos?.t ?? 0 });
+      const epos = extendTo ? findFieldPos(extendTo.columnKey) : null;
       setAnchor(
-        extendTo && ec >= 0 && extendTo.rowIndex >= 0 && extendTo.rowIndex < rows.length
-          ? { r: extendTo.rowIndex, c: ec }
-          : { r: cell.rowIndex, c },
+        extendTo && epos && extendTo.rowIndex >= 0 && extendTo.rowIndex < rows.length
+          ? { r: extendTo.rowIndex, c: epos.c, t: epos.t }
+          : { r: cell.rowIndex, c, t: pos?.t ?? 0 },
       );
     },
     focus: () => {
       pendingFocusRef.current = true;
       if (!active && visible.length) {
-        setActive({ r: visible[0], c: 0 });
-        setAnchor({ r: visible[0], c: 0 });
+        setActive({ r: visible[0], c: 0, t: 0 });
+        setAnchor({ r: visible[0], c: 0, t: 0 });
         return;
       }
       focusActive();
@@ -2250,9 +2466,9 @@ function SpreadsheetGridInner<Row extends object>(
 
   const latest = React.useRef({
     isCellDirty,
-    handleCellMouseDown: (_r: number, _c: number, _e: React.MouseEvent) => {},
-    handleCellMouseEnter: (_r: number, _c: number) => {},
-    handleCellDoubleClick: (_r: number, _c: number) => {},
+    handleCellMouseDown: (_r: number, _c: number, _t: 0 | 1, _e: React.MouseEvent) => {},
+    handleCellMouseEnter: (_r: number, _c: number, _t: 0 | 1) => {},
+    handleCellDoubleClick: (_r: number, _c: number, _t: 0 | 1) => {},
     handleCellContextMenu: (_r: number, _c: number) => {},
     handleHeaderMouseDown: (_r: number, _e: React.MouseEvent) => {},
     handleHeaderMouseEnter: (_r: number) => {},
@@ -2265,32 +2481,30 @@ function SpreadsheetGridInner<Row extends object>(
     handleInputKeyDown,
     commitPicker: (_value: SpreadsheetCellValue) => {},
     cancelEdit,
-    handleCheckbox: (_r: number, _c: number, _checked: boolean) => {},
+    handleCheckbox: (_r: number, _c: number, _t: 0 | 1, _checked: boolean) => {},
     optionHover: (_i: number) => {},
     optionPick: (_i: number) => {},
   });
 
   latest.current = {
     isCellDirty,
-    handleCellMouseDown: (r, c, e) => {
+    handleCellMouseDown: (r, c, t, e) => {
       if (e.button !== 0) return;
       const ed = editingRef.current;
       // select / date エディタは Portal を使うため blur で閉じない。
       // 別セルのクリックでここから取り消す
       // （input エディタは mousedown 後の blur が確定を担う）
-      if (
-        ed &&
-        (ed.r !== r || ed.c !== c) &&
-        (columns[ed.c].type === 'select' || columns[ed.c].type === 'date')
-      ) {
-        setEditing(null);
+      if (ed && (ed.r !== r || ed.c !== c || ed.t !== t)) {
+        const edType = fieldAt(ed.c, ed.t)?.type;
+        if (edType === 'select' || edType === 'date') setEditing(null);
       }
       // 入力欄の外（セルの余白など）を押しても、入力欄からフォーカスを外さない
       const target = e.target as HTMLElement;
-      const willHostInput = canEdit(r, c) && TEXT_INPUT_TYPES.includes(columns[c].type);
+      const willHostInput =
+        canEdit(r, c, t) && TEXT_INPUT_TYPES.includes(fieldAt(c, t)?.type ?? 'readonly');
       if (willHostInput && target.tagName !== 'INPUT') {
         e.preventDefault();
-        if (ed && (ed.r !== r || ed.c !== c)) commitEdit('none');
+        if (ed && (ed.r !== r || ed.c !== c || ed.t !== t)) commitEdit('none');
         requestAnimationFrame(() => {
           pendingFocusRef.current = true;
           activeInputRef.current?.focus({ preventScroll: true });
@@ -2299,20 +2513,20 @@ function SpreadsheetGridInner<Row extends object>(
       draggingRef.current = true;
       pendingFocusRef.current = true;
       if (e.shiftKey && active) {
-        setActive({ r, c });
+        setActive({ r, c, t });
       } else {
-        const pos = { r, c };
+        const pos = { r, c, t };
         setActive(pos);
         setAnchor(pos);
       }
     },
-    handleCellMouseEnter: (r, c) => {
-      if (draggingRef.current) setActive({ r, c });
+    handleCellMouseEnter: (r, c, t) => {
+      if (draggingRef.current) setActive({ r, c, t });
     },
-    handleCellDoubleClick: (r, c) => {
-      const column = columns[c];
-      if (column.type === 'checkbox' || column.type === 'readonly') return;
-      startEdit(r, c);
+    handleCellDoubleClick: (r, c, t) => {
+      const field = fieldAt(c, t);
+      if (!field || field.type === 'checkbox' || field.type === 'readonly') return;
+      startEdit(r, c, t);
     },
     handleCellContextMenu: (r, c) => {
       // 範囲の外を右クリックしたら、そのセルを選び直す（Excel と同じ）。
@@ -2329,8 +2543,8 @@ function SpreadsheetGridInner<Row extends object>(
       if (!inside && !insideRows) {
         if (editingRef.current) commitEdit('none');
         pendingFocusRef.current = true;
-        setActive({ r, c });
-        setAnchor({ r, c });
+        setActive({ r, c, t: 0 });
+        setAnchor({ r, c, t: 0 });
       }
       setMenuTarget({
         kind: 'cells',
@@ -2381,7 +2595,7 @@ function SpreadsheetGridInner<Row extends object>(
       }
     },
     handleHeaderMouseEnter: (r) => {
-      if (rowDraggingRef.current) setActive({ r, c: 0 });
+      if (rowDraggingRef.current) setActive({ r, c: 0, t: 0 });
     },
     handleRowMouseEnter: (r) => {
       if (!rowDrag || tree) return;
@@ -2419,11 +2633,11 @@ function SpreadsheetGridInner<Row extends object>(
     handleInputChange: (value) => {
       const ed = editingRef.current;
       if (ed) setEditing(withHighlight({ ...ed, draft: value }));
-      else if (active) startEdit(active.r, active.c, value);
+      else if (active) startEdit(active.r, active.c, active.t, value);
     },
     handleCompositionStart: () => {
       // 日本語入力の変換開始で編集に入る（入力欄はそのまま。値は空のまま変えない）
-      if (!editingRef.current && active) startEdit(active.r, active.c, '');
+      if (!editingRef.current && active) startEdit(active.r, active.c, active.t, '');
     },
     handleInputBlur: () => {
       if (editingRef.current) commitEdit('none');
@@ -2433,12 +2647,12 @@ function SpreadsheetGridInner<Row extends object>(
       const ed = editingRef.current;
       if (!ed) return;
       setEditing(null);
-      writeCells([{ r: ed.r, c: ed.c, value }]);
+      writeCells([{ r: ed.r, c: ed.c, t: ed.t, value }]);
     },
     cancelEdit,
-    handleCheckbox: (r, c, checked) => {
-      if (!canEdit(r, c)) return;
-      writeCells([{ r, c, value: checked }]);
+    handleCheckbox: (r, c, t, checked) => {
+      if (!canEdit(r, c, t)) return;
+      writeCells([{ r, c, t, value: checked }]);
     },
     optionHover: (i) => {
       const ed = editingRef.current;
@@ -2450,18 +2664,18 @@ function SpreadsheetGridInner<Row extends object>(
   const api = React.useMemo<GridApi<Row>>(
     () => ({
       isDirty: (row, key) => latest.current.isCellDirty(row, key),
-      setCellRef: (r, c, node) => {
-        if (node) cellRefs.current.set(`${r}:${c}`, node);
-        else if (cellRefs.current.get(`${r}:${c}`) === node)
-          cellRefs.current.delete(`${r}:${c}`);
+      setCellRef: (r, c, t, node) => {
+        if (node) cellRefs.current.set(`${r}:${c}:${t}`, node);
+        else if (cellRefs.current.get(`${r}:${c}:${t}`) === node)
+          cellRefs.current.delete(`${r}:${c}:${t}`);
       },
-      getCell: (r, c) => cellRefs.current.get(`${r}:${c}`),
+      getCell: (r, c, t) => cellRefs.current.get(`${r}:${c}:${t}`),
       setInputRef: (node) => {
         activeInputRef.current = node;
       },
-      cellMouseDown: (r, c, e) => latest.current.handleCellMouseDown(r, c, e),
-      cellMouseEnter: (r, c) => latest.current.handleCellMouseEnter(r, c),
-      cellDoubleClick: (r, c) => latest.current.handleCellDoubleClick(r, c),
+      cellMouseDown: (r, c, t, e) => latest.current.handleCellMouseDown(r, c, t, e),
+      cellMouseEnter: (r, c, t) => latest.current.handleCellMouseEnter(r, c, t),
+      cellDoubleClick: (r, c, t) => latest.current.handleCellDoubleClick(r, c, t),
       cellContextMenu: (r, c) => latest.current.handleCellContextMenu(r, c),
       headerMouseDown: (r, e) => latest.current.handleHeaderMouseDown(r, e),
       headerMouseEnter: (r) => latest.current.handleHeaderMouseEnter(r),
@@ -2474,7 +2688,8 @@ function SpreadsheetGridInner<Row extends object>(
       inputKeyDown: (e) => latest.current.handleInputKeyDown(e),
       pickerCommit: (value) => latest.current.commitPicker(value),
       pickerCancel: () => latest.current.cancelEdit(),
-      checkboxChange: (r, c, checked) => latest.current.handleCheckbox(r, c, checked),
+      checkboxChange: (r, c, t, checked) =>
+        latest.current.handleCheckbox(r, c, t, checked),
       optionHover: (i) => latest.current.optionHover(i),
       optionPick: (i) => latest.current.optionPick(i),
     }),
@@ -2485,22 +2700,23 @@ function SpreadsheetGridInner<Row extends object>(
 
   const editingView = React.useMemo<EditingView | null>(() => {
     if (!editing) return null;
-    const column = columns[editing.c];
+    const field = fieldAt(editing.c, editing.t);
     const row = rows[editing.r];
-    if (!column || !row) return null;
+    if (!field || !row) return null;
     let liveError: string | null = null;
-    if (column.type !== 'select' && column.type !== 'date') {
-      const { ok, value } = parseDraft(column.type, editing.draft);
+    if (field.type !== 'select' && field.type !== 'date') {
+      const { ok, value } = parseDraft(field.type, editing.draft);
       // 入力中のリアルタイム検証。パース不能な数値はパースエラーを優先
-      liveError = !ok ? '数値で入力してください' : validateCell(column, value, row);
+      liveError = !ok ? '数値で入力してください' : validateCell(field, value, row);
     }
     return {
       c: editing.c,
+      t: editing.t,
       draft: editing.draft,
       liveError,
       items: itemsOf(editing),
       highlight: editing.highlight,
-      header: column.optionsHeader ? column.optionsHeader(row) : null,
+      header: field.optionsHeader ? field.optionsHeader(row) : null,
     };
   }, [editing, rows, columns]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -2655,7 +2871,9 @@ function SpreadsheetGridInner<Row extends object>(
             row={row}
             r={r}
             columns={columns}
+            hasTiers={hasTiers}
             activeC={active?.r === r ? active.c : -1}
+            activeT={active?.r === r ? active.t : 0}
             selLeft={inSel ? selectionRect!.left : -1}
             selRight={inSel ? selectionRect!.right : -1}
             rowSelected={isRowSelected(r)}
@@ -2741,7 +2959,7 @@ function SpreadsheetGridInner<Row extends object>(
       <table
         role={treeMode ? 'treegrid' : 'grid'}
         aria-label={ariaLabel}
-        aria-rowcount={rows.length}
+        aria-rowcount={hasTiers ? rows.length * 2 : rows.length}
         aria-colcount={colCount + 1}
         // 罫線は各セルが右と下だけ描く（separate）。collapse だと固定した列の
         // 罫線部分から下を流れるセルが透けるため
@@ -2794,12 +3012,12 @@ function SpreadsheetGridInner<Row extends object>(
                     if (editingRef.current) commitEdit('none');
                     pendingFocusRef.current = true;
                     if (e.shiftKey && anchor) {
-                      setAnchor({ r: visible[visible.length - 1], c: anchor.c });
-                      setActive({ r: visible[0], c });
+                      setAnchor({ r: visible[visible.length - 1], c: anchor.c, t: 0 });
+                      setActive({ r: visible[0], c, t: 0 });
                       return;
                     }
-                    setAnchor({ r: visible[visible.length - 1], c });
-                    setActive({ r: visible[0], c });
+                    setAnchor({ r: visible[visible.length - 1], c, t: 0 });
+                    setActive({ r: visible[0], c, t: 0 });
                   }}
                   className={cn(
                     'sticky top-0 z-30 cursor-pointer border-b border-r border-[var(--color-border)] bg-[var(--color-surface-sunken)] px-2 py-1.5 text-xs font-medium text-[var(--color-on-surface-secondary)] last:border-r-0',
@@ -2810,11 +3028,41 @@ function SpreadsheetGridInner<Row extends object>(
                     inSel && isMultiCell && 'text-[var(--color-on-surface-accent)]',
                   )}
                 >
-                  {column.header}
-                  {column.required && (
-                    <span aria-hidden className="ml-0.5 text-[var(--color-error-400)]">
-                      *
+                  {column.fields ? (
+                    // 2段セルの列ヘッダーは上段/下段のラベルを積んで表示
+                    <span className="flex flex-col gap-0.5 font-medium">
+                      {column.fields.map((f, i) => (
+                        <span
+                          key={f.key}
+                          className={cn(
+                            i === 1 &&
+                              'border-t border-dashed border-[var(--color-border)] pt-0.5',
+                          )}
+                        >
+                          {f.header}
+                          {f.required && (
+                            <span
+                              aria-hidden
+                              className="ml-0.5 text-[var(--color-error-400)]"
+                            >
+                              *
+                            </span>
+                          )}
+                        </span>
+                      ))}
                     </span>
+                  ) : (
+                    <>
+                      {column.header}
+                      {column.required && (
+                        <span
+                          aria-hidden
+                          className="ml-0.5 text-[var(--color-error-400)]"
+                        >
+                          *
+                        </span>
+                      )}
+                    </>
                   )}
                 </th>
               );

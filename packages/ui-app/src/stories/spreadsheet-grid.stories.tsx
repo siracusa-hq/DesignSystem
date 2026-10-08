@@ -27,6 +27,7 @@ const meta: Meta = {
           'Cmd/Ctrl+Z で元に戻す、Cmd/Ctrl+Shift+Z または Ctrl+Y でやり直し。' +
           'バリデーションエラーは入力中にリアルタイム表示される。' +
           '日本語入力（IME）でも、選んだセルにそのまま打ち始められる。' +
+          '列定義の fields: [上段, 下段] で2段セル（仕訳の借方/貸方など）になる。' +
           'セルごとの入力可否（isCellEditable）・表示の差し替え（column.render）・' +
           '書き込み口（column.setValue）・行の class・行番号・左の列の固定（stickyColumns）・' +
           '合計行（column.footer）を外から決められる。' +
@@ -899,5 +900,145 @@ export const TreeThreeHundredRows: Story = {
       }
     }
     return <TreeEstimate className="max-h-[520px] max-w-[760px]" initial={initial} />;
+  },
+};
+
+/* ----- 2段セル（仕訳入力） ----- */
+
+interface JournalRow extends SpreadsheetRow {
+  date: string | null;
+  debitAccount: string | null;
+  creditAccount: string | null;
+  debitSub: string;
+  creditSub: string;
+  amount: number | null;
+  description: string;
+}
+
+const accountOptions = [
+  { value: 'cash', label: '現金' },
+  { value: 'bank', label: '普通預金' },
+  { value: 'sales', label: '売上高' },
+  { value: 'purchases', label: '仕入高' },
+  { value: 'ap', label: '買掛金' },
+  { value: 'ar', label: '売掛金' },
+  { value: 'travel', label: '旅費交通費' },
+  { value: 'comm', label: '通信費' },
+];
+
+const journalColumns: SpreadsheetColumn<JournalRow>[] = [
+  { key: 'date', header: '日付', type: 'date', width: 130 },
+  {
+    key: 'account',
+    header: '勘定科目',
+    width: 160,
+    fields: [
+      {
+        key: 'debitAccount',
+        header: '借方科目',
+        type: 'select',
+        options: accountOptions,
+        required: true,
+      },
+      {
+        key: 'creditAccount',
+        header: '貸方科目',
+        type: 'select',
+        options: accountOptions,
+        required: true,
+      },
+    ],
+  },
+  {
+    key: 'sub',
+    header: '補助科目',
+    width: 150,
+    fields: [
+      { key: 'debitSub', header: '借方補助', type: 'text' },
+      { key: 'creditSub', header: '貸方補助', type: 'text' },
+    ],
+  },
+  {
+    key: 'amount',
+    header: '金額',
+    type: 'number',
+    min: 0,
+    width: 120,
+    footer: (rows) =>
+      rows
+        .reduce((sum, row) => sum + (typeof row.amount === 'number' ? row.amount : 0), 0)
+        .toLocaleString(),
+  },
+  { key: 'description', header: '摘要', type: 'text', width: 220 },
+];
+
+/**
+ * 2段セル（会計システムの仕訳入力）。列定義に fields: [上段, 下段] を
+ * 指定すると、その列は1レコードが上下2段で描画される（借方/貸方など）。
+ * fields を持たない列（日付・金額・摘要）は rowSpan=2 で1段のまま。
+ *
+ * - 矢印キー・Enter は 上段 → 下段 → 次の仕訳 の順に移動する
+ * - データ構造は変わらず「1レコード = 1オブジェクト」。借方と貸方は
+ *   同じレコードの別フィールド（debitAccount / creditAccount）
+ * - コピー&ペーストは「1レコード = 2行」の TSV（Excel のセル結合
+ *   レイアウトと相互運用できる）
+ * - バリデーション・未保存マーカーは段ごと、行操作・D&D・Undo は
+ *   レコード単位で動く
+ * - 階層（getRowDepth）とは同時に使えない
+ */
+export const TwoTierCells: Story = {
+  render: () => {
+    const [rows, setRows] = useState<JournalRow[]>([
+      {
+        date: '2026-10-01',
+        debitAccount: 'travel',
+        creditAccount: 'cash',
+        debitSub: 'タクシー',
+        creditSub: '',
+        amount: 3200,
+        description: '客先訪問',
+      },
+      {
+        date: '2026-10-02',
+        debitAccount: 'purchases',
+        creditAccount: 'ap',
+        debitSub: '',
+        creditSub: 'シラクサ商事',
+        amount: 150000,
+        description: '10月分仕入',
+      },
+      {
+        date: '2026-10-05',
+        debitAccount: 'bank',
+        creditAccount: 'sales',
+        debitSub: '',
+        creditSub: '',
+        amount: 480000,
+        description: '売上入金',
+      },
+    ]);
+    return (
+      <div className="flex max-w-[940px] flex-col gap-2">
+        <SpreadsheetGrid
+          aria-label="仕訳明細"
+          columns={journalColumns}
+          rows={rows}
+          onRowsChange={setRows}
+          createRow={() => ({
+            date: null,
+            debitAccount: null,
+            creditAccount: null,
+            debitSub: '',
+            creditSub: '',
+            amount: null,
+            description: '',
+          })}
+        />
+        <p className="text-xs text-[var(--color-on-surface-muted)]">
+          勘定科目・補助科目は上段が借方、下段が貸方。↓キーで上段 → 下段 →
+          次の仕訳へ移動する。
+        </p>
+      </div>
+    );
   },
 };

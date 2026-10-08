@@ -472,6 +472,7 @@ export {
   type SpreadsheetGridProps,
   type SpreadsheetGridHandle,
   type SpreadsheetColumn,
+  type SpreadsheetTierField,
   type SpreadsheetColumnType,
   type SpreadsheetSelectOption,
   type SpreadsheetCellValue,
