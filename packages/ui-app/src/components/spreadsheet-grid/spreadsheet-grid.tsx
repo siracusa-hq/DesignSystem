@@ -47,6 +47,8 @@ import {
      履歴はリセットされる）。history={false} ならアプリ側で持つ
    - Cmd/Ctrl+D で下へ、Cmd/Ctrl+R で右へコピー（範囲の先頭行・列を
      残りへ。1行・1列の範囲なら上・左のセルを写す）
+   - 選択範囲の右下のつまみ（フィルハンドル）を引っぱると、縦か横へ
+     範囲の値を繰り返し写す（連番にはしない）
    - 入力できるセルを選んでいる間は、セルに透明な入力欄を置いて
      フォーカスを渡す。打鍵や日本語入力（IME）の変換開始で、
      そのまま同じ入力欄で編集に入る（変換が途切れない）
@@ -780,6 +782,7 @@ interface GridApi<Row extends object> {
   setInputRef: (node: HTMLInputElement | null) => void;
   cellMouseDown: (r: number, c: number, t: 0 | 1, e: React.MouseEvent) => void;
   cellMouseEnter: (r: number, c: number, t: 0 | 1) => void;
+  fillHandleMouseDown: (e: React.MouseEvent) => void;
   cellDoubleClick: (r: number, c: number, t: 0 | 1) => void;
   cellContextMenu: (r: number, c: number) => void;
   headerMouseDown: (r: number, e: React.MouseEvent) => void;
@@ -811,6 +814,12 @@ interface RowViewProps<Row extends object> {
   /** 範囲に入っていれば左右の列、入っていなければ -1 */
   selLeft: number;
   selRight: number;
+  /** フィルハンドルを出すセル（この行になければ -1）と段 */
+  handleC: number;
+  handleT: 0 | 1;
+  /** 引っぱり中に写す先の範囲に入っていれば左右の列、入っていなければ -1 */
+  fillLeft: number;
+  fillRight: number;
   rowSelected: boolean;
   editing: EditingView | null;
   dropEdge: 'top' | 'bottom' | null;
@@ -859,6 +868,7 @@ function RowViewInner<Row extends object>(p: RowViewProps<Row>) {
     const isEditing = p.editing?.c === c && p.editing?.t === t;
     const isActive = p.activeC === c && p.activeT === t;
     const selected = p.selLeft >= 0 && c >= p.selLeft && c <= p.selRight;
+    const fillPreview = p.fillLeft >= 0 && c >= p.fillLeft && c <= p.fillRight;
     const textInput = isActive && editable && TEXT_INPUT_TYPES.includes(field.type);
     const pickerEditing =
       isEditing && (field.type === 'select' || field.type === 'date');
@@ -988,6 +998,9 @@ function RowViewInner<Row extends object>(p: RowViewProps<Row>) {
           isActive &&
             !isEditing &&
             'shadow-[inset_0_0_0_2px_var(--color-primary-500)]',
+          // フィルハンドルで写す先（離すとここに入る）
+          fillPreview &&
+            'outline outline-1 -outline-offset-1 outline-dashed outline-[var(--color-primary-500)]',
           // 行 D&D のドロップ位置インジケータ（行全体に線を引く）
           edgeShadow,
           pickerEditing && 'p-0',
@@ -1088,6 +1101,15 @@ function RowViewInner<Row extends object>(p: RowViewProps<Row>) {
             freeTextOption={field.freeTextOption}
             onHover={api.optionHover}
             onPick={api.optionPick}
+          />
+        )}
+        {p.handleC === c && p.handleT === t && (
+          // キーボードでは Ctrl/Cmd+D・R が同じ役割を担うので読み上げない
+          <span
+            aria-hidden
+            data-fill-handle
+            onMouseDown={api.fillHandleMouseDown}
+            className="absolute -bottom-1 -right-1 z-30 h-2 w-2 cursor-crosshair border border-[var(--color-surface-raised)] bg-[var(--color-primary-500)]"
           />
         )}
         {dirty && (
@@ -1795,31 +1817,26 @@ function SpreadsheetGridInner<Row extends object>(
   };
 
   /**
-   * Ctrl/Cmd+D（下へ）・Ctrl/Cmd+R（右へ）のコピー（Excel/Sheets と同じ）。
-   * 範囲が複数行（複数列）なら先頭の行（列）を残りへ、1行（1列）なら
-   * 上（左）のセルを範囲へ写す。同じフィールドは値をそのまま、違う列へは
-   * 貼り付けと同じ規則で読み直す（読めない値・入力できないセルは変えない）
+   * 範囲（表に出ている行の位置 × 列）の各セルへ、sourceOf が返すセルの値を写す。
+   * 同じフィールドは値をそのまま、違う列へは貼り付けと同じ規則で読み直す
+   * （読めない値・入力できないセルは変えない）。1段の列から2段の列へは、
+   * 1段の値を両方の段へ写す
    */
-  const fillFromEdge = (dir: 'down' | 'right') => {
-    if (!selectionRect) return;
-    const { top, bottom, left, right } = selectionRect;
-    const down = dir === 'down';
-    const first = down ? top : left;
-    const last = down ? bottom : right;
-    const source = first === last ? first - 1 : first;
-    if (source < 0) return;
+  const copyCellsInto = (
+    rect: { top: number; bottom: number; left: number; right: number },
+    sourceOf: (v: number, c: number) => { v: number; c: number } | null,
+  ) => {
     const updates: { r: number; c: number; t: 0 | 1; value: SpreadsheetCellValue }[] =
       [];
-    for (let v = top; v <= bottom; v++) {
-      for (let c = left; c <= right; c++) {
-        if ((down ? v : c) === source) continue;
+    for (let v = rect.top; v <= rect.bottom; v++) {
+      for (let c = rect.left; c <= rect.right; c++) {
+        const src = sourceOf(v, c);
+        if (!src) continue;
         const r = visible[v];
-        const sr = down ? visible[source] : r;
-        const sc = down ? c : source;
+        const sr = visible[src.v];
         for (const t of tiersOf(columns[c])) {
           if (!canEdit(r, c, t)) continue;
-          // 1段の列から2段の列へは、1段の値を両方の段へ写す
-          const from = fieldAt(sc, columns[sc].fields ? t : 0);
+          const from = fieldAt(src.c, columns[src.c].fields ? t : 0);
           const to = fieldAt(c, t)!;
           if (!from) continue;
           const value =
@@ -1832,6 +1849,76 @@ function SpreadsheetGridInner<Row extends object>(
       }
     }
     writeCells(updates);
+  };
+
+  /**
+   * Ctrl/Cmd+D（下へ）・Ctrl/Cmd+R（右へ）のコピー（Excel/Sheets と同じ）。
+   * 範囲が複数行（複数列）なら先頭の行（列）を残りへ、1行（1列）なら
+   * 上（左）のセルを範囲へ写す
+   */
+  const fillFromEdge = (dir: 'down' | 'right') => {
+    if (!selectionRect) return;
+    const down = dir === 'down';
+    const first = down ? selectionRect.top : selectionRect.left;
+    const last = down ? selectionRect.bottom : selectionRect.right;
+    const source = first === last ? first - 1 : first;
+    if (source < 0) return;
+    copyCellsInto(selectionRect, (v, c) =>
+      (down ? v : c) === source ? null : down ? { v: source, c } : { v, c: source },
+    );
+  };
+
+  /* ----- フィルハンドル -----
+     選択範囲の右下のつまみを引っぱると、範囲を縦か横（遠いほう）へ広げ、
+     元の範囲の値を繰り返し写す（Excel/Sheets と同じ。連番にはしない）。
+     キーボードでは Ctrl/Cmd+D・R が同じ役割を担う */
+
+  const [fillTo, setFillTo] = React.useState<{ v: number; c: number } | null>(null);
+
+  /** 引っぱった先から、写す先の範囲（元の範囲の外側だけ）を出す */
+  const fillTargetOf = (to: { v: number; c: number } | null) => {
+    if (!to || !selectionRect) return null;
+    const { top, bottom, left, right } = selectionRect;
+    const dv = to.v > bottom ? to.v - bottom : to.v < top ? to.v - top : 0;
+    const dc = to.c > right ? to.c - right : to.c < left ? to.c - left : 0;
+    if (dv === 0 && dc === 0) return null;
+    if (Math.abs(dv) >= Math.abs(dc)) {
+      return dv > 0
+        ? { top: bottom + 1, bottom: to.v, left, right }
+        : { top: to.v, bottom: top - 1, left, right };
+    }
+    return dc > 0
+      ? { top, bottom, left: right + 1, right: to.c }
+      : { top, bottom, left: to.c, right: left - 1 };
+  };
+  const fillTarget = fillTargetOf(fillTo);
+
+  const completeFill = () => {
+    const target = fillTarget;
+    const source = selectionRect;
+    setFillTo(null);
+    if (!target || !source) return;
+    const h = source.bottom - source.top + 1;
+    const w = source.right - source.left + 1;
+    const vertical = target.left === source.left && target.right === source.right;
+    const mod = (n: number, m: number) => ((n % m) + m) % m;
+    copyCellsInto(target, (v, c) =>
+      vertical
+        ? { v: source.top + mod(v - source.top, h), c }
+        : { v, c: source.left + mod(c - source.left, w) },
+    );
+    // 選択を写した先まで広げる
+    pendingFocusRef.current = true;
+    setAnchor({
+      r: visible[Math.min(source.top, target.top)],
+      c: Math.min(source.left, target.left),
+      t: 0,
+    });
+    setActive({
+      r: visible[Math.max(source.bottom, target.bottom)],
+      c: Math.max(source.right, target.right),
+      t: 0,
+    });
   };
 
   const clearSelection = () => {
@@ -2521,6 +2608,7 @@ function SpreadsheetGridInner<Row extends object>(
     isCellDirty,
     handleCellMouseDown: (_r: number, _c: number, _t: 0 | 1, _e: React.MouseEvent) => {},
     handleCellMouseEnter: (_r: number, _c: number, _t: 0 | 1) => {},
+    handleFillHandleMouseDown: (_e: React.MouseEvent) => {},
     handleCellDoubleClick: (_r: number, _c: number, _t: 0 | 1) => {},
     handleCellContextMenu: (_r: number, _c: number) => {},
     handleHeaderMouseDown: (_r: number, _e: React.MouseEvent) => {},
@@ -2574,7 +2662,20 @@ function SpreadsheetGridInner<Row extends object>(
       }
     },
     handleCellMouseEnter: (r, c, t) => {
+      if (fillTo) {
+        const v = vOf(r);
+        if (v !== fillTo.v || c !== fillTo.c) setFillTo({ v, c });
+        return;
+      }
       if (draggingRef.current) setActive({ r, c, t });
+    },
+    handleFillHandleMouseDown: (e) => {
+      if (e.button !== 0 || !selectionRect) return;
+      // セルの mousedown（選択のやり直し）に渡さない
+      e.preventDefault();
+      e.stopPropagation();
+      if (editingRef.current) commitEdit('none');
+      setFillTo({ v: selectionRect.bottom, c: selectionRect.right });
     },
     handleCellDoubleClick: (r, c, t) => {
       const field = fieldAt(c, t);
@@ -2728,6 +2829,7 @@ function SpreadsheetGridInner<Row extends object>(
       },
       cellMouseDown: (r, c, t, e) => latest.current.handleCellMouseDown(r, c, t, e),
       cellMouseEnter: (r, c, t) => latest.current.handleCellMouseEnter(r, c, t),
+      fillHandleMouseDown: (e) => latest.current.handleFillHandleMouseDown(e),
       cellDoubleClick: (r, c, t) => latest.current.handleCellDoubleClick(r, c, t),
       cellContextMenu: (r, c) => latest.current.handleCellContextMenu(r, c),
       headerMouseDown: (r, e) => latest.current.handleHeaderMouseDown(r, e),
@@ -2888,18 +2990,23 @@ function SpreadsheetGridInner<Row extends object>(
     focusActive();
   };
 
+  // 編集中・行の並べ替え中はつまみを出さない
+  const showFillHandle = !!selectionRect && !editing && !rowDrag;
+
   const tbody = (
     <tbody
-      className={cn(rowDrag && 'cursor-grabbing')}
+      className={cn(rowDrag && 'cursor-grabbing', fillTo && 'cursor-crosshair')}
       onMouseUp={() => {
         draggingRef.current = false;
         rowDraggingRef.current = false;
         completeRowDrag();
+        if (fillTo) completeFill();
       }}
       onMouseLeave={() => {
         draggingRef.current = false;
         rowDraggingRef.current = false;
         setRowDrag(null);
+        setFillTo(null);
       }}
     >
       {visible.map((r) => {
@@ -2907,6 +3014,9 @@ function SpreadsheetGridInner<Row extends object>(
         const v = vpos[r];
         const inSel =
           !!selectionRect && v >= selectionRect.top && v <= selectionRect.bottom;
+        const inFill = !!fillTarget && v >= fillTarget.top && v <= fillTarget.bottom;
+        const handleC =
+          showFillHandle && v === selectionRect!.bottom ? selectionRect!.right : -1;
         const dropEdge: 'top' | 'bottom' | null = !rowDrag
           ? null
           : tree
@@ -2929,6 +3039,10 @@ function SpreadsheetGridInner<Row extends object>(
             activeT={active?.r === r ? active.t : 0}
             selLeft={inSel ? selectionRect!.left : -1}
             selRight={inSel ? selectionRect!.right : -1}
+            handleC={handleC}
+            handleT={handleC >= 0 && columns[handleC].fields ? 1 : 0}
+            fillLeft={inFill ? fillTarget!.left : -1}
+            fillRight={inFill ? fillTarget!.right : -1}
             rowSelected={isRowSelected(r)}
             editing={editing?.r === r ? editingView : null}
             dropEdge={dropEdge}
