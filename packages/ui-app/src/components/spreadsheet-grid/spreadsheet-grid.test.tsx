@@ -858,6 +858,118 @@ describe('SpreadsheetGrid 下へ・右へコピー（Ctrl/Cmd+D・R）', () => {
   });
 });
 
+describe('SpreadsheetGrid フィルハンドル', () => {
+  const fourRows = (): EstimateRow[] => [
+    { item: 'A', qty: 1, unit: 'set', note: '' },
+    { item: 'B', qty: 2, unit: 'piece', note: '' },
+    { item: 'C', qty: 3, unit: null, note: '' },
+    { item: 'D', qty: 4, unit: null, note: '' },
+  ];
+  const handle = () => document.querySelector<HTMLElement>('[data-fill-handle]');
+  // 数量は行番号と同じ数字なので、品目のセルから同じ行のセルをたどる
+  const cellsOf = (item: string) =>
+    Array.from(getCell(item).parentElement!.querySelectorAll('td'));
+  /** つまみを押して、セルを順に通って、最後のセルで離す */
+  const dragHandleTo = (...cells: HTMLElement[]) => {
+    fireEvent.mouseDown(handle()!, { button: 0 });
+    for (const cell of cells) fireEvent.mouseEnter(cell);
+    fireEvent.mouseUp(cells.at(-1)!);
+  };
+
+  it('選択範囲の右下のセルにだけつまみが出る（読み上げない）', async () => {
+    const user = userEvent.setup();
+    render(<Harness initial={fourRows()} />);
+    expect(handle()).toBeNull();
+    await user.click(getCell('A'));
+    await user.keyboard('{Shift>}{ArrowDown}{ArrowRight}{/Shift}');
+    expect(document.querySelectorAll('[data-fill-handle]')).toHaveLength(1);
+    expect(handle()!.closest('td')).toBe(cellsOf('B')[1]);
+    expect(handle()).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  it('下へ引っぱると値がコピーされ、選択も広がる。Undo 1回で戻る', async () => {
+    const user = userEvent.setup();
+    const onRows = vi.fn();
+    render(<Harness initial={fourRows()} onRows={onRows} />);
+    await user.click(getCell('A'));
+    dragHandleTo(getCell('B'), getCell('C'));
+    const rows = onRows.mock.calls.at(-1)![0];
+    expect(rows.map((r: EstimateRow) => r.item)).toEqual(['A', 'A', 'A', 'D']);
+    expect(document.querySelectorAll('td[aria-selected="true"]')).toHaveLength(3);
+    await user.keyboard('{Control>}z{/Control}');
+    expect(screen.getByText('B')).toBeInTheDocument();
+    expect(screen.getByText('C')).toBeInTheDocument();
+  });
+
+  it('複数行を選んで引っぱると、その並びを繰り返す（連番にはしない）', async () => {
+    const user = userEvent.setup();
+    const onRows = vi.fn();
+    render(<Harness initial={fourRows()} onRows={onRows} />);
+    await user.click(getCell('A'));
+    await user.keyboard('{Shift>}{ArrowDown}{ArrowRight}{/Shift}');
+    dragHandleTo(getCell('C'), getCell('D'));
+    const rows = onRows.mock.calls.at(-1)![0];
+    expect(rows.map((r: EstimateRow) => [r.item, r.qty])).toEqual([
+      ['A', 1],
+      ['B', 2],
+      ['A', 1],
+      ['B', 2],
+    ]);
+  });
+
+  it('上へも引っぱれる', async () => {
+    const user = userEvent.setup();
+    const onRows = vi.fn();
+    render(<Harness initial={fourRows()} onRows={onRows} />);
+    await user.click(getCell('D'));
+    dragHandleTo(getCell('C'), getCell('B'));
+    expect(onRows.mock.calls.at(-1)![0].map((r: EstimateRow) => r.item)).toEqual([
+      'A',
+      'D',
+      'D',
+      'D',
+    ]);
+  });
+
+  it('右へ引っぱると左の列の値が入る。型の合わない列は変えない', async () => {
+    const user = userEvent.setup();
+    const onRows = vi.fn();
+    render(<Harness initial={fourRows()} onRows={onRows} />);
+    await user.click(getCell('A'));
+    dragHandleTo(cellsOf('A')[1], cellsOf('A')[3]);
+    expect(onRows.mock.calls.at(-1)![0][0]).toEqual({
+      item: 'A',
+      qty: 1,
+      unit: 'set',
+      note: 'A',
+    });
+  });
+
+  it('引っぱり中は写す先が示され、表の外へ出ると取り消される', async () => {
+    const user = userEvent.setup();
+    const onRows = vi.fn();
+    render(<Harness initial={fourRows()} onRows={onRows} />);
+    await user.click(getCell('A'));
+    fireEvent.mouseDown(handle()!, { button: 0 });
+    fireEvent.mouseEnter(getCell('B'));
+    fireEvent.mouseEnter(getCell('C'));
+    expect(getCell('B').className).toContain('outline-dashed');
+    expect(getCell('C').className).toContain('outline-dashed');
+    expect(getCell('D').className).not.toContain('outline-dashed');
+    fireEvent.mouseLeave(getCell('C').closest('tbody')!);
+    expect(getCell('B').className).not.toContain('outline-dashed');
+    expect(onRows).not.toHaveBeenCalled();
+  });
+
+  it('編集中はつまみを出さない', async () => {
+    const user = userEvent.setup();
+    render(<Harness initial={fourRows()} />);
+    await user.click(getCell('A'));
+    await user.keyboard('{F2}');
+    expect(handle()).toBeNull();
+  });
+});
+
 describe('SpreadsheetGrid Undo / Redo', () => {
   it('Ctrl+Z でセル編集が取り消され、Ctrl+Shift+Z でやり直せる', async () => {
     const user = userEvent.setup();

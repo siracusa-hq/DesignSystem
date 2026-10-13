@@ -311,6 +311,25 @@ describe('SpreadsheetGrid 2段セル: 下へ・右へコピー', () => {
   });
 });
 
+describe('SpreadsheetGrid 2段セル: フィルハンドル', () => {
+  it('2段の列ではつまみが下段に出て、下へ引っぱると上下段とも写る', async () => {
+    const user = userEvent.setup();
+    const onRows = vi.fn();
+    render(<Harness onRows={onRows} />);
+    await user.click(getCell('現金'));
+    const handle = document.querySelector<HTMLElement>('[data-fill-handle]')!;
+    expect(handle.closest('td')).toBe(getCell('売上'));
+    fireEvent.mouseDown(handle, { button: 0 });
+    fireEvent.mouseEnter(getCell('買掛金'));
+    fireEvent.mouseUp(getCell('買掛金'));
+    expect(onRows.mock.calls.at(-1)![0][1]).toMatchObject({
+      debitAccount: '現金',
+      creditAccount: '売上',
+      amount: 6000,
+    });
+  });
+});
+
 describe('SpreadsheetGrid 2段セル: 行操作', () => {
   it('行操作（削除）はレコード単位で動く', async () => {
     const user = userEvent.setup();
