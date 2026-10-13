@@ -45,6 +45,8 @@ import {
    - Cmd/Ctrl+Z で Undo、Cmd/Ctrl+Shift+Z / Ctrl+Y で Redo。
      グリッド内部からの変更のみが履歴対象（外部からの rows 差し替えで
      履歴はリセットされる）。history={false} ならアプリ側で持つ
+   - Cmd/Ctrl+D で下へ、Cmd/Ctrl+R で右へコピー（範囲の先頭行・列を
+     残りへ。1行・1列の範囲なら上・左のセルを写す）
    - 入力できるセルを選んでいる間は、セルに透明な入力欄を置いて
      フォーカスを渡す。打鍵や日本語入力（IME）の変換開始で、
      そのまま同じ入力欄で編集に入る（変換が途切れない）
@@ -1792,6 +1794,46 @@ function SpreadsheetGridInner<Row extends object>(
     writeCells(updates);
   };
 
+  /**
+   * Ctrl/Cmd+D（下へ）・Ctrl/Cmd+R（右へ）のコピー（Excel/Sheets と同じ）。
+   * 範囲が複数行（複数列）なら先頭の行（列）を残りへ、1行（1列）なら
+   * 上（左）のセルを範囲へ写す。同じフィールドは値をそのまま、違う列へは
+   * 貼り付けと同じ規則で読み直す（読めない値・入力できないセルは変えない）
+   */
+  const fillFromEdge = (dir: 'down' | 'right') => {
+    if (!selectionRect) return;
+    const { top, bottom, left, right } = selectionRect;
+    const down = dir === 'down';
+    const first = down ? top : left;
+    const last = down ? bottom : right;
+    const source = first === last ? first - 1 : first;
+    if (source < 0) return;
+    const updates: { r: number; c: number; t: 0 | 1; value: SpreadsheetCellValue }[] =
+      [];
+    for (let v = top; v <= bottom; v++) {
+      for (let c = left; c <= right; c++) {
+        if ((down ? v : c) === source) continue;
+        const r = visible[v];
+        const sr = down ? visible[source] : r;
+        const sc = down ? c : source;
+        for (const t of tiersOf(columns[c])) {
+          if (!canEdit(r, c, t)) continue;
+          // 1段の列から2段の列へは、1段の値を両方の段へ写す
+          const from = fieldAt(sc, columns[sc].fields ? t : 0);
+          const to = fieldAt(c, t)!;
+          if (!from) continue;
+          const value =
+            from.key === to.key
+              ? cellOf(rows[sr], from.key)
+              : parsePastedValue(to, formatCellForCopy(from, rows[sr]));
+          if (value === KEEP) continue;
+          updates.push({ r, c, t, value });
+        }
+      }
+    }
+    writeCells(updates);
+  };
+
   const clearSelection = () => {
     if (!selectionRect) return;
     const updates: { r: number; c: number; t: 0 | 1; value: SpreadsheetCellValue }[] =
@@ -2201,6 +2243,17 @@ function SpreadsheetGridInner<Row extends object>(
       e.preventDefault();
       copySelection();
       clearSelection();
+      return;
+    }
+    // 下へ・右へコピー（ブラウザのブックマーク・再読み込みより優先する）
+    if (mod && !e.shiftKey && !e.altKey && (e.key === 'd' || e.key === 'D')) {
+      e.preventDefault();
+      fillFromEdge('down');
+      return;
+    }
+    if (mod && !e.shiftKey && !e.altKey && (e.key === 'r' || e.key === 'R')) {
+      e.preventDefault();
+      fillFromEdge('right');
       return;
     }
     if (mod && (e.key === 'a' || e.key === 'A')) {

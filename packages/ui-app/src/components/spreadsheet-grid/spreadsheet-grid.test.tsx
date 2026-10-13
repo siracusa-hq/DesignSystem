@@ -782,6 +782,82 @@ describe('SpreadsheetGrid checkbox 列', () => {
   });
 });
 
+describe('SpreadsheetGrid 下へ・右へコピー（Ctrl/Cmd+D・R）', () => {
+  const threeRows = (): EstimateRow[] => [
+    { item: 'サーバー構築', qty: 1, unit: 'set', note: '' },
+    { item: '保守', qty: 12, unit: null, note: '月額' },
+    { item: '', qty: null, unit: null, note: '' },
+  ];
+
+  it('複数行を選んで Ctrl+D で、先頭行の値が残りの行へ入る', async () => {
+    const user = userEvent.setup();
+    const onRows = vi.fn();
+    render(<Harness initial={threeRows()} onRows={onRows} />);
+    await user.click(getCell('サーバー構築'));
+    await user.keyboard('{Shift>}{ArrowDown}{ArrowDown}{ArrowRight}{ArrowRight}{/Shift}');
+    await user.keyboard('{Control>}d{/Control}');
+    const rows = onRows.mock.calls.at(-1)![0];
+    expect(rows[1]).toMatchObject({ item: 'サーバー構築', qty: 1, unit: 'set', note: '月額' });
+    expect(rows[2]).toMatchObject({ item: 'サーバー構築', qty: 1, unit: 'set', note: '' });
+  });
+
+  it('1セルで Ctrl+D なら上のセルの値が入る（1行目では何もしない）', async () => {
+    const user = userEvent.setup();
+    const onRows = vi.fn();
+    render(<Harness onRows={onRows} />);
+    await user.click(getCell('サーバー構築'));
+    await user.keyboard('{Control>}d{/Control}');
+    expect(onRows).not.toHaveBeenCalled();
+    await user.click(getCell('保守'));
+    await user.keyboard('{Control>}d{/Control}');
+    expect(onRows.mock.calls.at(-1)![0][1].item).toBe('サーバー構築');
+  });
+
+  it('Ctrl+R で左端の列の値が右へ入る。型の合わない列は変えない', async () => {
+    const user = userEvent.setup();
+    const onRows = vi.fn();
+    render(<Harness onRows={onRows} />);
+    await user.click(getCell('サーバー構築'));
+    await user.keyboard('{Shift>}{ArrowRight}{ArrowRight}{ArrowRight}{/Shift}');
+    await user.keyboard('{Control>}r{/Control}');
+    // 数量（数値）・単位（選択肢）には読めないので元のまま、備考（文字）には入る
+    expect(onRows.mock.calls.at(-1)![0][0]).toEqual({
+      item: 'サーバー構築',
+      qty: 1,
+      unit: 'set',
+      note: 'サーバー構築',
+    });
+  });
+
+  it('Cmd+D でも動き、ブラウザの既定動作（ブックマーク）を止める。Undo 1回で戻る', async () => {
+    const user = userEvent.setup();
+    render(<Harness />);
+    await user.click(getCell('保守'));
+    const notPrevented = fireEvent.keyDown(document.activeElement!, {
+      key: 'd',
+      metaKey: true,
+    });
+    expect(notPrevented).toBe(false);
+    expect(screen.getAllByText('サーバー構築')).toHaveLength(2);
+    await user.keyboard('{Control>}z{/Control}');
+    expect(screen.getByText('保守')).toBeInTheDocument();
+  });
+
+  it('計算列（readonly）には書かない', async () => {
+    const user = userEvent.setup();
+    const onRows = vi.fn();
+    const cols: SpreadsheetColumn<EstimateRow>[] = [
+      ...columns,
+      { key: 'label', header: '表示', type: 'readonly', getValue: (r) => `${r.item}!` },
+    ];
+    render(<Harness cols={cols} onRows={onRows} />);
+    await user.click(getCell('サーバー構築!'));
+    await user.keyboard('{Shift>}{ArrowDown}{/Shift}{Control>}d{/Control}');
+    expect(onRows).not.toHaveBeenCalled();
+    expect(screen.getByText('保守!')).toBeInTheDocument();
+  });
+});
+
 describe('SpreadsheetGrid Undo / Redo', () => {
   it('Ctrl+Z でセル編集が取り消され、Ctrl+Shift+Z でやり直せる', async () => {
     const user = userEvent.setup();
