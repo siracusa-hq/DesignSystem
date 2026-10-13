@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.16.0
+
+### Minor Changes
+
+- f764e56: SpreadsheetGrid に Cmd/Ctrl+D（下へコピー）と Cmd/Ctrl+R（右へコピー）を追加。Excel と同じく範囲の先頭行・列を残りへ写し、1行・1列の範囲なら上・左のセルを写す。入力できないセル・型の合わない値は変えない。
+- 92cb048: SpreadsheetGrid にフィルハンドルを追加。選択範囲の右下のつまみを引っぱると、縦か横（遠いほう）へ範囲を広げて値を繰り返しコピーする（Excel と同じ。連番にはしない）。上・左へも引っぱれ、Undo 1回で戻る。コピーの規則は Cmd/Ctrl+D・R と同じ。
+
 ## 0.15.0
 
 ### Minor Changes
