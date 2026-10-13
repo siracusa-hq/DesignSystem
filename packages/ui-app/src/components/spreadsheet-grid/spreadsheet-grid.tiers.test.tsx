@@ -283,6 +283,34 @@ describe('SpreadsheetGrid 2段セル: コピー & ペースト & クリア', () 
   });
 });
 
+describe('SpreadsheetGrid 2段セル: 下へ・右へコピー', () => {
+  it('複数レコードで Ctrl+D なら、先頭レコードの上段・下段が両方写る', async () => {
+    const user = userEvent.setup();
+    const onRows = vi.fn();
+    render(<Harness onRows={onRows} />);
+    await user.click(getCell('現金'));
+    await user.keyboard('{Shift>}{ArrowDown}{ArrowDown}{/Shift}{Control>}d{/Control}');
+    expect(onRows.mock.calls.at(-1)![0][1]).toMatchObject({
+      debitAccount: '現金',
+      creditAccount: '売上',
+      amount: 6000,
+    });
+  });
+
+  it('1セルで Ctrl+D なら、1つ上のレコードの上下段が写る（Delete と同じくレコード単位）', async () => {
+    const user = userEvent.setup();
+    const onRows = vi.fn();
+    render(<Harness onRows={onRows} />);
+    await user.click(getCell('買掛金'));
+    await user.keyboard('{Control>}d{/Control}');
+    expect(onRows.mock.calls.at(-1)![0][1]).toMatchObject({
+      debitAccount: '現金',
+      creditAccount: '売上',
+      amount: 6000,
+    });
+  });
+});
+
 describe('SpreadsheetGrid 2段セル: 行操作', () => {
   it('行操作（削除）はレコード単位で動く', async () => {
     const user = userEvent.setup();
