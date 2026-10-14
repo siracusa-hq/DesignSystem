@@ -111,6 +111,14 @@ describe('AppShell', () => {
     expect(content?.className).toContain('pb-');
   });
 
+  it('makes the content area the containing block for absolutely positioned descendants', () => {
+    // main が包含ブロックでないと、本文の中の position:absolute な要素（sr-only のラベルなど）が viewport を
+    // 基準に置かれて main の外へ逃げ、文書のスクロール領域を伸ばす（末尾でさらにスクロールすると枠ごと流れる）。
+    renderAppShell();
+    const content = screen.getByText('Main content').closest('main');
+    expect(content).toHaveClass('relative', 'overflow-auto');
+  });
+
   it('merges custom className', () => {
     const { container } = render(
       <AppShell className="custom-shell">
