@@ -65,3 +65,22 @@ export const WithBadges: Story = {
     </DescriptionList>
   ),
 };
+
+export const Vertical: Story = {
+  render: () => (
+    <DescriptionList direction="vertical" className="max-w-md">
+      <DescriptionListItem>
+        <DescriptionListTerm>Name</DescriptionListTerm>
+        <DescriptionListDetails>Haruka Tanaka</DescriptionListDetails>
+      </DescriptionListItem>
+      <DescriptionListItem>
+        <DescriptionListTerm>Email</DescriptionListTerm>
+        <DescriptionListDetails>haruka.tanaka@example.com</DescriptionListDetails>
+      </DescriptionListItem>
+      <DescriptionListItem>
+        <DescriptionListTerm>Role</DescriptionListTerm>
+        <DescriptionListDetails>Product Manager</DescriptionListDetails>
+      </DescriptionListItem>
+    </DescriptionList>
+  ),
+};
