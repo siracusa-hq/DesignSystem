@@ -56,6 +56,25 @@ describe('DescriptionList', () => {
     expect(ref).toHaveBeenCalled();
   });
 
+  it('marks dl as the group/dl that items read their direction from', () => {
+    const { container } = renderList();
+    const dl = container.querySelector('dl');
+    expect(dl?.className).toContain('group/dl');
+    expect(dl).toHaveAttribute('data-direction', 'horizontal');
+  });
+
+  it('sets data-direction to vertical when requested', () => {
+    const { container } = render(
+      <DescriptionList direction="vertical">
+        <DescriptionListItem>
+          <DescriptionListTerm>Term</DescriptionListTerm>
+          <DescriptionListDetails>Details</DescriptionListDetails>
+        </DescriptionListItem>
+      </DescriptionList>,
+    );
+    expect(container.querySelector('dl')).toHaveAttribute('data-direction', 'vertical');
+  });
+
   it('merges custom className', () => {
     const { container } = renderList({ className: 'custom-class' });
     expect(container.querySelector('dl')?.className).toContain('custom-class');

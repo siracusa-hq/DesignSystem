@@ -25,7 +25,9 @@ export const DescriptionList = React.forwardRef<
   <dl
     ref={ref}
     data-direction={direction ?? 'horizontal'}
-    className={cn('divide-y divide-[var(--color-border)]', className)}
+    // 子の DescriptionListItem は group-data-[direction=...]/dl で向きを切り替えるため、
+    // dl 自身に名前付きグループ group/dl が必要
+    className={cn('group/dl divide-y divide-[var(--color-border)]', className)}
     {...props}
   />
 ));
