@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.17.0
+
+### Minor Changes
+
+- 78faa52: `InfoTip` を追加。i アイコンにホバー / フォーカスすると説明を表示し、タッチ端末ではタップで開閉する。説明文向けに、既定は Popover と同じ明るい面（白背景・枠線・影）で表示する。`appearance="inverse"` で Tooltip と同じ黒背景にもできる。
+
 ## 0.16.1
 
 ### Patch Changes
