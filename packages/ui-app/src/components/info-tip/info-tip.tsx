@@ -14,10 +14,21 @@ export interface InfoTipProps extends Omit<
   side?: React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>['side'];
   align?: React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>['align'];
   size?: 'sm' | 'md';
+  /**
+   * 吹き出しの面。既定の `default` は Popover と同じ明るい面。
+   * `inverse` は Tooltip と同じ黒背景で、一言で済む補足や、明るい面だと埋もれる場所に使う
+   */
+  appearance?: 'default' | 'inverse';
   delayDuration?: number;
 }
 
 const iconSize = { sm: 'size-3.5', md: 'size-4' } as const;
+
+const surface = {
+  default:
+    'border border-[var(--color-border)] bg-[var(--color-surface-raised)] text-[var(--color-on-surface)]',
+  inverse: 'bg-[var(--color-tooltip-bg)] text-[var(--color-tooltip-text)]',
+} as const;
 
 /**
  * i アイコンにホバー / フォーカスすると説明を出す。タッチ端末ではタップで開閉する。
@@ -34,6 +45,7 @@ export const InfoTip = React.forwardRef<HTMLButtonElement, InfoTipProps>(
       side = 'top',
       align = 'center',
       size = 'md',
+      appearance = 'default',
       delayDuration = 200,
       className,
       onPointerDown,
@@ -81,7 +93,7 @@ export const InfoTip = React.forwardRef<HTMLButtonElement, InfoTipProps>(
           <TooltipPrimitive.Portal>
             {/*
               Tooltip（黒）はアイコン名などの短いラベル用。InfoTip は説明文を出すので、
-              Popover / DropdownMenu と同じ明るい面に揃える（Material 3 の rich tooltip と同じ考え方）。
+              既定は Popover / DropdownMenu と同じ明るい面に揃える（Material 3 の rich tooltip と同じ考え方）。
               TooltipContent と違い touch:hidden は付けない（タップで開くため）
             */}
             <TooltipPrimitive.Content
@@ -89,7 +101,8 @@ export const InfoTip = React.forwardRef<HTMLButtonElement, InfoTipProps>(
               align={align}
               sideOffset={4}
               className={cn(
-                'z-tooltip max-w-xs rounded-md border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-3 py-2 text-xs leading-relaxed text-[var(--color-on-surface)] shadow-md',
+                'z-tooltip max-w-xs rounded-md px-3 py-2 text-xs leading-relaxed shadow-md',
+                surface[appearance],
                 'animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
                 'data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
               )}

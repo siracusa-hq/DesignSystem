@@ -16,6 +16,7 @@ const meta: Meta<typeof InfoTip> = {
     side: { control: 'select', options: ['top', 'right', 'bottom', 'left'] },
     align: { control: 'select', options: ['start', 'center', 'end'] },
     size: { control: 'inline-radio', options: ['sm', 'md'] },
+    appearance: { control: 'inline-radio', options: ['default', 'inverse'] },
   },
 };
 export default meta;
@@ -78,6 +79,20 @@ export const Sizes: Story = {
       </span>
       <span className="flex items-center gap-1">
         md <InfoTip {...args} size="md" />
+      </span>
+    </div>
+  ),
+};
+
+/** 既定（明るい面）と inverse（Tooltip と同じ黒背景）の見比べ用 */
+export const Appearances: Story = {
+  render: (args) => (
+    <div className="flex items-center gap-10 p-16 text-sm">
+      <span className="flex items-center gap-1">
+        default <InfoTip {...args} label="default の例" />
+      </span>
+      <span className="flex items-center gap-1">
+        inverse <InfoTip {...args} label="inverse の例" appearance="inverse" />
       </span>
     </div>
   ),
