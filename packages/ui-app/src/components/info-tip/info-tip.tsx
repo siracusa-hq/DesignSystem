@@ -2,7 +2,6 @@ import * as React from 'react';
 import * as TooltipPrimitive from '@radix-ui/react-tooltip';
 import { Info } from 'lucide-react';
 import { cn } from '@/lib/cn';
-import { TooltipContent } from '@/components/tooltip';
 
 export interface InfoTipProps extends Omit<
   React.ButtonHTMLAttributes<HTMLButtonElement>,
@@ -79,15 +78,25 @@ export const InfoTip = React.forwardRef<HTMLButtonElement, InfoTipProps>(
           >
             <Info className={iconSize[size]} aria-hidden />
           </TooltipPrimitive.Trigger>
-          <TooltipContent
-            side={side}
-            align={align}
-            // 説明文は複数行になり得るので幅を抑える。
-            // TooltipContent はタッチで非表示だが、InfoTip はタップで開くので表示する
-            className="max-w-xs leading-relaxed touch:block"
-          >
-            {content}
-          </TooltipContent>
+          <TooltipPrimitive.Portal>
+            {/*
+              Tooltip（黒）はアイコン名などの短いラベル用。InfoTip は説明文を出すので、
+              Popover / DropdownMenu と同じ明るい面に揃える（Material 3 の rich tooltip と同じ考え方）。
+              TooltipContent と違い touch:hidden は付けない（タップで開くため）
+            */}
+            <TooltipPrimitive.Content
+              side={side}
+              align={align}
+              sideOffset={4}
+              className={cn(
+                'z-tooltip max-w-xs rounded-md border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-3 py-2 text-xs leading-relaxed text-[var(--color-on-surface)] shadow-md',
+                'animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
+                'data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
+              )}
+            >
+              {content}
+            </TooltipPrimitive.Content>
+          </TooltipPrimitive.Portal>
         </TooltipPrimitive.Root>
       </TooltipPrimitive.Provider>
     );
