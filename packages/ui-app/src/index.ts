@@ -57,6 +57,7 @@ export {
   TooltipContent,
   TooltipProvider,
 } from './components/tooltip';
+export { InfoTip, type InfoTipProps } from './components/info-tip';
 export {
   Toast,
   ToastAction,
