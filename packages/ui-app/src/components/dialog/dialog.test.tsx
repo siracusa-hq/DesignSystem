@@ -7,6 +7,7 @@ import {
   DialogTrigger,
   DialogContent,
   DialogHeader,
+  DialogBody,
   DialogFooter,
   DialogTitle,
   DialogDescription,
@@ -114,6 +115,59 @@ describe('Dialog', () => {
     // Should have mobile full-screen + desktop centered classes
     expect(dialog.className).toContain('inset-0');
     expect(dialog.className).toContain('sm:max-w-lg');
+  });
+
+  it('lays out children with a standard gap', async () => {
+    const user = userEvent.setup();
+    renderDialog();
+
+    await user.click(screen.getByText('Open Dialog'));
+    const dialog = screen.getByRole('dialog');
+    expect(dialog.className).toContain('flex');
+    expect(dialog.className).toContain('flex-col');
+    expect(dialog.className).toContain('gap-6');
+  });
+
+  it('keeps the close button out of the flex flow', async () => {
+    const user = userEvent.setup();
+    renderDialog();
+
+    await user.click(screen.getByText('Open Dialog'));
+    expect(screen.getByRole('button', { name: 'Close' }).className).toContain('absolute');
+  });
+
+  it('keeps footer button order classes', async () => {
+    const user = userEvent.setup();
+    renderDialog();
+
+    await user.click(screen.getByText('Open Dialog'));
+    const footer = screen.getByText('Save').parentElement!;
+    expect(footer.className).toContain('flex-col-reverse');
+    expect(footer.className).toContain('sm:flex-row');
+    expect(footer.className).toContain('sm:justify-end');
+  });
+
+  it('renders DialogBody as a scrollable region', () => {
+    render(
+      <Dialog defaultOpen>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Title</DialogTitle>
+            <DialogDescription>Desc</DialogDescription>
+          </DialogHeader>
+          <DialogBody className="custom-body">Long body</DialogBody>
+          <DialogFooter>
+            <button>OK</button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>,
+    );
+
+    const body = screen.getByText('Long body');
+    expect(body.className).toContain('flex-1');
+    expect(body.className).toContain('min-h-0');
+    expect(body.className).toContain('overflow-y-auto');
+    expect(body.className).toContain('custom-body');
   });
 
   it('passes axe accessibility check', async () => {
