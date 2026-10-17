@@ -35,6 +35,9 @@ export const AlertDialogContent = React.forwardRef<
       className={cn(
         'fixed z-modal bg-[var(--color-surface-raised)] p-6 shadow-xl',
         'focus-visible:outline-none',
+        // Layout: standard gap between header / body / footer.
+        // overflow-y-auto is a fallback when AlertDialogBody is not used.
+        'flex flex-col gap-6 overflow-y-auto',
         // Mobile: full-screen with safe area insets
         'inset-0',
         'pt-[max(1.5rem,env(safe-area-inset-top))]',
@@ -45,6 +48,7 @@ export const AlertDialogContent = React.forwardRef<
         // Desktop: centered modal
         'sm:inset-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2',
         'sm:w-full sm:max-w-lg sm:rounded-xl sm:border sm:border-[var(--color-border)]',
+        'sm:max-h-[calc(100dvh-2rem)]',
         // Animations
         'animate-in fade-in-0',
         'sm:zoom-in-95 sm:slide-in-from-left-1/2 sm:slide-in-from-top-[48%]',
@@ -69,13 +73,29 @@ export const AlertDialogHeader = ({
 );
 AlertDialogHeader.displayName = 'AlertDialogHeader';
 
+/**
+ * Scrollable body between AlertDialogHeader and AlertDialogFooter.
+ * Keeps header and footer pinned while long content scrolls.
+ * `-m-1 p-1` keeps focus rings of edge controls from being clipped.
+ */
+export const AlertDialogBody = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cn('-m-1 min-h-0 flex-1 overflow-y-auto p-1', className)}
+    {...props}
+  />
+);
+AlertDialogBody.displayName = 'AlertDialogBody';
+
 export const AlertDialogFooter = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      'mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end',
+      'flex flex-col-reverse gap-2 sm:flex-row sm:justify-end',
       className,
     )}
     {...props}
