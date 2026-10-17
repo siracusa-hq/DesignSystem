@@ -242,6 +242,10 @@ export interface FilterChipSelectProps
   onRemove?: () => void;
   /** 値が未選択のときに表示するテキスト */
   placeholder?: string;
+  /** すべての候補が選択されているときに表示するテキスト（例: 'すべて'）。未指定なら件数の表示（formatCount）になる */
+  allLabel?: string;
+  /** 3 つ以上選択されているときの表示。既定は `${count} selected`（例: (n) => `${n} 件`） */
+  formatCount?: (count: number) => string;
   /** マウント時にメニューを開く（FilterSelector で軸を追加した直後に値を選ばせる用途） */
   defaultOpen?: boolean;
   className?: string;
@@ -254,6 +258,8 @@ export function FilterChipSelect({
   onSelectedChange,
   onRemove,
   placeholder = 'Any',
+  allLabel,
+  formatCount = (count) => `${count} selected`,
   defaultOpen,
   variant,
   className,
@@ -261,12 +267,16 @@ export function FilterChipSelect({
   const selectedLabels = options
     .filter((opt) => selected.includes(opt.id))
     .map((opt) => opt.label);
+  const allSelected =
+    options.length > 0 && selectedLabels.length === options.length;
   const display =
     selectedLabels.length === 0
       ? placeholder
-      : selectedLabels.length <= 2
-        ? selectedLabels.join(', ')
-        : `${selectedLabels.length} selected`;
+      : allSelected && allLabel
+        ? allLabel
+        : selectedLabels.length <= 2
+          ? selectedLabels.join(', ')
+          : formatCount(selectedLabels.length);
 
   function handleToggle(id: string, checked: boolean) {
     onSelectedChange(

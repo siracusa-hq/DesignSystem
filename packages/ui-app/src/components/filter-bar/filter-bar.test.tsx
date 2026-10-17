@@ -222,6 +222,33 @@ describe('FilterChipSelect', () => {
     expect(screen.getByText('3 selected')).toBeInTheDocument();
   });
 
+  it('shows allLabel when every option is selected', () => {
+    render(
+      <FilterChipSelect
+        label="Role"
+        options={[{ id: 'owner', label: 'Owner' }, { id: 'admin', label: 'Admin' }, { id: 'user', label: 'User' }]}
+        selected={['owner', 'admin', 'user']}
+        onSelectedChange={() => {}}
+        allLabel="すべて"
+      />,
+    );
+    expect(screen.getByText('すべて')).toBeInTheDocument();
+  });
+
+  it('formats the count with formatCount', () => {
+    render(
+      <FilterChipSelect
+        label="Role"
+        options={[{ id: 'owner', label: 'Owner' }, { id: 'admin', label: 'Admin' }, { id: 'user', label: 'User' }, { id: 'guest', label: 'Guest' }]}
+        selected={['owner', 'admin', 'user']}
+        onSelectedChange={() => {}}
+        allLabel="すべて"
+        formatCount={(n) => `${n} 件`}
+      />,
+    );
+    expect(screen.getByText('3 件')).toBeInTheDocument();
+  });
+
   it('opens value menu and adds a value', async () => {
     const user = userEvent.setup();
     const onSelectedChange = vi.fn();
