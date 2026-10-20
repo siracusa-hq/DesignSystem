@@ -173,7 +173,11 @@ export const AppShellContent = React.forwardRef<
     <main
       ref={ref}
       className={cn(
-        'flex-1 overflow-auto',
+        // `relative`: 本文は main の中でスクロールする（ルートは h-dvh）。main を包含ブロックにしないと、
+        // 本文の中の position:absolute な要素（sr-only のラベル・Radix の bubble input など）が viewport を基準に
+        // 置かれて main の外へ逃げ、文書のスクロール領域をその要素の位置まで伸ばす（本文の末尾でさらに
+        // スクロールすると枠ごと上へ流れ、画面の下半分が白くなる）。
+        'relative flex-1 overflow-auto',
         withBottomNav &&
           'pb-[calc(var(--bottom-nav-height)+var(--safe-area-bottom))]',
         className,
