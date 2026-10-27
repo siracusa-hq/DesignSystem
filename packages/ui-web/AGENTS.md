@@ -16,7 +16,7 @@ import '@siracusahq/gtm-design-system/styles.css';
 
 | 軸                | 値                                                                                   | 意味                                       |
 | ----------------- | ------------------------------------------------------------------------------------ | ------------------------------------------ |
-| ブランド `brand`  | `corporate` / `polastack` / `peerdesk` / `peerdesk-taxpeer` / `proofline`            | 誰の顔か。色相と視覚デバイスを決める       |
+| ブランド `brand`  | `corporate` / `polastack` / `peerdesk` / `peerdesk-taxpeer` / `proofline` / `out-reacher` / `ad-operator` / `content-maker` | 誰の顔か。色相と視覚デバイスを決める       |
 | トーン `tone`     | `trust` / `product` / `campaign`                                                     | 何を狙うページか。余白量・装飾量を決める   |
 | ページ型 `pattern` | ランディング型: `product` / `product-portfolio-top` / `lead-gen` / `corporate-top`、コンテンツ型: `case-study-list` / `case-study-detail` / `article-list` / `article-detail` / `resources-library` / `seminar-list` / `seminar-detail` | 構成。セクションの順序と面のリズムを決める |
 
