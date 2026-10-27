@@ -68,3 +68,23 @@ export {
   type BrandEntry,
   type ResolvedBrand,
 } from './brand-registry';
+
+// ---- グラフの色（spec §12 Q15）----
+export {
+  CHART_SLOTS,
+  CHART_HUE_GAP,
+  CHART_ACHROMATIC_C,
+  CHART_SURFACE,
+  CHART_L_BAND,
+  CHART_CHROMA_FLOOR,
+  CHART_MIN_CONTRAST,
+  CHART_CVD_MIN,
+  CHART_NORMAL_MIN,
+  CHART_POOL,
+  chartDeltaE,
+  checkCategorical,
+  chartPaletteFor,
+  type ChartMode,
+  type ChartCheck,
+  type ChartPalette,
+} from './chart';

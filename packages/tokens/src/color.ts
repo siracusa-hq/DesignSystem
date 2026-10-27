@@ -36,9 +36,14 @@ export function rgbToHex(rgb: Rgb): string {
 }
 
 const toLinear = (c: number) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+
+/** '#rrggbb' -> linear sRGB [0..1]^3 */
+export function hexToLinear(hex: string): Rgb {
+  return hexToRgb(hex).map(toLinear) as Rgb;
+}
 const toGamma = (c: number) => (c <= 0.0031308 ? c * 12.92 : 1.055 * c ** (1 / 2.4) - 0.055);
 
-function linearToOklab([r, g, b]: Rgb): [number, number, number] {
+export function linearToOklab([r, g, b]: Rgb): [number, number, number] {
   const l = 0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b;
   const m = 0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b;
   const s = 0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b;

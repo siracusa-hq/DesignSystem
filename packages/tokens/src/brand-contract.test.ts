@@ -29,6 +29,7 @@ import {
   stepLightness,
 } from './ramp';
 import { registry, resolveAllBrands } from './brand-registry';
+import { chartPaletteFor } from './chart';
 
 const brands = resolveAllBrands();
 const contractL = Object.fromEntries(STEPS.map((s) => [s.step, s.L]));
@@ -203,19 +204,31 @@ describe('(e2) 業務 UI（ui-app）の生成 CSS とレジストリの同期', 
     return css.slice(i, css.indexOf('}', i));
   };
   for (const b of brands) {
-    it(`${b.key}: primary の段・グラフの 1 色目がブランドのランプ（コーポレートは既定の primary）`, () => {
+    it(`${b.key}: primary の段がブランドのランプ（コーポレートは既定の primary）・グラフの色が chartPaletteFor`, () => {
       const light = block(`[data-brand='${b.dataBrand}']`);
       for (const step of STEP_VALUES) {
         const expected = b.key === 'corporate' ? primary[step as keyof typeof primary] : b.ramp[step];
         expect(light, `${b.key} primary-${step}`).toContain(`--color-primary-${step}: ${expected};`);
       }
-      expect(light).toContain(`--color-chart-1: ${b.key === 'corporate' ? primary[500] : b.ramp[500]};`);
+      const chart = chartPaletteFor(b.ramp[500]);
+      chart.light.forEach((hex, i) => expect(light, `${b.key} chart-${i + 1}`).toContain(`--color-chart-${i + 1}: ${hex};`));
+      chart.lightSubtle.forEach((hex, i) => expect(light).toContain(`--color-chart-${i + 1}-subtle: ${hex};`));
+      const dark = block(`.dark${`[data-brand='${b.dataBrand}']`},\n.dark [data-brand='${b.dataBrand}'],\n[data-brand='${b.dataBrand}'] .dark`);
+      chart.dark.forEach((hex, i) => expect(dark, `${b.key} dark chart-${i + 1}`).toContain(`--color-chart-${i + 1}: ${hex};`));
       for (const v of ['--color-surface-accent', '--color-bg-brand-deep', '--color-decor-brand', '--color-decor-brand-strong', '--color-text-brand-on-dark']) {
         expect(light, `${b.key} ${v}`).toContain(`${v}:`);
       }
       expect(css).toContain(`.dark[data-brand='${b.dataBrand}'],`);
     });
   }
+  it('グラフの色の既定（:root・.dark）はコーポレートと同じ', () => {
+    const corp = chartPaletteFor(brands.find((b) => b.key === 'corporate')!.ramp[500]);
+    const i = css.indexOf('/* グラフの色の既定');
+    const root = css.slice(css.indexOf(':root {', i), css.indexOf('}', css.indexOf(':root {', i)));
+    const dark = css.slice(css.indexOf('.dark {', i), css.indexOf('}', css.indexOf('.dark {', i)));
+    corp.light.forEach((hex, n) => expect(root).toContain(`--color-chart-${n + 1}: ${hex};`));
+    corp.dark.forEach((hex, n) => expect(dark).toContain(`--color-chart-${n + 1}: ${hex};`));
+  });
 });
 
 describe('(f) :root 凍結ガード — ブランド追従すべき変数が :root にだけ宣言されていない', () => {

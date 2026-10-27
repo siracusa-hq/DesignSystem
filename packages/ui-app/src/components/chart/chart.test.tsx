@@ -1,5 +1,8 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { chartColors } from '@/tokens/chart-theme';
 import {
   getChartColors,
   getChartSubtleColors,
@@ -21,6 +24,15 @@ describe('getChartColors', () => {
     const colors = getChartColors();
     expect(colors).toHaveLength(5);
     colors.forEach((c) => expect(c).toMatch(/^var\(--color-chart-\d\)$/));
+  });
+});
+
+describe('chartColors.hex', () => {
+  it('既定（コーポレート）の明るい画面の値が generated-brand.css の :root と同じ', () => {
+    const css = readFileSync(resolve(__dirname, '../../styles/generated-brand.css'), 'utf8');
+    const i = css.indexOf(':root {', css.indexOf('/* グラフの色の既定'));
+    const root = css.slice(i, css.indexOf('}', i));
+    chartColors.hex.categorical.forEach((hex, n) => expect(root).toContain(`--color-chart-${n + 1}: ${hex};`));
   });
 });
 
