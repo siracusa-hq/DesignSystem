@@ -12,66 +12,66 @@
    ============================================================ */
 
 :root {
-  /* コーポレート（Siracusa） — explicit */
-  --ramp-corporate-50: #e0f2f1;
-  --ramp-corporate-100: #b2dfdb;
-  --ramp-corporate-200: #80cbc4;
-  --ramp-corporate-300: #13c3a0;
-  --ramp-corporate-400: #26a69a;
+  /* コーポレート（Siracusa） */
+  --ramp-corporate-50: #e0f4ef;
+  --ramp-corporate-100: #b4e3d9;
+  --ramp-corporate-200: #80d3c3;
+  --ramp-corporate-300: #15c2ab;
+  --ramp-corporate-400: #10a692;
   --ramp-corporate-500: #008575;
-  --ramp-corporate-600: #007567;
-  --ramp-corporate-700: #006055;
-  --ramp-corporate-800: #004c43;
-  --ramp-corporate-900: #003831;
-  --ramp-corporate-950: #00231f;
-  /* Polastack（Enterprise Agent Stack） — generated */
+  --ramp-corporate-600: #087567;
+  --ramp-corporate-700: #056054;
+  --ramp-corporate-800: #034c42;
+  --ramp-corporate-900: #023830;
+  --ramp-corporate-950: #01231e;
+  /* Polastack（Enterprise Agent Stack） */
   --ramp-polastack-50: #e7efff;
   --ramp-polastack-100: #c6d8fd;
   --ramp-polastack-200: #a4c0fe;
   --ramp-polastack-300: #7da5fd;
   --ramp-polastack-400: #678cdf;
   --ramp-polastack-500: #2f4989;
-  --ramp-polastack-600: #48629e;
-  --ramp-polastack-700: #3a5083;
-  --ramp-polastack-800: #2d3f68;
-  --ramp-polastack-900: #202e4e;
-  --ramp-polastack-950: #121c33;
-  /* Proofline — generated */
+  --ramp-polastack-600: #284078;
+  --ramp-polastack-700: #1f3363;
+  --ramp-polastack-800: #17274e;
+  --ramp-polastack-900: #0f1c3a;
+  --ramp-polastack-950: #070f24;
+  /* Proofline */
   --ramp-proofline-50: #dff2fa;
   --ramp-proofline-100: #b3e0f2;
   --ramp-proofline-200: #7eceec;
   --ramp-proofline-300: #14b8e7;
   --ramp-proofline-400: #0f9ec6;
   --ramp-proofline-500: #06617c;
-  --ramp-proofline-600: #086f8c;
-  --ramp-proofline-700: #055b74;
-  --ramp-proofline-800: #03485c;
-  --ramp-proofline-900: #023545;
-  --ramp-proofline-950: #01212c;
-  /* ピアデスク シリーズ — explicit */
-  --ramp-peerdesk-50: #f3eff6;
+  --ramp-proofline-600: #04556c;
+  --ramp-proofline-700: #034559;
+  --ramp-proofline-800: #023646;
+  --ramp-proofline-900: #012734;
+  --ramp-proofline-950: #001720;
+  /* ピアデスク シリーズ */
+  --ramp-peerdesk-50: #efeef0;
   --ramp-peerdesk-100: #d9d6db;
   --ramp-peerdesk-200: #c3bfc7;
   --ramp-peerdesk-300: #aca4b1;
-  --ramp-peerdesk-400: #928c98;
+  --ramp-peerdesk-400: #928d97;
   --ramp-peerdesk-500: #4a464e;
-  --ramp-peerdesk-600: #3a363e;
-  --ramp-peerdesk-700: #545057;
-  --ramp-peerdesk-800: #423f45;
-  --ramp-peerdesk-900: #353139;
-  --ramp-peerdesk-950: #1e1c1f;
-  /* タックスピア — explicit */
-  --ramp-peerdesk-taxpeer-50: #eaf3ec;
+  --ramp-peerdesk-600: #403d44;
+  --ramp-peerdesk-700: #343137;
+  --ramp-peerdesk-800: #28262a;
+  --ramp-peerdesk-900: #1c1a1e;
+  --ramp-peerdesk-950: #0f0e11;
+  /* タックスピア */
+  --ramp-peerdesk-taxpeer-50: #e6f2e9;
   --ramp-peerdesk-taxpeer-100: #c3e0cc;
   --ramp-peerdesk-taxpeer-200: #9dcfaf;
   --ramp-peerdesk-taxpeer-300: #6abc8b;
   --ramp-peerdesk-taxpeer-400: #5aa176;
   --ramp-peerdesk-taxpeer-500: #2f6847;
-  --ramp-peerdesk-taxpeer-600: #3e7152;
-  --ramp-peerdesk-taxpeer-700: #325d43;
-  --ramp-peerdesk-taxpeer-800: #1d4630;
-  --ramp-peerdesk-taxpeer-900: #1b3626;
-  --ramp-peerdesk-taxpeer-950: #0f2216;
+  --ramp-peerdesk-taxpeer-600: #285b3e;
+  --ramp-peerdesk-taxpeer-700: #1f4a32;
+  --ramp-peerdesk-taxpeer-800: #173a26;
+  --ramp-peerdesk-taxpeer-900: #0f2a1a;
+  --ramp-peerdesk-taxpeer-950: #07190e;
 }
 
 /* ============================================================
@@ -98,8 +98,8 @@
   --color-decor-brand: var(--ramp-corporate-300);
   --color-decor-brand-soft: var(--ramp-corporate-200);
   --color-on-brand: #ffffff;
-  --shadow-glow-brand: 0 0 24px rgb(19 195 160 / 0.25);
-  --shadow-glow-brand-lg: 0 0 48px rgb(19 195 160 / 0.3);
+  --shadow-glow-brand: 0 0 24px rgb(21 194 171 / 0.25);
+  --shadow-glow-brand-lg: 0 0 48px rgb(21 194 171 / 0.3);
 }
 
 /* CTA 専用アクセント（第3のオプション役割）。既定は操作色へのフォールバック。
@@ -132,16 +132,16 @@
   --color-decor-brand: var(--ramp-corporate-300);
   --color-decor-brand-soft: var(--ramp-corporate-200);
   --color-on-brand: #ffffff;
-  --shadow-glow-brand: 0 0 24px rgb(19 195 160 / 0.25);
-  --shadow-glow-brand-lg: 0 0 48px rgb(19 195 160 / 0.3);
+  --shadow-glow-brand: 0 0 24px rgb(21 194 171 / 0.25);
+  --shadow-glow-brand-lg: 0 0 48px rgb(21 194 171 / 0.3);
 }
 
 [data-brand='polastack'] {
   --color-bg-brand-subtle: var(--ramp-polastack-50);
   --color-bg-brand-muted: var(--ramp-polastack-100);
   --color-bg-brand-primary: var(--ramp-polastack-500);
-  --color-bg-brand-hover: var(--ramp-polastack-700);
-  --color-bg-brand-active: var(--ramp-polastack-800);
+  --color-bg-brand-hover: var(--ramp-polastack-600);
+  --color-bg-brand-active: var(--ramp-polastack-700);
   --color-bg-brand-strong: var(--ramp-polastack-800);
   --color-text-brand: var(--ramp-polastack-500);
   --color-text-brand-strong: var(--ramp-polastack-700);
@@ -160,8 +160,8 @@
   --color-bg-brand-subtle: var(--ramp-proofline-50);
   --color-bg-brand-muted: var(--ramp-proofline-100);
   --color-bg-brand-primary: var(--ramp-proofline-500);
-  --color-bg-brand-hover: var(--ramp-proofline-700);
-  --color-bg-brand-active: var(--ramp-proofline-800);
+  --color-bg-brand-hover: var(--ramp-proofline-600);
+  --color-bg-brand-active: var(--ramp-proofline-700);
   --color-bg-brand-strong: var(--ramp-proofline-800);
   --color-text-brand: var(--ramp-proofline-500);
   --color-text-brand-strong: var(--ramp-proofline-700);
@@ -181,7 +181,7 @@
   --color-bg-brand-muted: var(--ramp-peerdesk-100);
   --color-bg-brand-primary: var(--ramp-peerdesk-500);
   --color-bg-brand-hover: var(--ramp-peerdesk-600);
-  --color-bg-brand-active: var(--ramp-peerdesk-900);
+  --color-bg-brand-active: var(--ramp-peerdesk-700);
   --color-bg-brand-strong: var(--ramp-peerdesk-800);
   --color-text-brand: var(--ramp-peerdesk-500);
   --color-text-brand-strong: var(--ramp-peerdesk-700);
@@ -200,8 +200,8 @@
   --color-bg-brand-subtle: var(--ramp-peerdesk-taxpeer-50);
   --color-bg-brand-muted: var(--ramp-peerdesk-taxpeer-100);
   --color-bg-brand-primary: var(--ramp-peerdesk-taxpeer-500);
-  --color-bg-brand-hover: var(--ramp-peerdesk-taxpeer-700);
-  --color-bg-brand-active: var(--ramp-peerdesk-taxpeer-800);
+  --color-bg-brand-hover: var(--ramp-peerdesk-taxpeer-600);
+  --color-bg-brand-active: var(--ramp-peerdesk-taxpeer-700);
   --color-bg-brand-strong: var(--ramp-peerdesk-taxpeer-800);
   --color-text-brand: var(--ramp-peerdesk-taxpeer-500);
   --color-text-brand-strong: var(--ramp-peerdesk-taxpeer-700);

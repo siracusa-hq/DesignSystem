@@ -20,17 +20,17 @@
      500 が white text 4.55:1 で AA pass するため、操作 UI に
      primary-500 を直接適用できる。
      -------------------------------------------------------- */
-  --color-primary-50: #e0f2f1;
-  --color-primary-100: #b2dfdb;
-  --color-primary-200: #80cbc4;
+  --color-primary-50: #e0f4ef;
+  --color-primary-100: #b4e3d9;
+  --color-primary-200: #80d3c3;
   --color-primary-300: #4db6ac;
-  --color-primary-400: #26a69a;
+  --color-primary-400: #10a692;
   --color-primary-500: #008575;
-  --color-primary-600: #007567;
-  --color-primary-700: #006055;
-  --color-primary-800: #004c43;
-  --color-primary-900: #003831;
-  --color-primary-950: #00231f;
+  --color-primary-600: #087567;
+  --color-primary-700: #056054;
+  --color-primary-800: #034c42;
+  --color-primary-900: #023830;
+  --color-primary-950: #01231e;
 
   /* --------------------------------------------------------
      Colors: Neutral (Zinc系)

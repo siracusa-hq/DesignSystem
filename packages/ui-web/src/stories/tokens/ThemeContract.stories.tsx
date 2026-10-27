@@ -125,11 +125,11 @@ function SlotShowcase() {
 function BrandSection({
   dataBrand,
   label,
-  mode,
+  anchors,
 }: {
   dataBrand: string;
   label: string;
-  mode: string;
+  anchors: string;
 }) {
   const ramp = brands.find((b) => b.dataBrand === dataBrand)!.ramp;
   return (
@@ -137,7 +137,7 @@ function BrandSection({
       <div className="flex items-baseline gap-3">
         <h3 className="text-heading-md font-semibold text-[var(--color-on-surface)]">{label}</h3>
         <code className="text-caption text-[var(--color-on-surface-muted)]">
-          data-brand=&quot;{dataBrand}&quot;（{mode}）
+          data-brand=&quot;{dataBrand}&quot;（固定する段: {anchors}）
         </code>
       </div>
       {/* ランプ実体（層2） */}
@@ -182,7 +182,7 @@ function ThemeContractStory() {
           key={b.dataBrand}
           dataBrand={b.dataBrand}
           label={b.entry.label}
-          mode={b.entry.mode}
+          anchors={Object.keys(b.entry.anchors ?? {}).join('・') || 'なし'}
         />
       ))}
 

@@ -51,7 +51,7 @@ const brands = resolveAllBrands();
 function rampsBlock() {
   const lines = [':root {'];
   for (const b of brands) {
-    lines.push(`  /* ${b.entry.label} — ${b.entry.mode} */`);
+    lines.push(`  /* ${b.entry.label} */`);
     for (const step of STEP_VALUES) {
       lines.push(`  --ramp-${b.key}-${step}: ${b.ramp[step]};`);
     }
@@ -68,10 +68,9 @@ function slotLines(b) {
       lines.push(`  ${slot.name}: ${slot.fixed};`);
       continue;
     }
-    const step = b.entry.slotOverrides?.[slot.name] ?? slot.step;
-    lines.push(`  ${slot.name}: var(--ramp-${b.key}-${step});`);
+    lines.push(`  ${slot.name}: var(--ramp-${b.key}-${slot.step});`);
   }
-  const decorStep = b.entry.slotOverrides?.['--color-decor-brand'] ?? 300;
+  const decorStep = 300;
   const glowRgb = hexToRgbTriplet(b.ramp[decorStep]);
   lines.push(`  --shadow-glow-brand: 0 0 24px rgb(${glowRgb} / 0.25);`);
   lines.push(`  --shadow-glow-brand-lg: 0 0 48px rgb(${glowRgb} / 0.3);`);

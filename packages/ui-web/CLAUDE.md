@@ -43,7 +43,7 @@ Web/LP は**装飾表現が多い**ため、`primary` と `brand` の使い分�
   - `MarketingButton` の背景、リンク、フォーカスリング、オーバーライン文字
   - 白文字 4.55:1 で WCAG AA 適合
   - グラデーションボタンは `from-primary-600 to-primary-500` の範囲に収めること。
-    `primary-400`（`#26a69a`）は白文字 3.0:1 で **AA を満たさない**
+    `primary-400`（`#10a692`）は白文字 3.05:1 で **AA を満たさない**
 - **`brand`（`#13c3a0`）… 装飾用**
   - グラデーション停止点、グロー、`Divider variant="brand"` のヘアライン、
     薄い面（`from-brand-50`）、ボーダーの淡いティント

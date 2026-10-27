@@ -7,12 +7,17 @@
  * 設計の核:
  *   1. L（明度）は段ごとに固定。色相によって絶対に変えない
  *      → 「同一トーン・色相違い」を機械的に成立させる唯一の装置
+ *      例外は 500 より暗い側（600〜950）だけ: 操作段（500）を深く置くブランド（deep 型）や、
+ *      公開済みの決定色を固定する段（anchors）があるときは、500 の実際の L と暗い側のアンカーを通る
+ *      折れ線で契約 L を写し、**段の数字が大きいほど暗い**を必ず保つ（2026-10-27。spec §12 Q13）
+ *   1b. 公開済みの決定色（ロゴ・公開サイトで使っている色）は anchors でその段に固定する。
+ *      固定した段は生成せず、その hex をそのまま使う
  *   2. C（彩度）はブランドごとの倍率（chromaScale）×段の上限。ただし
  *      その (L,H) で sRGB に収まる最大彩度 × GAMUT_SAFETY を超えない
  *   3. 操作段（500）は白文字 4.5:1 を必ず満たす（AA を彩度・明度の見た目より優先）
  */
 
-import { contrastRatio, maxChroma, oklchToHex } from './color';
+import { contrastRatio, hexToOklch, maxChroma, oklchToHex } from './color';
 
 export const STEP_VALUES = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950] as const;
 export type Step = (typeof STEP_VALUES)[number];
@@ -38,11 +43,6 @@ export const DECOR_STEP: Step = 300;
 /** 操作段が保証しなければならない白文字コントラスト */
 export const ACTION_MIN_CONTRAST = 4.5;
 
-/**
- * explicit 登録の L 許容差。実測（現行コーポレートランプの最大乖離 0.0188）から決定。
- * これを超える段は deviations に理由を明記しなければならない。
- */
-export const EXPLICIT_L_TOLERANCE = 0.02;
 
 /**
  * 彩度を色域最大の何割までに抑えるか。
@@ -59,7 +59,7 @@ export const ACTION_CHROMA_BAND = { min: 0.06, max: 0.15 } as const;
 /**
  * 生成ブランドの操作段 L 帯。
  * 下限 0.42 は Polastack 濃紺決定（2026-08-04）で拡大した。
- * 家族の実測レンジは explicit 込みで 0.40（ピアデスク）〜0.553（コーポレート）であり、
+ * 家族の実測レンジは 0.40（ピアデスク）〜0.553（コーポレート）であり、
  * 深い操作色は白文字コントラストが増える方向のため AA は常に満たす。
  */
 export const ACTION_L_BAND = { min: 0.42, max: 0.553 } as const;
@@ -71,6 +71,36 @@ export interface GenerateRampOptions {
   actionL?: number;
   /** 段ごとの色相オフセット（度）。通常は使わない */
   hueShift?: Partial<Record<Step, number>>;
+  /** 公開済みの決定色を固定する段（例: { 500: '#008575' }）。固定した段は生成しない */
+  anchors?: Partial<Record<Step, string>>;
+}
+
+/**
+ * 段の L を決める。500 以下（明るい側）は契約 L のまま。500 より暗い側は、
+ * (契約 L, 実際の L) の点 — 500・暗い側のアンカー・(0, 0) — を通る折れ線で写す。
+ * 点の実際の L が単調に減らない（アンカーの並びが崩れている）なら例外を投げる。
+ */
+export function stepLightness(L500: number, anchors: Partial<Record<Step, string>> = {}): Record<Step, number> {
+  const action = STEPS.find((s) => s.step === ACTION_STEP)!.L;
+  const pts: [number, number][] = [[action, L500], [0, 0]];
+  for (const { step, L } of STEPS) {
+    const hex = anchors[step];
+    if (hex && step > ACTION_STEP) pts.push([L, hexToOklch(hex).L]);
+  }
+  pts.sort((a, b) => b[0] - a[0]);
+  for (let i = 1; i < pts.length; i++) {
+    if (pts[i]![1] >= pts[i - 1]![1]) throw new Error(`アンカーの明るさが段の順に暗くなっていない: ${JSON.stringify(pts)}`);
+  }
+  const map = (L: number) => {
+    if (L >= action) return L;
+    for (let i = 1; i < pts.length; i++) {
+      const [x0, y0] = pts[i - 1]!;
+      const [x1, y1] = pts[i]!;
+      if (L <= x0 && L >= x1) return y1 + ((y0 - y1) * (L - x1)) / (x0 - x1);
+    }
+    return L;
+  };
+  return Object.fromEntries(STEPS.map(({ step, L }) => [step, map(L)])) as Record<Step, number>;
 }
 
 export interface RampResult {
@@ -87,13 +117,24 @@ export interface RampResult {
 export function generateRamp(hue: number, opts: GenerateRampOptions = {}): RampResult {
   const chromaScale = opts.chromaScale ?? 1;
   const shift = opts.hueShift ?? {};
+  const anchors = opts.anchors ?? {};
   const steps = {} as Record<Step, string>;
   const meta = {} as RampResult['meta'];
   const notes: string[] = [];
+  const actionAnchor = anchors[ACTION_STEP];
+  const L500 = actionAnchor ? hexToOklch(actionAnchor).L : (opts.actionL ?? STEPS.find((s) => s.step === ACTION_STEP)!.L);
+  const lightness = stepLightness(L500, anchors);
 
-  for (const { step, L: baseL, cCeil } of STEPS) {
+  for (const { step, cCeil } of STEPS) {
+    const fixed = anchors[step];
+    if (fixed) {
+      const o = hexToOklch(fixed);
+      steps[step] = fixed.toLowerCase();
+      meta[step] = { L: o.L, C: o.C, H: o.H, gamutLimited: false, loweredForContrast: 0 };
+      continue;
+    }
     const hueAt = (((hue + (shift[step] ?? 0)) % 360) + 360) % 360;
-    let L = step === ACTION_STEP && opts.actionL !== undefined ? opts.actionL : baseL;
+    let L = step === ACTION_STEP && opts.actionL !== undefined ? opts.actionL : lightness[step];
     const cTarget = cCeil * chromaScale;
     let loweredForContrast = 0;
 
