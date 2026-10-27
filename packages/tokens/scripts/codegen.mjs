@@ -5,9 +5,10 @@
  * 出力:
  *   packages/tokens/css/brand.css                     骨格 + ランプ + スロット（全置換）
  *   packages/ui-web/src/styles/generated-brand.css    ランプ + スロット
+ *   packages/ui-app/src/styles/generated-brand.css    業務 UI のブランド（primary の段・選択中の面・グラフの 1 色目・装飾）
  *
- * ui-app（業務システムUI）には出力しない（spec §12 Q10: 当面コーポレート固定・スコープ外。
- * また装飾色を業務UIに公開しない原則（ルート CLAUDE.md）に反するため）。
+ * 業務 UI（ui-app）は 2026-10-27 にブランドを持つようにした（spec §12 Q10 改定）。部品は primary の段を
+ * 直接参照しているので、[data-brand] で primary の段そのものを入れ替える（段の並びは Q13 で全ブランド統一済み）。
  *
  * 実行: pnpm --filter @siracusahq/tokens codegen（ルートからは pnpm codegen）
  */
@@ -176,9 +177,64 @@ const uiCss = [BANNER('テーマ契約（ブランドランプ + 抽象スロッ
   '\n',
 );
 
+// ---- 業務 UI（ui-app）: [data-brand] で primary の段と、それに続いて決まる色を入れ替える ----
+const hexToRgb = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+/** a を t の割合で b に混ぜる（semantic.css の選択中の面と同じ作り方） */
+const mix = (a, b, t) => '#' + hexToRgb(a).map((x, i) => Math.round(x * t + hexToRgb(b)[i] * (1 - t)).toString(16).padStart(2, '0')).join('');
+const DARK_SURFACE = '#121215';
+/**
+ * ブランドごとの値。コーポレートは既定（:root の tokens.css・semantic.css）と同じ値にする（入れ子で切り替えても既定に戻れるように）。
+ * 装飾（ログインの画面の地・光・文字など）のコーポレートの値は、従来どおり装飾用の brand スケール。
+ */
+function appValues(b) {
+  const corp = b.key === DEFAULT_BRAND;
+  const r = b.ramp;
+  return {
+    light: {
+      ...Object.fromEntries(STEP_VALUES.map((s) => [`--color-primary-${s}`, corp ? colors.primary[s] : r[s]])),
+      '--color-surface-accent': corp ? '#E6F3F2' : mix(r[500], '#ffffff', 0.1),
+      '--color-chart-1': corp ? colors.primary[500] : r[500],
+      '--color-chart-1-subtle': corp ? colors.primary[50] : r[50],
+      '--color-bg-brand-deep': corp ? colors.brand[950] : r[950],
+      '--color-decor-brand': corp ? colors.brand[500] : r[300],
+      '--color-decor-brand-strong': corp ? colors.brand[700] : r[700],
+      '--color-text-brand-on-dark': corp ? colors.brand[300] : r[200],
+    },
+    dark: {
+      '--color-surface-accent': corp ? '#0E2926' : mix(r[500], DARK_SURFACE, 0.2),
+      '--color-chart-1': corp ? colors.primary[300] : r[300],
+      '--color-chart-1-subtle': corp ? colors.primary[900] : r[900],
+    },
+  };
+}
+const decl = (o) => Object.entries(o).map(([k, v]) => `  ${k}: ${v};`).join('\n');
+const appCss = [
+  BANNER('業務 UI（ui-app）のブランド — data-brand で primary の段・選択中の面・グラフの 1 色目・装飾を切り替える'),
+  '',
+  '/* 装飾の既定（data-brand なし = コーポレート）。装飾色は濃い地の上の飾り（ログインの画面の地・光・アイコン・濃い地の文字）に使う。',
+  '   白い地の上の文字・ボタンには使わない（コントラストが足りない）。 */',
+  ':root {',
+  decl(Object.fromEntries(Object.entries(appValues(brands.find((b) => b.key === DEFAULT_BRAND)).light).filter(([k]) => !k.startsWith('--color-primary-') && !k.startsWith('--color-chart') && k !== '--color-surface-accent'))),
+  '}',
+  '',
+  ...brands.flatMap((b) => {
+    const v = appValues(b);
+    const sel = `[data-brand='${b.dataBrand}']`;
+    return [
+      `/* ${b.entry.label} */`,
+      `${sel} {\n${decl(v.light)}\n}`,
+      // ダークモード: .dark と data-brand が同じ要素にあっても、親子どちらにあっても効くように
+      `.dark${sel},\n.dark ${sel},\n${sel} .dark {\n${decl(v.dark)}\n}`,
+      '',
+    ];
+  }),
+].join('\n');
+
 writeFileSync(resolve(tokensRoot, 'css/brand.css'), brandCss);
+writeFileSync(resolve(repoRoot, 'packages/ui-app/src/styles/generated-brand.css'), appCss);
 writeFileSync(resolve(repoRoot, 'packages/ui-web/src/styles/generated-brand.css'), uiCss);
 
 console.log(`codegen: ${brands.length} ブランドを出力（${brands.map((b) => b.key).join(', ')}）`);
 console.log('  - packages/tokens/css/brand.css');
 console.log('  - packages/ui-web/src/styles/generated-brand.css');
+console.log('  - packages/ui-app/src/styles/generated-brand.css');

@@ -1,7 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import { axe } from 'vitest-axe';
-import { brand } from '@siracusahq/tokens';
 import { AuthLayout, AuthLayoutForm, AuthLayoutVisual } from './auth-layout';
 import {
   AuthVisualContent,
@@ -39,9 +38,9 @@ describe('AuthVisualContent', () => {
     expect(screen.getAllByRole('listitem')).toHaveLength(2);
   });
 
-  it('colors the accent with brand[300]', () => {
+  it('colors the accent with the brand on-dark text color', () => {
     renderPromo();
-    expect(screen.getByText('自動で終わらせる。')).toHaveStyle({ color: brand[300] });
+    expect(screen.getByText('自動で終わらせる。')).toHaveStyle({ color: 'var(--color-text-brand-on-dark)' });
   });
 
   it('renders a default check icon per feature, hidden from a11y tree', () => {

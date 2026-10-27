@@ -1,16 +1,13 @@
 import * as React from 'react';
 import { CheckCircle2 } from 'lucide-react';
-import { brand } from '@siracusahq/tokens';
 import { cn } from '@/lib/cn';
 
 /**
  * AuthLayoutVisual の中に置く製品訴求コンテンツ。
  * タイトル・アクセント・説明・特徴リストを compound で組み立てる。
  *
- * 文字色・アイコン色には装飾用 `brand` スケール（@siracusahq/tokens）を直接使う。
- * AuthLayoutVisual の暗色背景（brand[950]）上でのみ使う前提であり、
- * ui-app のテーマ変数としては brand を公開しない方針のため、
- * この定数参照をテーマ変数（--color-brand-*）に置き換えないこと。
+ * 文字色・アイコン色・光はブランドの装飾色（--color-text-brand-on-dark・--color-decor-brand・--color-decor-brand-strong）。
+ * data-brand でブランドに合わせて切り替わる（2026-10-27）。AuthLayoutVisual の濃い地（--color-bg-brand-deep）の上で使う前提。
  */
 
 /* ----- AuthVisualContent ----- */
@@ -66,7 +63,8 @@ export const AuthVisualBackdrop = React.forwardRef<HTMLDivElement, AuthVisualBac
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage: `radial-gradient(48rem 48rem at 88% -12%, ${brand[500]}40, transparent 68%), radial-gradient(52rem 52rem at -18% 112%, ${brand[700]}59, transparent 70%)`,
+            backgroundImage:
+              'radial-gradient(48rem 48rem at 88% -12%, color-mix(in srgb, var(--color-decor-brand) 25%, transparent), transparent 68%), radial-gradient(52rem 52rem at -18% 112%, color-mix(in srgb, var(--color-decor-brand-strong) 35%, transparent), transparent 70%)',
           }}
         />
       )}
@@ -97,7 +95,7 @@ export interface AuthVisualAccentProps extends React.HTMLAttributes<HTMLSpanElem
 /** タイトル内の強調語。暗色背景上でのみコントラストが成立する */
 export const AuthVisualAccent = React.forwardRef<HTMLSpanElement, AuthVisualAccentProps>(
   ({ style, ...props }, ref) => (
-    <span ref={ref} style={{ color: brand[300], ...style }} {...props} />
+    <span ref={ref} style={{ color: 'var(--color-text-brand-on-dark)', ...style }} {...props} />
   ),
 );
 AuthVisualAccent.displayName = 'AuthVisualAccent';
@@ -137,7 +135,7 @@ AuthVisualFeatures.displayName = 'AuthVisualFeatures';
 /* ----- AuthVisualFeature ----- */
 
 export interface AuthVisualFeatureProps extends React.HTMLAttributes<HTMLLIElement> {
-  /** 行頭アイコン。既定は CheckCircle2（brand[400]） */
+  /** 行頭アイコン。既定は CheckCircle2（ブランドの装飾色） */
   icon?: React.ReactNode;
 }
 
@@ -151,7 +149,7 @@ export const AuthVisualFeature = React.forwardRef<HTMLLIElement, AuthVisualFeatu
       {icon ?? (
         <CheckCircle2
           className="h-4 w-4 shrink-0"
-          style={{ color: brand[400] }}
+          style={{ color: 'var(--color-decor-brand)' }}
           aria-hidden="true"
         />
       )}
@@ -251,7 +249,7 @@ export const AuthVisualStat = React.forwardRef<HTMLDivElement, AuthVisualStatPro
       )}
       {...props}
     >
-      <span className="font-semibold" style={{ color: brand[300] }}>
+      <span className="font-semibold" style={{ color: 'var(--color-text-brand-on-dark)' }}>
         {value}
       </span>
       {label && <span className="text-white/70">{label}</span>}

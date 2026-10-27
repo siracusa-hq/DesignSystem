@@ -140,8 +140,7 @@ describe('(d) 公開済みの現行色とのドリフト検出', () => {
 });
 
 describe('(e) 生成 CSS とレジストリの同期', () => {
-  // ui-app には出力しない（spec §12 Q10: スコープ外・コーポレート固定。
-  // 装飾色を業務UIに公開しない原則にも反するため）
+  // ui-app はランプではなく primary の段を入れ替える別の形で出力する（下の (e2)。spec §12 Q10 改定 2026-10-27）
   const cssFiles = [
     resolve(__dirname, '../css/brand.css'),
     resolve(__dirname, '../../ui-web/src/styles/generated-brand.css'),
@@ -194,6 +193,29 @@ describe('(e) 生成 CSS とレジストリの同期', () => {
       }
     }
   });
+});
+
+describe('(e2) 業務 UI（ui-app）の生成 CSS とレジストリの同期', () => {
+  const css = readFileSync(resolve(__dirname, '../../ui-app/src/styles/generated-brand.css'), 'utf8');
+  const block = (sel: string) => {
+    const i = css.indexOf(`${sel} {`);
+    expect(i, `${sel} のブロックがない`).toBeGreaterThanOrEqual(0);
+    return css.slice(i, css.indexOf('}', i));
+  };
+  for (const b of brands) {
+    it(`${b.key}: primary の段・グラフの 1 色目がブランドのランプ（コーポレートは既定の primary）`, () => {
+      const light = block(`[data-brand='${b.dataBrand}']`);
+      for (const step of STEP_VALUES) {
+        const expected = b.key === 'corporate' ? primary[step as keyof typeof primary] : b.ramp[step];
+        expect(light, `${b.key} primary-${step}`).toContain(`--color-primary-${step}: ${expected};`);
+      }
+      expect(light).toContain(`--color-chart-1: ${b.key === 'corporate' ? primary[500] : b.ramp[500]};`);
+      for (const v of ['--color-surface-accent', '--color-bg-brand-deep', '--color-decor-brand', '--color-decor-brand-strong', '--color-text-brand-on-dark']) {
+        expect(light, `${b.key} ${v}`).toContain(`${v}:`);
+      }
+      expect(css).toContain(`.dark[data-brand='${b.dataBrand}'],`);
+    });
+  }
 });
 
 describe('(f) :root 凍結ガード — ブランド追従すべき変数が :root にだけ宣言されていない', () => {

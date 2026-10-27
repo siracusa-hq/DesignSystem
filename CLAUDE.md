@@ -47,9 +47,18 @@ TS定数とCSS変数を双方向で突き合わせる）。この仕組みは、
   - 500 単独で白文字 4.55:1 を満たし WCAG AA 適合
   - 業務システムUI・Web/LP の**両方**で同じ値
 - **`brand`（`#13c3a0` アンカー）… 装飾用**
-  - グラデーション・グロー・ダーク背景上のアクセント専用
-  - 白背景での対比は 2.25:1 しかない。**明背景のテキスト・ボタン背景に使ってはならない**
-  - Web/LP（`@siracusahq/gtm-design-system`）にのみ存在。業務システムUIには意図的に公開していない
+  - グラデーション・グロー・濃い地の上のアクセント・イラストなど、飾りならどこで使ってもよい（2026-10-27 に「ログインの画面だけ」の決まりを廃止）
+  - 白背景での対比は 2.25:1 しかない。**明背景のテキスト・ボタン背景に使ってはならない**（決まりではなく、読めないため）
+  - 業務システムUIでは CSS 変数で使う: `--color-bg-brand-deep`（濃い地）・`--color-decor-brand`（光・アイコン）・
+    `--color-decor-brand-strong`（光の濃い側）・`--color-text-brand-on-dark`（濃い地の上の文字）。`data-brand` で切り替わる
+
+### 業務システムUIのブランド（2026-10-27〜）
+
+- `<html data-brand="proofline">` のように指定すると、primary の段（50〜950）・選択中の面・グラフの 1 色目・装飾がそのブランドに切り替わる。
+  属性なしはコーポレート（今までと同じ値）
+- 生成物 `packages/ui-app/src/styles/generated-brand.css`（`pnpm codegen`。手で直さない）。`globals.css` が読み込む。
+  `tokens.css`・`semantic.css` を個別に読む消費側は、そのあとに `styles/generated-brand.css` も読む
+- 各ツールで primary の段を `index.css` に書き写して上書きしない（正本が直っても追従しない。上書き漏れが出る）
 
 ブランドごとの段（50〜950）の正本は `packages/tokens/src/brand-registry.ts`（テーマ契約）:
 
