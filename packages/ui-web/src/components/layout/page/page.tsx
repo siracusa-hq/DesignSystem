@@ -7,7 +7,7 @@ import { resolvePageSurface } from '@/lib/page-surface';
 import styles from './page.module.css';
 
 /** brand-registry のキーと一致すること（page.test.tsx が突き合わせる） */
-export const PAGE_BRANDS = ['corporate', 'polastack', 'peerdesk', 'peerdesk-taxpeer'] as const;
+export const PAGE_BRANDS = ['corporate', 'polastack', 'peerdesk', 'peerdesk-taxpeer', 'proofline'] as const;
 export type PageBrand = (typeof PAGE_BRANDS)[number];
 
 /**
