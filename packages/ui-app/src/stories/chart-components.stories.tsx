@@ -7,7 +7,8 @@ import { Button } from '../components/button';
 import { Badge } from '../components/badge';
 import { chartColors } from '../tokens/chart-theme';
 
-const COLOR_NAMES = ['Teal', 'Slate', 'Amber', 'Rose', 'Violet'];
+// 色の中身は data-brand で変わる（1 色目はブランドの色相、2 色目以降はブランドに近い色を飛ばした並び）ので、名前ではなく番号で示す
+const COLOR_NAMES = ['chart-1', 'chart-2', 'chart-3', 'chart-4', 'chart-5'];
 
 /* ----- StatCard Stories ----- */
 

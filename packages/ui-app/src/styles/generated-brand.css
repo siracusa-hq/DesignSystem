@@ -1,5 +1,5 @@
 /**
- * 業務 UI（ui-app）のブランド — data-brand で primary の段・選択中の面・グラフの 1 色目・装飾を切り替える
+ * 業務 UI（ui-app）のブランド — data-brand で primary の段・選択中の面・グラフの色・装飾を切り替える
  *
  * ⚠️ 自動生成ファイル — 手で編集しないこと。
  * 生成元: packages/tokens/src/brand-registry.ts（+ 骨格は packages/tokens/src/*.ts）
@@ -16,6 +16,32 @@
   --color-text-brand-on-dark: #7ee7d2;
 }
 
+/* グラフの色の既定（data-brand なし = コーポレート）。決め方は packages/tokens/src/chart.ts */
+:root {
+  --color-chart-1: #038e7d;
+  --color-chart-1-subtle: #daf6ef;
+  --color-chart-2: #026abe;
+  --color-chart-2-subtle: #e3f0ff;
+  --color-chart-3: #a87502;
+  --color-chart-3-subtle: #faedd9;
+  --color-chart-4: #be425f;
+  --color-chart-4-subtle: #ffe8eb;
+  --color-chart-5: #733699;
+  --color-chart-5-subtle: #f5e9fe;
+}
+.dark {
+  --color-chart-1: #039583;
+  --color-chart-1-subtle: #002e27;
+  --color-chart-2: #3c95f0;
+  --color-chart-2-subtle: #13283e;
+  --color-chart-3: #a87502;
+  --color-chart-3-subtle: #342305;
+  --color-chart-4: #e1627c;
+  --color-chart-4-subtle: #3b1b21;
+  --color-chart-5: #9d60c6;
+  --color-chart-5-subtle: #2e1f39;
+}
+
 /* コーポレート（Siracusa） */
 [data-brand='corporate'] {
   --color-primary-50: #e0f4ef;
@@ -30,8 +56,16 @@
   --color-primary-900: #023830;
   --color-primary-950: #01231e;
   --color-surface-accent: #E6F3F2;
-  --color-chart-1: #008575;
-  --color-chart-1-subtle: #e0f4ef;
+  --color-chart-1: #038e7d;
+  --color-chart-1-subtle: #daf6ef;
+  --color-chart-2: #026abe;
+  --color-chart-2-subtle: #e3f0ff;
+  --color-chart-3: #a87502;
+  --color-chart-3-subtle: #faedd9;
+  --color-chart-4: #be425f;
+  --color-chart-4-subtle: #ffe8eb;
+  --color-chart-5: #733699;
+  --color-chart-5-subtle: #f5e9fe;
   --color-bg-brand-deep: #072c25;
   --color-decor-brand: #13c3a0;
   --color-decor-brand-strong: #137663;
@@ -41,8 +75,16 @@
 .dark [data-brand='corporate'],
 [data-brand='corporate'] .dark {
   --color-surface-accent: #0E2926;
-  --color-chart-1: #4db6ac;
-  --color-chart-1-subtle: #023830;
+  --color-chart-1: #039583;
+  --color-chart-1-subtle: #002e27;
+  --color-chart-2: #3c95f0;
+  --color-chart-2-subtle: #13283e;
+  --color-chart-3: #a87502;
+  --color-chart-3-subtle: #342305;
+  --color-chart-4: #e1627c;
+  --color-chart-4-subtle: #3b1b21;
+  --color-chart-5: #9d60c6;
+  --color-chart-5-subtle: #2e1f39;
 }
 
 /* Polastack（Enterprise Agent Stack） */
@@ -59,8 +101,16 @@
   --color-primary-900: #0f1c3a;
   --color-primary-950: #070f24;
   --color-surface-accent: #eaedf3;
-  --color-chart-1: #2f4989;
+  --color-chart-1: #2b4fb0;
   --color-chart-1-subtle: #e7efff;
+  --color-chart-2: #a87502;
+  --color-chart-2-subtle: #faedd9;
+  --color-chart-3: #be425f;
+  --color-chart-3-subtle: #ffe8eb;
+  --color-chart-4: #733699;
+  --color-chart-4-subtle: #f5e9fe;
+  --color-chart-5: #049b8b;
+  --color-chart-5-subtle: #daf6f0;
   --color-bg-brand-deep: #070f24;
   --color-decor-brand: #7da5fd;
   --color-decor-brand-strong: #1f3363;
@@ -70,8 +120,16 @@
 .dark [data-brand='polastack'],
 [data-brand='polastack'] .dark {
   --color-surface-accent: #181d2c;
-  --color-chart-1: #7da5fd;
-  --color-chart-1-subtle: #0f1c3a;
+  --color-chart-1: #517adf;
+  --color-chart-1-subtle: #1a263f;
+  --color-chart-2: #a87502;
+  --color-chart-2-subtle: #342305;
+  --color-chart-3: #e1627c;
+  --color-chart-3-subtle: #3b1b21;
+  --color-chart-4: #9d60c6;
+  --color-chart-4-subtle: #2e1f39;
+  --color-chart-5: #04a291;
+  --color-chart-5-subtle: #002e28;
 }
 
 /* Proofline */
@@ -88,8 +146,16 @@
   --color-primary-900: #012734;
   --color-primary-950: #001720;
   --color-surface-accent: #e6eff2;
-  --color-chart-1: #06617c;
-  --color-chart-1-subtle: #dff2fa;
+  --color-chart-1: #027a9c;
+  --color-chart-1-subtle: #daf3fe;
+  --color-chart-2: #a87502;
+  --color-chart-2-subtle: #faedd9;
+  --color-chart-3: #be425f;
+  --color-chart-3-subtle: #ffe8eb;
+  --color-chart-4: #733699;
+  --color-chart-4-subtle: #f5e9fe;
+  --color-chart-5: #049b8b;
+  --color-chart-5-subtle: #daf6f0;
   --color-bg-brand-deep: #001720;
   --color-decor-brand: #14b8e7;
   --color-decor-brand-strong: #034559;
@@ -99,8 +165,16 @@
 .dark [data-brand='proofline'],
 [data-brand='proofline'] .dark {
   --color-surface-accent: #10222a;
-  --color-chart-1: #14b8e7;
-  --color-chart-1-subtle: #012734;
+  --color-chart-1: #0497c0;
+  --color-chart-1-subtle: #022b39;
+  --color-chart-2: #a87502;
+  --color-chart-2-subtle: #342305;
+  --color-chart-3: #e1627c;
+  --color-chart-3-subtle: #3b1b21;
+  --color-chart-4: #9d60c6;
+  --color-chart-4-subtle: #2e1f39;
+  --color-chart-5: #04a291;
+  --color-chart-5-subtle: #002e28;
 }
 
 /* ピアデスク シリーズ */
@@ -117,8 +191,16 @@
   --color-primary-900: #1c1a1e;
   --color-primary-950: #0f0e11;
   --color-surface-accent: #ededed;
-  --color-chart-1: #4a464e;
-  --color-chart-1-subtle: #efeef0;
+  --color-chart-1: #026abe;
+  --color-chart-1-subtle: #e3f0ff;
+  --color-chart-2: #a87502;
+  --color-chart-2-subtle: #faedd9;
+  --color-chart-3: #be425f;
+  --color-chart-3-subtle: #ffe8eb;
+  --color-chart-4: #733699;
+  --color-chart-4-subtle: #f5e9fe;
+  --color-chart-5: #049b8b;
+  --color-chart-5-subtle: #daf6f0;
   --color-bg-brand-deep: #0f0e11;
   --color-decor-brand: #aca4b1;
   --color-decor-brand-strong: #343137;
@@ -128,8 +210,16 @@
 .dark [data-brand='peerdesk'],
 [data-brand='peerdesk'] .dark {
   --color-surface-accent: #1d1c20;
-  --color-chart-1: #aca4b1;
-  --color-chart-1-subtle: #1c1a1e;
+  --color-chart-1: #3c95f0;
+  --color-chart-1-subtle: #13283e;
+  --color-chart-2: #a87502;
+  --color-chart-2-subtle: #342305;
+  --color-chart-3: #e1627c;
+  --color-chart-3-subtle: #3b1b21;
+  --color-chart-4: #9d60c6;
+  --color-chart-4-subtle: #2e1f39;
+  --color-chart-5: #04a291;
+  --color-chart-5-subtle: #002e28;
 }
 
 /* タックスピア */
@@ -146,8 +236,16 @@
   --color-primary-900: #0f2a1a;
   --color-primary-950: #07190e;
   --color-surface-accent: #eaf0ed;
-  --color-chart-1: #2f6847;
-  --color-chart-1-subtle: #e6f2e9;
+  --color-chart-1: #026a3d;
+  --color-chart-1-subtle: #dff5e6;
+  --color-chart-2: #026abe;
+  --color-chart-2-subtle: #e3f0ff;
+  --color-chart-3: #a87502;
+  --color-chart-3-subtle: #faedd9;
+  --color-chart-4: #be425f;
+  --color-chart-4-subtle: #ffe8eb;
+  --color-chart-5: #733699;
+  --color-chart-5-subtle: #f5e9fe;
   --color-bg-brand-deep: #07190e;
   --color-decor-brand: #6abc8b;
   --color-decor-brand-strong: #1f4a32;
@@ -157,6 +255,14 @@
 .dark [data-brand='peerdesk-taxpeer'],
 [data-brand='peerdesk-taxpeer'] .dark {
   --color-surface-accent: #18231f;
-  --color-chart-1: #6abc8b;
-  --color-chart-1-subtle: #0f2a1a;
+  --color-chart-1: #0eb16a;
+  --color-chart-1-subtle: #0e2e1c;
+  --color-chart-2: #3c95f0;
+  --color-chart-2-subtle: #13283e;
+  --color-chart-3: #a87502;
+  --color-chart-3-subtle: #342305;
+  --color-chart-4: #e1627c;
+  --color-chart-4-subtle: #3b1b21;
+  --color-chart-5: #9d60c6;
+  --color-chart-5-subtle: #2e1f39;
 }
