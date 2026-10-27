@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.20.0
+
+### Minor Changes
+
+- 48babc8: ブランドの段を「数字が大きいほど暗い」に統一し、全ブランドを生成＋アンカー（ロゴに使っている色だけを固定）にした。
+
+  - Polastack・Proofline・ピアデスク・タックスピアの 600〜950 を、500 より暗い順に並べ直した（ホバー・押下が暗くなる）。ホバーはどのブランドも 600、押下は 700
+  - コーポレートを生成に移した。操作色 #008575 は変わらない。装飾段 300 は #13c3a0 → #15c2ab、primary-50〜200・400・600〜950 もわずかに変わる
+  - タックスピアの 50・800、ピアデスクの 50・600・900 もロゴの色ではないので生成に変わる
+  - 値を手で書く登録（explicit）・`slotOverrides`・`EXPLICIT_L_TOLERANCE` を廃止。`anchors`・`stepLightness` を追加
+
+- d732629: 業務 UI もブランドを持つようにした。`<html data-brand="proofline">` などで、primary の段・選択中の面・グラフの 1 色目・ログインの画面の装飾がそのブランドに切り替わる（属性なしはコーポレートで、今までと同じ）。
+
+  - 生成物 `styles/generated-brand.css` を足し、`globals.css` が読み込む（`tokens.css`・`semantic.css` を個別に読む場合は、そのあとに読む）
+  - `AuthLayout`・`AuthVisualContent` は装飾用 brand スケールの JS 定数をやめ、CSS 変数（`--color-bg-brand-deep`・`--color-decor-brand`・`--color-decor-brand-strong`・`--color-text-brand-on-dark`）を使う
+  - Storybook にブランドの切り替え（ツールバーの Brand）を足した
+
+### Patch Changes
+
+- Updated dependencies [48babc8]
+  - @siracusahq/tokens@0.5.0
+
 ## 0.19.1
 
 ### Patch Changes
