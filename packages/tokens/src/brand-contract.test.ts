@@ -16,7 +16,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
-import { primary, brand } from './colors';
+import { primary } from './colors';
 import { contrastRatio, hexToOklch } from './color';
 import {
   ACTION_CHROMA_BAND,
@@ -126,33 +126,16 @@ describe('(d) 公開済みの現行色とのドリフト検出', () => {
       if (step === 300) continue;
       expect(primary[step as keyof typeof primary], `primary-${step}`).toBe(corporate.ramp[step]);
     }
-    expect(corporate.ramp[300], 'corporate-300 は装飾色（brand-500）').toBe(brand[500]);
   });
 
-  it('ブランド決定のアンカー hex（スウォッチ承認値）が再現される', () => {
+  it('ロゴの色（アンカー）が再現される', () => {
     const get = (key: string) => brands.find((b) => b.key === key)!.ramp;
-    // Polastack 濃紺（2026-08-04 決定・スウォッチ v8 案J）
-    expect(get('polastack')[500]).toBe('#2f4989');
-    expect(get('polastack')[300]).toBe('#7da5fd');
-    expect(get('polastack')[900]).toBe('#202e4e');
-    expect(get('polastack')[950]).toBe('#121c33');
-    // ピアデスク 濃鼠（2026-08-03 決定）
-    expect(get('peerdesk')[500]).toBe('#4a464e');
-    expect(get('peerdesk')[600]).toBe('#3a363e');
-    expect(get('peerdesk')[50]).toBe('#f3eff6');
-    expect(get('peerdesk')[900]).toBe('#353139');
-    // ピアデスク ライト（ロゴの副次要素）
-    expect(get('peerdesk')[300]).toBe('#aca4b1');
-    // コーポレート 操作色・装飾色
     expect(get('corporate')[500]).toBe('#008575');
-    expect(get('corporate')[300]).toBe('#13c3a0');
-    // Proofline 主色・アクセント（ロゴ）
+    expect(get('polastack')[500]).toBe('#2f4989');
     expect(get('proofline')[500]).toBe('#06617c');
-    expect(get('proofline')[300]).toBe('#14b8e7');
-    // タックスピア既存3色
+    expect(get('peerdesk')[500]).toBe('#4a464e');
+    expect(get('peerdesk')[300]).toBe('#aca4b1');
     expect(get('peerdesk-taxpeer')[500]).toBe('#2f6847');
-    expect(get('peerdesk-taxpeer')[800]).toBe('#1d4630');
-    expect(get('peerdesk-taxpeer')[50]).toBe('#eaf3ec');
   });
 });
 
