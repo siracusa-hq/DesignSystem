@@ -4,7 +4,7 @@
 
 **このファイルに書いてあるのは、API では表現できない判断だけ**である。型で落とせるもの・警告で止まるものは書かない（§6 に一覧だけ置く）。すべてのルールに実測の根拠を1行添えてある。根拠を引けないルールは書いていない。
 
-**語彙**: ブランド4 = `corporate` / `polastack` / `peerdesk` / `peerdesk-taxpeer`。トーン3 = `trust` / `product` / `campaign`。ページ型11は §2 に1節ずつある。
+**語彙**: ブランド5 = `corporate` / `polastack` / `peerdesk` / `peerdesk-taxpeer` / `proofline`。トーン3 = `trust` / `product` / `campaign`。ページ型11は §2 に1節ずつある。
 
 実測の原典（本文の数値はすべてここから引いている）:
 

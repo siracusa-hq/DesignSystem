@@ -38,7 +38,7 @@ pnpm add shiki
 これに含まれるもの:
 
 - 全コンポーネントのスタイル（CSS Modules でハッシュ済み。利用側のクラス名と衝突しません）
-- デザイントークン（CSS 変数）と 4 ブランドのテーマ定義（`data-brand` 属性で切替）
+- デザイントークン（CSS 変数）と 5 ブランドのテーマ定義（`data-brand` 属性で切替）
 - Web フォントの読み込み（Google Fonts の `@import`: `Inter` + `Noto Sans JP` + `JetBrains Mono`）
 
 #### フォントをセルフホストする場合
@@ -135,7 +135,7 @@ import { defineLandingPage, LandingPage } from '@siracusahq/gtm-design-system';
 
 | ファイル                                                        | 中身                                                             |
 | --------------------------------------------------------------- | ---------------------------------------------------------------- |
-| `node_modules/@siracusahq/gtm-design-system/AGENTS.md`          | 入口。導入1行・語彙（ブランド4 / トーン3 / ページ型5）・組み方2択 |
+| `node_modules/@siracusahq/gtm-design-system/AGENTS.md`          | 入口。導入1行・語彙（ブランド5 / トーン3 / ページ型5）・組み方2択 |
 | `node_modules/@siracusahq/gtm-design-system/GUIDELINES.md`      | Do's & Don'ts の正本。すべてのルールに実測の根拠つき             |
 
 最小のプロンプト例:
