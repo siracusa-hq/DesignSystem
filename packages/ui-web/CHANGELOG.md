@@ -1,5 +1,12 @@
 # @polastack/gtm-design-system
 
+## 0.21.1
+
+### Patch Changes
+
+- Updated dependencies [d86e26b]
+  - @siracusahq/tokens@0.6.0
+
 ## 0.21.0
 
 ### Minor Changes
