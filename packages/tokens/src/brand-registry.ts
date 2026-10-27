@@ -1,56 +1,34 @@
 /**
  * ブランドレジストリ — テーマ契約の登録簿
  *
- * ブランドの追加は原則ここに **色相1つ**（mode: 'generated'）を書くだけ。
- * 既存公開色を持つブランド（コーポレート・タックスピア等）だけが
- * mode: 'explicit' で hex を直接登録できる。
+ * ブランドの追加はここに **色相1つ**（＋彩度倍率・操作段の L）を書くだけ。50〜950 の段は生成器が作る。
+ * 公開済みの決定色（ロゴ・公開サイトで使っている色）は `anchors` でその段に固定する（固定した段は生成しない）。
  *
- * 段の契約（L / C）からの逸脱は `deviations` に理由を書かない限り
- * brand-contract.test.ts が落とす。
- *
- * 決定の経緯は docs/theme-contract-spec.md §12 を参照。
+ * 2026-10-27 に、値を手で書く登録（explicit）を廃止し、全ブランドを生成＋アンカーに統一した。
+ * あわせて「段の数字が大きいほど暗い」を全ブランドの契約にした（deep 型のホバー段の差し替え
+ * slotOverrides は不要になったので廃止）。経緯は docs/theme-contract-spec.md §12 Q13。
  */
 
 import { generateRamp, type Step } from './ramp';
 
-/** スロット名 → 参照する段の上書き（deep 型ブランドのホバー段差し替え等） */
-export type SlotOverrides = Partial<Record<string, Step>>;
-
-interface BrandCommon {
+export interface BrandEntry {
   /** 表示名 */
   label: string;
-  /** スロットの参照段をブランド単位で上書きする（例: deep 型は hover を 700 に） */
-  slotOverrides?: SlotOverrides;
-  /**
-   * 段契約からの意図的な逸脱の宣言。キー = 段、値 = 理由。
-   * explicit 登録で |L - 契約L| > EXPLICIT_L_TOLERANCE の段はここに必須。
-   */
-  deviations?: Partial<Record<Step, string>>;
-}
-
-export interface GeneratedBrand extends BrandCommon {
-  mode: 'generated';
-  /** OKLCH 色相角（0..360）。ブランド登録で書く唯一の色情報 */
+  /** OKLCH 色相角（0..360） */
   hue: number;
   /** 彩度倍率（契約帯: 操作段実効 C 0.06〜0.15）。既定 1 */
   chromaScale?: number;
-  /** 操作段の L（deep 型）。契約帯 0.500〜0.553。既定 0.553 */
+  /** 操作段の L（deep 型）。契約帯 0.42〜0.553。既定 0.553。500 をアンカーで固定するときは使わない */
   actionL?: number;
+  /** 公開済みの決定色を固定する段。理由はエントリの説明に書く */
+  anchors?: Partial<Record<Step, string>>;
+  /** 操作段の L 帯・彩度帯の契約から外れる理由（額縁戦略のような意図的な暗い無彩色など）。書いたときだけテストが帯を見ない */
+  actionBandExemption?: string;
   /** 仮登録（実物確認前）なら true */
   provisional?: boolean;
-}
-
-export interface ExplicitBrand extends BrandCommon {
-  mode: 'explicit';
-  /** explicit 登録が必要な理由（既存公開色の維持など） */
-  reason: string;
-  ramp: Record<Step, string>;
-}
-
-export type BrandEntry = (GeneratedBrand | ExplicitBrand) & {
   /** 配下製品（ピアデスクシリーズ等）。data-brand は `${親キー}-${製品キー}` になる */
-  products?: Record<string, GeneratedBrand | ExplicitBrand>;
-};
+  products?: Record<string, Omit<BrandEntry, 'products'>>;
+}
 
 /**
  * 既定ブランド（data-brand 属性なし = :root のスロットが指す先）
@@ -59,142 +37,80 @@ export const DEFAULT_BRAND = 'corporate';
 
 export const registry: Record<string, BrandEntry> = {
   /**
-   * コーポレート（ティール）— 公開済みの現行色を一切変えないため explicit。
-   * 300 段のみ現行 brand-500（#13c3a0）を採用（Q2 決定: 操作/装飾は同一ランプの2段）。
-   * 現行 primary-300 #4db6ac は装飾段の役割を持たないため、ランプには含めない。
+   * コーポレート（ティール）。色相・彩度は操作色 #008575 から求めた値（H 180.4・C 0.100）。
+   * アンカー: 500 = 操作色 #008575（白文字 4.55:1）、300 = 装飾色 #13c3a0（現行 brand-500。Q2 決定: 操作/装飾は同一ランプの2段）。
+   * 2026-10-27 に explicit（Material の teal の値）から生成に移した。ほかの段は契約どおりに作り直したため、わずかに変わった。
    */
   corporate: {
     label: 'コーポレート（Siracusa）',
-    mode: 'explicit',
-    reason:
-      '公開済みの現行 primary スケールを維持する（生成器の単一色相では現行2色 H180.4/H173.4 を同時再現できない。spec §6.2）',
-    ramp: {
-      50: '#e0f2f1',
-      100: '#b2dfdb',
-      200: '#80cbc4',
-      300: '#13c3a0', // 現行 brand-500。装飾段（Q2 決定）
-      400: '#26a69a',
-      500: '#008575',
-      600: '#007567',
-      700: '#006055',
-      800: '#004c43',
-      900: '#003831',
-      950: '#00231f',
-    },
+    hue: 180.4,
+    chromaScale: 1.0,
+    anchors: { 300: '#13c3a0', 500: '#008575' },
   },
 
   /**
    * Polastack（濃紺・deep 型）— 2026-08-04 ブランド決定（スウォッチ v6〜v8 の3巡で確定）。
    * H=265 / C×1.10 / 操作段 L=0.420（#2f4989、白文字 8.62:1）。
    * 「存在感がありつつ落ち着いた濃紺」= 彩度を保ち明度を沈める。
-   * deep 型のため 500 が 600 より暗い。ホバーは 700、押下は 800 を充てる。
+   * アンカー: スウォッチで承認した 300・500・900・950。600〜800 は 500 と 900 のあいだに暗い順で並ぶ。
    */
   polastack: {
     label: 'Polastack（Enterprise Agent Stack）',
-    mode: 'generated',
     hue: 265,
     chromaScale: 1.1,
-    actionL: 0.42,
-    slotOverrides: {
-      '--color-bg-brand-hover': 700,
-      '--color-bg-brand-active': 800,
-    },
+    anchors: { 300: '#7da5fd', 500: '#2f4989', 900: '#202e4e', 950: '#121c33' },
   },
 
   /**
    * Proofline（深青・deep 型）— 2026-10-27 ブランド決定。
-   * H=225 / C×1.05 / 操作段 L=0.460（#05617c、白文字 6.98:1）。
+   * H=225 / C×1.05 / 操作段 L=0.460（#06617c、白文字 6.98:1）。
    * セキュリティ・ガバナンス製品のため、統制と検証を示す濃い青を基調にする。
    * 緑系は成功状態（--c-ok 相当）と意味が衝突し、状態色の設計余地を奪うため採らない。
    * 色相は社内で空いている帯を選んだ: コーポレート 180.4 から 45 度、
    * タックスピア 156.0 から 69 度、Polastack 265.3 から 40 度。
-   * deep 型のため 500 が 600 より暗い。ホバーは 700、押下は 800 を充てる。
+   * アンカー: ロゴの主色 500（#06617c）とアクセント 300（#14b8e7）。
    */
   proofline: {
     label: 'Proofline',
-    mode: 'generated',
     hue: 225,
     chromaScale: 1.05,
-    actionL: 0.46,
-    slotOverrides: {
-      '--color-bg-brand-hover': 700,
-      '--color-bg-brand-active': 800,
-    },
+    anchors: { 300: '#14b8e7', 500: '#06617c' },
   },
 
   /**
    * ピアデスク シリーズ（濃鼠・額縁戦略）— 2026-08-03 ブランド決定。
-   * シリーズ色はほぼ無彩の暗色（#4a464e、白文字 9.22:1）にとどめ、
-   * 配下製品の色を主役にする。500/600 は額縁用アンカーの explicit 値のため
-   * 契約 L から大きく外れる（意図的・deviations 参照）。
+   * シリーズ色はほぼ無彩の暗色（#4a464e、白文字 9.22:1）にとどめ、配下製品の色を主役にする。
+   * 色相・彩度は #4a464e から求めた値（H 308.1・C 0.014）。
+   * アンカー: 50（淡色面）・300（ライト。ロゴの副次要素）・500（濃鼠）・600（hover）・900（フッター濃色）。
    */
   peerdesk: {
     label: 'ピアデスク シリーズ',
-    mode: 'explicit',
-    reason:
-      '額縁戦略: シリーズ色は L0.40 の濃鼠。操作段の契約 L 帯より暗いが、白文字コントラストは暗いほど強くなるため AA は常に満たす（spec §12 Q8/Q9）',
-    ramp: {
-      50: '#f3eff6',
-      100: '#d9d6db',
-      200: '#c3bfc7',
-      300: '#aca4b1',
-      400: '#928c98',
-      500: '#4a464e', // 濃鼠（決定アンカー）
-      600: '#3a363e', // hover（決定アンカー）
-      700: '#545057',
-      800: '#423f45',
-      900: '#353139', // フッター濃色（決定アンカー）
-      950: '#1e1c1f',
-    },
-    deviations: {
-      500: '額縁戦略の決定アンカー #4a464e（L 0.40）。白文字 9.22:1 で AA 超過',
-      600: 'hover アンカー #3a363e（L 0.34）。500 より暗い方向に統一',
-    },
-    slotOverrides: {
-      // 700 (#545057) は 500 より明るいため押下には使えない。900 を充てる
-      '--color-bg-brand-active': 900,
-    },
+    hue: 308.1,
+    chromaScale: 0.14,
+    anchors: { 50: '#f3eff6', 300: '#aca4b1', 500: '#4a464e', 600: '#3a363e', 900: '#353139' },
+    actionBandExemption: '額縁戦略: シリーズ色は L 0.40・ほぼ無彩（C 0.014）の濃鼠。操作段の帯より暗く無彩だが、白文字は暗いほど強くなるので AA は常に満たす。彩度で目立たせず、配下製品の色を主役にする（spec §12 Q8/Q9）',
     products: {
       /**
-       * タックスピア — ピアデスク第一弾（実在製品）。既存3色を維持する explicit。
-       * data-brand="peerdesk-taxpeer"
+       * タックスピア — ピアデスク第一弾（実在製品）。data-brand="peerdesk-taxpeer"
+       * 色相・彩度は千歳緑 #2F6847 から求めた値（H 156.0・C 0.081）。
+       * アンカー: 既存の公開色（淡色帯 50 #EAF3EC・主色 500 #2F6847・濃色 800 #1D4630）。
        */
       taxpeer: {
         label: 'タックスピア',
-        mode: 'explicit',
-        reason: '実在製品の既存公開色（千歳緑 #2F6847 / 濃色 #1D4630 / 淡色帯 #EAF3EC）を維持する',
-        ramp: {
-          50: '#eaf3ec', // 既存 淡色帯（≒50段、L差 .005）
-          100: '#c3e0cc',
-          200: '#9dcfaf',
-          300: '#6abc8b',
-          400: '#5aa176',
-          500: '#2f6847', // 既存 主色 千歳緑（L .469）
-          600: '#3e7152',
-          700: '#325d43',
-          800: '#1d4630', // 既存 濃色（≒800段、L差 .016）
-          900: '#1b3626',
-          950: '#0f2216',
-        },
-        deviations: {
-          500: '既存製品の主色 #2F6847（L 0.469）。白文字 6.58:1 で AA 超過',
-        },
-        slotOverrides: {
-          // 600 (#3e7152) は 500 より明るい。hover は 700、押下は 800 を充てる
-          '--color-bg-brand-hover': 700,
-          '--color-bg-brand-active': 800,
-        },
+        hue: 156.0,
+        chromaScale: 0.81,
+        anchors: { 50: '#eaf3ec', 500: '#2f6847', 800: '#1d4630' },
       },
     },
   },
 };
 
 /** レジストリのエントリからランプ実体を解決する */
-export function resolveRamp(entry: GeneratedBrand | ExplicitBrand): Record<Step, string> {
-  if (entry.mode === 'explicit') return entry.ramp;
+export function resolveRamp(entry: Omit<BrandEntry, 'products'>): Record<Step, string> {
   return generateRamp(entry.hue, {
     chromaScale: entry.chromaScale,
     actionL: entry.actionL,
+    anchors: entry.anchors,
   }).steps;
 }
 
@@ -203,7 +119,7 @@ export interface ResolvedBrand {
   key: string;
   /** data-brand 属性値。既定ブランドは属性なしでも効く */
   dataBrand: string;
-  entry: GeneratedBrand | ExplicitBrand;
+  entry: Omit<BrandEntry, 'products'>;
   ramp: Record<Step, string>;
 }
 

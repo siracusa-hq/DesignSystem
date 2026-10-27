@@ -2,7 +2,8 @@
  * テーマ契約テスト — docs/theme-contract-spec.md §8 の実装
  *
  * バクラクの実測で確認された「契約の破れ方」を CI で塞ぐ:
- *   (a) 段の L 混在（-60/-70 分裂で L* が 38.5〜57.0 にばらけた事故）
+ *   (a) 段の L 混在（-60/-70 分裂で L* が 38.5〜57.0 にばらけた事故）と、段の並びの崩れ
+ *       （deep 型で 600 が 500 より明るく、ホバーで色が明るくなる。2026-10-27 に契約にした）
  *   (b) AA 不適合の操作色（バクラク7色中4色が白地 AA 未達だった事故）
  *   (c) ダーク面での不適合（操作段はダーク面テキストに使えない）
  *   (d) 公開済みの現行色とのドリフト
@@ -22,10 +23,10 @@ import {
   CTA_SLOTS,
   ACTION_L_BAND,
   ACTION_MIN_CONTRAST,
-  EXPLICIT_L_TOLERANCE,
   SLOTS,
   STEPS,
   STEP_VALUES,
+  stepLightness,
 } from './ramp';
 import { registry, resolveAllBrands } from './brand-registry';
 
@@ -35,37 +36,50 @@ const contractL = Object.fromEntries(STEPS.map((s) => [s.step, s.L]));
 /** ダーク面の基準色（spec §12 Q5: 最悪ケース #1C1C1F を含める） */
 const DARK_SURFACES = ['#09090b', '#1C1C1F'];
 
-describe('(a) 段の規則 — L の混在を許さない', () => {
+describe('(a) 段の規則 — L の混在と並びの崩れを許さない', () => {
   for (const b of brands) {
-    it(`${b.key}: 全段の L が契約値に一致する（explicit は ±${EXPLICIT_L_TOLERANCE}、宣言済み逸脱を除く）`, () => {
+    it(`${b.key}: 段の数字が大きいほど暗い（L が単調に減る）`, () => {
+      for (let i = 1; i < STEP_VALUES.length; i++) {
+        const prev = STEP_VALUES[i - 1]!;
+        const step = STEP_VALUES[i]!;
+        expect(
+          hexToOklch(b.ramp[step]).L,
+          `${b.key}-${step}（${b.ramp[step]}）が ${prev}（${b.ramp[prev]}）より暗くない`,
+        ).toBeLessThan(hexToOklch(b.ramp[prev]).L);
+      }
+    });
+
+    it(`${b.key}: アンカーの段は登録した hex のまま、ほかの段の L は契約（暗い側は 500 とアンカーを通る写像）に一致する`, () => {
+      const anchors = b.entry.anchors ?? {};
+      const L500 = hexToOklch(b.ramp[500]).L;
+      const expectedL = stepLightness(L500, anchors);
       for (const step of STEP_VALUES) {
-        const actual = hexToOklch(b.ramp[step]).L;
-        const declared = b.entry.deviations?.[step];
-        if (declared) {
-          expect(declared.length, `${b.key}-${step} の逸脱理由が空`).toBeGreaterThan(0);
+        const fixed = anchors[step];
+        if (fixed) {
+          expect(b.ramp[step], `${b.key}-${step}`).toBe(fixed.toLowerCase());
           continue;
         }
-        const expected =
-          b.entry.mode === 'generated' && step === 500
-            ? (b.entry.actionL ?? contractL[500])
-            : contractL[step];
-        const tolerance = b.entry.mode === 'generated' ? 0.004 : EXPLICIT_L_TOLERANCE;
+        const actual = hexToOklch(b.ramp[step]).L;
+        const expected = step === 500 ? (b.entry.actionL ?? contractL[500]) : expectedL[step];
         expect(
           Math.abs(actual - expected),
-          `${b.key}-${step}: L=${actual.toFixed(4)} 期待=${expected}`,
-        ).toBeLessThanOrEqual(tolerance);
+          `${b.key}-${step}: L=${actual.toFixed(4)} 期待=${expected.toFixed(4)}`,
+        ).toBeLessThanOrEqual(0.004);
       }
     });
   }
 
-  it('生成ブランドの操作段は L 帯・彩度帯（契約改定 2026-08-03）の内側にある', () => {
+  it('操作段は L 帯・彩度帯（契約改定 2026-08-03）の内側にある（理由を宣言したブランドは帯を見ない）', () => {
     for (const b of brands) {
-      if (b.entry.mode !== 'generated') continue;
       const { L, C } = hexToOklch(b.ramp[500]);
-      expect(L).toBeGreaterThanOrEqual(ACTION_L_BAND.min - 0.004);
-      expect(L).toBeLessThanOrEqual(ACTION_L_BAND.max + 0.004);
-      expect(C).toBeGreaterThanOrEqual(ACTION_CHROMA_BAND.min);
-      expect(C).toBeLessThanOrEqual(ACTION_CHROMA_BAND.max + 0.001);
+      if (b.entry.actionBandExemption) {
+        expect(b.entry.actionBandExemption.length).toBeGreaterThan(0);
+        continue;
+      }
+      expect(L, `${b.key}-500 の L`).toBeGreaterThanOrEqual(ACTION_L_BAND.min - 0.004);
+      expect(L, `${b.key}-500 の L`).toBeLessThanOrEqual(ACTION_L_BAND.max + 0.004);
+      expect(C, `${b.key}-500 の C`).toBeGreaterThanOrEqual(ACTION_CHROMA_BAND.min);
+      expect(C, `${b.key}-500 の C`).toBeLessThanOrEqual(ACTION_CHROMA_BAND.max + 0.001);
     }
   });
 });
@@ -94,7 +108,7 @@ describe('(c) 装飾段の構造的保証 — 全ブランド', () => {
     });
 
     it(`${b.key}: 操作段(500)をダーク面のテキストに使ってはならない根拠（参考値の記録）`, () => {
-      // 500 がダーク面で AA を満たすブランド（peerdesk 等の explicit 暗色）は例外的に存在するが、
+      // 500 がダーク面で AA を満たすブランド（peerdesk 等の暗色）は例外的に存在するが、
       // 契約としては「ダーク面のテキストは 300（--color-text-brand-on-dark）」で統一する。
       // このテストは 300 が常に使えること（上のテスト）で担保されるため、ここでは退行検知のみ:
       expect(contrastRatio(b.ramp[300], '#09090b')).toBeGreaterThan(
@@ -105,12 +119,14 @@ describe('(c) 装飾段の構造的保証 — 全ブランド', () => {
 });
 
 describe('(d) 公開済みの現行色とのドリフト検出', () => {
-  it('corporate ランプは現行 primary スケールと一致する（300 段のみ現行 brand-500）', () => {
+  it('primary スケール（colors.ts・ui-app と ui-web の CSS）は corporate ランプと一致する（300 段だけは primary 独自の #4db6ac）', () => {
+    // 2026-10-27 に corporate を生成へ移したので、向きを「ランプが正、primary はその写し」にした
     const corporate = brands.find((b) => b.key === 'corporate')!;
     for (const step of STEP_VALUES) {
-      const expected = step === 300 ? brand[500] : primary[step as keyof typeof primary];
-      expect(corporate.ramp[step], `corporate-${step}`).toBe(expected);
+      if (step === 300) continue;
+      expect(primary[step as keyof typeof primary], `primary-${step}`).toBe(corporate.ramp[step]);
     }
+    expect(corporate.ramp[300], 'corporate-300 は装飾色（brand-500）').toBe(brand[500]);
   });
 
   it('ブランド決定のアンカー hex（スウォッチ承認値）が再現される', () => {
@@ -125,6 +141,14 @@ describe('(d) 公開済みの現行色とのドリフト検出', () => {
     expect(get('peerdesk')[600]).toBe('#3a363e');
     expect(get('peerdesk')[50]).toBe('#f3eff6');
     expect(get('peerdesk')[900]).toBe('#353139');
+    // ピアデスク ライト（ロゴの副次要素）
+    expect(get('peerdesk')[300]).toBe('#aca4b1');
+    // コーポレート 操作色・装飾色
+    expect(get('corporate')[500]).toBe('#008575');
+    expect(get('corporate')[300]).toBe('#13c3a0');
+    // Proofline 主色・アクセント（ロゴ）
+    expect(get('proofline')[500]).toBe('#06617c');
+    expect(get('proofline')[300]).toBe('#14b8e7');
     // タックスピア既存3色
     expect(get('peerdesk-taxpeer')[500]).toBe('#2f6847');
     expect(get('peerdesk-taxpeer')[800]).toBe('#1d4630');
@@ -158,15 +182,12 @@ describe('(e) 生成 CSS とレジストリの同期', () => {
     });
   }
 
-  it('スロットの参照段（slotOverrides 適用後）が CSS に反映されている', () => {
+  it('ホバー・押下はどのブランドも 600・700（段の並びを統一したので、ブランドごとの差し替えはない）', () => {
     const css = readFileSync(cssFiles[0], 'utf8');
-    // polastack: deep 型のため hover=700 / active=800
-    expect(css).toContain('--color-bg-brand-hover: var(--ramp-polastack-700);');
-    expect(css).toContain('--color-bg-brand-active: var(--ramp-polastack-800);');
-    // peerdesk: active=900
-    expect(css).toContain('--color-bg-brand-active: var(--ramp-peerdesk-900);');
-    // taxpeer: hover=700 / active=800
-    expect(css).toContain('--color-bg-brand-hover: var(--ramp-peerdesk-taxpeer-700);');
+    for (const b of brands) {
+      expect(css).toContain(`--color-bg-brand-hover: var(--ramp-${b.key}-600);`);
+      expect(css).toContain(`--color-bg-brand-active: var(--ramp-${b.key}-700);`);
+    }
   });
 
   it('CTA スロット（第3役割）が既定フォールバックとして出力されている', () => {
@@ -185,12 +206,8 @@ describe('(e) 生成 CSS とレジストリの同期', () => {
       }
     }
     for (const [key, entry] of Object.entries(registry)) {
-      for (const [slotName, step] of Object.entries(entry.slotOverrides ?? {})) {
-        expect(
-          SLOTS.map((s) => s.name),
-          `${key} の slotOverrides キー ${slotName}`,
-        ).toContain(slotName);
-        expect(STEP_VALUES).toContain(step);
+      for (const step of Object.keys(entry.anchors ?? {})) {
+        expect(STEP_VALUES, `${key} のアンカーの段 ${step}`).toContain(Number(step));
       }
     }
   });

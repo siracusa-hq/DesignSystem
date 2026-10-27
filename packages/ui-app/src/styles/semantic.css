@@ -32,7 +32,7 @@
   --color-chart-4: #D4687A; /* rose — dusty pink-red */
   --color-chart-5: #7C6BB1; /* violet — soft purple */
   /* Chart subtle fills — 1:1 paired with categorical */
-  --color-chart-1-subtle: #E0F2F1;
+  --color-chart-1-subtle: #e0f4ef;
   --color-chart-2-subtle: #E8EEF4;
   --color-chart-3-subtle: #FDF3E0;
   --color-chart-4-subtle: #FCEAED;
@@ -80,7 +80,7 @@
   --color-chart-3: #F0BD5C; /* brighter amber */
   --color-chart-4: #E08A9A; /* brighter rose */
   --color-chart-5: #9B8DD4; /* brighter violet */
-  --color-chart-1-subtle: #003831;
+  --color-chart-1-subtle: #023830;
   --color-chart-2-subtle: #1A2535;
   --color-chart-3-subtle: #2C2312;
   --color-chart-4-subtle: #2C1A1E;
