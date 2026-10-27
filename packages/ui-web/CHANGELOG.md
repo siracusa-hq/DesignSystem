@@ -1,5 +1,16 @@
 # @polastack/gtm-design-system
 
+## 0.20.0
+
+### Minor Changes
+
+- 8562466: Proofline のブランドランプを追加（深青・H=225。操作段 #05617c）。Page の `brand` に `proofline` を指定できるようにした。
+
+### Patch Changes
+
+- Updated dependencies [8562466]
+  - @siracusahq/tokens@0.4.0
+
 ## 0.19.0
 
 ### Minor Changes

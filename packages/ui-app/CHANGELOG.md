@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.19.1
+
+### Patch Changes
+
+- Updated dependencies [8562466]
+  - @siracusahq/tokens@0.4.0
+
 ## 0.19.0
 
 ### Minor Changes
