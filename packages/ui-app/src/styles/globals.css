@@ -3,7 +3,7 @@
 
    Tailwind 初期化 + 全トークン + ベーススタイルをまとめたエントリポイント。
    消費側が自前の Tailwind を持つ場合は globals.css ではなく
-   tokens.css / semantic.css を個別に @import すること。
+   tokens.css / semantic.css / generated-brand.css を個別に @import すること（この順で）。
    ============================================================ */
 
 @import 'tailwindcss';
@@ -17,6 +17,9 @@
 
 /* Semantic Color Tokens (:root / .dark) */
 @import './semantic.css';
+
+/* ブランド（data-brand で primary の段・選択中の面・グラフの 1 色目・装飾を切り替える。生成物） */
+@import './generated-brand.css';
 
 /* Base Styles, Keyframes, PWA, Print */
 @import './base.css';

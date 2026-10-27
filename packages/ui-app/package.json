@@ -29,6 +29,7 @@
     "./globals.css": "./src/styles/globals.css",
     "./styles/tokens.css": "./src/styles/tokens.css",
     "./styles/semantic.css": "./src/styles/semantic.css",
+    "./styles/generated-brand.css": "./src/styles/generated-brand.css",
     "./styles/base.css": "./src/styles/base.css"
   },
   "files": [

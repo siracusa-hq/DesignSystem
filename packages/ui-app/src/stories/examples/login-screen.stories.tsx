@@ -1,7 +1,6 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { AlertCircle } from 'lucide-react';
-import { brand } from '@siracusahq/tokens';
 import {
   AuthLayout,
   AuthLayoutForm,
@@ -62,7 +61,7 @@ function LoginForm({ error, sso }: { error?: boolean; sso?: 'top' | 'bottom' }) 
       <div className="flex flex-col gap-4">
         <div
           className="flex h-10 w-10 items-center justify-center rounded-lg text-lg font-bold text-white"
-          style={{ backgroundColor: brand[500] }}
+          style={{ backgroundColor: 'var(--color-primary-500)' }}
           aria-hidden="true"
         >
           P

@@ -1,0 +1,162 @@
+/**
+ * 業務 UI（ui-app）のブランド — data-brand で primary の段・選択中の面・グラフの 1 色目・装飾を切り替える
+ *
+ * ⚠️ 自動生成ファイル — 手で編集しないこと。
+ * 生成元: packages/tokens/src/brand-registry.ts（+ 骨格は packages/tokens/src/*.ts）
+ * 再生成: pnpm --filter @siracusahq/tokens codegen
+ */
+
+
+/* 装飾の既定（data-brand なし = コーポレート）。装飾色は濃い地の上の飾り（ログインの画面の地・光・アイコン・濃い地の文字）に使う。
+   白い地の上の文字・ボタンには使わない（コントラストが足りない）。 */
+:root {
+  --color-bg-brand-deep: #072c25;
+  --color-decor-brand: #13c3a0;
+  --color-decor-brand-strong: #137663;
+  --color-text-brand-on-dark: #7ee7d2;
+}
+
+/* コーポレート（Siracusa） */
+[data-brand='corporate'] {
+  --color-primary-50: #e0f4ef;
+  --color-primary-100: #b4e3d9;
+  --color-primary-200: #80d3c3;
+  --color-primary-300: #4db6ac;
+  --color-primary-400: #10a692;
+  --color-primary-500: #008575;
+  --color-primary-600: #087567;
+  --color-primary-700: #056054;
+  --color-primary-800: #034c42;
+  --color-primary-900: #023830;
+  --color-primary-950: #01231e;
+  --color-surface-accent: #E6F3F2;
+  --color-chart-1: #008575;
+  --color-chart-1-subtle: #e0f4ef;
+  --color-bg-brand-deep: #072c25;
+  --color-decor-brand: #13c3a0;
+  --color-decor-brand-strong: #137663;
+  --color-text-brand-on-dark: #7ee7d2;
+}
+.dark[data-brand='corporate'],
+.dark [data-brand='corporate'],
+[data-brand='corporate'] .dark {
+  --color-surface-accent: #0E2926;
+  --color-chart-1: #4db6ac;
+  --color-chart-1-subtle: #023830;
+}
+
+/* Polastack（Enterprise Agent Stack） */
+[data-brand='polastack'] {
+  --color-primary-50: #e7efff;
+  --color-primary-100: #c6d8fd;
+  --color-primary-200: #a4c0fe;
+  --color-primary-300: #7da5fd;
+  --color-primary-400: #678cdf;
+  --color-primary-500: #2f4989;
+  --color-primary-600: #284078;
+  --color-primary-700: #1f3363;
+  --color-primary-800: #17274e;
+  --color-primary-900: #0f1c3a;
+  --color-primary-950: #070f24;
+  --color-surface-accent: #eaedf3;
+  --color-chart-1: #2f4989;
+  --color-chart-1-subtle: #e7efff;
+  --color-bg-brand-deep: #070f24;
+  --color-decor-brand: #7da5fd;
+  --color-decor-brand-strong: #1f3363;
+  --color-text-brand-on-dark: #a4c0fe;
+}
+.dark[data-brand='polastack'],
+.dark [data-brand='polastack'],
+[data-brand='polastack'] .dark {
+  --color-surface-accent: #181d2c;
+  --color-chart-1: #7da5fd;
+  --color-chart-1-subtle: #0f1c3a;
+}
+
+/* Proofline */
+[data-brand='proofline'] {
+  --color-primary-50: #dff2fa;
+  --color-primary-100: #b3e0f2;
+  --color-primary-200: #7eceec;
+  --color-primary-300: #14b8e7;
+  --color-primary-400: #0f9ec6;
+  --color-primary-500: #06617c;
+  --color-primary-600: #04556c;
+  --color-primary-700: #034559;
+  --color-primary-800: #023646;
+  --color-primary-900: #012734;
+  --color-primary-950: #001720;
+  --color-surface-accent: #e6eff2;
+  --color-chart-1: #06617c;
+  --color-chart-1-subtle: #dff2fa;
+  --color-bg-brand-deep: #001720;
+  --color-decor-brand: #14b8e7;
+  --color-decor-brand-strong: #034559;
+  --color-text-brand-on-dark: #7eceec;
+}
+.dark[data-brand='proofline'],
+.dark [data-brand='proofline'],
+[data-brand='proofline'] .dark {
+  --color-surface-accent: #10222a;
+  --color-chart-1: #14b8e7;
+  --color-chart-1-subtle: #012734;
+}
+
+/* ピアデスク シリーズ */
+[data-brand='peerdesk'] {
+  --color-primary-50: #efeef0;
+  --color-primary-100: #d9d6db;
+  --color-primary-200: #c3bfc7;
+  --color-primary-300: #aca4b1;
+  --color-primary-400: #928d97;
+  --color-primary-500: #4a464e;
+  --color-primary-600: #403d44;
+  --color-primary-700: #343137;
+  --color-primary-800: #28262a;
+  --color-primary-900: #1c1a1e;
+  --color-primary-950: #0f0e11;
+  --color-surface-accent: #ededed;
+  --color-chart-1: #4a464e;
+  --color-chart-1-subtle: #efeef0;
+  --color-bg-brand-deep: #0f0e11;
+  --color-decor-brand: #aca4b1;
+  --color-decor-brand-strong: #343137;
+  --color-text-brand-on-dark: #c3bfc7;
+}
+.dark[data-brand='peerdesk'],
+.dark [data-brand='peerdesk'],
+[data-brand='peerdesk'] .dark {
+  --color-surface-accent: #1d1c20;
+  --color-chart-1: #aca4b1;
+  --color-chart-1-subtle: #1c1a1e;
+}
+
+/* タックスピア */
+[data-brand='peerdesk-taxpeer'] {
+  --color-primary-50: #e6f2e9;
+  --color-primary-100: #c3e0cc;
+  --color-primary-200: #9dcfaf;
+  --color-primary-300: #6abc8b;
+  --color-primary-400: #5aa176;
+  --color-primary-500: #2f6847;
+  --color-primary-600: #285b3e;
+  --color-primary-700: #1f4a32;
+  --color-primary-800: #173a26;
+  --color-primary-900: #0f2a1a;
+  --color-primary-950: #07190e;
+  --color-surface-accent: #eaf0ed;
+  --color-chart-1: #2f6847;
+  --color-chart-1-subtle: #e6f2e9;
+  --color-bg-brand-deep: #07190e;
+  --color-decor-brand: #6abc8b;
+  --color-decor-brand-strong: #1f4a32;
+  --color-text-brand-on-dark: #9dcfaf;
+}
+.dark[data-brand='peerdesk-taxpeer'],
+.dark [data-brand='peerdesk-taxpeer'],
+[data-brand='peerdesk-taxpeer'] .dark {
+  --color-surface-accent: #18231f;
+  --color-chart-1: #6abc8b;
+  --color-chart-1-subtle: #0f2a1a;
+}

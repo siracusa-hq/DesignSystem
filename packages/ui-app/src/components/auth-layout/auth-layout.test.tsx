@@ -1,7 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import { axe } from 'vitest-axe';
-import { brand } from '@siracusahq/tokens';
 import {
   AuthLayout,
   AuthLayoutForm,
@@ -37,7 +36,7 @@ describe('AuthLayout', () => {
 
   it('paints the visual panel with the brand dark background', () => {
     render(<AuthLayoutVisual data-testid="visual" />);
-    expect(screen.getByTestId('visual')).toHaveStyle({ backgroundColor: brand[950] });
+    expect(screen.getByTestId('visual')).toHaveStyle({ backgroundColor: 'var(--color-bg-brand-deep)' });
   });
 
   it('lets a custom style override the visual background', () => {

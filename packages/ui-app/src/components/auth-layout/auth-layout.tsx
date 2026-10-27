@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { brand } from '@siracusahq/tokens';
 import { cn } from '@/lib/cn';
 
 /* ----- AuthLayout ----- */
@@ -9,10 +8,8 @@ import { cn } from '@/lib/cn';
  * 左（AuthLayoutForm）にログインフォーム、右（AuthLayoutVisual）に
  * 製品ビジュアルや訴求を置く。lg 未満ではフォームのみの1カラムになる。
  *
- * Visual の背景には装飾用 `brand` スケール（@siracusahq/tokens）を直接使う。
- * 暗色背景上の装飾は brand の本来の用途であり WCAG 上の問題はないが、
- * ui-app のテーマ変数としては brand を公開しない方針のため、
- * この定数参照をテーマ変数（--color-brand-*）に置き換えないこと。
+ * Visual の背景はブランドの濃い地（--color-bg-brand-deep）。data-brand でブランドに合わせて切り替わる
+ * （2026-10-27。既定はコーポレートの装飾用 brand スケールの 950）。
  */
 export interface AuthLayoutProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -106,7 +103,7 @@ export const AuthLayoutVisual = React.forwardRef<HTMLDivElement, AuthLayoutVisua
         'relative hidden flex-col items-center justify-center overflow-hidden p-12 text-white lg:flex',
         className,
       )}
-      style={{ backgroundColor: brand[950], ...style }}
+      style={{ backgroundColor: 'var(--color-bg-brand-deep)', ...style }}
       {...props}
     />
   ),
