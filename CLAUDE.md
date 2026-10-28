@@ -146,7 +146,8 @@ pnpm --filter @siracusahq/gtm-design-system build
 2. PR を main にマージすると、Release ワークフローが version 更新と CHANGELOG 生成を行い、
    その結果を **`changeset-release/main` ブランチに push する**（ここまでは自動）
 
-3. **そのブランチから Version PR を手動で作る**（下記「Version PR を手で作る理由」参照）
+3. 同じ実行の中で、GitHub App のトークンで Version PR が作られる（下記「Version PR と GitHub App」参照）。
+   App の secrets が未登録のときだけ、Version PR を手で作る
 
    ```bash
    gh pr create --base main --head changeset-release/main \
@@ -166,26 +167,21 @@ npm への公開は Trusted Publishing（OIDC）。`NPM_TOKEN` は不要。
 **`.github/workflows/release.yml` のファイル名は変更しないこと**
 （npm側の信頼設定がリポジトリ+ワークフローファイル名に紐づいているため）。
 
-### Version PR を手で作る理由
+### Version PR と GitHub App
 
-changesets は本来この PR を自動で作るが、**org のポリシーで
-GitHub Actions による PR 作成が禁止されている**ため 403 で失敗する
-（`The organization does not allow GitHub Actions to create or approve pull requests`）。
-リポジトリ単位では上書きできない（API が 409 を返す）。
+org のポリシーで **GitHub Actions のトークン（`GITHUB_TOKEN`）による PR 作成は禁止されている**
+（`GitHub Actions is not permitted to create or approve pull requests`）。リポジトリ単位では上書きできない（API が 409 を返す）。
+そのため Release ワークフローは、**GitHub App のトークン**で Version PR を作る（2026-10-27〜）。
 
-**これは異常ではなく想定どおりの運用。** Release ワークフローのログに
-「creating pull request」で失敗した記録が残るが、その手前までは成功しており、
-`changeset-release/main` ブランチには正しい内容が入っている。
+- secrets: `RELEASE_APP_ID`（App ID）・`RELEASE_APP_PRIVATE_KEY`（App の秘密鍵）。このリポジトリに登録する
+- App の権限: Repository permissions の **Contents: Read and write**・**Pull requests: Read and write**（ほかは不要）。
+  インストール先はこのリポジトリだけにする
+- App のトークンで作った PR・push には CI が走る（`GITHUB_TOKEN` によるものには走らない）
+- secrets が未登録・失効のときは `GITHUB_TOKEN` で動き、従来どおり PR の作成だけが 403 で失敗する。
+  その手前（`changeset-release/main` への push）は成功しているので、上の手順 3 のコマンドで手で作る
 
-自動化したくなった場合の選択肢は2つ。
-
-- org 設定 `Allow GitHub Actions to create and approve pull requests` を開放する
-  （org 配下の全リポジトリに影響する）
-- Fine-grained PAT を `RELEASE_TOKEN` として登録し、`changesets/action` の
-  `GITHUB_TOKEN` env に渡す（このリポジトリだけに権限を限定できる）
-
-なお、Version PR を人が開く運用には副次的な利点がある。
-破壊的変更（例: Web/LP のプライマリカラー変更）を公開前に必ず一度目視する機会になる。
+Version PR が自動で開いても、**マージは人が判断する**。破壊的変更（例: Web/LP のプライマリカラー変更）を
+公開前に必ず一度目視する機会として残す。
 
 ### 未公開パッケージの初回公開について
 
