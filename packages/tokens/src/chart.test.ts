@@ -71,15 +71,34 @@ describe('グラフの色 — 決め方の規則', () => {
     }
   });
 
-  it('2 色目以降は候補の決まった順で、ブランドの色相に近い候補だけを飛ばす', () => {
+  it('2 色目以降は候補の決まった順で使い、ブランドの色相に近い候補を飛ばす（通らないときだけ、順を保って飛ばす色を増やす）', () => {
     for (const b of brands) {
       const brand = hexToOklch(b.ramp[500]);
       const achromatic = brand.C < CHART_ACHROMATIC_C;
-      const expected = CHART_POOL.filter((c) => achromatic || hueDist(hexToOklch(c.light).H, brand.H) >= CHART_HUE_GAP)
-        .slice(0, achromatic ? CHART_SLOTS : CHART_SLOTS - 1)
-        .map((c) => c.key);
-      expect(chartPaletteFor(b.ramp[500]).keys.slice(achromatic ? 0 : 1), b.key).toEqual(expected);
+      const candidates = CHART_POOL.filter((c) => achromatic || hueDist(hexToOklch(c.light).H, brand.H) >= CHART_HUE_GAP).map((c) => c.key);
+      const keys = chartPaletteFor(b.ramp[500]).keys.slice(achromatic ? 0 : 1);
+      // 候補の部分列で、順を保っている
+      let at = -1;
+      for (const k of keys) {
+        const idx = candidates.indexOf(k as (typeof candidates)[number]);
+        expect(idx, `${b.key}: ${k}`).toBeGreaterThan(at);
+        at = idx;
+      }
     }
+  });
+
+  it('ブランドごとの並び（変わったら、使っている画面のグラフの色が変わる。意図した変更か確かめる）', () => {
+    const got = Object.fromEntries(brands.map((b) => [b.key, chartPaletteFor(b.ramp[500]).keys.join('>')]));
+    expect(got).toEqual({
+      corporate: 'brand>slate>amber>rose>violet',
+      polastack: 'brand>amber>rose>violet>teal',
+      proofline: 'brand>amber>rose>violet>teal',
+      'out-reacher': 'brand>amber>teal>orange>magenta',
+      'ad-operator': 'brand>amber>rose>violet>teal',
+      'content-maker': 'brand>slate>amber>violet>teal',
+      peerdesk: 'slate>amber>rose>violet>teal',
+      'peerdesk-taxpeer': 'brand>slate>amber>rose>violet',
+    });
   });
 
   it('候補の並びは変えない（並びが見分けやすさを保つ。変えるなら検査を流してから）', () => {

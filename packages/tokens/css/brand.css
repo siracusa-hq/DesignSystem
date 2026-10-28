@@ -179,6 +179,42 @@
   --ramp-proofline-800: #023646;
   --ramp-proofline-900: #012734;
   --ramp-proofline-950: #001720;
+  /* Out Reacher */
+  --ramp-out-reacher-50: #efebff;
+  --ramp-out-reacher-100: #dad0fe;
+  --ramp-out-reacher-200: #c5b4fe;
+  --ramp-out-reacher-300: #af92fd;
+  --ramp-out-reacher-400: #9973f0;
+  --ramp-out-reacher-500: #6445a6;
+  --ramp-out-reacher-600: #573b93;
+  --ramp-out-reacher-700: #473079;
+  --ramp-out-reacher-800: #382560;
+  --ramp-out-reacher-900: #281948;
+  --ramp-out-reacher-950: #180d2e;
+  /* AdOperator */
+  --ramp-ad-operator-50: #e3f0ff;
+  --ramp-ad-operator-100: #bbdbfe;
+  --ramp-ad-operator-200: #91c6fe;
+  --ramp-ad-operator-300: #5dacfd;
+  --ramp-ad-operator-400: #1792f7;
+  --ramp-ad-operator-500: #1675c6;
+  --ramp-ad-operator-600: #1066af;
+  --ramp-ad-operator-700: #0c5491;
+  --ramp-ad-operator-800: #084274;
+  --ramp-ad-operator-900: #043058;
+  --ramp-ad-operator-950: #021e39;
+  /* Content Maker */
+  --ramp-content-maker-50: #ffe8e7;
+  --ramp-content-maker-100: #fec8c6;
+  --ramp-content-maker-200: #fea5a4;
+  --ramp-content-maker-300: #fe787b;
+  --ramp-content-maker-400: #e8575f;
+  --ramp-content-maker-500: #b64349;
+  --ramp-content-maker-600: #a13a3f;
+  --ramp-content-maker-700: #852f33;
+  --ramp-content-maker-800: #6b2427;
+  --ramp-content-maker-900: #50181b;
+  --ramp-content-maker-950: #340d0f;
   /* ピアデスク シリーズ */
   --ramp-peerdesk-50: #efeef0;
   --ramp-peerdesk-100: #d9d6db;
@@ -305,6 +341,66 @@
   --color-on-brand: #ffffff;
   --shadow-glow-brand: 0 0 24px rgb(20 184 231 / 0.25);
   --shadow-glow-brand-lg: 0 0 48px rgb(20 184 231 / 0.3);
+}
+
+[data-brand='out-reacher'] {
+  --color-bg-brand-subtle: var(--ramp-out-reacher-50);
+  --color-bg-brand-muted: var(--ramp-out-reacher-100);
+  --color-bg-brand-primary: var(--ramp-out-reacher-500);
+  --color-bg-brand-hover: var(--ramp-out-reacher-600);
+  --color-bg-brand-active: var(--ramp-out-reacher-700);
+  --color-bg-brand-strong: var(--ramp-out-reacher-800);
+  --color-text-brand: var(--ramp-out-reacher-500);
+  --color-text-brand-strong: var(--ramp-out-reacher-700);
+  --color-text-brand-on-dark: var(--ramp-out-reacher-300);
+  --color-border-brand: var(--ramp-out-reacher-200);
+  --color-border-brand-strong: var(--ramp-out-reacher-500);
+  --color-ring-brand: var(--ramp-out-reacher-500);
+  --color-decor-brand: var(--ramp-out-reacher-300);
+  --color-decor-brand-soft: var(--ramp-out-reacher-200);
+  --color-on-brand: #ffffff;
+  --shadow-glow-brand: 0 0 24px rgb(175 146 253 / 0.25);
+  --shadow-glow-brand-lg: 0 0 48px rgb(175 146 253 / 0.3);
+}
+
+[data-brand='ad-operator'] {
+  --color-bg-brand-subtle: var(--ramp-ad-operator-50);
+  --color-bg-brand-muted: var(--ramp-ad-operator-100);
+  --color-bg-brand-primary: var(--ramp-ad-operator-500);
+  --color-bg-brand-hover: var(--ramp-ad-operator-600);
+  --color-bg-brand-active: var(--ramp-ad-operator-700);
+  --color-bg-brand-strong: var(--ramp-ad-operator-800);
+  --color-text-brand: var(--ramp-ad-operator-500);
+  --color-text-brand-strong: var(--ramp-ad-operator-700);
+  --color-text-brand-on-dark: var(--ramp-ad-operator-300);
+  --color-border-brand: var(--ramp-ad-operator-200);
+  --color-border-brand-strong: var(--ramp-ad-operator-500);
+  --color-ring-brand: var(--ramp-ad-operator-500);
+  --color-decor-brand: var(--ramp-ad-operator-300);
+  --color-decor-brand-soft: var(--ramp-ad-operator-200);
+  --color-on-brand: #ffffff;
+  --shadow-glow-brand: 0 0 24px rgb(93 172 253 / 0.25);
+  --shadow-glow-brand-lg: 0 0 48px rgb(93 172 253 / 0.3);
+}
+
+[data-brand='content-maker'] {
+  --color-bg-brand-subtle: var(--ramp-content-maker-50);
+  --color-bg-brand-muted: var(--ramp-content-maker-100);
+  --color-bg-brand-primary: var(--ramp-content-maker-500);
+  --color-bg-brand-hover: var(--ramp-content-maker-600);
+  --color-bg-brand-active: var(--ramp-content-maker-700);
+  --color-bg-brand-strong: var(--ramp-content-maker-800);
+  --color-text-brand: var(--ramp-content-maker-500);
+  --color-text-brand-strong: var(--ramp-content-maker-700);
+  --color-text-brand-on-dark: var(--ramp-content-maker-300);
+  --color-border-brand: var(--ramp-content-maker-200);
+  --color-border-brand-strong: var(--ramp-content-maker-500);
+  --color-ring-brand: var(--ramp-content-maker-500);
+  --color-decor-brand: var(--ramp-content-maker-300);
+  --color-decor-brand-soft: var(--ramp-content-maker-200);
+  --color-on-brand: #ffffff;
+  --shadow-glow-brand: 0 0 24px rgb(254 120 123 / 0.25);
+  --shadow-glow-brand-lg: 0 0 48px rgb(254 120 123 / 0.3);
 }
 
 [data-brand='peerdesk'] {

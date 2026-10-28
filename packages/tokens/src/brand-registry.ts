@@ -80,6 +80,34 @@ export const registry: Record<string, BrandEntry> = {
   },
 
   /**
+   * 業務ツール（2026-10-27 登録。spec §12 Q16）。ロゴがまだないのでアンカーは置かず、全段を生成する。
+   * 色相・明るさは各ツールが index.css に書き写していた 500 から求め、彩度は操作段の契約帯の上限（C 0.150）に収めた。
+   * 書き写していた色とのずれ（500 の ΔE）: Out Reacher 3.6・AdOperator 1.5・Content Maker 0.7。
+   * ロゴができたら、そのロゴの色をアンカーにする（Q14）。
+   */
+  /** Out Reacher（紫）。元の 500 は #673ab7（C 0.186 で帯の外） */
+  'out-reacher': {
+    label: 'Out Reacher',
+    hue: 294.8,
+    chromaScale: 1.5,
+    actionL: 0.474,
+  },
+  /** AdOperator（青）。元の 500 は #0b78cf（L 0.565・C 0.159 で帯の外） */
+  'ad-operator': {
+    label: 'AdOperator',
+    hue: 250.7,
+    chromaScale: 1.5,
+    actionL: 0.553,
+  },
+  /** Content Maker（エンジ）。元の 500 は #b94047（C 0.156 で帯の外） */
+  'content-maker': {
+    label: 'Content Maker',
+    hue: 20.7,
+    chromaScale: 1.49,
+    actionL: 0.544,
+  },
+
+  /**
    * ピアデスク シリーズ（濃鼠・額縁戦略）— 2026-08-03 ブランド決定。
    * シリーズ色はほぼ無彩の暗色（#4a464e、白文字 9.22:1）にとどめ、配下製品の色を主役にする。
    * 色相・彩度は #4a464e から求めた値（H 308.1・C 0.014）。

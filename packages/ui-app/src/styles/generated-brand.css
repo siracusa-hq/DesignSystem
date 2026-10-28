@@ -177,6 +177,141 @@
   --color-chart-5-subtle: #002e28;
 }
 
+/* Out Reacher */
+[data-brand='out-reacher'] {
+  --color-primary-50: #efebff;
+  --color-primary-100: #dad0fe;
+  --color-primary-200: #c5b4fe;
+  --color-primary-300: #af92fd;
+  --color-primary-400: #9973f0;
+  --color-primary-500: #6445a6;
+  --color-primary-600: #573b93;
+  --color-primary-700: #473079;
+  --color-primary-800: #382560;
+  --color-primary-900: #281948;
+  --color-primary-950: #180d2e;
+  --color-surface-accent: #f0ecf6;
+  --color-chart-1: #613ea6;
+  --color-chart-1-subtle: #efebff;
+  --color-chart-2: #a87502;
+  --color-chart-2-subtle: #faedd9;
+  --color-chart-3: #049b8b;
+  --color-chart-3-subtle: #daf6f0;
+  --color-chart-4: #ba5002;
+  --color-chart-4-subtle: #ffe9df;
+  --color-chart-5: #b54d98;
+  --color-chart-5-subtle: #fde7f5;
+  --color-bg-brand-deep: #180d2e;
+  --color-decor-brand: #af92fd;
+  --color-decor-brand-strong: #473079;
+  --color-text-brand-on-dark: #c5b4fe;
+}
+.dark[data-brand='out-reacher'],
+.dark [data-brand='out-reacher'],
+[data-brand='out-reacher'] .dark {
+  --color-surface-accent: #221c32;
+  --color-chart-1: #8868d4;
+  --color-chart-1-subtle: #28213c;
+  --color-chart-2: #a87502;
+  --color-chart-2-subtle: #342305;
+  --color-chart-3: #04a291;
+  --color-chart-3-subtle: #002e28;
+  --color-chart-4: #ca5b10;
+  --color-chart-4-subtle: #3a1e10;
+  --color-chart-5: #d066b1;
+  --color-chart-5-subtle: #361c2e;
+}
+
+/* AdOperator */
+[data-brand='ad-operator'] {
+  --color-primary-50: #e3f0ff;
+  --color-primary-100: #bbdbfe;
+  --color-primary-200: #91c6fe;
+  --color-primary-300: #5dacfd;
+  --color-primary-400: #1792f7;
+  --color-primary-500: #1675c6;
+  --color-primary-600: #1066af;
+  --color-primary-700: #0c5491;
+  --color-primary-800: #084274;
+  --color-primary-900: #043058;
+  --color-primary-950: #021e39;
+  --color-surface-accent: #e8f1f9;
+  --color-chart-1: #015a9e;
+  --color-chart-1-subtle: #e3f0ff;
+  --color-chart-2: #a87502;
+  --color-chart-2-subtle: #faedd9;
+  --color-chart-3: #be425f;
+  --color-chart-3-subtle: #ffe8eb;
+  --color-chart-4: #733699;
+  --color-chart-4-subtle: #f5e9fe;
+  --color-chart-5: #049b8b;
+  --color-chart-5-subtle: #daf6f0;
+  --color-bg-brand-deep: #021e39;
+  --color-decor-brand: #5dacfd;
+  --color-decor-brand-strong: #0c5491;
+  --color-text-brand-on-dark: #91c6fe;
+}
+.dark[data-brand='ad-operator'],
+.dark [data-brand='ad-operator'],
+[data-brand='ad-operator'] .dark {
+  --color-surface-accent: #132638;
+  --color-chart-1: #1d83db;
+  --color-chart-1-subtle: #12283e;
+  --color-chart-2: #a87502;
+  --color-chart-2-subtle: #342305;
+  --color-chart-3: #e1627c;
+  --color-chart-3-subtle: #3b1b21;
+  --color-chart-4: #9d60c6;
+  --color-chart-4-subtle: #2e1f39;
+  --color-chart-5: #04a291;
+  --color-chart-5-subtle: #002e28;
+}
+
+/* Content Maker */
+[data-brand='content-maker'] {
+  --color-primary-50: #ffe8e7;
+  --color-primary-100: #fec8c6;
+  --color-primary-200: #fea5a4;
+  --color-primary-300: #fe787b;
+  --color-primary-400: #e8575f;
+  --color-primary-500: #b64349;
+  --color-primary-600: #a13a3f;
+  --color-primary-700: #852f33;
+  --color-primary-800: #6b2427;
+  --color-primary-900: #50181b;
+  --color-primary-950: #340d0f;
+  --color-surface-accent: #f8eced;
+  --color-chart-1: #9e212f;
+  --color-chart-1-subtle: #ffe8e7;
+  --color-chart-2: #026abe;
+  --color-chart-2-subtle: #e3f0ff;
+  --color-chart-3: #a87502;
+  --color-chart-3-subtle: #faedd9;
+  --color-chart-4: #733699;
+  --color-chart-4-subtle: #f5e9fe;
+  --color-chart-5: #049b8b;
+  --color-chart-5-subtle: #daf6f0;
+  --color-bg-brand-deep: #340d0f;
+  --color-decor-brand: #fe787b;
+  --color-decor-brand-strong: #852f33;
+  --color-text-brand-on-dark: #fea5a4;
+}
+.dark[data-brand='content-maker'],
+.dark [data-brand='content-maker'],
+[data-brand='content-maker'] .dark {
+  --color-surface-accent: #331c1f;
+  --color-chart-1: #e7666a;
+  --color-chart-1-subtle: #3b1c1c;
+  --color-chart-2: #3c95f0;
+  --color-chart-2-subtle: #13283e;
+  --color-chart-3: #a87502;
+  --color-chart-3-subtle: #342305;
+  --color-chart-4: #9d60c6;
+  --color-chart-4-subtle: #2e1f39;
+  --color-chart-5: #04a291;
+  --color-chart-5-subtle: #002e28;
+}
+
 /* ピアデスク シリーズ */
 [data-brand='peerdesk'] {
   --color-primary-50: #efeef0;

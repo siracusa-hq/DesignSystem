@@ -4,7 +4,8 @@
  * 決め方:
  *   - 1 色目はブランドの色相。グラフ向けの明るさ・彩度に合わせて作る（ブランドの 500 そのものではない。
  *     500 は彩度が低い・暗すぎるブランドが多く、グラフの検査に通らないため）
- *   - 2 色目以降は CHART_POOL を決まった順で使い、ブランドの色相から CHART_HUE_GAP 未満の候補は飛ばす
+ *   - 2 色目以降は CHART_POOL を決まった順で使い、ブランドの色相から CHART_HUE_GAP 未満の候補は飛ばす。
+ *     その並びが検査に通らないときだけ、候補の順を保ったまま飛ばす色を増やし、最初に通る並びを使う（2026-10-27。Out Reacher の紫とスレートの青）
  *   - 色相がない（無彩色の）ブランドは、1 色目から CHART_POOL を使う
  *   - CHART_POOL の値は、この規則で全ブランドが下の検査に通るように選んだ（値は手で直さない。直すなら検査を流す）
  *
@@ -142,24 +143,58 @@ export interface ChartPalette {
   darkSubtle: string[];
 }
 
-/** ブランドの主色（500）から、グラフの 5 色を決める */
+/** 候補の組み合わせ（順は保つ）を、辞書順（候補の先のものを優先）に列挙する */
+function* combinations<T>(items: readonly T[], n: number, start = 0): Generator<T[]> {
+  if (n === 0) {
+    yield [];
+    return;
+  }
+  for (let i = start; i <= items.length - n; i++) for (const rest of combinations(items, n - 1, i + 1)) yield [items[i], ...rest];
+}
+
+type PoolItem = (typeof CHART_POOL)[number];
+
+/** 1 色目（ブランドの色相）の明るさを選び、並び全体の検査の余裕を返す */
+function withBrandSlot(pool: readonly PoolItem[], H: number | null) {
+  const out = { light: pool.map((p) => p.light as string), dark: pool.map((p) => p.dark as string) };
+  let worst = Infinity;
+  for (const mode of ['light', 'dark'] as const) {
+    if (H === null) {
+      worst = Math.min(worst, margin(out[mode], mode));
+      continue;
+    }
+    let best: { m: number; hex: string } | null = null;
+    for (const L of BRAND_SLOT_L[mode]) {
+      const hex = chartHex(L, H);
+      const m = margin([hex, ...out[mode]], mode);
+      if (!best || m > best.m) best = { m, hex };
+    }
+    out[mode] = [best!.hex, ...out[mode]];
+    worst = Math.min(worst, best!.m);
+  }
+  return { out, worst };
+}
+
+/**
+ * ブランドの主色（500）から、グラフの 5 色を決める。
+ * 候補を決まった順で使い、ブランドの色相に近い候補は飛ばす。その並びが検査に通らないときだけ、
+ * 候補の順は保ったまま飛ばす色を増やし、最初に通る並びを使う（例: 紫のブランドではスレートの青も飛ばす）
+ */
 export function chartPaletteFor(brand500: string): ChartPalette {
   const { C, H } = hexToOklch(brand500);
   const achromatic = C < CHART_ACHROMATIC_C;
-  const pool = CHART_POOL.filter((p) => achromatic || hueDist(hexToOklch(p.light).H, H) >= CHART_HUE_GAP).slice(
-    0,
-    achromatic ? CHART_SLOTS : CHART_SLOTS - 1,
-  );
-  const out: Record<ChartMode, string[]> = { light: pool.map((p) => p.light), dark: pool.map((p) => p.dark) };
-  if (!achromatic) {
-    for (const mode of ['light', 'dark'] as const) {
-      let best: { m: number; hex: string } | null = null;
-      for (const L of BRAND_SLOT_L[mode]) {
-        const hex = chartHex(L, H);
-        const m = margin([hex, ...out[mode]], mode);
-        if (!best || m > best.m) best = { m, hex };
+  const candidates = CHART_POOL.filter((p) => achromatic || hueDist(hexToOklch(p.light).H, H) >= CHART_HUE_GAP);
+  const n = achromatic ? CHART_SLOTS : CHART_SLOTS - 1;
+  let pool = candidates.slice(0, n);
+  let { out, worst } = withBrandSlot(pool, achromatic ? null : H);
+  if (worst < CHART_CVD_MIN) {
+    for (const combo of combinations(candidates, n)) {
+      const r = withBrandSlot(combo, achromatic ? null : H);
+      if (r.worst >= CHART_CVD_MIN) {
+        pool = combo;
+        ({ out, worst } = r);
+        break;
       }
-      out[mode] = [best!.hex, ...out[mode]];
     }
   }
   return {
