@@ -139,6 +139,53 @@ export const Wide: Story = {
   ),
 };
 
+/** wide を固定表示で本文の横に並べる。画面が狭いときも画面の外にはみ出さない（max-w-full） */
+export const WidePinned: Story = {
+  parameters: { layout: 'fullscreen' },
+  render: () => {
+    const WidePinnedDemo = () => {
+      const [open, setOpen] = useState(true);
+      const [pinned, setPinned] = useState(true);
+      return (
+        <div className="flex h-screen">
+          <main className="min-w-0 flex-1 overflow-auto p-6">
+            <h1 className="text-lg font-semibold">集計</h1>
+            <p className="mt-2 text-sm text-neutral-600">
+              引き出しを固定すると、本文の横に並ぶ。ピンを外すと本文の上に重なる。
+            </p>
+            {!open && (
+              <Button className="mt-4" onClick={() => setOpen(true)}>
+                Open Drawer
+              </Button>
+            )}
+          </main>
+          <Drawer
+            open={open}
+            onOpenChange={(next) => {
+              setOpen(next);
+              if (!next) setPinned(false);
+            }}
+            pinnable
+            pinned={open && pinned}
+            onPinnedChange={setPinned}
+          >
+            <DrawerContent size="wide">
+              <DrawerHeader>
+                <DrawerTitle>判定の明細</DrawerTitle>
+                <DrawerDescription>size="wide" を固定表示</DrawerDescription>
+              </DrawerHeader>
+              <div className="p-6 flex-1 overflow-auto text-sm text-neutral-600">
+                ウィンドウの幅を変えて、本文と引き出しの幅を確かめる。
+              </div>
+            </DrawerContent>
+          </Drawer>
+        </div>
+      );
+    };
+    return <WidePinnedDemo />;
+  },
+};
+
 export const WithPinning: Story = {
   render: () => (
     <Drawer pinnable>
