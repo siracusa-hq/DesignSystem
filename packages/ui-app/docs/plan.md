@@ -214,7 +214,7 @@ shadcn/ui型アプローチを採用：
 - [x] DropdownMenu（Radix UI、14サブコンポーネント、destructive/inset variant）
 - [x] Dialog / Modal（Radix UI、レスポンシブ対応 — モバイル:フルスクリーン、デスクトップ:中央モーダル）
 - [x] CommandPalette（Dialog + cmdk構成、グループ/ショートカット/アイコン対応）
-- [x] Drawer（Radix Dialog primitives、left/right side、sm/md/lg/xl size、ピン/アンピン、DrawerProviderスタッキング）
+- [x] Drawer（Radix Dialog primitives、left/right side、sm/md/lg/xl/wide size、ピン/アンピン、DrawerProviderスタッキング）
 - [x] AppShell（createContextベース複合コンポーネント、レスポンシブサイドバー、モバイルDrawer連携、PWA BottomNav padding）
 
 **設計判断:**
