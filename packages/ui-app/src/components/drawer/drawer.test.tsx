@@ -16,7 +16,7 @@ import {
 
 function renderDrawer(props?: {
   side?: 'left' | 'right';
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'wide';
   pinnable?: boolean;
 }) {
   return render(
@@ -105,6 +105,16 @@ describe('Drawer', () => {
     await user.click(screen.getByText('Open Drawer'));
     const dialog = screen.getByRole('dialog');
     expect(dialog.className).toContain('w-[640px]');
+  });
+
+  it('applies wide size, capped to the viewport', async () => {
+    const user = userEvent.setup();
+    renderDrawer({ size: 'wide' });
+
+    await user.click(screen.getByText('Open Drawer'));
+    const dialog = screen.getByRole('dialog');
+    expect(dialog.className).toContain('w-[clamp(640px,50vw,1100px)]');
+    expect(dialog.className).toContain('max-w-full');
   });
 
   it('renders footer', async () => {

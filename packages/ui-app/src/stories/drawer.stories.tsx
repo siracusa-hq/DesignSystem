@@ -75,7 +75,7 @@ export const LeftSide: Story = {
 export const Sizes: Story = {
   render: () => (
     <div className="flex gap-2">
-      {(['sm', 'md', 'lg', 'xl'] as const).map((size) => (
+      {(['sm', 'md', 'lg', 'xl', 'wide'] as const).map((size) => (
         <Drawer key={size}>
           <DrawerTrigger asChild>
             <Button variant="outline" size="sm">
@@ -95,6 +95,47 @@ export const Sizes: Story = {
         </Drawer>
       ))}
     </div>
+  ),
+};
+
+/** 画面の半分まで広がる。640px より狭くせず 1100px より広くしない。明細の表など、横に長い中身向け */
+export const Wide: Story = {
+  render: () => (
+    <Drawer>
+      <DrawerTrigger asChild>
+        <Button>Open Wide Drawer</Button>
+      </DrawerTrigger>
+      <DrawerContent size="wide">
+        <DrawerHeader>
+          <DrawerTitle>判定の明細</DrawerTitle>
+          <DrawerDescription>
+            画面の半分（640〜1100px）。画面が 640px より狭いときは画面いっぱい。
+          </DrawerDescription>
+        </DrawerHeader>
+        <div className="p-6 flex-1 overflow-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-neutral-600">
+                <th className="py-2 pr-4">項目</th>
+                <th className="py-2 pr-4">判定</th>
+                <th className="py-2 pr-4">最終確認</th>
+                <th className="py-2">直し方</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Array.from({ length: 8 }, (_, i) => (
+                <tr key={i} className="border-t border-[var(--color-border)]">
+                  <td className="py-2 pr-4">項目 {i + 1}</td>
+                  <td className="py-2 pr-4">{i % 3 === 0 ? '要対応' : '適合'}</td>
+                  <td className="py-2 pr-4">2026-11-01</td>
+                  <td className="py-2">設定画面で対象を見直す</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </DrawerContent>
+    </Drawer>
   ),
 };
 
