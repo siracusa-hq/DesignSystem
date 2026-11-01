@@ -111,8 +111,8 @@ const drawerSizeVariants = cva('', {
       md: 'w-[480px]',
       lg: 'w-[640px]',
       xl: 'w-[800px]',
-      // 画面の半分。640px より狭くせず 1100px より広くしない（画面が 640px 未満なら max-w-full で画面いっぱい）
-      wide: 'w-[clamp(640px,50vw,1100px)]',
+      // 画面の 60%。800px より狭くせず 1200px より広くしない（画面が 800px 未満なら max-w-full で画面いっぱい）
+      wide: 'w-[clamp(800px,60vw,1200px)]',
     },
   },
   defaultVariants: { size: 'md' },
