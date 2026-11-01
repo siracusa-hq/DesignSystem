@@ -98,7 +98,7 @@ export const Sizes: Story = {
   ),
 };
 
-/** 画面の半分まで広がる。640px より狭くせず 1100px より広くしない。明細の表など、横に長い中身向け */
+/** 画面の 60% まで広がる。800px より狭くせず 1200px より広くしない。明細の表など、横に長い中身向け */
 export const Wide: Story = {
   render: () => (
     <Drawer>
@@ -109,7 +109,7 @@ export const Wide: Story = {
         <DrawerHeader>
           <DrawerTitle>判定の明細</DrawerTitle>
           <DrawerDescription>
-            画面の半分（640〜1100px）。画面が 640px より狭いときは画面いっぱい。
+            画面の 60%（800〜1200px）。画面が 800px より狭いときは画面いっぱい。
           </DrawerDescription>
         </DrawerHeader>
         <div className="p-6 flex-1 overflow-auto">

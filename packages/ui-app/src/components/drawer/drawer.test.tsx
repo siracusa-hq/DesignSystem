@@ -113,7 +113,7 @@ describe('Drawer', () => {
 
     await user.click(screen.getByText('Open Drawer'));
     const dialog = screen.getByRole('dialog');
-    expect(dialog.className).toContain('w-[clamp(640px,50vw,1100px)]');
+    expect(dialog.className).toContain('w-[clamp(800px,60vw,1200px)]');
     expect(dialog.className).toContain('max-w-full');
   });
 
