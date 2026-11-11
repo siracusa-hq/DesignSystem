@@ -14,4 +14,6 @@ export {
   type SpreadsheetCellRef,
   type SpreadsheetSelection,
   type SpreadsheetMenuTarget,
+  type SpreadsheetWriteSource,
+  type SpreadsheetWriteContext,
 } from './spreadsheet-grid';
