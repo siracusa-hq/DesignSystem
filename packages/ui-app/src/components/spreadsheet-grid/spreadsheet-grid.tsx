@@ -47,6 +47,8 @@ import {
      履歴はリセットされる）。history={false} ならアプリ側で持つ
    - Cmd/Ctrl+D で下へ、Cmd/Ctrl+R で右へコピー（範囲の先頭行・列を
      残りへ。1行・1列の範囲なら上・左のセルを写す）
+   - Cmd/Ctrl+矢印で、値の続く端・次の値・表の端へ移る（Excel と同じ。
+     Shift も押すと範囲を広げる）
    - 選択範囲の右下のつまみ（フィルハンドル）を引っぱると、縦か横へ
      範囲の値を繰り返し写す（連番にはしない）
    - 入力できるセルを選んでいる間は、セルに透明な入力欄を置いて
@@ -420,6 +422,28 @@ function matchOption(
     options.find((o) => normalizeText(o.value) === q) ??
     options.find((o) => normalizeText(o.label) === q)
   )?.value;
+}
+
+/**
+ * Cmd/Ctrl+矢印で移る先（Excel・Google スプレッドシートと同じ）。並び（行か列）の位置 from から dir の向きに見て、
+ * 今と次のセルに値があれば、値の続く最後のセルへ。そうでなければ、次の値のあるセルへ。どれも無ければ並びの端へ
+ */
+function jumpTarget(
+  length: number,
+  from: number,
+  dir: 1 | -1,
+  isEmpty: (index: number) => boolean,
+): number {
+  const last = dir > 0 ? length - 1 : 0;
+  if (length === 0 || from === last) return from;
+  const next = from + dir;
+  let i = next;
+  if (!isEmpty(from) && !isEmpty(next)) {
+    while (i !== last && !isEmpty(i + dir)) i += dir;
+    return i;
+  }
+  while (i !== last && isEmpty(i)) i += dir;
+  return i;
 }
 
 /**
@@ -2319,6 +2343,19 @@ function SpreadsheetGridInner<Row extends object>(
 
   /* ----- キーボード ----- */
 
+  /** Cmd/Ctrl+矢印で見る「空のセル」。計算列は getValue の値で見る（チェックは外れていれば空） */
+  const isEmptyCell = (r: number, c: number, t: 0 | 1): boolean => {
+    const field = fieldAt(c, t);
+    const row = rows[r];
+    if (!field || !row) return true;
+    if (field.type === 'readonly' && field.getValue) {
+      const shown = field.getValue(row);
+      return shown === null || shown === undefined || shown === '' || shown === false;
+    }
+    if (field.type === 'checkbox') return cellOf(row, field.key) !== true;
+    return normalizeForCompare(cellOf(row, field.key)) === null;
+  };
+
   const toggleCheckbox = (r: number, c: number, t: 0 | 1) => {
     const column = columns[c];
     const field = fieldAt(c, t);
@@ -2350,19 +2387,34 @@ function SpreadsheetGridInner<Row extends object>(
 
     switch (e.key) {
       case 'ArrowUp':
+      case 'ArrowDown': {
         e.preventDefault();
-        moveVertical(v, c, t, -1, e.shiftKey);
+        const dir = e.key === 'ArrowDown' ? 1 : -1;
+        // Cmd/Ctrl+↑↓: 値の続く端・次の値・表の端へ（Excel と同じ。Shift で範囲を広げる）
+        if (mod && !e.altKey) {
+          const to = jumpTarget(visible.length, v, dir, (i) => isEmptyCell(visible[i], c, t));
+          moveActive(to, c, e.shiftKey, t);
+        } else {
+          moveVertical(v, c, t, dir, e.shiftKey);
+        }
         return;
-      case 'ArrowDown':
-        e.preventDefault();
-        moveVertical(v, c, t, 1, e.shiftKey);
-        return;
+      }
       case 'ArrowLeft':
-        nav(v, c - 1);
+      case 'ArrowRight': {
+        const dir = e.key === 'ArrowRight' ? 1 : -1;
+        // Cmd/Ctrl+←→: 同じ行で、値の続く端・次の値・表の端へ（ブラウザの「戻る」「進む」より優先する）
+        if (mod && !e.altKey) {
+          nav(
+            v,
+            jumpTarget(columns.length, c, dir, (i) =>
+              isEmptyCell(r, i, columns[i]?.fields ? t : 0),
+            ),
+          );
+        } else {
+          nav(v, c + dir);
+        }
         return;
-      case 'ArrowRight':
-        nav(v, c + 1);
-        return;
+      }
       case 'Home':
         nav(v, 0);
         return;
