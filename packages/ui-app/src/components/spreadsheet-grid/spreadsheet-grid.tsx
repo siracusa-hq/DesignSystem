@@ -81,6 +81,21 @@ export interface SpreadsheetOption<T = unknown> {
   data?: T;
 }
 
+/**
+ * setValue に渡る、書き込みのきっかけ。手で入れたときだけほかの項目も整える
+ * （例: 開始を入れたら終了を 1 時間後にする。貼り付けではしない）ときに使う
+ * - 'edit': セル 1 つを手で入れた（打って確定・候補や選択肢や日付を選んだ・チェックを切り替えた）
+ * - 'auto': autoFill が入れた
+ * - 'paste': 貼り付けた（1 つの値を範囲に貼ったときも）
+ * - 'fill': 範囲へ写した（フィルハンドル・Cmd/Ctrl+D・R・範囲を選んで Cmd/Ctrl+Enter）
+ * - 'clear': Delete・Backspace で消した
+ */
+export type SpreadsheetWriteSource = 'edit' | 'auto' | 'paste' | 'fill' | 'clear';
+
+export interface SpreadsheetWriteContext {
+  source: SpreadsheetWriteSource;
+}
+
 export interface SpreadsheetColumn<Row extends object = SpreadsheetRow> {
   key: string;
   header: string;
@@ -94,6 +109,9 @@ export interface SpreadsheetColumn<Row extends object = SpreadsheetRow> {
   /** type: 'number' の下限/上限 */
   min?: number;
   max?: number;
+  /** type: 'date' で選べる日の範囲（YYYY-MM-DD）。範囲の外はカレンダーで選べず、貼り付けても入らない */
+  minDate?: string;
+  maxDate?: string;
   /** カスタム検証。エラーメッセージを返すとエラー表示（null/undefined で合格） */
   validate?: (value: SpreadsheetCellValue, row: Row) => string | null | undefined;
   /** type: 'readonly' の値（計算列）。表示とコピーに使う。例: (r) => r.qty * r.price */
@@ -102,9 +120,19 @@ export interface SpreadsheetColumn<Row extends object = SpreadsheetRow> {
   render?: (row: Row, cell: { rowIndex: number; editable: boolean }) => React.ReactNode;
   /**
    * セルに値を書く。編集の確定・貼り付け・Delete・範囲入力のすべてがここを通る。
-   * 既定は `{ ...row, [key]: value }`。ほかの項目も一緒に変えたいときに使う
+   * 既定は `{ ...row, [key]: value }`。ほかの項目も一緒に変えたいときに使う。
+   * context.source で、手で入れたのか・貼り付けたのかなどが分かる
    */
-  setValue?: (row: Row, value: SpreadsheetCellValue) => Row;
+  setValue?: (row: Row, value: SpreadsheetCellValue, context: SpreadsheetWriteContext) => Row;
+  /**
+   * 空のセルに自動で入れる値（例: 押したら 9:00・ダブルクリックしたら今日の日付）。
+   * on: 'click' は空のセルを押したとき（ドラッグ・Shift などを押しながら・キーでの移動では入れない）、
+   * 'edit' は空のセルで編集を始めたとき（ダブルクリック・Enter・F2 など。text・number・autocomplete の列で
+   * 文字を打って始めたときは入れない）。
+   * 入れた値は setValue に source: 'auto' で渡り、編集をやめても残る。'edit' の日付・選択の列は、
+   * 入れた値を選んだ状態で開く。null・undefined・'' を返すと何も入れない
+   */
+  autoFill?: { on: 'click' | 'edit'; value: (row: Row) => SpreadsheetCellValue };
   /** 合計行に出す中身。どれかの列に指定すると合計行が出る */
   footer?: React.ReactNode | ((rows: Row[]) => React.ReactNode);
   /** 文字の寄せ。既定は number が右、ほかは左 */
@@ -122,6 +150,12 @@ export interface SpreadsheetColumn<Row extends object = SpreadsheetRow> {
   optionsHeader?: (row: Row) => React.ReactNode;
   /** autocomplete: 候補の幅(px)。既定はセル幅（最低 200） */
   optionsWidth?: number;
+  /**
+   * autocomplete: 文字を打たずに候補を開いたとき（ダブルクリック・Enter・F2）に選んでおく候補の value。
+   * その候補まで一覧を送る（例: 0:00〜23:50 の時刻の一覧を、今の時刻のところで開く）。
+   * 返さなければ、今までどおり何も選ばない
+   */
+  initialOption?: (row: Row) => string | null | undefined;
   /** autocomplete: 候補を選んだときに行へ反映する（複数の項目を書き換えてよい）。既定は value をこの列に書く */
   onSelectOption?: (row: Row, option: SpreadsheetOption) => Row;
   /** autocomplete: 候補を選んだあとに移る列（同じ行）。返さなければ Enter は下・Tab は右へ */
@@ -388,6 +422,27 @@ function matchOption(
   )?.value;
 }
 
+/**
+ * 貼り付けた日付を YYYY-MM-DD にする。2026-12-05・2026/12/5・2026.12.5・2026年12月5日 を読む
+ * （Excel は 2026/12/5 の形で写す）。暦に無い日（2026-02-30 など）と、読めない文字は null
+ */
+function parseDateText(text: string): string | null {
+  const m = /^(\d{4})[-/.年](\d{1,2})[-/.月](\d{1,2})日?$/.exec(
+    text.normalize('NFKC').replace(/\s+/g, ''),
+  );
+  if (!m) return null;
+  const [year, month, day] = [Number(m[1]), Number(m[2]), Number(m[3])];
+  const date = new Date(Date.UTC(year, month - 1, day));
+  if (
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() !== month - 1 ||
+    date.getUTCDate() !== day
+  ) {
+    return null;
+  }
+  return `${m[1]}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+}
+
 function parsePastedValue<Row extends object>(
   column: SpreadsheetColumn<Row>,
   text: string,
@@ -402,8 +457,13 @@ function parsePastedValue<Row extends object>(
       return /^(true|1|yes|✓|○)$/i.test(trimmed);
     case 'date': {
       if (trimmed === '') return null;
-      const normalized = trimmed.normalize('NFKC').replace(/\//g, '-');
-      return /^\d{4}-\d{2}-\d{2}$/.test(normalized) ? normalized : KEEP;
+      const date = parseDateText(trimmed);
+      if (!date) return KEEP;
+      // 選べる日の範囲の外は入れない（カレンダーと同じ）
+      if ((column.minDate && date < column.minDate) || (column.maxDate && date > column.maxDate)) {
+        return KEEP;
+      }
+      return date;
     }
     case 'select': {
       if (trimmed === '') return null;
@@ -607,6 +667,8 @@ function DateCellEditor<Row extends object>({
         ref={triggerRef}
         value={typeof value === 'string' ? value : ''}
         onValueChange={(v) => onCommit(v === '' ? null : v)}
+        min={column.minDate}
+        max={column.maxDate}
         aria-label={column.header}
         aria-invalid={invalid || undefined}
         size="sm"
@@ -665,11 +727,22 @@ function OptionsPopup({
     };
   }, [anchor]);
 
+  // 選んでいる候補を見えるところへ送る。一覧はセルの位置を測ってから出るので、出たときにも送る。
+  // 出たときは一覧の真ん中に置く（initialOption で開いたとき、前後の候補も見えるように）
+  const shown = rect !== null;
+  const placedRef = React.useRef(false);
   React.useEffect(() => {
-    listRef.current
-      ?.querySelector<HTMLElement>(`[data-option-index="${highlight}"]`)
-      ?.scrollIntoView?.({ block: 'nearest' });
-  }, [highlight]);
+    if (!shown) return;
+    const list = listRef.current;
+    const item = list?.querySelector<HTMLElement>(`[data-option-index="${highlight}"]`);
+    if (!list || !item) return;
+    if (!placedRef.current) {
+      placedRef.current = true;
+      list.scrollTop = Math.max(0, item.offsetTop - (list.clientHeight - item.offsetHeight) / 2);
+    } else {
+      item.scrollIntoView?.({ block: 'nearest' });
+    }
+  }, [highlight, shown]);
 
   if (!rect || typeof document === 'undefined') return null;
   const w = width ?? Math.max(200, rect.width);
@@ -781,6 +854,7 @@ interface GridApi<Row extends object> {
   getCell: (r: number, c: number, t: 0 | 1) => HTMLTableCellElement | undefined;
   setInputRef: (node: HTMLInputElement | null) => void;
   cellMouseDown: (r: number, c: number, t: 0 | 1, e: React.MouseEvent) => void;
+  cellClick: (r: number, c: number, t: 0 | 1, e: React.MouseEvent) => void;
   cellMouseEnter: (r: number, c: number, t: 0 | 1) => void;
   fillHandleMouseDown: (e: React.MouseEvent) => void;
   cellDoubleClick: (r: number, c: number, t: 0 | 1) => void;
@@ -960,6 +1034,7 @@ function RowViewInner<Row extends object>(p: RowViewProps<Row>) {
         data-locked={(typeEditable && !editable) || undefined}
         data-tier={tiered ? t : undefined}
         onMouseDown={(e) => api.cellMouseDown(r, c, t, e)}
+        onClick={(e) => api.cellClick(r, c, t, e)}
         onMouseEnter={() => api.cellMouseEnter(r, c, t)}
         onDoubleClick={() => api.cellDoubleClick(r, c, t)}
         onContextMenu={() => api.cellContextMenu(r, c)}
@@ -1546,7 +1621,8 @@ function SpreadsheetGridInner<Row extends object>(
   /** セルに値を書く（setValue を通す）。何も変わらなければ false */
   const writeCells = (
     updates: { r: number; c: number; t: 0 | 1; value: SpreadsheetCellValue }[],
-    appendedRows: Row[] = [],
+    appendedRows: Row[],
+    source: SpreadsheetWriteSource,
   ): boolean => {
     const next = [...rows, ...appendedRows];
     let changed = appendedRows.length > 0;
@@ -1563,7 +1639,7 @@ function SpreadsheetGridInner<Row extends object>(
         continue;
       }
       const newRow = field.setValue
-        ? field.setValue(base, value)
+        ? field.setValue(base, value, { source })
         : ({ ...base, [field.key]: value } as Row);
       if (newRow === base) continue;
       transferRowIdentity(base, newRow);
@@ -1572,6 +1648,17 @@ function SpreadsheetGridInner<Row extends object>(
     }
     if (changed) applyChange(next);
     return changed;
+  };
+
+  /** 空のセルに autoFill の値を入れる。入れた値を返す（入れなければ undefined） */
+  const autoFillCell = (r: number, c: number, t: 0 | 1): SpreadsheetCellValue => {
+    const field = fieldAt(c, t);
+    const row = rows[r];
+    if (!field?.autoFill || !row || !canEdit(r, c, t)) return undefined;
+    if (normalizeForCompare(cellOf(row, field.key)) !== null) return undefined;
+    const value = field.autoFill.value(row);
+    if (normalizeForCompare(value) === null) return undefined;
+    return writeCells([{ r, c, t, value }], [], 'auto') ? value : undefined;
   };
 
   /* ----- 候補（autocomplete） ----- */
@@ -1610,13 +1697,19 @@ function SpreadsheetGridInner<Row extends object>(
     return items;
   };
 
-  /** 候補の選択位置。開いただけでは選ばない。決まった候補は先頭、
+  /** 候補の選択位置。開いただけでは選ばない（initialOption があればその候補）。決まった候補は先頭、
       getOptions の候補は「2 文字以上の前方一致」か「完全一致」のときだけ先頭を選ぶ */
   const withHighlight = (ed: EditingState): EditingState => {
     const items = itemsOf(ed);
     let highlight = -1;
-    if (items && items.length && !(ed.mode === 'edit' && ed.draft === ed.original)) {
-      const column = fieldAt(ed.c, ed.t)!;
+    const column = fieldAt(ed.c, ed.t);
+    if (items && items.length && column && ed.mode === 'edit' && ed.draft === ed.original) {
+      const row = rows[ed.r];
+      const target = row ? column.initialOption?.(row) : null;
+      if (target) {
+        highlight = items.findIndex((it) => it.kind === 'option' && it.option.value === target);
+      }
+    } else if (items && items.length && column) {
       if (!column.getOptions) {
         highlight = items[0].kind === 'option' ? 0 : -1;
       } else {
@@ -1641,7 +1734,12 @@ function SpreadsheetGridInner<Row extends object>(
       onEditBlocked?.({ row, rowIndex: r, column });
       return;
     }
-    const value = cellOf(row, field.key);
+    let value = cellOf(row, field.key);
+    // 空のセルで（文字を打たずに）編集を始めたら、autoFill（on: 'edit'）の値を先に入れる
+    if (initialDraft === undefined && field.autoFill?.on === 'edit') {
+      const filled = autoFillCell(r, c, t);
+      if (filled !== undefined) value = filled;
+    }
     const original = value === null || value === undefined ? '' : String(value);
     setEditing(
       withHighlight({
@@ -1722,7 +1820,7 @@ function SpreadsheetGridInner<Row extends object>(
     if (!ok && move !== 'none') return;
     committingRef.current = true;
     setEditing(null);
-    if (ok) writeCells([{ r: ed.r, c: ed.c, t: ed.t, value }]);
+    if (ok) writeCells([{ r: ed.r, c: ed.c, t: ed.t, value }], [], 'edit');
     // 最下行の Enter でも行は自動追加しない。既存行を修正して確定する
     // たびに空行が増えてしまうため（行追加はボタン / 右クリック /
     // ペースト時の自動拡張で行う）。move は clamp されるので最下行では留まる
@@ -1747,11 +1845,20 @@ function SpreadsheetGridInner<Row extends object>(
     const row = rows[ed.r];
     setEditing(null);
     if (!row || !field) return;
-    const newRow = field.onSelectOption
-      ? field.onSelectOption(row, item.option)
-      : field.setValue
-        ? field.setValue(row, item.option.value)
-        : ({ ...row, [field.key]: item.option.value } as Row);
+    // 今の値と同じ候補を選んだだけなら書かない（貼り付けなどと同じ。onSelectOption は今までどおり呼ぶ）
+    const same =
+      !field.onSelectOption &&
+      Object.is(
+        normalizeForCompare(cellOf(row, field.key)),
+        normalizeForCompare(item.option.value),
+      );
+    const newRow = same
+      ? row
+      : field.onSelectOption
+        ? field.onSelectOption(row, item.option)
+        : field.setValue
+          ? field.setValue(row, item.option.value, { source: 'edit' })
+          : ({ ...row, [field.key]: item.option.value } as Row);
     if (newRow !== row) {
       const next = [...rows];
       transferRowIdentity(row, newRow);
@@ -1798,7 +1905,7 @@ function SpreadsheetGridInner<Row extends object>(
   };
 
   /** 範囲の入力できるセルすべてに同じ値を入れる（読めない値のセルは変えない） */
-  const fillSelection = (text: string) => {
+  const fillSelection = (text: string, source: 'paste' | 'fill') => {
     if (!selectionRect) return;
     const updates: { r: number; c: number; t: 0 | 1; value: SpreadsheetCellValue }[] =
       [];
@@ -1813,7 +1920,7 @@ function SpreadsheetGridInner<Row extends object>(
         }
       }
     }
-    writeCells(updates);
+    writeCells(updates, [], source);
   };
 
   /**
@@ -1848,7 +1955,7 @@ function SpreadsheetGridInner<Row extends object>(
         }
       }
     }
-    writeCells(updates);
+    writeCells(updates, [], 'fill');
   };
 
   /**
@@ -1945,7 +2052,7 @@ function SpreadsheetGridInner<Row extends object>(
         }
       }
     }
-    writeCells(updates);
+    writeCells(updates, [], 'clear');
   };
 
   const handlePaste = (e: React.ClipboardEvent) => {
@@ -1966,7 +2073,7 @@ function SpreadsheetGridInner<Row extends object>(
 
     // 1 つの値を範囲に貼ると、範囲すべてに入る（Excel と同じ）
     if (matrix.length === 1 && matrix[0].length === 1 && isMultiCell) {
-      fillSelection(matrix[0][0]);
+      fillSelection(matrix[0][0], 'paste');
       return;
     }
 
@@ -2009,7 +2116,7 @@ function SpreadsheetGridInner<Row extends object>(
         updates.push({ r, c, t, value });
       });
     });
-    writeCells(updates, appended);
+    writeCells(updates, appended, 'paste');
     // ペースト範囲を選択状態にする
     const width = Math.max(...matrix.map((m) => m.length));
     setAnchor({ r: visible[startV] ?? active.r, c: startC, t: 0 });
@@ -2220,7 +2327,7 @@ function SpreadsheetGridInner<Row extends object>(
       onEditBlocked?.({ row: rows[r], rowIndex: r, column });
       return;
     }
-    writeCells([{ r, c, t, value: cellOf(rows[r], field.key) !== true }]);
+    writeCells([{ r, c, t, value: cellOf(rows[r], field.key) !== true }], [], 'edit');
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -2402,7 +2509,7 @@ function SpreadsheetGridInner<Row extends object>(
       e.stopPropagation();
       const draft = ed.draft;
       setEditing(null);
-      fillSelection(draft);
+      fillSelection(draft, 'fill');
       return;
     }
     switch (e.key) {
@@ -2607,6 +2714,7 @@ function SpreadsheetGridInner<Row extends object>(
   const latest = React.useRef({
     isCellDirty,
     handleCellMouseDown: (_r: number, _c: number, _t: 0 | 1, _e: React.MouseEvent) => {},
+    handleCellClick: (_r: number, _c: number, _t: 0 | 1, _e: React.MouseEvent) => {},
     handleCellMouseEnter: (_r: number, _c: number, _t: 0 | 1) => {},
     handleFillHandleMouseDown: (_e: React.MouseEvent) => {},
     handleCellDoubleClick: (_r: number, _c: number, _t: 0 | 1) => {},
@@ -2660,6 +2768,18 @@ function SpreadsheetGridInner<Row extends object>(
         setActive(pos);
         setAnchor(pos);
       }
+    },
+    handleCellClick: (r, c, t, e) => {
+      // 空のセルを押したら autoFill（on: 'click'）の値を入れる。範囲を広げる押し方・
+      // ダブルクリックの 2 度目・フィルハンドル・編集中のセルの中は除く
+      // （ドラッグで別のセルまで動かしたときは、click がセルに届かない）
+      if (e.button !== 0 || e.detail > 1) return;
+      if (e.shiftKey || e.metaKey || e.ctrlKey || e.altKey) return;
+      if ((e.target as HTMLElement).closest?.('[data-fill-handle]')) return;
+      const ed = editingRef.current;
+      if (ed && ed.r === r && ed.c === c && ed.t === t) return;
+      if (fieldAt(c, t)?.autoFill?.on !== 'click') return;
+      autoFillCell(r, c, t);
     },
     handleCellMouseEnter: (r, c, t) => {
       if (fillTo) {
@@ -2801,12 +2921,12 @@ function SpreadsheetGridInner<Row extends object>(
       const ed = editingRef.current;
       if (!ed) return;
       setEditing(null);
-      writeCells([{ r: ed.r, c: ed.c, t: ed.t, value }]);
+      writeCells([{ r: ed.r, c: ed.c, t: ed.t, value }], [], 'edit');
     },
     cancelEdit,
     handleCheckbox: (r, c, t, checked) => {
       if (!canEdit(r, c, t)) return;
-      writeCells([{ r, c, t, value: checked }]);
+      writeCells([{ r, c, t, value: checked }], [], 'edit');
     },
     optionHover: (i) => {
       const ed = editingRef.current;
@@ -2828,6 +2948,7 @@ function SpreadsheetGridInner<Row extends object>(
         activeInputRef.current = node;
       },
       cellMouseDown: (r, c, t, e) => latest.current.handleCellMouseDown(r, c, t, e),
+      cellClick: (r, c, t, e) => latest.current.handleCellClick(r, c, t, e),
       cellMouseEnter: (r, c, t) => latest.current.handleCellMouseEnter(r, c, t),
       fillHandleMouseDown: (e) => latest.current.handleFillHandleMouseDown(e),
       cellDoubleClick: (r, c, t) => latest.current.handleCellDoubleClick(r, c, t),

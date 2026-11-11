@@ -1044,3 +1044,109 @@ export const TwoTierCells: Story = {
     );
   },
 };
+// 0:00〜23:50 の 10 分きざみ（終了は 0:10〜24:00）
+const tenMinutes = Array.from({ length: 144 }, (_, i) => {
+  const h = String(Math.floor(i / 6)).padStart(2, '0');
+  return `${h}:${String((i % 6) * 10).padStart(2, '0')}`;
+});
+const endTimes = [...tenMinutes.slice(1), '24:00'];
+const minutesOf = (t: string) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 5));
+const timeOf = (m: number) =>
+  `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
+const anHourLater = (t: string) => timeOf(Math.min(minutesOf(t) + 60, 24 * 60));
+
+type TimeRow = SpreadsheetRow & { day: string | null; start: string; end: string; task: string };
+
+export const AutoFillAndTimes: Story = {
+  name: '自動で入れる値・日付の範囲・時刻の一覧',
+  render: () => {
+    const year = 2026;
+    const month = 12;
+    const first = `${year}-${String(month).padStart(2, '0')}-01`;
+    const last = `${year}-${String(month).padStart(2, '0')}-31`;
+    const blankTime = (): TimeRow => ({ day: null, start: '', end: '', task: '' });
+    const [rows, setRows] = useState<TimeRow[]>([
+      { day: '2026-12-01', start: '09:00', end: '12:00', task: '打ち合わせ' },
+      blankTime(),
+      blankTime(),
+      blankTime(),
+    ]);
+    const options = (list: string[]) => list.map((t) => ({ value: t, label: t }));
+    const columns: SpreadsheetColumn<TimeRow>[] = [
+      {
+        key: 'day',
+        header: '日付',
+        type: 'date',
+        width: 130,
+        minDate: first,
+        maxDate: last,
+        // 空の日付をダブルクリック（Enter・F2）すると、その日を入れてからカレンダーを開く
+        autoFill: { on: 'edit', value: () => '2026-12-10' },
+      },
+      {
+        key: 'start',
+        header: '開始',
+        type: 'autocomplete',
+        width: 80,
+        align: 'center',
+        optionsWidth: 96,
+        // 文字を打たずに開いたときは全部（今の時刻のところで開く）、打ったら数字で絞る
+        getOptions: (query, row) =>
+          options(
+            query === row.start
+              ? tenMinutes
+              : tenMinutes.filter((t) => t.replace(':', '').startsWith(query.replace(/\D/g, ''))),
+          ),
+        initialOption: (row) => row.start || '09:00',
+        // 空の開始を押すと 9:00 が入る
+        autoFill: { on: 'click', value: () => '09:00' },
+        // 手で入れたときだけ、終了を開始の 1 時間後にする（終了より前へ直したときはそのまま）
+        setValue: (row, value, { source }) => {
+          const start = typeof value === 'string' ? value : '';
+          const manual = source === 'edit' || source === 'auto';
+          const keep = row.end && start && minutesOf(start) < minutesOf(row.end);
+          return {
+            ...row,
+            start,
+            end: manual && start && !keep ? anHourLater(start) : row.end,
+          };
+        },
+      },
+      {
+        key: 'end',
+        header: '終了',
+        type: 'autocomplete',
+        width: 80,
+        align: 'center',
+        optionsWidth: 96,
+        getOptions: (query, row) =>
+          options(
+            query === row.end
+              ? endTimes
+              : endTimes.filter((t) => t.replace(':', '').startsWith(query.replace(/\D/g, ''))),
+          ),
+        initialOption: (row) => row.end || (row.start ? anHourLater(row.start) : '18:00'),
+        validate: (_v, row) =>
+          row.start && row.end && minutesOf(row.end) <= minutesOf(row.start)
+            ? '終了は開始より後にしてください'
+            : null,
+      },
+      { key: 'task', header: '作業', type: 'text', width: 240 },
+    ];
+    return (
+      <div className="flex max-w-[640px] flex-col gap-2">
+        <SpreadsheetGrid
+          aria-label="作業時間"
+          columns={columns}
+          rows={rows}
+          onRowsChange={setRows}
+          createRow={blankTime}
+        />
+        <p className="text-xs text-[var(--color-on-surface-muted)]">
+          空の開始を押すと 9:00、終了はその 1 時間後が入る（貼り付けでは入れない）。 時刻の一覧は
+          0:00 から順に並び、今の時刻のところで開く。日付はこの月の中だけ選べる。
+        </p>
+      </div>
+    );
+  },
+};
